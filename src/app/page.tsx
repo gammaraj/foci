@@ -35,14 +35,13 @@ export default function HomePage() {
 
   return (
     <div className="flex items-start justify-center min-h-screen p-1 pt-4">
-      <div className="w-full max-w-[420px]">
+        <div className="w-full max-w-[640px]">
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-white/20 dark:border-gray-800 overflow-visible relative">
           {/* Header */}
           <header
             className="flex items-center justify-between px-4 py-5 text-white rounded-t-2xl"
             style={{
-              background:
-                "linear-gradient(135deg, var(--electric-blue) 0%, var(--purple-power) 100%)",
+              background: "#1e293b",
             }}
           >
             <div className="flex items-center">
@@ -151,8 +150,8 @@ export default function HomePage() {
           {/* Quote display */}
           {timer.lastQuote && (
             <div className="px-4 pb-2">
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center">
-                <p className="text-xs italic text-gray-600 dark:text-gray-300">
+              <div className="bg-slate-50 dark:bg-slate-800/40 rounded-lg p-3 border border-slate-200 dark:border-slate-700 text-center">
+                <p className="text-xs italic text-slate-500 dark:text-slate-400">
                   &ldquo;{timer.lastQuote}&rdquo;
                 </p>
               </div>

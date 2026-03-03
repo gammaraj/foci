@@ -2,13 +2,13 @@
 
 /* ===== Custom Properties ===== */
 :root {
-  --electric-blue: #0066FF;
-  --vibrant-cyan: #00D4FF;
-  --energetic-green: #00CC66;
-  --purple-power: #7B68EE;
-  --coral-red: #FF4757;
-  --primary-color: var(--electric-blue);
-  --secondary-color: var(--energetic-green);
+  --primary-blue: #2563eb;
+  --primary-blue-dark: #1d4ed8;
+  --accent-indigo: #4f46e5;
+  --success-green: #059669;
+  --muted-slate: #64748b;
+  --primary-color: var(--primary-blue);
+  --secondary-color: var(--success-green);
 }
 
 /* ===== Base Styles ===== */
@@ -21,8 +21,8 @@ body {
 /* ===== Circular Timer ===== */
 .circular-timer-container {
   position: relative;
-  width: 220px;
-  height: 220px;
+  width: 280px;
+  height: 280px;
   margin: 0 auto;
 }
 
@@ -30,7 +30,7 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.06));
 }
 
 .timer-svg {
@@ -41,19 +41,19 @@ body {
 
 .timer-circle-bg {
   fill: none;
-  stroke: #e4e4e7;
+  stroke: #e2e8f0;
   stroke-width: 3;
   opacity: 0.6;
 }
 
 .timer-inner-bg {
-  fill: rgba(59, 130, 246, 0.08);
+  fill: rgba(37, 99, 235, 0.05);
   stroke: none;
   transition: fill 0.5s ease;
 }
 
 .timer-inner-bg.break {
-  fill: rgba(34, 197, 94, 0.08);
+  fill: rgba(5, 150, 105, 0.05);
 }
 
 .timer-circle-progress {
@@ -64,12 +64,12 @@ body {
   stroke-dashoffset: 315;
   transition: stroke-dashoffset 0.3s ease;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 8px rgba(0, 102, 255, 0.4));
+  filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.2));
 }
 
 .timer-circle-progress.break {
   stroke: var(--secondary-color);
-  filter: drop-shadow(0 0 8px rgba(0, 204, 102, 0.4));
+  filter: drop-shadow(0 0 4px rgba(5, 150, 105, 0.2));
 }
 
 .timer-content {
@@ -80,14 +80,14 @@ body {
   text-align: center;
   background: rgba(255, 255, 255, 0.98);
   border-radius: 50%;
-  width: 155px;
-  height: 155px;
+  width: 200px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(226, 232, 240, 0.6);
 }
 
 /* ===== Timer Control Buttons ===== */
@@ -97,33 +97,27 @@ body {
   justify-content: center;
   padding: 0.75rem;
   border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   border: none;
   outline: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  background: #64748b;
   color: white;
-  box-shadow: 0 1px 3px rgba(0, 102, 255, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .pause-button:hover {
-  background: linear-gradient(135deg, #5b6370 0%, #8c939f 100%);
+  background: #475569;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .pause-button.running {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  animation: pulse-green 2s ease-in-out infinite;
+  background: var(--primary-blue);
 }
 
 .pause-button.running:hover {
-  background: linear-gradient(135deg, #047857 0%, #0d9668 100%);
-}
-
-@keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  background: var(--primary-blue-dark);
 }
 
 .reset-button {
@@ -132,44 +126,27 @@ body {
   justify-content: center;
   padding: 0.75rem;
   border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   border: none;
   outline: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-  color: #6b7280;
-  border: 1px solid #d1d5db;
-  box-shadow: 0 1px 3px rgba(0, 102, 255, 0.1);
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .reset-button:hover {
-  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-  color: #4b5563;
+  background: #e2e8f0;
+  color: #475569;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* ===== Daily Progress ===== */
 #dailyGoalProgress {
   position: relative;
   transition: box-shadow 0.2s ease;
-}
-
-#dailyGoalProgress::before {
-  content: '';
-  position: absolute;
-  top: -2px; left: -2px; right: -2px; bottom: -2px;
-  background: linear-gradient(45deg, var(--electric-blue), var(--vibrant-cyan), var(--purple-power), var(--electric-blue));
-  background-size: 300% 300%;
-  border-radius: 14px;
-  z-index: -1;
-  animation: gradient-shift 3s ease infinite;
-  opacity: 0.6;
-}
-
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
 }
 
 /* ===== Settings Panel ===== */
@@ -189,10 +166,10 @@ body {
   z-index: 50;
   width: 380px;
   max-width: 95vw;
-  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  border: 2px solid rgba(0, 102, 255, 0.2);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+  border: 1px solid #e2e8f0;
   overflow: hidden;
 }
 
@@ -213,7 +190,7 @@ body {
 /* ===== Animations ===== */
 @keyframes celebrationPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  50% { transform: scale(1.02); }
 }
 
 .goal-completed {
@@ -252,25 +229,25 @@ input:focus-visible {
 @media (prefers-color-scheme: dark) {
   .timer-content {
     background: rgba(30, 30, 30, 0.98);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   .pause-button {
-    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+    background: #475569;
   }
 
   .pause-button.running {
-    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    background: #2563eb;
   }
 
   .reset-button {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    color: #d1d5db;
-    border-color: #4b5563;
+    background: #334155;
+    color: #cbd5e1;
+    border-color: #475569;
   }
 
   .settings-panel {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    border-color: rgba(0, 102, 255, 0.3);
+    background: #1e293b;
+    border-color: #334155;
   }
 }

@@ -42,7 +42,7 @@ export default function DailyProgress({
     <section className="px-3 py-2" aria-labelledby="daily-progress-heading">
       <div
         id="dailyGoalProgress"
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-blue-300 dark:border-blue-700 p-4"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4"
       >
         {/* Sessions counter */}
         <div className="flex items-center justify-between mb-4">
@@ -67,7 +67,7 @@ export default function DailyProgress({
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
               Streak
             </div>
-            <div className="bg-orange-200 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-3 py-1.5 rounded-lg text-sm font-bold border border-orange-300 dark:border-orange-700 hover:bg-orange-300 dark:hover:bg-orange-800 transition-colors">
+            <div className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
               🔥 {dailyGoalData.streak} days
             </div>
           </div>

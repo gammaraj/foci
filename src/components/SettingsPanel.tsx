@@ -65,8 +65,7 @@ export default function SettingsPanel({
         <div
           className="px-4 py-3 text-white flex justify-between items-center"
           style={{
-            background:
-              "linear-gradient(135deg, var(--electric-blue) 0%, var(--purple-power) 100%)",
+            background: "#1e293b",
           }}
         >
           <h3 className="text-sm font-bold flex items-center gap-1.5">
@@ -106,15 +105,15 @@ export default function SettingsPanel({
           {/* Timer Settings */}
           <div>
             <h4 className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5 flex items-center">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-1.5" />
+              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-1.5" />
               Timer Settings
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {/* Work Duration */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg p-2 border border-blue-200 dark:border-blue-700">
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
                 <label
                   htmlFor="workDuration"
-                  className="flex text-xs font-medium text-blue-800 dark:text-blue-300 mb-1 items-center"
+                  className="flex text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 items-center"
                 >
                   <span className="mr-1">⏱️</span> Work (min)
                 </label>
@@ -125,15 +124,15 @@ export default function SettingsPanel({
                   max={120}
                   value={workMin}
                   onChange={(e) => setWorkMin(Number(e.target.value))}
-                  className="w-full px-2 py-1 border border-blue-300 dark:border-blue-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="w-full px-2 py-1 border border-slate-300 dark:border-slate-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
               </div>
 
               {/* Break Duration */}
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg p-2 border border-green-200 dark:border-green-700">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
                 <label
                   htmlFor="breakDuration"
-                  className="flex text-xs font-medium text-green-800 dark:text-green-300 mb-1 items-center"
+                  className="flex text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 items-center"
                 >
                   <span className="mr-1">🛌</span> Break (min)
                 </label>
@@ -144,15 +143,15 @@ export default function SettingsPanel({
                   max={60}
                   value={breakMin}
                   onChange={(e) => setBreakMin(Number(e.target.value))}
-                  className="w-full px-2 py-1 border border-green-300 dark:border-green-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-green-500 focus:ring-1 focus:ring-green-200"
+                  className="w-full px-2 py-1 border border-slate-300 dark:border-slate-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
               </div>
 
               {/* Inactivity Threshold */}
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg p-2 border border-purple-200 dark:border-purple-700">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
                 <label
                   htmlFor="inactivityThreshold"
-                  className="flex text-xs font-medium text-purple-800 dark:text-purple-300 mb-1 items-center"
+                  className="flex text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 items-center"
                 >
                   <span className="mr-1">⏸️</span> Inactivity (min)
                 </label>
@@ -162,18 +161,18 @@ export default function SettingsPanel({
                   min={1}
                   value={inactivityMin}
                   onChange={(e) => setInactivityMin(Number(e.target.value))}
-                  className="w-full px-2 py-1 border border-purple-300 dark:border-purple-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200"
+                  className="w-full px-2 py-1 border border-slate-300 dark:border-slate-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
-                <div className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Auto-pause when inactive
                 </div>
               </div>
 
               {/* Daily Goal */}
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-lg p-2 border border-amber-200 dark:border-amber-700">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
                 <label
                   htmlFor="dailyGoal"
-                  className="flex text-xs font-medium text-amber-800 dark:text-amber-300 mb-1 items-center"
+                  className="flex text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 items-center"
                 >
                   <span className="mr-1">🎯</span> Goal (sessions)
                 </label>
@@ -184,7 +183,7 @@ export default function SettingsPanel({
                   max={20}
                   value={dailyGoal}
                   onChange={(e) => setDailyGoal(Number(e.target.value))}
-                  className="w-full px-2 py-1 border border-amber-300 dark:border-amber-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-200"
+                  className="w-full px-2 py-1 border border-slate-300 dark:border-slate-600 rounded-md text-xs bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
               </div>
             </div>
@@ -255,8 +254,7 @@ export default function SettingsPanel({
             type="submit"
             className="w-full text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-200 flex items-center justify-center text-sm"
             style={{
-              background:
-                "linear-gradient(to right, #2563eb, #7c3aed)",
+              background: "#2563eb",
             }}
           >
             {saved ? (
