@@ -78,34 +78,6 @@ body {
   filter: drop-shadow(0 0 6px rgba(5, 150, 105, 0.25));
 }
 
-.timer-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-radius: 50%;
-  width: min(200px, 50vw);
-  height: min(200px, 50vw);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-@media (prefers-color-scheme: dark) {
-  .timer-inner-bg {
-    fill: rgba(15, 23, 42, 0.6);
-  }
-  .timer-inner-bg.break {
-    fill: rgba(5, 150, 105, 0.12);
-  }
-}
-
 /* ===== Timer Control Buttons ===== */
 .pause-button {
   display: flex;
@@ -270,12 +242,6 @@ input:focus-visible {
 
 /* ===== Dark Mode ===== */
 @media (prefers-color-scheme: dark) {
-  .timer-content {
-    background: #1e293b;
-    border: 2px solid #475569;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  }
-
   .pause-button {
     background: #475569;
   }
