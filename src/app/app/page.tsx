@@ -128,6 +128,12 @@ export default function AppPage() {
               </div>
 
               <div className="flex items-center gap-1">
+              <button
+                onClick={() => document.getElementById('tasks-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="lg:hidden text-xs text-white/70 hover:text-white transition px-2 py-1.5 rounded-lg hover:bg-white/10"
+              >
+                Tasks
+              </button>
               {user && <UserMenu />}
               {!user && (
                 <a
@@ -223,7 +229,7 @@ export default function AppPage() {
         </div>
 
         {/* Task list column */}
-        <div className="w-full lg:flex-1">
+        <div id="tasks-section" className="w-full lg:flex-1">
           <TaskList
             activeTaskId={activeTaskId}
             onSelectTask={setActiveTaskId}

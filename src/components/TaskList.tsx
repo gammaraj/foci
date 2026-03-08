@@ -425,7 +425,7 @@ export default function TaskList({
             className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-purple-200 dark:border-purple-700 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-800/40 transition-colors"
             title="Load task template"
           >
-            📋 <span>Templates</span>
+            📋 <span className="hidden sm:inline">Templates</span>
           </button>
           {showTemplateMenu && (
             <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50">
@@ -526,7 +526,7 @@ export default function TaskList({
                   />
                 ) : (
                   <div
-                    className="text-[15px] font-medium text-slate-800 dark:text-slate-100 truncate cursor-pointer leading-snug"
+                    className="text-[15px] font-medium text-slate-800 dark:text-slate-100 break-words cursor-pointer leading-snug"
                     onDoubleClick={() => startEditing(task)}
                   >
                     {task.title}

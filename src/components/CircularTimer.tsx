@@ -24,7 +24,7 @@ export default function CircularTimer({
   const offset = circumference - progress * circumference;
 
   return (
-    <div className="relative mx-auto my-2" style={{ width: 'min(280px, 70vw)', height: 'min(280px, 70vw)' }}>
+    <div className="relative mx-auto my-2" style={{ width: 'min(280px, 55vw)', height: 'min(280px, 55vw)' }}>
       {/* SVG ring */}
       <svg
         className="absolute inset-0 w-full h-full"
@@ -59,7 +59,7 @@ export default function CircularTimer({
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="rounded-full flex flex-col items-center justify-center text-center bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 shadow-lg"
-          style={{ width: 'min(200px, 50vw)', height: 'min(200px, 50vw)' }}
+          style={{ width: 'min(200px, 40vw)', height: 'min(200px, 40vw)' }}
         >
           <div className="text-base font-bold mb-1 text-gray-700 dark:text-gray-200">
             {isBreak ? "🎉 " : ""}
