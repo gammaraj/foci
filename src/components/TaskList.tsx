@@ -105,9 +105,22 @@ export default function TaskList({
 
     const handleUpdate = () => {
       loadTasks().then(setTasks);
+      loadProjects().then(setProjects);
     };
     window.addEventListener("tempo-tasks-updated", handleUpdate);
-    return () => window.removeEventListener("tempo-tasks-updated", handleUpdate);
+
+    // Re-sync from Supabase when user switches back to this tab
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        handleUpdate();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.removeEventListener("tempo-tasks-updated", handleUpdate);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user]);
 
@@ -749,18 +762,27 @@ export default function TaskList({
                   setExpandedTaskId(isExpanded ? null : task.id);
                   setNewSubtaskTitle("");
                 }}
-                className={`flex-shrink-0 p-1 rounded-md transition-all ${
+                className={`flex-shrink-0 rounded-md transition-all flex items-center gap-1 ${
                   isExpanded
-                    ? "text-blue-500 dark:text-blue-400"
+                    ? "text-blue-500 dark:text-blue-400 p-1"
                     : hasSubtasks
-                      ? "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400"
-                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                      ? "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 px-1.5 py-0.5"
+                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1"
                 }`}
-                title={isExpanded ? "Collapse subtasks" : "Add subtask"}
+                title={isExpanded ? "Collapse subtasks" : hasSubtasks ? "Expand subtasks" : "Add subtask"}
               >
-                <svg className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-45" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
+                {hasSubtasks && !isExpanded ? (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-xs">{completedSubtasks}/{subtasks.length}</span>
+                  </>
+                ) : (
+                  <svg className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-45" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                )}
               </button>
 
               {/* Start / Stop button */}
