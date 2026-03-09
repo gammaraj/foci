@@ -61,7 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
       />
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-6 py-8 flex-1">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex-1">
         <Link
           href="/blog"
           className="inline-flex items-center gap-1 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors mb-8"

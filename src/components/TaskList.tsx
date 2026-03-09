@@ -40,6 +40,7 @@ export default function TaskList({
   const [selectedProjectId, setSelectedProjectId] = useState<string>(DEFAULT_PROJECT_ID);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
+  const [showAddProject, setShowAddProject] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editProjectName, setEditProjectName] = useState("");
   const [showTemplateMenu, setShowTemplateMenu] = useState(false);
@@ -328,6 +329,21 @@ export default function TaskList({
             </button>
           ))}
 
+          {/* Add project button */}
+          <button
+            onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
+            className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
+              showAddProject
+                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
+            }`}
+            title="Add project"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+
           {/* More / manage button */}
           <button
             onClick={() => setShowProjectMenu(!showProjectMenu)}
@@ -343,6 +359,35 @@ export default function TaskList({
             </svg>
           </button>
         </div>
+
+        {/* Inline add project input */}
+        {showAddProject && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              addProject();
+              setShowAddProject(false);
+            }}
+            className="flex gap-1.5 mt-2"
+          >
+            <input
+              type="text"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              placeholder="Project name..."
+              className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#2a3f5c] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === "Escape") setShowAddProject(false); }}
+            />
+            <button
+              type="submit"
+              disabled={!newProjectName.trim()}
+              className="px-2.5 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Add
+            </button>
+          </form>
+        )}
 
         {/* Dropdown for managing projects + overflow */}
         {showProjectMenu && (
@@ -383,7 +428,7 @@ export default function TaskList({
                         {tasks.filter((t) => t.projectId === p.id && !t.completed).length}
                       </span>
                       {p.id !== DEFAULT_PROJECT_ID && (
-                        <div className="flex items-center gap-0.5 opacity-0 group-hover/proj:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover/proj:opacity-100 transition-opacity">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -560,7 +605,7 @@ export default function TaskList({
               {/* Checkbox */}
               <button
                 onClick={() => toggleComplete(task.id)}
-                className="flex-shrink-0 w-[22px] h-[22px] rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
+                className="flex-shrink-0 w-6 h-6 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
                 aria-label={`Mark "${task.title}" complete`}
               />
 
@@ -619,7 +664,7 @@ export default function TaskList({
                     ? "text-blue-500 dark:text-blue-400"
                     : hasSubtasks
                       ? "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400"
-                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100"
+                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                 }`}
                 title={isExpanded ? "Collapse subtasks" : "Add subtask"}
               >
@@ -641,7 +686,7 @@ export default function TaskList({
                   className={`flex-shrink-0 px-2.5 py-1 text-sm font-medium rounded transition-colors flex items-center gap-1 ${
                     activeTaskId === task.id
                       ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                      : "bg-blue-600 text-white hover:bg-blue-700 opacity-0 group-hover:opacity-100"
+                      : "bg-blue-600 text-white hover:bg-blue-700 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                   }`}
                   title={
                     activeTaskId === task.id
@@ -672,7 +717,7 @@ export default function TaskList({
               {!isTimerRunning && (
                 <button
                   onClick={() => deleteTask(task.id)}
-                  className="flex-shrink-0 p-1 rounded-md text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                  className="flex-shrink-0 p-1.5 rounded-md text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                   aria-label={`Delete "${task.title}"`}
                 >
                   <svg
@@ -704,7 +749,7 @@ export default function TaskList({
                   <div key={sub.id} className="group/sub flex items-center gap-2.5 py-1 pl-6 pr-4 ml-4 border-l-2 border-slate-200 dark:border-[#243350]">
                     <button
                       onClick={() => toggleSubtask(task.id, sub.id)}
-                      className={`flex-shrink-0 w-4 h-4 rounded border-[1.5px] transition-colors flex items-center justify-center ${
+                      className={`flex-shrink-0 w-5 h-5 rounded border-[1.5px] transition-colors flex items-center justify-center ${
                         sub.completed
                           ? "border-green-400 bg-green-500"
                           : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
@@ -743,7 +788,7 @@ export default function TaskList({
                     )}
                     <button
                       onClick={() => deleteSubtask(task.id, sub.id)}
-                      className="flex-shrink-0 text-slate-300 hover:text-red-500 opacity-0 group-hover/sub:opacity-100 transition-all"
+                      className="flex-shrink-0 p-1 text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 transition-all"
                       aria-label={`Delete subtask "${sub.title}"`}
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

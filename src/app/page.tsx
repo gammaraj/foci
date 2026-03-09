@@ -7,7 +7,7 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center -mt-16">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 text-center -mt-8 sm:-mt-16">
         <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-900 dark:bg-neutral-800 mb-6 shadow-lg">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <circle cx="16" cy="16" r="13" stroke="white" strokeWidth="2.5" strokeOpacity="0.3" fill="none"/>
@@ -39,7 +39,7 @@ export default function LandingPage() {
         </div>
 
         {/* Features */}
-        <section className="mt-20 max-w-2xl w-full">
+        <section className="mt-12 sm:mt-20 max-w-2xl w-full">
           <h2 className="text-xl font-bold text-neutral-900 dark:text-white text-center mb-6">
             Everything you need to stay focused
           </h2>

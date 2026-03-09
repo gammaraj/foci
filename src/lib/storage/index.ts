@@ -21,11 +21,25 @@ let currentAdapter: StorageAdapter = localAdapter;
 
 /**
  * Switch to the Supabase adapter (call after user logs in).
+ * Clears localStorage keys so stale local data never leaks through.
  */
 export function activateSupabaseStorage(): void {
   const supabase = createClient();
   supabaseAdapter = new SupabaseStorageAdapter(supabase);
   currentAdapter = supabaseAdapter;
+
+  // Clear local storage so only Supabase data is used for logged-in users
+  if (typeof window !== "undefined") {
+    const keys = [
+      "tempo_settings",
+      "tempo_daily_goal",
+      "tempo_streak_history",
+      "tempo_tasks",
+      "tempo_projects",
+      "tempo_selected_project",
+    ];
+    keys.forEach((k) => localStorage.removeItem(k));
+  }
 }
 
 /**

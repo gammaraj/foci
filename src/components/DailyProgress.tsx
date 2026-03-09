@@ -247,7 +247,7 @@ function CalendarView({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 mt-3 text-sm text-gray-500 dark:text-gray-300">
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-3 text-sm text-gray-500 dark:text-gray-300">
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded-full bg-green-500" />
           <span>Goal met</span>

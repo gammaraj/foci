@@ -142,7 +142,7 @@ export default function SettingsPanel({
               <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
               Timer Settings
             </h4>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Work Duration */}
             <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
                 <label
@@ -219,7 +219,7 @@ export default function SettingsPanel({
                   onChange={(e) => setDailyGoal(Number(e.target.value))}
                   className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
-                <div className="flex gap-1.5 mt-2">
+                <div className="flex flex-wrap gap-1.5 mt-2">
                   {GOAL_PRESETS.map((gp) => (
                     <button
                       key={gp.label}

@@ -26,7 +26,7 @@ export default function BlogIndexPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-6 py-12">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight">
           Blog
         </h1>
