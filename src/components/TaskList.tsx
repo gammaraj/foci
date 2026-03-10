@@ -836,40 +836,49 @@ export default function TaskList({
                     autoFocus
                   />
                 ) : (
-                  <div className="flex items-center gap-1">
-                    <div
-                      className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words cursor-pointer leading-snug flex-1"
-                      onDoubleClick={() => startEditing(task)}
-                    >
-                      {task.title}
-                    </div>
-                    <button
-                      onClick={() => startEditing(task)}
-                      className="flex-shrink-0 p-0.5 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
-                      aria-label={`Edit "${task.title}"`}
-                      title="Edit task"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                    </button>
-                    <label
-                      className="flex-shrink-0 p-0.5 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer"
-                      title={task.dueDate ? `Due: ${formatDueDate(task.dueDate)}` : "Set due date"}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <input
-                        type="date"
-                        className="sr-only"
-                        value={task.dueDate ?? ""}
-                        onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
-                      />
-                    </label>
+                  <div
+                    className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words cursor-pointer leading-snug"
+                    onDoubleClick={() => startEditing(task)}
+                  >
+                    {task.title}
                   </div>
                 )}
                 <div className="flex items-center gap-2 mt-0.5">
+                  {/* Inline action icons — edit & due date */}
+                  <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+                    <button
+                      onClick={() => startEditing(task)}
+                      className="p-0.5 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                      aria-label={`Edit "${task.title}"`}
+                      title="Edit task"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => {
+                        const input = document.getElementById(`due-${task.id}`) as HTMLInputElement;
+                        input?.showPicker();
+                      }}
+                      className="p-0.5 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                      title={task.dueDate ? `Due: ${formatDueDate(task.dueDate)}` : "Set due date"}
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                    <input
+                      id={`due-${task.id}`}
+                      type="date"
+                      className="absolute w-0 h-0 opacity-0 pointer-events-none"
+                      value={task.dueDate ?? ""}
+                      onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
+                    />
+                  </div>
+                  {(task.dueDate || hasSubtasks || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
+                    <span className="text-xs text-slate-300 dark:text-slate-600">·</span>
+                  )}
                   {task.dueDate && (
                     <span className={`inline-flex items-center gap-1 text-xs font-medium ${
                       task.completed
@@ -886,9 +895,6 @@ export default function TaskList({
                       {formatDueDate(task.dueDate)}
                       {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
                     </span>
-                  )}
-                  {task.dueDate && hasSubtasks && (
-                    <span className="text-xs text-slate-300 dark:text-slate-600">·</span>
                   )}
                   {hasSubtasks && (
                     <span className="text-xs text-slate-500 dark:text-slate-400">
