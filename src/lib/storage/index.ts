@@ -23,59 +23,67 @@ let currentAdapter: StorageAdapter = localAdapter;
  * Switch to the Supabase adapter (call after user logs in).
  * Migrates any existing local data to Supabase before clearing localStorage.
  */
+let activatingSupabase = false;
 export async function activateSupabaseStorage(): Promise<void> {
-  const supabase = createClient();
-  supabaseAdapter = new SupabaseStorageAdapter(supabase);
-  currentAdapter = supabaseAdapter;
+  if (activatingSupabase) return;
+  activatingSupabase = true;
 
-  // Migrate local data to Supabase if any exists
-  if (typeof window !== "undefined") {
-    try {
-      const localTasks = localStorage.getItem("tempo_tasks");
-      const localProjects = localStorage.getItem("tempo_projects");
-      const localSettings = localStorage.getItem("tempo_settings");
-      const localStreak = localStorage.getItem("tempo_streak_history");
-      const localGoal = localStorage.getItem("tempo_daily_goal");
+  try {
+    const supabase = createClient();
+    supabaseAdapter = new SupabaseStorageAdapter(supabase);
+    currentAdapter = supabaseAdapter;
 
-      // Only migrate if there's local data and Supabase has no tasks yet
-      if (localTasks) {
-        const existingTasks = await supabaseAdapter.loadTasks();
-        if (existingTasks.length === 0) {
-          const tasks = JSON.parse(localTasks);
-          if (Array.isArray(tasks) && tasks.length > 0) {
-            await supabaseAdapter.saveTasks(tasks);
-          }
-          if (localProjects) {
-            const projects = JSON.parse(localProjects);
-            if (Array.isArray(projects) && projects.length > 0) {
-              await supabaseAdapter.saveProjects(projects);
+    // Migrate local data to Supabase if any exists
+    if (typeof window !== "undefined") {
+      try {
+        const localTasks = localStorage.getItem("tempo_tasks");
+        const localProjects = localStorage.getItem("tempo_projects");
+        const localSettings = localStorage.getItem("tempo_settings");
+        const localStreak = localStorage.getItem("tempo_streak_history");
+        const localGoal = localStorage.getItem("tempo_daily_goal");
+
+        // Only migrate if there's local data and Supabase has no tasks yet
+        if (localTasks) {
+          const existingTasks = await supabaseAdapter.loadTasks();
+          if (existingTasks.length === 0) {
+            const tasks = JSON.parse(localTasks);
+            if (Array.isArray(tasks) && tasks.length > 0) {
+              await supabaseAdapter.saveTasks(tasks);
+            }
+            if (localProjects) {
+              const projects = JSON.parse(localProjects);
+              if (Array.isArray(projects) && projects.length > 0) {
+                await supabaseAdapter.saveProjects(projects);
+              }
+            }
+            if (localSettings) {
+              await supabaseAdapter.saveSettings(JSON.parse(localSettings));
+            }
+            if (localStreak) {
+              await supabaseAdapter.saveStreakHistory(JSON.parse(localStreak));
+            }
+            if (localGoal) {
+              await supabaseAdapter.saveDailyGoalData(JSON.parse(localGoal));
             }
           }
-          if (localSettings) {
-            await supabaseAdapter.saveSettings(JSON.parse(localSettings));
-          }
-          if (localStreak) {
-            await supabaseAdapter.saveStreakHistory(JSON.parse(localStreak));
-          }
-          if (localGoal) {
-            await supabaseAdapter.saveDailyGoalData(JSON.parse(localGoal));
-          }
         }
-      }
-    } catch {
-      // Migration failed — continue with Supabase adapter, local data stays as fallback
-    }
 
-    // Clear local storage after successful migration
-    const keys = [
-      "tempo_settings",
-      "tempo_daily_goal",
-      "tempo_streak_history",
-      "tempo_tasks",
-      "tempo_projects",
-      "tempo_selected_project",
-    ];
-    keys.forEach((k) => localStorage.removeItem(k));
+        // Clear local storage only after successful migration
+        const keys = [
+          "tempo_settings",
+          "tempo_daily_goal",
+          "tempo_streak_history",
+          "tempo_tasks",
+          "tempo_projects",
+          "tempo_selected_project",
+        ];
+        keys.forEach((k) => localStorage.removeItem(k));
+      } catch {
+        // Migration failed — keep local data as fallback
+      }
+    }
+  } finally {
+    activatingSupabase = false;
   }
 }
 

@@ -90,6 +90,7 @@ export default function TaskList({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  const userId = user?.id;
   useEffect(() => {
     // Wait until auth has resolved so we use the correct adapter (Supabase vs localStorage)
     if (authLoading) return;
@@ -144,7 +145,7 @@ export default function TaskList({
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user]);
+  }, [authLoading, userId]);
 
   const persist = useCallback((updated: Task[]) => {
     setTasks(updated);

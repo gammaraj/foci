@@ -28,10 +28,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check initial session
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       setUser(user);
       if (user) {
-        activateSupabaseStorage();
+        await activateSupabaseStorage();
+      } else {
+        activateLocalStorage();
       }
       setLoading(false);
     });
