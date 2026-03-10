@@ -69,7 +69,9 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async saveSettings(settings: Settings): Promise<void> {
     if (!isBrowser()) return;
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch { /* quota exceeded — silently fail */ }
   }
 
   // ── Daily Goal ────────────────────────────────────────
@@ -137,7 +139,9 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async saveDailyGoalData(data: DailyGoalData): Promise<void> {
     if (!isBrowser()) return;
-    localStorage.setItem(DAILY_GOAL_KEY, JSON.stringify(data));
+    try {
+      localStorage.setItem(DAILY_GOAL_KEY, JSON.stringify(data));
+    } catch { /* quota exceeded */ }
   }
 
   // ── Streak History ────────────────────────────────────
@@ -155,7 +159,9 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async saveStreakHistory(history: StreakHistory): Promise<void> {
     if (!isBrowser()) return;
-    localStorage.setItem(STREAK_HISTORY_KEY, JSON.stringify(history));
+    try {
+      localStorage.setItem(STREAK_HISTORY_KEY, JSON.stringify(history));
+    } catch { /* quota exceeded */ }
   }
 
   async recordDayCompletion(
@@ -188,7 +194,9 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async saveTasks(tasks: Task[]): Promise<void> {
     if (!isBrowser()) return;
-    localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+    try {
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+    } catch { /* quota exceeded */ }
   }
 
   // ── Projects ──────────────────────────────────────────
@@ -210,7 +218,9 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async saveProjects(projects: Project[]): Promise<void> {
     if (!isBrowser()) return;
-    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    try {
+      localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    } catch { /* quota exceeded */ }
   }
 
   async loadSelectedProjectId(): Promise<string> {
@@ -220,6 +230,8 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async saveSelectedProjectId(id: string): Promise<void> {
     if (!isBrowser()) return;
-    localStorage.setItem(SELECTED_PROJECT_KEY, id);
+    try {
+      localStorage.setItem(SELECTED_PROJECT_KEY, id);
+    } catch { /* quota exceeded */ }
   }
 }

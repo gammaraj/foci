@@ -782,7 +782,7 @@ export default function TaskList({
               {/* Drag handle (desktop) / Move buttons (mobile) */}
               <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
                 {/* Desktop: drag handle */}
-                <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
                   </svg>
@@ -793,7 +793,7 @@ export default function TaskList({
                     <button
                       onClick={(e) => { e.stopPropagation(); moveTask(task.id, "up"); }}
                       disabled={pendingTasks[0]?.id === task.id}
-                      className="p-0.5 text-slate-300 dark:text-slate-600 hover:text-slate-500 disabled:opacity-0 transition-all"
+                      className="p-0.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 disabled:opacity-0 transition-all"
                       aria-label="Move up"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -803,7 +803,7 @@ export default function TaskList({
                     <button
                       onClick={(e) => { e.stopPropagation(); moveTask(task.id, "down"); }}
                       disabled={pendingTasks[pendingTasks.length - 1]?.id === task.id}
-                      className="p-0.5 text-slate-300 dark:text-slate-600 hover:text-slate-500 disabled:opacity-0 transition-all"
+                      className="p-0.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 disabled:opacity-0 transition-all"
                       aria-label="Move down"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -848,11 +848,11 @@ export default function TaskList({
                   <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
                     <button
                       onClick={() => startEditing(task)}
-                      className="p-0.5 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                      className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                       aria-label={`Edit "${task.title}"`}
                       title="Edit task"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                     </button>
@@ -861,10 +861,10 @@ export default function TaskList({
                         const input = document.getElementById(`due-${task.id}`) as HTMLInputElement;
                         input?.showPicker();
                       }}
-                      className="p-0.5 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                      className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                       title={task.dueDate ? `Due: ${formatDueDate(task.dueDate)}` : "Set due date"}
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </button>
@@ -877,7 +877,7 @@ export default function TaskList({
                     />
                   </div>
                   {(task.dueDate || hasSubtasks || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-300 dark:text-slate-600">·</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">·</span>
                   )}
                   {task.dueDate && (
                     <span className={`inline-flex items-center gap-1 text-xs font-medium ${
@@ -902,7 +902,7 @@ export default function TaskList({
                     </span>
                   )}
                   {hasSubtasks && (task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-300 dark:text-slate-600">·</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">·</span>
                   )}
                   {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
                     <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -1062,7 +1062,7 @@ export default function TaskList({
                     )}
                     <button
                       onClick={() => deleteSubtask(task.id, sub.id)}
-                      className="flex-shrink-0 p-1 text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 transition-all"
+                      className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-500 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 transition-all"
                       aria-label={`Delete subtask "${sub.title}"`}
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1166,7 +1166,7 @@ export default function TaskList({
                     {task.title}
                   </span>
                   {((task.timeSpent || 0) > 0 || task.sessions > 0) && (
-                    <span className="text-xs text-slate-300 dark:text-slate-500 ml-auto flex-shrink-0">
+                    <span className="text-xs text-slate-400 dark:text-slate-400 ml-auto flex-shrink-0">
                       {(task.timeSpent || 0) > 0 ? formatDuration(task.timeSpent) : `${task.sessions}s`}
                     </span>
                   )}
@@ -1208,7 +1208,7 @@ export default function TaskList({
                     key={task.id}
                     className="group flex items-center gap-2 p-2 rounded-lg"
                   >
-                    <svg className="w-4 h-4 flex-shrink-0 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 flex-shrink-0 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                     </svg>
                     <span className="text-sm text-slate-400 dark:text-slate-500 line-through truncate">
@@ -1443,7 +1443,7 @@ function TaskCalendarView({
                   )}
                   <button
                     onClick={() => onSetDueDate(task.id, undefined)}
-                    className="flex-shrink-0 p-1 text-slate-300 dark:text-slate-600 hover:text-red-400 transition-colors"
+                    className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-500 hover:text-red-400 transition-colors"
                     title="Remove due date"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1467,7 +1467,7 @@ function TaskCalendarView({
             {unscheduledTasks.slice(0, 8).map((task) => (
               <div key={task.id} className="flex items-center gap-2 p-2 rounded-lg">
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
-                <label className="flex-shrink-0 p-1 text-slate-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors cursor-pointer" title="Set due date">
+                <label className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors cursor-pointer" title="Set due date">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>

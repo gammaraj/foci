@@ -29,19 +29,19 @@ export default function Navbar() {
       <div className="flex items-center gap-3 sm:gap-6">
         <Link
           href={user ? "/app" : "/login"}
-          className="text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm sm:text-base font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           My Tasks
         </Link>
         <Link
           href="/stats"
-          className="text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm sm:text-base font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           Stats
         </Link>
         <Link
           href="/blog"
-          className="text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm sm:text-base font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           Blog
         </Link>

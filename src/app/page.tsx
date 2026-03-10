@@ -1,6 +1,56 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
+const siteUrl = "https://usetempo.app";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Tempo",
+  url: siteUrl,
+  applicationCategory: "ProductivityApplication",
+  operatingSystem: "Any",
+  browserRequirements: "Requires a modern web browser with JavaScript enabled",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Tempo is a free online Pomodoro focus timer that helps you stay productive with customizable work-break cycles, daily session goals, task tracking, streak stats, and motivational quotes.",
+  image: `${siteUrl}/opengraph-image`,
+  featureList: [
+    "Pomodoro focus timer",
+    "Customizable work and break durations",
+    "Task tracking with time logging",
+    "Daily session goals and streak tracking",
+    "Browser notifications",
+    "Dark mode support",
+    "Cloud sync with Supabase",
+  ],
+};
+
+const howToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to Use the Pomodoro Technique with Tempo",
+  description: "A step-by-step guide to boosting your productivity using the Pomodoro technique with Tempo's free online focus timer.",
+  step: [
+    { "@type": "HowToStep", name: "Open Tempo", text: "Visit usetempo.app and click 'Try without account' or sign up for free to sync across devices." },
+    { "@type": "HowToStep", name: "Set your durations", text: "Open Settings and configure your work duration (default 25 min), break duration (default 5 min), and daily session goal." },
+    { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks you want to work on. Select a task to associate timer sessions with it." },
+    { "@type": "HowToStep", name: "Start the timer", text: "Press Start to begin your focus session. The circular timer counts down your work duration." },
+    { "@type": "HowToStep", name: "Take a break", text: "When the work session ends, Tempo automatically starts your break. Relax and recharge." },
+    { "@type": "HowToStep", name: "Track your progress", text: "Monitor completed sessions, daily goals, and streaks to build consistent productivity habits." },
+  ],
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    { "@type": "Question", name: "What is Tempo?", acceptedAnswer: { "@type": "Answer", text: "Tempo is a free online Pomodoro-style focus timer that helps you stay productive with customizable work-break cycles, task tracking, daily goals, and streak stats." } },
+    { "@type": "Question", name: "Is Tempo free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes. Tempo is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices." } },
+    { "@type": "Question", name: "Can I use Tempo without creating an account?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Click 'Try without account' on the homepage and start using Tempo immediately. Your settings, tasks, and progress are saved locally in your browser." } },
+    { "@type": "Question", name: "Can I customize the timer durations?", acceptedAnswer: { "@type": "Answer", text: "Yes. Open the Settings panel to customize your work duration, break duration, and daily session goal to match your preferred workflow." } },
+  ],
+};
+
 // ── Inline app mockup (dark UI preview) ──────────────────
 function AppMockup() {
   return (
@@ -14,7 +64,7 @@ function AppMockup() {
         </div>
         <div className="flex-1 flex justify-center">
           <div className="bg-[#0d1117] rounded-md px-4 py-1 text-xs text-gray-400 font-mono">
-            tempo-now.vercel.app/app
+            usetempo.app/app
           </div>
         </div>
       </div>
@@ -115,6 +165,18 @@ function AppMockup() {
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <Navbar />
 
       {/* Hero */}
@@ -141,13 +203,13 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-md"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-base hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-md"
             >
               Start focusing — free
             </Link>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium text-base hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               Try without an account
             </Link>
@@ -161,7 +223,7 @@ export default function LandingPage() {
 
         {/* Social proof bar */}
         <section className="w-full max-w-3xl mx-auto pb-10 sm:pb-14">
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm text-neutral-500 dark:text-neutral-400">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm sm:text-base text-neutral-500 dark:text-neutral-400">
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -172,7 +234,7 @@ export default function LandingPage() {
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>Works offline (PWA)</span>
+              <span>Installable PWA</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -251,7 +313,7 @@ export default function LandingPage() {
           <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-4">
             Why not just use a browser timer?
           </h2>
-          <p className="text-center text-neutral-500 dark:text-neutral-400 mb-10 max-w-xl mx-auto">
+          <p className="text-center text-base sm:text-lg text-neutral-500 dark:text-neutral-400 mb-10 max-w-xl mx-auto">
             You could. But you&apos;ll end up switching between tabs, forgetting what you worked on, and
             losing track of where your hours go. Tempo keeps everything in one place.
           </p>
@@ -260,13 +322,13 @@ export default function LandingPage() {
               { icon: "🎯", title: "Timer + tasks, same screen", desc: "No more Alt-Tab between your timer and to-do app." },
               { icon: "📊", title: "Automatic time logging", desc: "Every session is tracked per-task. See exactly where your hours go." },
               { icon: "🔥", title: "Streaks that stick", desc: "Daily goals and streak tracking keep you coming back." },
-              { icon: "📱", title: "Works everywhere", desc: "Install as a PWA, use offline, sync when you're back online." },
+              { icon: "📱", title: "Works everywhere", desc: "Install as a PWA on any device. Sign in to sync tasks across all your devices." },
             ].map((item, i) => (
               <div key={i} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0f1b33] border border-gray-200 dark:border-[#1e3355]">
                 <span className="text-2xl flex-shrink-0">{item.icon}</span>
                 <div>
-                  <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-0.5">{item.title}</h3>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">{item.desc}</p>
+                  <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-0.5">{item.title}</h3>
+                  <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -284,13 +346,13 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-md"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-base hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-md"
             >
               Get started — it&apos;s free
             </Link>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium text-base hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               Try without account
             </Link>
@@ -299,7 +361,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-xs text-neutral-400 dark:text-neutral-600">
+      <footer className="py-6 text-center text-sm text-neutral-400 dark:text-neutral-600">
         Built for focus.
       </footer>
     </div>

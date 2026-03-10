@@ -65,6 +65,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const lastTickRef = useRef<number>(Date.now());
   const totalDurationRef = useRef(DEFAULT_SETTINGS.workDuration);
   const settingsRef = useRef<Settings>(DEFAULT_SETTINGS);
   const dailyGoalRef = useRef<DailyGoalData>(dailyGoalData);
@@ -181,11 +182,30 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
     totalDurationRef.current = s.breakDuration;
     startTimeRef.current = Date.now();
+    lastTickRef.current = Date.now();
     setRemainingTime(s.breakDuration);
 
     // Start break countdown
     timerRef.current = setInterval(() => {
       const now = Date.now();
+      const tickGap = now - lastTickRef.current;
+      lastTickRef.current = now;
+
+      // Skip break timer if device slept — just end the break
+      if (tickGap > 3000) {
+        clearTimer();
+        setIsBreakMode(false);
+        isBreakModeRef.current = false;
+        setLastQuote(null);
+        setStatus("idle");
+        statusRef.current = "idle";
+        setLabel("Focus Time");
+        setStatusText("Ready to focus");
+        totalDurationRef.current = settingsRef.current.workDuration;
+        setRemainingTime(settingsRef.current.workDuration);
+        return;
+      }
+
       const elapsed = now - (startTimeRef.current || now);
       const rem = Math.max(0, settingsRef.current.breakDuration - elapsed);
       setRemainingTime(rem);
@@ -226,10 +246,23 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
     totalDurationRef.current = s.workDuration;
     startTimeRef.current = Date.now();
+    lastTickRef.current = Date.now();
     setRemainingTime(s.workDuration);
 
     timerRef.current = setInterval(() => {
       const now = Date.now();
+      const tickGap = now - lastTickRef.current;
+      lastTickRef.current = now;
+
+      // If gap between ticks > 3s, device likely slept — pause to avoid false completion
+      if (tickGap > 3000) {
+        clearTimer();
+        setStatus("paused");
+        statusRef.current = "paused";
+        setStatusText("Paused (device slept)");
+        return;
+      }
+
       const elapsed = now - (startTimeRef.current || now);
       const rem = Math.max(0, settingsRef.current.workDuration - elapsed);
       setRemainingTime(rem);
@@ -255,10 +288,22 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
       const resumeStart = Date.now();
       startTimeRef.current = resumeStart;
+      lastTickRef.current = Date.now();
       totalDurationRef.current = currentRemaining;
 
       timerRef.current = setInterval(() => {
         const now = Date.now();
+        const tickGap = now - lastTickRef.current;
+        lastTickRef.current = now;
+
+        if (tickGap > 3000) {
+          clearTimer();
+          setStatus("paused");
+          statusRef.current = "paused";
+          setStatusText("Paused (device slept)");
+          return;
+        }
+
         const elapsed = now - resumeStart;
         const rem = Math.max(0, currentRemaining - elapsed);
         setRemainingTime(rem);

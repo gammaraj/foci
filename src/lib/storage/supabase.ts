@@ -18,6 +18,12 @@ function getYesterday(): string {
   return new Date(Date.now() - 86400000).toDateString();
 }
 
+/** Throw if a Supabase response has an error. */
+function check<T>(result: { data: T; error: { message: string } | null }): T {
+  if (result.error) throw new Error(result.error.message);
+  return result.data;
+}
+
 /**
  * Supabase-backed implementation of StorageAdapter.
  * Requires an authenticated Supabase client (user session must be active).
@@ -37,11 +43,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async loadSettings(): Promise<Settings> {
     const userId = await this.getUserId();
-    const { data } = await this.supabase
-      .from("settings")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const data = check(
+      await this.supabase
+        .from("settings")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle()
+    );
 
     if (!data) return DEFAULT_SETTINGS;
 
@@ -57,27 +65,31 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async saveSettings(settings: Settings): Promise<void> {
     const userId = await this.getUserId();
-    await this.supabase.from("settings").upsert({
-      user_id: userId,
-      work_duration: settings.workDuration,
-      break_duration: settings.breakDuration,
-      inactivity_threshold: settings.inactivityThreshold,
-      daily_goal: settings.dailyGoal,
-      auto_start_enabled: settings.autoStartEnabled,
-      notifications_enabled: settings.notificationsEnabled,
-      updated_at: new Date().toISOString(),
-    });
+    check(
+      await this.supabase.from("settings").upsert({
+        user_id: userId,
+        work_duration: settings.workDuration,
+        break_duration: settings.breakDuration,
+        inactivity_threshold: settings.inactivityThreshold,
+        daily_goal: settings.dailyGoal,
+        auto_start_enabled: settings.autoStartEnabled,
+        notifications_enabled: settings.notificationsEnabled,
+        updated_at: new Date().toISOString(),
+      })
+    );
   }
 
   // ── Daily Goal ────────────────────────────────────────
 
   async loadDailyGoalData(dailyGoal: number): Promise<DailyGoalData> {
     const userId = await this.getUserId();
-    const { data } = await this.supabase
-      .from("daily_goal_data")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const data = check(
+      await this.supabase
+        .from("daily_goal_data")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle()
+    );
 
     const today = getToday();
 
@@ -117,24 +129,28 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async saveDailyGoalData(data: DailyGoalData): Promise<void> {
     const userId = await this.getUserId();
-    await this.supabase.from("daily_goal_data").upsert({
-      user_id: userId,
-      date: data.date,
-      session_count: data.sessionCount,
-      streak: data.streak,
-      last_streak_update: data.lastStreakUpdate,
-      updated_at: new Date().toISOString(),
-    });
+    check(
+      await this.supabase.from("daily_goal_data").upsert({
+        user_id: userId,
+        date: data.date,
+        session_count: data.sessionCount,
+        streak: data.streak,
+        last_streak_update: data.lastStreakUpdate,
+        updated_at: new Date().toISOString(),
+      })
+    );
   }
 
   // ── Streak History ────────────────────────────────────
 
   async loadStreakHistory(): Promise<StreakHistory> {
     const userId = await this.getUserId();
-    const { data } = await this.supabase
-      .from("streak_history")
-      .select("*")
-      .eq("user_id", userId);
+    const data = check(
+      await this.supabase
+        .from("streak_history")
+        .select("*")
+        .eq("user_id", userId)
+    );
 
     const days: StreakHistory["days"] = {};
     if (data) {
@@ -160,9 +176,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     }));
 
     if (rows.length === 0) return;
-    await this.supabase
-      .from("streak_history")
-      .upsert(rows, { onConflict: "user_id,date_key" });
+    check(
+      await this.supabase
+        .from("streak_history")
+        .upsert(rows, { onConflict: "user_id,date_key" })
+    );
   }
 
   async recordDayCompletion(
@@ -173,15 +191,17 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const userId = await this.getUserId();
     const dateKey = date.toISOString().split("T")[0];
 
-    await this.supabase.from("streak_history").upsert(
-      {
-        user_id: userId,
-        date_key: dateKey,
-        session_count: sessionCount,
-        goal_met: goalMet,
-        recorded_at: Date.now(),
-      },
-      { onConflict: "user_id,date_key" },
+    check(
+      await this.supabase.from("streak_history").upsert(
+        {
+          user_id: userId,
+          date_key: dateKey,
+          session_count: sessionCount,
+          goal_met: goalMet,
+          recorded_at: Date.now(),
+        },
+        { onConflict: "user_id,date_key" },
+      )
     );
   }
 
@@ -189,11 +209,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async loadTasks(): Promise<Task[]> {
     const userId = await this.getUserId();
-    const { data } = await this.supabase
-      .from("tasks")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true });
+    const data = check(
+      await this.supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true })
+    );
 
     if (!data) return [];
 
@@ -213,45 +235,52 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   async saveTasks(tasks: Task[]): Promise<void> {
     const userId = await this.getUserId();
 
-    // Remove tasks that are no longer in the list
-    const keepIds = tasks.map((t) => t.id);
-    if (keepIds.length > 0) {
-      await this.supabase
-        .from("tasks")
-        .delete()
-        .eq("user_id", userId)
-        .not("id", "in", `(${keepIds.join(",")})`);
-    } else {
-      await this.supabase.from("tasks").delete().eq("user_id", userId);
+    // Upsert current tasks first to ensure data is safe before deleting stale rows
+    if (tasks.length > 0) {
+      const rows = tasks.map((t) => ({
+        id: t.id,
+        user_id: userId,
+        title: t.title,
+        completed: t.completed,
+        sessions: t.sessions,
+        time_spent: t.timeSpent,
+        created_at: t.createdAt,
+        project_id: t.projectId,
+        subtasks: t.subtasks ?? [],
+        due_date: t.dueDate ?? null,
+      }));
+
+      check(await this.supabase.from("tasks").upsert(rows));
     }
 
-    if (tasks.length === 0) return;
-
-    const rows = tasks.map((t) => ({
-      id: t.id,
-      user_id: userId,
-      title: t.title,
-      completed: t.completed,
-      sessions: t.sessions,
-      time_spent: t.timeSpent,
-      created_at: t.createdAt,
-      project_id: t.projectId,
-      subtasks: t.subtasks ?? [],
-      due_date: t.dueDate ?? null,
-    }));
-
-    await this.supabase.from("tasks").upsert(rows);
+    // Remove tasks that are no longer in the list (after upsert succeeds)
+    const keepIds = tasks.map((t) => t.id);
+    if (keepIds.length > 0) {
+      check(
+        await this.supabase
+          .from("tasks")
+          .delete()
+          .eq("user_id", userId)
+          .not("id", "in", `(${keepIds.join(",")})`)
+      );
+    } else {
+      check(
+        await this.supabase.from("tasks").delete().eq("user_id", userId)
+      );
+    }
   }
 
   // ── Projects ──────────────────────────────────────────
 
   async loadProjects(): Promise<Project[]> {
     const userId = await this.getUserId();
-    const { data } = await this.supabase
-      .from("projects")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true });
+    const data = check(
+      await this.supabase
+        .from("projects")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true })
+    );
 
     const projects: Project[] = data
       ? data.map((row) => ({
@@ -270,46 +299,55 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   async saveProjects(projects: Project[]): Promise<void> {
     const userId = await this.getUserId();
 
-    // Remove projects that are no longer in the list
-    const keepIds = projects.map((p) => p.id);
-    if (keepIds.length > 0) {
-      await this.supabase
-        .from("projects")
-        .delete()
-        .eq("user_id", userId)
-        .not("id", "in", `(${keepIds.join(",")})`);
-    } else {
-      await this.supabase.from("projects").delete().eq("user_id", userId);
+    // Upsert first to ensure data is safe before deleting stale rows
+    if (projects.length > 0) {
+      const rows = projects.map((p) => ({
+        id: p.id,
+        user_id: userId,
+        name: p.name,
+        created_at: p.createdAt,
+      }));
+
+      check(await this.supabase.from("projects").upsert(rows));
     }
 
-    if (projects.length === 0) return;
-
-    const rows = projects.map((p) => ({
-      id: p.id,
-      user_id: userId,
-      name: p.name,
-      created_at: p.createdAt,
-    }));
-
-    await this.supabase.from("projects").upsert(rows);
+    // Remove projects no longer in the list (after upsert succeeds)
+    const keepIds = projects.map((p) => p.id);
+    if (keepIds.length > 0) {
+      check(
+        await this.supabase
+          .from("projects")
+          .delete()
+          .eq("user_id", userId)
+          .not("id", "in", `(${keepIds.join(",")})`)
+      );
+    } else {
+      check(
+        await this.supabase.from("projects").delete().eq("user_id", userId)
+      );
+    }
   }
 
   async loadSelectedProjectId(): Promise<string> {
     const userId = await this.getUserId();
-    const { data } = await this.supabase
-      .from("user_preferences")
-      .select("selected_project_id")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const data = check(
+      await this.supabase
+        .from("user_preferences")
+        .select("selected_project_id")
+        .eq("user_id", userId)
+        .maybeSingle()
+    );
 
     return data?.selected_project_id ?? DEFAULT_PROJECT.id;
   }
 
   async saveSelectedProjectId(id: string): Promise<void> {
     const userId = await this.getUserId();
-    await this.supabase.from("user_preferences").upsert({
-      user_id: userId,
-      selected_project_id: id,
-    });
+    check(
+      await this.supabase.from("user_preferences").upsert({
+        user_id: userId,
+        selected_project_id: id,
+      })
+    );
   }
 }
