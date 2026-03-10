@@ -169,7 +169,7 @@ function startSound(
 }
 
 export default function AmbientSounds() {
-  const [mode, setMode] = useState<"sounds" | "spotify" | "lofi">("sounds");
+  const [mode, setMode] = useState<"sounds" | "spotify" | "lofi">("spotify");
   const [activeSound, setActiveSound] = useState<SoundType | null>(null);
   const [volume, setVolume] = useState(0.5);
   const [ytStreamIdx, setYtStreamIdx] = useState(0);
