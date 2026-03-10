@@ -148,12 +148,16 @@ export default function TaskList({
 
   const persist = useCallback((updated: Task[]) => {
     setTasks(updated);
-    saveTasks(updated);
+    saveTasks(updated).catch((err) => {
+      console.error("[Tempo] Failed to save tasks:", err);
+    });
   }, []);
 
   const persistProjects = useCallback((updated: Project[]) => {
     setProjects(updated);
-    saveProjects(updated);
+    saveProjects(updated).catch((err) => {
+      console.error("[Tempo] Failed to save projects:", err);
+    });
   }, []);
 
   const selectProject = (id: string) => {

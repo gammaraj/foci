@@ -249,7 +249,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       due_date: t.dueDate ?? null,
     }));
 
-    check(await this.supabase.from("tasks").upsert(rows));
+    check(await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }));
   }
 
   async deleteTask(id: string): Promise<void> {
@@ -312,7 +312,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       created_at: p.createdAt,
     }));
 
-    check(await this.supabase.from("projects").upsert(rows));
+    check(await this.supabase.from("projects").upsert(rows, { onConflict: "user_id,id" }));
   }
 
   async deleteProject(id: string): Promise<void> {
