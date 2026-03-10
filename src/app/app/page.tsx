@@ -9,7 +9,7 @@ import SettingsPanel from "@/components/SettingsPanel";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import RadioPlayer from "@/components/RadioPlayer";
+import AmbientSounds from "@/components/AmbientSounds";
 import OnboardingTour from "@/components/OnboardingTour";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks, saveTasks } from "@/lib/storage";
@@ -205,7 +205,7 @@ export default function AppPage() {
               dailyGoal={timer.settings.dailyGoal}
             />
 
-            <RadioPlayer />
+            <AmbientSounds />
 
             <div className="h-2" />
           </div>

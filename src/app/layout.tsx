@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "time blocking",
     "ambient music timer",
     "lo-fi focus music",
-    "somafm timer",
+    "focus sounds",
   ],
   authors: [{ name: "Tempo" }],
   creator: "Tempo",

@@ -22,7 +22,7 @@ const jsonLd = {
     "Browser notifications",
     "Dark mode support",
     "Cloud sync with Supabase",
-    "Built-in ambient music via SomaFM",
+    "Built-in ambient sounds and lo-fi radio",
   ],
 };
 
@@ -327,7 +327,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { icon: "🎯", title: "Timer + tasks, same screen", desc: "No more Alt-Tab between your timer and to-do app." },
-              { icon: "🎵", title: "Built-in ambient music", desc: "Stream lo-fi and ambient stations from SomaFM while you focus." },
+              { icon: "🎵", title: "Built-in ambient music", desc: "Rain, café, white noise, plus lo-fi YouTube radio — all built in." },
               { icon: "📊", title: "Automatic time logging", desc: "Every session is tracked per-task. See exactly where your hours go." },
               { icon: "🔥", title: "Streaks that stick", desc: "Daily goals and streak tracking keep you coming back." },
             ].map((item, i) => (

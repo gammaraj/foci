@@ -1,6 +1,6 @@
 # Tempo – Focus Timer & Pomodoro Productivity App
 
-> Tempo is a free, open-source Pomodoro-style focus timer web app built with Next.js, React, and Tailwind CSS. It helps users stay productive through customizable work-break cycles, task management, daily session goals, streak tracking, built-in ambient music via SomaFM, and motivational quotes. No sign-up required — works instantly in any modern browser.
+> Tempo is a free, open-source Pomodoro-style focus timer web app built with Next.js, React, and Tailwind CSS. It helps users stay productive through customizable work-break cycles, task management, daily session goals, streak tracking, built-in ambient sounds and lo-fi radio, and motivational quotes. No sign-up required — works instantly in any modern browser.
 
 ## What is Tempo?
 
@@ -16,7 +16,7 @@ Tempo is an online Pomodoro focus timer designed for students, developers, write
 - **Browser Notifications**: Get notified when a work session or break completes.
 - **Motivational Quotes**: Rotating inspirational quotes displayed during sessions to keep you motivated.
 - **Dark Mode**: Full light and dark theme support based on system preference.
-- **Ambient Music**: Built-in streaming radio player with curated SomaFM stations (Groove Salad, Suburbs of Goa, Drone Zone, Deep Space One, Lush) for focus-friendly background audio.
+- **Ambient Music**: Built-in ambient sound generator (rain, café, white noise, brown noise) using Web Audio API — works offline. Plus optional lo-fi radio via YouTube embeds.
 - **Cloud Sync**: Optionally sign up to sync settings, tasks, and progress across devices via Supabase.
 - **Data Privacy**: All data is stored locally by default. No tracking, no ads.
 
@@ -38,7 +38,7 @@ A: Yes, Tempo is 100% free with no premium tiers, ads, or hidden costs.
 A: No. You can use Tempo immediately without signing up. Create an account only if you want to sync data across devices.
 
 **Q: Does Tempo have background music?**
-A: Yes. Tempo includes a built-in ambient radio player powered by SomaFM with stations like Groove Salad, Suburbs of Goa, and Drone Zone — perfect for focused work sessions.
+A: Yes. Tempo includes built-in ambient sounds (rain, café, white noise, brown noise) that work offline via Web Audio API, plus optional lo-fi YouTube radio streams — perfect for focused work sessions.
 
 **Q: What is the Pomodoro technique?**
 A: The Pomodoro technique is a time management method that alternates focused work intervals (typically 25 minutes) with short breaks (typically 5 minutes). After four cycles, take a longer break. It helps maintain concentration and prevent burnout.
