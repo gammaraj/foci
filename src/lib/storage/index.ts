@@ -121,6 +121,8 @@ export const recordDayCompletion = (...args: Parameters<StorageAdapter["recordDa
 export const loadTasks = () => currentAdapter.loadTasks();
 export const saveTasks = (...args: Parameters<StorageAdapter["saveTasks"]>) =>
   currentAdapter.saveTasks(...args);
+export const saveTask = (...args: Parameters<StorageAdapter["saveTask"]>) =>
+  currentAdapter.saveTask(...args);
 export const deleteTask = (...args: Parameters<StorageAdapter["deleteTask"]>) =>
   currentAdapter.deleteTask(...args);
 export const deleteTasks = (...args: Parameters<StorageAdapter["deleteTasks"]>) =>

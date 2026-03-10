@@ -199,6 +199,18 @@ export class LocalStorageAdapter implements StorageAdapter {
     } catch { /* quota exceeded */ }
   }
 
+  async saveTask(task: Task): Promise<void> {
+    if (!isBrowser()) return;
+    try {
+      const raw = localStorage.getItem(TASKS_KEY);
+      const tasks: Task[] = raw ? JSON.parse(raw) : [];
+      const idx = tasks.findIndex((t) => t.id === task.id);
+      if (idx >= 0) tasks[idx] = task;
+      else tasks.push(task);
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+    } catch { /* quota exceeded */ }
+  }
+
   async deleteTask(id: string): Promise<void> {
     if (!isBrowser()) return;
     try {

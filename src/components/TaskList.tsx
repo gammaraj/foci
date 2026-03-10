@@ -2,9 +2,13 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Task, Project, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, Subtask } from "@/lib/types";
-import { loadTasks, saveTasks, loadProjects, saveProjects, loadSelectedProjectId, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, loadSelectedProjectId, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB } from "@/lib/storage";
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
+import { useToast } from "@/components/ToastProvider";
+
+const MAX_TASK_TITLE = 200;
+const MAX_PROJECT_NAME = 100;
 
 function formatDuration(ms: number): string {
   const totalMin = Math.floor(ms / 60000);
@@ -51,6 +55,7 @@ export default function TaskList({
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -157,21 +162,33 @@ export default function TaskList({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, userId]);
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevTasksRef = useRef<Task[]>([]);
+
   const persist = useCallback(async (updated: Task[]) => {
+    prevTasksRef.current = tasks;
     setTasks(updated);
-    try {
-      await saveTasks(updated);
-    } catch (err) {
-      console.error("[Tempo] Failed to save tasks:", err);
-    }
-  }, []);
+    // Debounce batch saves: coalesce rapid changes into one write
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        await saveTasks(updated);
+      } catch (err) {
+        console.error("[Tempo] Failed to save tasks:", err);
+        showToast("Failed to save tasks. Changes may be lost.", "error");
+        // Rollback to last known good state
+        setTasks(prevTasksRef.current);
+      }
+    }, 500);
+  }, [tasks, showToast]);
 
   const persistProjects = useCallback((updated: Project[]) => {
     setProjects(updated);
     saveProjects(updated).catch((err) => {
       console.error("[Tempo] Failed to save projects:", err);
+      showToast("Failed to save projects.", "error");
     });
-  }, []);
+  }, [showToast]);
 
   const selectProject = (id: string) => {
     setSelectedProjectId(id);
@@ -182,7 +199,7 @@ export default function TaskList({
   };
 
   const addProject = () => {
-    const name = newProjectName.trim();
+    const name = newProjectName.trim().slice(0, MAX_PROJECT_NAME);
     if (!name) return;
     const project: Project = {
       id: crypto.randomUUID(),
@@ -200,7 +217,7 @@ export default function TaskList({
   };
 
   const saveProjectEdit = () => {
-    const name = editProjectName.trim();
+    const name = editProjectName.trim().slice(0, MAX_PROJECT_NAME);
     if (!name || !editingProjectId) return;
     persistProjects(
       projects.map((p) => (p.id === editingProjectId ? { ...p, name } : p))
@@ -221,7 +238,7 @@ export default function TaskList({
   };
 
   const addTask = () => {
-    const title = newTaskTitle.trim();
+    const title = newTaskTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
 
     const task: Task = {
@@ -271,7 +288,7 @@ export default function TaskList({
   };
 
   const saveEdit = (id: string) => {
-    const title = editTitle.trim();
+    const title = editTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
     const updated = tasks.map((t) =>
       t.id === id ? { ...t, title } : t
@@ -383,7 +400,7 @@ export default function TaskList({
 
   // Subtask helpers
   const addSubtask = (taskId: string) => {
-    const title = newSubtaskTitle.trim();
+    const title = newSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
     const subtask: Subtask = { id: crypto.randomUUID(), title, completed: false };
     const updated = tasks.map((t) =>
@@ -422,7 +439,7 @@ export default function TaskList({
   };
 
   const saveSubtaskEdit = (taskId: string, subtaskId: string) => {
-    const title = editSubtaskTitle.trim();
+    const title = editSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) { setEditingSubtaskId(null); return; }
     const updated = tasks.map((t) =>
       t.id === taskId
@@ -603,6 +620,7 @@ export default function TaskList({
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               placeholder="Project name..."
+              maxLength={MAX_PROJECT_NAME}
               className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
               autoFocus
               onKeyDown={(e) => { if (e.key === "Escape") setShowAddProject(false); }}
@@ -703,6 +721,7 @@ export default function TaskList({
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
                   placeholder="New project..."
+                  maxLength={MAX_PROJECT_NAME}
                   className="flex-1 px-2 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
                 />
                 <button
@@ -734,6 +753,7 @@ export default function TaskList({
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder={`Add a task to ${isAllProjects ? "General" : currentProject?.name ?? "General"}...`}
+            maxLength={MAX_TASK_TITLE}
             className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
           <button

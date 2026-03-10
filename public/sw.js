@@ -1,3 +1,75 @@
-// This is a no-op service worker to prevent 404 errors.
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+const CACHE_NAME = "tempo-v1";
+const STATIC_ASSETS = [
+  "/",
+  "/app",
+  "/manifest.json",
+];
+
+// Install: pre-cache shell
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+  );
+  self.skipWaiting();
+});
+
+// Activate: clean old caches
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  event.waitUntil(self.clients.claim());
+});
+
+// Fetch: network-first for API/auth, cache-first for static assets
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== "GET") return;
+
+  // Network-only for auth and Supabase API calls
+  if (
+    url.pathname.startsWith("/auth") ||
+    url.pathname.startsWith("/api") ||
+    url.hostname.includes("supabase")
+  ) {
+    return;
+  }
+
+  // Cache-first for static assets (images, fonts, CSS, JS)
+  if (
+    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf|eot)$/) ||
+    url.pathname.startsWith("/_next/static")
+  ) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Network-first for pages (HTML navigation)
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request))
+  );
+});

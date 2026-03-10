@@ -34,6 +34,7 @@ export interface StorageAdapter {
   // ── Tasks ─────────────────────────────────────────────
   loadTasks(): Promise<Task[]>;
   saveTasks(tasks: Task[]): Promise<void>;
+  saveTask(task: Task): Promise<void>;
   deleteTask(id: string): Promise<void>;
   deleteTasks(ids: string[]): Promise<void>;
 

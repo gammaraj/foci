@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { showToastGlobal } from "@/components/ToastProvider";
 import {
   Settings,
   DailyGoalData,
@@ -20,7 +21,10 @@ function getYesterday(): string {
 
 /** Throw if a Supabase response has an error. */
 function check<T>(result: { data: T; error: { message: string } | null }): T {
-  if (result.error) throw new Error(result.error.message);
+  if (result.error) {
+    showToastGlobal(`Sync error: ${result.error.message}`, "error");
+    throw new Error(result.error.message);
+  }
   return result.data;
 }
 
@@ -260,6 +264,29 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
     if (result.error) {
       console.error("[Tempo] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
+      throw new Error(result.error.message);
+    }
+  }
+
+  async saveTask(task: Task): Promise<void> {
+    const userId = await this.getUserId();
+    const row = {
+      id: task.id,
+      user_id: userId,
+      title: task.title,
+      completed: task.completed,
+      sessions: task.sessions,
+      time_spent: task.timeSpent,
+      created_at: task.createdAt,
+      project_id: task.projectId,
+      subtasks: task.subtasks ?? [],
+      ...(task.dueDate !== undefined ? { due_date: task.dueDate } : {}),
+      ...(task.order !== undefined ? { "order": task.order } : {}),
+      ...(task.archivedAt !== undefined ? { archived_at: task.archivedAt } : {}),
+    };
+    const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
+    if (result.error) {
+      console.error("[Tempo] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
       throw new Error(result.error.message);
     }
   }
