@@ -504,16 +504,8 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     };
   }, [clearTimer]);
 
-  // Request notification permission on mount
-  useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      "Notification" in window &&
-      Notification.permission === "default"
-    ) {
-      Notification.requestPermission();
-    }
-  }, []);
+  // Notification permission is now requested via NotificationPrompt / SettingsPanel
+  // instead of automatically on mount (which browsers may block).
 
   const setOnSessionCompleteCallback = useCallback(
     (cb: (() => void) | null) => {

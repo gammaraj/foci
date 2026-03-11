@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
 
 interface Step {
   target: string; // CSS selector
@@ -37,15 +39,28 @@ const STEPS: Step[] = [
 ];
 
 export default function OnboardingTour() {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(-1);
   const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
 
   useEffect(() => {
+    if (!user) return;
+    // Already completed onboarding (persisted in Supabase user metadata)
+    if (user.user_metadata?.onboarding_done) return;
+    // Fast local cache to avoid showing again in same browser
     if (localStorage.getItem("tempo_onboarding_done")) return;
+    // Only show for new signups: skip if account older than 5 minutes
+    const createdAt = new Date(user.created_at).getTime();
+    if (Date.now() - createdAt > 5 * 60 * 1000) {
+      localStorage.setItem("tempo_onboarding_done", "1");
+      const supabase = createClient();
+      supabase.auth.updateUser({ data: { onboarding_done: true } });
+      return;
+    }
     // Delay to allow the page to render
     const timer = setTimeout(() => setCurrentStep(0), 1000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [user]);
 
   const positionTooltip = useCallback(() => {
     if (currentStep < 0 || currentStep >= STEPS.length) return;
@@ -105,6 +120,9 @@ export default function OnboardingTour() {
   const finish = () => {
     setCurrentStep(-1);
     localStorage.setItem("tempo_onboarding_done", "1");
+    // Persist to Supabase user metadata so it survives across devices/browsers
+    const supabase = createClient();
+    supabase.auth.updateUser({ data: { onboarding_done: true } });
   };
 
   const next = () => {

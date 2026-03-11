@@ -849,7 +849,7 @@ export default function TaskList({
               onDragOver={(e) => handleDragOver(e, task.id)}
               onDrop={() => handleDrop(task.id)}
               onDragEnd={handleDragEnd}
-              className={`group flex items-center gap-3 p-3.5 rounded-xl border transition-colors ${
+              className={`group flex items-start gap-3 p-3.5 rounded-xl border transition-colors ${
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
                   : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30]"
@@ -862,7 +862,7 @@ export default function TaskList({
               }`}
             >
               {/* Drag handle (desktop) / Move buttons (mobile) */}
-              <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
+              <div className="flex-shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
                 {/* Desktop: drag handle */}
                 <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -898,7 +898,7 @@ export default function TaskList({
               {/* Checkbox */}
               <button
                 onClick={() => toggleComplete(task.id)}
-                className="flex-shrink-0 w-6 h-6 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
+                className="flex-shrink-0 w-6 h-6 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
                 aria-label={`Mark "${task.title}" complete`}
               />
 

@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AmbientSounds from "@/components/AmbientSounds";
 import OnboardingTour from "@/components/OnboardingTour";
+import NotificationPrompt from "@/components/NotificationPrompt";
 import DueDateReminders from "@/components/DueDateReminders";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks, saveTasks } from "@/lib/storage";
@@ -245,6 +246,7 @@ export default function AppPage() {
       )}
 
       <PWAInstallPrompt />
+      <NotificationPrompt />
       <OnboardingTour />
     </div>
   );

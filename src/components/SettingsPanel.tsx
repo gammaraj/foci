@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Settings } from "@/lib/types";
 import { TIMER_PRESETS, GOAL_PRESETS } from "@/lib/templates";
 
@@ -29,6 +29,18 @@ export default function SettingsPanel({
   const [notifications, setNotifications] = useState(
     settings.notificationsEnabled
   );
+  const [browserPerm, setBrowserPerm] = useState<NotificationPermission>("default");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setBrowserPerm(Notification.permission);
+    }
+  }, []);
+
+  const requestPermission = async () => {
+    const result = await Notification.requestPermission();
+    setBrowserPerm(result);
+  };
   const [saved, setSaved] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -297,6 +309,28 @@ export default function SettingsPanel({
                 Get inspirational quotes as browser notifications after each work
                 session
               </p>
+
+              {/* Browser permission status */}
+              <div className="mt-2 px-2">
+                {browserPerm === "granted" ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-600 dark:text-green-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    Browser notifications enabled
+                  </span>
+                ) : browserPerm === "denied" ? (
+                  <span className="text-xs text-red-500 dark:text-red-400">
+                    Notifications blocked — please enable them in your browser&apos;s site settings
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={requestPermission}
+                    className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Allow browser notifications →
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
