@@ -41,11 +41,19 @@ function migrateFromLockIn(): void {
 migrateFromLockIn();
 
 function getToday(): string {
-  return new Date().toDateString();
+  return new Date().toLocaleDateString('en-CA');
 }
 
 function getYesterday(): string {
-  return new Date(Date.now() - 86400000).toDateString();
+  return new Date(Date.now() - 86400000).toLocaleDateString('en-CA');
+}
+
+/** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
+function migrateDate(dateStr: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) return parsed.toLocaleDateString('en-CA');
+  return getToday();
 }
 
 /**
@@ -100,6 +108,8 @@ export class LocalStorageAdapter implements StorageAdapter {
       }
 
       const saved: DailyGoalData = JSON.parse(raw);
+      saved.date = migrateDate(saved.date);
+      if (saved.lastStreakUpdate) saved.lastStreakUpdate = migrateDate(saved.lastStreakUpdate);
       const today = getToday();
       const yesterday = getYesterday();
 

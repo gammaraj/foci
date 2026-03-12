@@ -12,11 +12,19 @@ import {
 import type { StorageAdapter } from "./types";
 
 function getToday(): string {
-  return new Date().toDateString();
+  return new Date().toLocaleDateString('en-CA');
 }
 
 function getYesterday(): string {
-  return new Date(Date.now() - 86400000).toDateString();
+  return new Date(Date.now() - 86400000).toLocaleDateString('en-CA');
+}
+
+/** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
+function migrateDate(dateStr: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) return parsed.toLocaleDateString('en-CA');
+  return getToday();
 }
 
 /** Throw if a Supabase response has an error. */
@@ -113,10 +121,10 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     }
 
     const saved: DailyGoalData = {
-      date: data.date,
+      date: migrateDate(data.date),
       sessionCount: data.session_count,
       streak: data.streak,
-      lastStreakUpdate: data.last_streak_update,
+      lastStreakUpdate: data.last_streak_update ? migrateDate(data.last_streak_update) : null,
     };
 
     if (saved.date === today) return saved;

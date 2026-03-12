@@ -273,7 +273,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     dgd.sessionCount++;
 
     // Update streak
-    const today = new Date().toDateString();
+    const today = new Date().toLocaleDateString('en-CA');
     if (dgd.sessionCount === s.dailyGoal && dgd.lastStreakUpdate !== today) {
       dgd.streak = (dgd.streak || 0) + 1;
       dgd.lastStreakUpdate = today;
