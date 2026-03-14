@@ -1,4 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { AuthProvider } from "@/components/AuthProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ToastProvider } from "@/components/ToastProvider";
 import "./globals.css";
 
 const siteUrl = "https://usetempo.app";
@@ -75,10 +78,6 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
 };
-
-import { AuthProvider } from "@/components/AuthProvider";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { ToastProvider } from "@/components/ToastProvider";
 
 const themeScript = `(function(){try{var t=localStorage.getItem("tempo_theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`;
 

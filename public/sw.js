@@ -1,4 +1,5 @@
-const CACHE_NAME = "tempo-v1";
+const CACHE_VERSION = "2";
+const CACHE_NAME = `tempo-v${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   "/",
   "/app",

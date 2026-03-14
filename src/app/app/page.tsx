@@ -243,15 +243,27 @@ function ActiveTaskBanner({
   const [title, setTitle] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     const refresh = () => {
       loadTasks().then((tasks) => {
+        if (cancelled) return;
         const t = tasks.find((task) => task.id === taskId);
         setTitle(t?.title ?? "");
       });
     };
     refresh();
-    window.addEventListener("tempo-tasks-updated", refresh);
-    return () => window.removeEventListener("tempo-tasks-updated", refresh);
+    // Only refresh on task-updated if the title might have changed (rename/delete)
+    const handleUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      // Skip session-complete events — they don’t change the title
+      if (detail?.taskId && detail?.elapsed) return;
+      refresh();
+    };
+    window.addEventListener("tempo-tasks-updated", handleUpdate);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("tempo-tasks-updated", handleUpdate);
+    };
   }, [taskId]);
 
   if (!title) return null;

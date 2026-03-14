@@ -22,11 +22,16 @@ let currentAdapter: StorageAdapter = localAdapter;
 /**
  * Switch to the Supabase adapter (call after user logs in).
  * Migrates any existing local data to Supabase before clearing localStorage.
+ * Returns a Promise that resolves when activation + migration is complete.
  */
-let activatingSupabase = false;
-export async function activateSupabaseStorage(): Promise<void> {
-  if (activatingSupabase) return;
-  activatingSupabase = true;
+let activatingPromise: Promise<void> | null = null;
+export function activateSupabaseStorage(): Promise<void> {
+  if (activatingPromise) return activatingPromise;
+  activatingPromise = doActivateSupabase();
+  return activatingPromise;
+}
+
+async function doActivateSupabase(): Promise<void> {
 
   try {
     const supabase = createClient();
@@ -83,7 +88,7 @@ export async function activateSupabaseStorage(): Promise<void> {
       }
     }
   } finally {
-    activatingSupabase = false;
+    activatingPromise = null;
   }
 }
 

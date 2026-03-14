@@ -8,6 +8,7 @@ import {
   DEFAULT_PROJECT,
 } from "../types";
 import type { StorageAdapter } from "./types";
+import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 const SETTINGS_KEY = "tempo_settings";
 const DAILY_GOAL_KEY = "tempo_daily_goal";
@@ -40,19 +41,11 @@ function migrateFromLockIn(): void {
 // Run migration eagerly on module load
 migrateFromLockIn();
 
-function getToday(): string {
-  return new Date().toLocaleDateString('en-CA');
-}
-
-function getYesterday(): string {
-  return new Date(Date.now() - 86400000).toLocaleDateString('en-CA');
-}
-
 /** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
 function migrateDate(dateStr: string): string {
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
   const parsed = new Date(dateStr);
-  if (!isNaN(parsed.getTime())) return parsed.toLocaleDateString('en-CA');
+  if (!isNaN(parsed.getTime())) return formatDateLocal(parsed);
   return getToday();
 }
 
@@ -180,7 +173,7 @@ export class LocalStorageAdapter implements StorageAdapter {
     goalMet: boolean,
   ): Promise<void> {
     const history = await this.loadStreakHistory();
-    const dateKey = date.toISOString().split("T")[0];
+    const dateKey = formatDateLocal(date);
     history.days[dateKey] = {
       sessionCount,
       goalMet,

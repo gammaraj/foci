@@ -15,6 +15,7 @@ import {
   recordDayCompletion,
 } from "@/lib/storage";
 import { getRandomQuote } from "@/lib/quotes";
+import { getToday } from "@/lib/dates";
 
 export interface TimerState {
   // Timer
@@ -50,7 +51,7 @@ export interface TimerOptions {
 export function useTimer({ authLoading = false, user }: TimerOptions = {}): TimerState {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [dailyGoalData, setDailyGoalData] = useState<DailyGoalData>({
-    date: new Date().toLocaleDateString('en-CA'),
+    date: getToday(),
     sessionCount: 0,
     streak: 0,
     lastStreakUpdate: null,
@@ -83,7 +84,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     isBreak: boolean;
   }) => {
     try {
-      const toSave = { ...state, savedDate: new Date().toLocaleDateString('en-CA') };
+      const toSave = { ...state, savedDate: getToday() };
       localStorage.setItem(TIMER_STATE_KEY, JSON.stringify(toSave));
     } catch {}
   }, []);
@@ -98,7 +99,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       // Discard timer state from a previous day
-      if (parsed.savedDate && parsed.savedDate !== new Date().toLocaleDateString('en-CA')) {
+      if (parsed.savedDate && parsed.savedDate !== getToday()) {
         localStorage.removeItem(TIMER_STATE_KEY);
         return null;
       }
@@ -154,58 +155,29 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
               startTimeRef.current = Date.now();
               lastTickRef.current = Date.now();
 
-              // Restart interval — delegate to start/startWork would cause circular refs,
-              // so inline a simple countdown here
+              // Restart countdown using shared helper
               const isBreak = saved.isBreak;
               const endTime = saved.endTime;
-              timerRef.current = setInterval(() => {
-                const now = Date.now();
-                const tickGap = now - lastTickRef.current;
-                lastTickRef.current = now;
-
-                if (tickGap > 60000) {
-                  clearTimer();
+              runCountdown(
+                endTime,
+                () => {
                   if (isBreak) {
-                    clearTimerState();
-                    setIsBreakMode(false);
-                    isBreakModeRef.current = false;
-                    setLastQuote(null);
-                    setStatus("idle");
-                    statusRef.current = "idle";
-                    setLabel("Focus Time");
-                    setStatusText("Ready to focus");
-                    totalDurationRef.current = settingsRef.current.workDuration;
-                    setRemainingTime(settingsRef.current.workDuration);
+                    resetToIdle();
+                  } else {
+                    onSessionComplete();
+                  }
+                },
+                () => {
+                  if (isBreak) {
+                    resetToIdle();
                   } else {
                     setStatus("paused");
                     statusRef.current = "paused";
                     setStatusText("Paused (device slept)");
-                    saveTimerState({ remainingTime: Math.max(0, endTime - now), status: "paused", isBreak: false });
+                    saveTimerState({ remainingTime: Math.max(0, endTime - Date.now()), status: "paused", isBreak: false });
                   }
-                  return;
-                }
-
-                const r = Math.max(0, endTime - now);
-                setRemainingTime(r);
-
-                if (r <= 0) {
-                  if (isBreak) {
-                    clearTimer();
-                    clearTimerState();
-                    setIsBreakMode(false);
-                    isBreakModeRef.current = false;
-                    setLastQuote(null);
-                    setStatus("idle");
-                    statusRef.current = "idle";
-                    setLabel("Focus Time");
-                    setStatusText("Ready to focus");
-                    totalDurationRef.current = settingsRef.current.workDuration;
-                    setRemainingTime(settingsRef.current.workDuration);
-                  } else {
-                    onSessionComplete();
-                  }
-                }
-              }, 200);
+                },
+              );
             } else {
               // Timer expired while away
               clearTimerState();
@@ -249,6 +221,55 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     }
   }, []);
 
+  /** Reset UI to idle / "Ready to focus" state. */
+  const resetToIdle = useCallback(() => {
+    clearTimerState();
+    setIsBreakMode(false);
+    isBreakModeRef.current = false;
+    setLastQuote(null);
+    setStatus("idle");
+    statusRef.current = "idle";
+    setLabel("Focus Time");
+    setStatusText("Ready to focus");
+    totalDurationRef.current = settingsRef.current.workDuration;
+    setRemainingTime(settingsRef.current.workDuration);
+  }, [clearTimerState]);
+
+  /**
+   * Shared countdown interval used by work timer, break timer, and resume.
+   * `endTime` — timestamp when the countdown reaches zero.
+   * `onComplete` — called when remaining time reaches 0.
+   * `onDeviceSleep` — called when a tick gap > 60 s is detected (device slept).
+   */
+  const runCountdown = useCallback((
+    endTime: number,
+    onComplete: () => void,
+    onDeviceSleep: () => void,
+  ) => {
+    clearTimer();
+    startTimeRef.current = Date.now();
+    lastTickRef.current = Date.now();
+
+    timerRef.current = setInterval(() => {
+      const now = Date.now();
+      const tickGap = now - lastTickRef.current;
+      lastTickRef.current = now;
+
+      if (tickGap > 60000) {
+        clearTimer();
+        onDeviceSleep();
+        return;
+      }
+
+      const rem = Math.max(0, endTime - now);
+      setRemainingTime(rem);
+
+      if (rem <= 0) {
+        onComplete();
+      }
+    }, 200);
+  }, [clearTimer]);
+
   // Show browser notification
   const showNotification = useCallback(
     (quote: string, goalMet: boolean, sessionCount: number, dailyGoal: number) => {
@@ -283,7 +304,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     const dgd = { ...dailyGoalRef.current };
 
     // If the day rolled over since the data was loaded, reset session count
-    const today = new Date().toLocaleDateString('en-CA');
+    const today = getToday();
     if (dgd.date !== today) {
       dgd.sessionCount = 0;
       dgd.date = today;
@@ -329,55 +350,24 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     setRemainingTime(s.breakDuration);
 
     // Persist break state
-    saveTimerState({ endTime: Date.now() + s.breakDuration, status: "break", isBreak: true });
+    const breakEnd = Date.now() + s.breakDuration;
+    saveTimerState({ endTime: breakEnd, status: "break", isBreak: true });
 
     // Start break countdown
-    timerRef.current = setInterval(() => {
-      const now = Date.now();
-      const tickGap = now - lastTickRef.current;
-      lastTickRef.current = now;
-
-      // Skip break timer if device slept — just end the break
-      if (tickGap > 60000) {
+    runCountdown(
+      breakEnd,
+      () => {
         clearTimer();
-        clearTimerState();
-        setIsBreakMode(false);
-        isBreakModeRef.current = false;
-        setLastQuote(null);
-        setStatus("idle");
-        statusRef.current = "idle";
-        setLabel("Focus Time");
-        setStatusText("Ready to focus");
-        totalDurationRef.current = settingsRef.current.workDuration;
-        setRemainingTime(settingsRef.current.workDuration);
-        return;
-      }
-
-      const elapsed = now - (startTimeRef.current || now);
-      const rem = Math.max(0, settingsRef.current.breakDuration - elapsed);
-      setRemainingTime(rem);
-
-      if (rem <= 0) {
-        clearTimer();
-        clearTimerState();
-        setIsBreakMode(false);
-        isBreakModeRef.current = false;
-        setLastQuote(null);
-
         if (settingsRef.current.autoStartEnabled) {
-          // Auto-start next work session
+          resetToIdle();
           startWork();
         } else {
-          setStatus("idle");
-          statusRef.current = "idle";
-          setLabel("Focus Time");
-          setStatusText("Ready to focus");
-          totalDurationRef.current = settingsRef.current.workDuration;
-          setRemainingTime(settingsRef.current.workDuration);
+          resetToIdle();
         }
-      }
-    }, 200);
-  }, [clearTimer, showNotification]);
+      },
+      () => resetToIdle(), // device slept — just end the break
+    );
+  }, [clearTimer, showNotification, runCountdown, resetToIdle]);
 
   // Start work timer
   const startWork = useCallback(() => {
@@ -393,36 +383,22 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     setLastQuote(null);
 
     totalDurationRef.current = s.workDuration;
-    startTimeRef.current = Date.now();
-    lastTickRef.current = Date.now();
     setRemainingTime(s.workDuration);
 
     // Persist so timer survives navigation
-    saveTimerState({ endTime: Date.now() + s.workDuration, status: "running", isBreak: false });
+    const endTime = Date.now() + s.workDuration;
+    saveTimerState({ endTime, status: "running", isBreak: false });
 
-    timerRef.current = setInterval(() => {
-      const now = Date.now();
-      const tickGap = now - lastTickRef.current;
-      lastTickRef.current = now;
-
-      // If gap between ticks > 60s, device likely slept — pause to avoid false completion
-      if (tickGap > 60000) {
-        clearTimer();
+    runCountdown(
+      endTime,
+      () => onSessionComplete(),
+      () => {
         setStatus("paused");
         statusRef.current = "paused";
         setStatusText("Paused (device slept)");
-        return;
-      }
-
-      const elapsed = now - (startTimeRef.current || now);
-      const rem = Math.max(0, settingsRef.current.workDuration - elapsed);
-      setRemainingTime(rem);
-
-      if (rem <= 0) {
-        onSessionComplete();
-      }
-    }, 200);
-  }, [clearTimer, onSessionComplete]);
+      },
+    );
+  }, [clearTimer, onSessionComplete, runCountdown, saveTimerState]);
 
   const start = useCallback(() => {
     if (statusRef.current === "paused") {
@@ -437,39 +413,25 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
       statusRef.current = "running";
       setStatusText("Welcome back! 🎯");
 
-      const resumeStart = Date.now();
-      startTimeRef.current = resumeStart;
-      lastTickRef.current = Date.now();
       totalDurationRef.current = currentRemaining;
 
       // Persist resumed state
-      saveTimerState({ endTime: Date.now() + currentRemaining, status: "running", isBreak: false });
+      const endTime = Date.now() + currentRemaining;
+      saveTimerState({ endTime, status: "running", isBreak: false });
 
-      timerRef.current = setInterval(() => {
-        const now = Date.now();
-        const tickGap = now - lastTickRef.current;
-        lastTickRef.current = now;
-
-        if (tickGap > 60000) {
-          clearTimer();
+      runCountdown(
+        endTime,
+        () => onSessionComplete(),
+        () => {
           setStatus("paused");
           statusRef.current = "paused";
           setStatusText("Paused (device slept)");
-          return;
-        }
-
-        const elapsed = now - resumeStart;
-        const rem = Math.max(0, currentRemaining - elapsed);
-        setRemainingTime(rem);
-
-        if (rem <= 0) {
-          onSessionComplete();
-        }
-      }, 200);
+        },
+      );
     } else if (statusRef.current !== "running" && statusRef.current !== "break") {
       startWork();
     }
-  }, [startWork, onSessionComplete, remainingTime]);
+  }, [startWork, onSessionComplete, remainingTime, runCountdown, saveTimerState]);
 
   const pause = useCallback(() => {
     if (statusRef.current === "running") {
@@ -483,18 +445,9 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
   const reset = useCallback(() => {
     clearTimer();
-    clearTimerState();
-    setIsBreakMode(false);
-    isBreakModeRef.current = false;
-    setStatus("idle");
-    statusRef.current = "idle";
-    setLabel("Focus Time");
-    setStatusText("Ready to focus");
-    setLastQuote(null);
-    totalDurationRef.current = settingsRef.current.workDuration;
-    setRemainingTime(settingsRef.current.workDuration);
+    resetToIdle();
     startTimeRef.current = null;
-  }, [clearTimer]);
+  }, [clearTimer, resetToIdle]);
 
   const handleSaveSettings = useCallback(
     (newSettings: Settings) => {
@@ -525,7 +478,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     if (authLoading) return;
 
     const reloadIfNewDay = () => {
-      const today = new Date().toLocaleDateString('en-CA');
+      const today = getToday();
       if (dailyGoalRef.current.date !== today) {
         loadDailyGoalData(settingsRef.current.dailyGoal).then((goal) => {
           setDailyGoalData(goal);

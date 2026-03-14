@@ -6,6 +6,7 @@ import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjec
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
+import { getToday, formatDateLocal } from "@/lib/dates";
 
 const MAX_TASK_TITLE = 200;
 const MAX_PROJECT_NAME = 100;
@@ -18,24 +19,19 @@ function formatDuration(ms: number): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function todayDateStr(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
 function formatDueDate(iso: string): string {
-  const today = todayDateStr();
+  const today = getToday();
   if (iso === today) return "Today";
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
+  const tomorrowStr = formatDateLocal(tomorrow);
   if (iso === tomorrowStr) return "Tomorrow";
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 function isDueDateOverdue(iso: string): boolean {
-  return iso < todayDateStr();
+  return iso < getToday();
 }
 
 interface TaskListProps {
@@ -192,6 +188,17 @@ export default function TaskList({
     }
   }, [showToast]);
 
+  /** Save a single task update (avoids re-upserting the entire array). */
+  const persistOne = useCallback(async (updated: Task[], changedTask: Task) => {
+    setTasks(updated);
+    try {
+      await saveOneTask(changedTask);
+    } catch (err) {
+      console.error("[Tempo] Failed to save task:", err);
+      showToast("Failed to save task. Changes may be lost.", "error");
+    }
+  }, [showToast]);
+
   const persistProjects = useCallback((updated: Project[]) => {
     setProjects(updated);
     saveProjects(updated).catch((err) => {
@@ -282,7 +289,8 @@ export default function TaskList({
         ? { ...t, completed: !t.completed, timeSpent: (t.timeSpent || 0) + elapsed }
         : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === id)!;
+    persistOne(updated, changed);
     if (activeTaskId === id) onSelectTask(null);
   };
 
@@ -297,7 +305,9 @@ export default function TaskList({
   };
 
   const setDueDate = (id: string, date: string | undefined) => {
-    persist(tasks.map((t) => (t.id === id ? { ...t, dueDate: date } : t)));
+    const updated = tasks.map((t) => (t.id === id ? { ...t, dueDate: date } : t));
+    const changed = updated.find((t) => t.id === id)!;
+    persistOne(updated, changed);
   };
 
   const startEditing = (task: Task) => {
@@ -311,7 +321,8 @@ export default function TaskList({
     const updated = tasks.map((t) =>
       t.id === id ? { ...t, title } : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === id)!;
+    persistOne(updated, changed);
     setEditingId(null);
   };
 
@@ -995,7 +1006,7 @@ export default function TaskList({
                         ? "text-slate-400 dark:text-slate-500"
                         : isDueDateOverdue(task.dueDate)
                           ? "text-red-500 dark:text-red-400"
-                          : task.dueDate === todayDateStr()
+                          : task.dueDate === getToday()
                             ? "text-orange-500 dark:text-orange-400"
                             : "text-slate-500 dark:text-slate-400"
                     }`}>

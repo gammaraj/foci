@@ -15,6 +15,7 @@ import type {
   Project,
   Settings,
 } from "@/lib/types";
+import { formatDateLocal } from "@/lib/dates";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -25,9 +26,8 @@ function formatMs(ms: number): string {
   return `${m}m`;
 }
 
-function dateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
+// Re-export for use in this file
+const dateKey = formatDateLocal;
 
 function getDaysArray(count: number): string[] {
   const days: string[] = [];
@@ -80,7 +80,7 @@ function BarChart({
               className="w-full rounded-t-md transition-all duration-300"
               style={{
                 height: `${Math.max(pct, d.value > 0 ? 4 : 0)}%`,
-                background: `var(--bar-color, ${color})`,
+                backgroundColor: color,
                 minHeight: d.value > 0 ? 4 : 0,
               }}
             />
@@ -90,10 +90,6 @@ function BarChart({
           </div>
         );
       })}
-      <style>{`
-        :root { --bar-color: ${color}; }
-        .dark { --bar-color: ${darkColor}; }
-      `}</style>
     </div>
   );
 }
@@ -230,18 +226,30 @@ export default function StatsPage() {
     }
   }
 
-  // Longest streak
+  // Longest streak (must check for consecutive calendar days)
   let longestStreak = 0;
   {
     const sorted = allDayKeys.sort();
     let run = 0;
     for (let i = 0; i < sorted.length; i++) {
-      if (streakHistory.days[sorted[i]]?.goalMet) {
-        run++;
-        longestStreak = Math.max(longestStreak, run);
-      } else {
+      if (!streakHistory.days[sorted[i]]?.goalMet) {
         run = 0;
+        continue;
       }
+      // Check if this day is consecutive with the previous streak day
+      if (run > 0) {
+        const prev = new Date(sorted[i - 1] + "T00:00:00");
+        const curr = new Date(sorted[i] + "T00:00:00");
+        const diffDays = (curr.getTime() - prev.getTime()) / 86_400_000;
+        if (diffDays !== 1) {
+          run = 1; // gap found — restart streak
+        } else {
+          run++;
+        }
+      } else {
+        run = 1;
+      }
+      longestStreak = Math.max(longestStreak, run);
     }
   }
 

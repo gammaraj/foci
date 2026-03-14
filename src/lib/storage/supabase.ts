@@ -10,20 +10,13 @@ import {
   DEFAULT_PROJECT,
 } from "../types";
 import type { StorageAdapter } from "./types";
-
-function getToday(): string {
-  return new Date().toLocaleDateString('en-CA');
-}
-
-function getYesterday(): string {
-  return new Date(Date.now() - 86400000).toLocaleDateString('en-CA');
-}
+import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 /** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
 function migrateDate(dateStr: string): string {
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
   const parsed = new Date(dateStr);
-  if (!isNaN(parsed.getTime())) return parsed.toLocaleDateString('en-CA');
+  if (!isNaN(parsed.getTime())) return formatDateLocal(parsed);
   return getToday();
 }
 
@@ -205,7 +198,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     goalMet: boolean,
   ): Promise<void> {
     const userId = await this.getUserId();
-    const dateKey = date.toISOString().split("T")[0];
+    const dateKey = formatDateLocal(date);
 
     check(
       await this.supabase.from("streak_history").upsert(
