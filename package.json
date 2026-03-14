@@ -1,7 +1,7 @@
 {
-  "name": "tempo",
+  "name": "foci",
   "version": "1.0.0",
-  "description": "Tempo - Productivity Timer Web App",
+  "description": "Foci - Productivity Timer Web App",
   "private": true,
   "scripts": {
     "dev": "next dev",

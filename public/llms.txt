@@ -1,10 +1,10 @@
-# Tempo – Your Focus System: Timer, Tasks, Goals & Ambient Music
+# Foci – Your Focus System: Timer, Tasks, Goals & Ambient Music
 
-> Tempo is a free all-in-one focus system built with Next.js, React, and Tailwind CSS. It combines a Pomodoro timer, task tracking, daily goals, streak stats, built-in ambient music, and motivational quotes into one distraction-free workspace. No sign-up required — works instantly in any modern browser.
+> Foci is a free all-in-one focus system built with Next.js, React, and Tailwind CSS. It combines a Pomodoro timer, task tracking, daily goals, streak stats, built-in ambient music, and motivational quotes into one distraction-free workspace. No sign-up required — works instantly in any modern browser.
 
-## What is Tempo?
+## What is Foci?
 
-Tempo is more than a Pomodoro timer. It’s a complete focus system designed for students, developers, writers, and anyone who wants to get more done. Timer. Tasks. Goals. Streaks. Ambient music to stay in the zone — everything you need to focus, in one window. Tempo is completely free and requires no account to get started.
+Foci is more than a Pomodoro timer. It’s a complete focus system designed for students, developers, writers, and anyone who wants to get more done. Timer. Tasks. Goals. Streaks. Ambient music to stay in the zone — everything you need to focus, in one window. Foci is completely free and requires no account to get started.
 
 ## Key Features
 
@@ -18,34 +18,34 @@ Tempo is more than a Pomodoro timer. It’s a complete focus system designed for
 - **Motivational Quotes**: Rotating inspirational quotes displayed during sessions to keep you motivated.
 - **Dark Mode**: Full light and dark theme support based on system preference.
 - **Cloud Sync**: Optionally sign up to sync settings, tasks, and progress across devices via Supabase.
-- **Installable PWA**: Install Tempo on your device and use it offline.
+- **Installable PWA**: Install Foci on your device and use it offline.
 - **Data Privacy**: All data is stored locally by default. No tracking, no ads.
 
-## How to Use Tempo
+## How to Use Foci
 
-1. Visit https://usetempo.app and click "Try without account" or sign up for free.
+1. Visit https://usefoci.app and click "Try without account" or sign up for free.
 2. Add tasks and organize them into projects.
 3. Open Settings to configure work duration, break duration, and daily session goal.
 4. Select a task, turn on ambient music if you like, and press Start.
-5. When the timer ends, take a break. Tempo handles the transition automatically.
+5. When the timer ends, take a break. Foci handles the transition automatically.
 6. Hit your daily goal and build your streak. Track progress with stats and charts.
 
 ## Frequently Asked Questions
 
-**Q: What is Tempo?**
-A: Tempo is a free all-in-one focus system that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive, in one window.
+**Q: What is Foci?**
+A: Foci is a free all-in-one focus system that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive, in one window.
 
 **Q: Do I need an account?**
-A: No. You can use Tempo immediately without signing up. Create an account only if you want to sync data across devices.
+A: No. You can use Foci immediately without signing up. Create an account only if you want to sync data across devices.
 
-**Q: Does Tempo have background music?**
-A: Yes. Tempo includes built-in ambient sounds (rain, café, white noise, brown noise) that work offline via Web Audio API, plus optional lo-fi YouTube radio streams — perfect for getting in the zone.
+**Q: Does Foci have background music?**
+A: Yes. Foci includes built-in ambient sounds (rain, café, white noise, brown noise) that work offline via Web Audio API, plus optional lo-fi YouTube radio streams — perfect for getting in the zone.
 
 **Q: What is the Pomodoro technique?**
 A: The Pomodoro technique is a time management method that alternates focused work intervals (typically 25 minutes) with short breaks (typically 5 minutes). After four cycles, take a longer break. It helps maintain concentration and prevent burnout.
 
 **Q: How does task tracking work?**
-A: Create tasks, organize them into projects, and select one before starting the timer. Tempo automatically logs sessions and time spent per-task so you know exactly where your hours go.
+A: Create tasks, organize them into projects, and select one before starting the timer. Foci automatically logs sessions and time spent per-task so you know exactly where your hours go.
 
 **Q: Can I customize the timer?**
 A: Yes. You can adjust work duration, break duration, and daily session goals in the Settings panel.
@@ -54,7 +54,7 @@ A: Yes. You can adjust work duration, break duration, and daily session goals in
 A: By default, all data is stored in your browser's local storage. If you sign up, data is synced to a secure Supabase backend.
 
 **Q: What browsers are supported?**
-A: Tempo works in all modern browsers including Chrome, Firefox, Safari, and Edge.
+A: Foci works in all modern browsers including Chrome, Firefox, Safari, and Edge.
 
 ## Tech Stack
 
@@ -84,17 +84,17 @@ A: Tempo works in all modern browsers including Chrome, Firefox, Safari, and Edg
 
 ## URL
 
-- Homepage: https://usetempo.app
-- App: https://usetempo.app/app
-- Blog: https://usetempo.app/blog
-- Login: https://usetempo.app/login
+- Homepage: https://usefoci.app
+- App: https://usefoci.app/app
+- Blog: https://usefoci.app/blog
+- Login: https://usefoci.app/login
 
 ## Blog
 
-Tempo publishes articles about the Pomodoro technique, focus strategies, and time management. Blog posts are available at https://usetempo.app/blog.
+Foci publishes articles about the Pomodoro technique, focus strategies, and time management. Blog posts are available at https://usefoci.app/blog.
 
-- [What Is the Pomodoro Technique? A Complete Guide](https://usetempo.app/blog/pomodoro-technique-guide) — 2026-03-01
-- [How to Stay Focused While Studying: 7 Proven Strategies](https://usetempo.app/blog/how-to-stay-focused-while-studying) — 2026-03-04
-- [Pomodoro vs. Flowtime vs. 52/17: Which Focus Technique Is Best?](https://usetempo.app/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-03-07
+- [What Is the Pomodoro Technique? A Complete Guide](https://usefoci.app/blog/pomodoro-technique-guide) — 2026-03-01
+- [How to Stay Focused While Studying: 7 Proven Strategies](https://usefoci.app/blog/how-to-stay-focused-while-studying) — 2026-03-04
+- [Pomodoro vs. Flowtime vs. 52/17: Which Focus Technique Is Best?](https://usefoci.app/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-03-07
 
-For the full text of all blog posts, see: https://usetempo.app/llms-full.txt
+For the full text of all blog posts, see: https://usefoci.app/llms-full.txt

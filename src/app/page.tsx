@@ -1,18 +1,18 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
-const siteUrl = "https://usetempo.app";
+const siteUrl = "https://usefoci.app";
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Tempo",
+  name: "Foci",
   url: siteUrl,
   applicationCategory: "ProductivityApplication",
   operatingSystem: "Any",
   browserRequirements: "Requires a modern web browser with JavaScript enabled",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  description: "Tempo is a free all-in-one focus system: Pomodoro timer, task tracking, daily goals, streak stats, built-in ambient music, and motivational quotes — everything you need to stay productive, in one window.",
+  description: "Foci is a free all-in-one focus system: Pomodoro timer, task tracking, daily goals, streak stats, built-in ambient music, and motivational quotes — everything you need to stay productive, in one window.",
   image: `${siteUrl}/opengraph-image`,
   featureList: [
     "Pomodoro focus timer with customizable work and break durations",
@@ -30,14 +30,14 @@ const jsonLd = {
 const howToJsonLd = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  name: "How to Use Tempo to Stay Focused and Productive",
-  description: "A step-by-step guide to using Tempo — a free all-in-one focus system with a Pomodoro timer, task tracking, ambient music, daily goals, and streak stats.",
+  name: "How to Use Foci to Stay Focused and Productive",
+  description: "A step-by-step guide to using Foci — a free all-in-one focus system with a Pomodoro timer, task tracking, ambient music, daily goals, and streak stats.",
   step: [
-    { "@type": "HowToStep", name: "Open Tempo", text: "Visit usetempo.app and click 'Try without account' or sign up for free to sync across devices." },
+    { "@type": "HowToStep", name: "Open Foci", text: "Visit usefoci.app and click 'Try without account' or sign up for free to sync across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
     { "@type": "HowToStep", name: "Set your preferences", text: "Open Settings to configure work duration (default 25 min), break duration (default 5 min), daily session goal, and notification preferences." },
     { "@type": "HowToStep", name: "Pick a task and start", text: "Select a task, turn on ambient music if you like, and press Start. The circular timer counts down your work session." },
-    { "@type": "HowToStep", name: "Take a break", text: "When the session ends, Tempo automatically starts your break. Sessions and time are logged per-task." },
+    { "@type": "HowToStep", name: "Take a break", text: "When the session ends, Foci automatically starts your break. Sessions and time are logged per-task." },
     { "@type": "HowToStep", name: "Build your streak", text: "Hit your daily session goal and watch your streak grow. Track progress with stats, charts, and a calendar view." },
   ],
 };
@@ -46,12 +46,12 @@ const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "What is Tempo?", acceptedAnswer: { "@type": "Answer", text: "Tempo is a free all-in-one focus system that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive, in one window." } },
-    { "@type": "Question", name: "Is Tempo free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes. Tempo is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices." } },
-    { "@type": "Question", name: "Can I use Tempo without creating an account?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Click 'Try without account' on the homepage and start using Tempo immediately. Your settings, tasks, and progress are saved locally in your browser." } },
-    { "@type": "Question", name: "Does Tempo have ambient music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Tempo includes built-in ambient sounds like rain, café, white noise, and brown noise that work offline, plus optional lo-fi YouTube radio streams — perfect for getting in the zone." } },
+    { "@type": "Question", name: "What is Foci?", acceptedAnswer: { "@type": "Answer", text: "Foci is a free all-in-one focus system that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive, in one window." } },
+    { "@type": "Question", name: "Is Foci free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices." } },
+    { "@type": "Question", name: "Can I use Foci without creating an account?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Click 'Try without account' on the homepage and start using Foci immediately. Your settings, tasks, and progress are saved locally in your browser." } },
+    { "@type": "Question", name: "Does Foci have ambient music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes built-in ambient sounds like rain, café, white noise, and brown noise that work offline, plus optional lo-fi YouTube radio streams — perfect for getting in the zone." } },
     { "@type": "Question", name: "Can I customize the timer durations?", acceptedAnswer: { "@type": "Answer", text: "Yes. Open the Settings panel to customize your work duration, break duration, and daily session goal to match your preferred workflow." } },
-    { "@type": "Question", name: "How does task tracking work?", acceptedAnswer: { "@type": "Answer", text: "Create tasks in the task list, organize them into projects, and select one before starting the timer. Tempo automatically logs sessions and time spent per-task so you know exactly where your hours go." } },
+    { "@type": "Question", name: "How does task tracking work?", acceptedAnswer: { "@type": "Answer", text: "Create tasks in the task list, organize them into projects, and select one before starting the timer. Foci automatically logs sessions and time spent per-task so you know exactly where your hours go." } },
   ],
 };
 
@@ -68,7 +68,7 @@ function AppMockup() {
         </div>
         <div className="flex-1 flex justify-center">
           <div className="bg-[#0d1117] rounded-md px-4 py-1 text-xs text-gray-400 font-mono">
-            tempo-now.vercel.app/app
+            usefoci.app/app
           </div>
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function LandingPage() {
             </span>
           </h1>
           <p className="mt-5 text-lg sm:text-xl text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
-            Timer. Tasks. Goals. Streaks. Ambient music to stay in the zone — Tempo is everything
+            Timer. Tasks. Goals. Streaks. Ambient music to stay in the zone — Foci is everything
             you need to focus, in one window.
           </p>
 
@@ -264,7 +264,7 @@ export default function LandingPage() {
         {/* How it works — replaces flat feature icons */}
         <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-10">
-            How Tempo works
+            How Foci works
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* Step 1 */}
@@ -296,7 +296,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">Start the timer</h3>
               <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                Hit play. Tempo runs a focused work sprint, then gives you a break. Sessions are tracked per-task automatically.
+                Hit play. Foci runs a focused work sprint, then gives you a break. Sessions are tracked per-task automatically.
               </p>
             </div>
 
@@ -318,14 +318,14 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Why Tempo vs. others */}
+        {/* Why Foci vs. others */}
         <section className="w-full max-w-3xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-4">
             Why not just use a browser timer?
           </h2>
           <p className="text-center text-base sm:text-lg text-neutral-500 dark:text-neutral-400 mb-10 max-w-xl mx-auto">
             You could. But you&apos;ll end up switching between tabs, forgetting what you worked on, and
-            losing track of where your hours go. Tempo keeps everything in one place.
+            losing track of where your hours go. Foci keeps everything in one place.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[

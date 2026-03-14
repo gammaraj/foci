@@ -4,10 +4,10 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import "./globals.css";
 
-const siteUrl = "https://usetempo.app";
-const title = "Tempo – Your Focus System: Timer, Tasks, Goals & Ambient Music";
+const siteUrl = "https://usefoci.app";
+const title = "Foci – Your Focus System: Timer, Tasks, Goals & Ambient Music";
 const description =
-  "Tempo is a free all-in-one focus system: Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music. Everything you need to stay productive, in one window.";
+  "Foci is a free all-in-one focus system: Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music. Everything you need to stay productive, in one window.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "focus sounds",
     "online timer",
     "time management",
-    "tempo app",
+    "foci app",
     "pomodoro technique",
     "study timer",
     "concentration timer",
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
     "work break timer",
     "tomato timer",
   ],
-  authors: [{ name: "Tempo" }],
-  creator: "Tempo",
+  authors: [{ name: "Foci" }],
+  creator: "Foci",
   metadataBase: new URL(siteUrl),
   alternates: { canonical: "/" },
   icons: {
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "Tempo",
+    siteName: "Foci",
     title,
     description,
   },
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
   },
 };
 
-const themeScript = `(function(){try{var t=localStorage.getItem("tempo_theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||localStorage.getItem("tempo_theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`;
 
 export default function RootLayout({
   children,

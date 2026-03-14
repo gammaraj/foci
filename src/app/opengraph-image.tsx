@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Tempo – Your Focus System: Timer, Tasks, Goals & Ambient Music";
+export const alt = "Foci – Your Focus System: Timer, Tasks, Goals & Ambient Music";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -26,15 +26,18 @@ export default function Image() {
             width: 88,
             height: 88,
             borderRadius: 22,
-            background: "rgba(255, 255, 255, 0.12)",
-            border: "2px solid rgba(255, 255, 255, 0.2)",
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "2px solid rgba(255, 255, 255, 0.15)",
             marginBottom: 32,
-            fontSize: 44,
-            fontWeight: 800,
-            color: "white",
+            position: "relative",
           }}
         >
-          T
+          {/* Outer ring */}
+          <div style={{ position: "absolute", width: 60, height: 60, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.3)" }} />
+          {/* Inner ring */}
+          <div style={{ position: "absolute", width: 38, height: 38, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.55)" }} />
+          {/* Focal point */}
+          <div style={{ width: 16, height: 16, borderRadius: "50%", background: "white" }} />
         </div>
         <div
           style={{
@@ -44,7 +47,7 @@ export default function Image() {
             letterSpacing: -2,
           }}
         >
-          Tempo
+          Foci
         </div>
         <div
           style={{

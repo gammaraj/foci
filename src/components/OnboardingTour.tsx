@@ -48,11 +48,11 @@ export default function OnboardingTour() {
     // Already completed onboarding (persisted in Supabase user metadata)
     if (user.user_metadata?.onboarding_done) return;
     // Fast local cache to avoid showing again in same browser
-    if (localStorage.getItem("tempo_onboarding_done")) return;
+    if (localStorage.getItem("foci_onboarding_done") || localStorage.getItem("tempo_onboarding_done")) return;
     // Only show for new signups: skip if account older than 5 minutes
     const createdAt = new Date(user.created_at).getTime();
     if (Date.now() - createdAt > 5 * 60 * 1000) {
-      localStorage.setItem("tempo_onboarding_done", "1");
+      localStorage.setItem("foci_onboarding_done", "1");
       const supabase = createClient();
       supabase.auth.updateUser({ data: { onboarding_done: true } });
       return;
@@ -119,7 +119,7 @@ export default function OnboardingTour() {
 
   const finish = () => {
     setCurrentStep(-1);
-    localStorage.setItem("tempo_onboarding_done", "1");
+    localStorage.setItem("foci_onboarding_done", "1");
     // Persist to Supabase user metadata so it survives across devices/browsers
     const supabase = createClient();
     supabase.auth.updateUser({ data: { onboarding_done: true } });

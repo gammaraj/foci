@@ -186,13 +186,13 @@ export default function AmbientSounds() {
   const [scShuffle, setScShuffle] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return true;
-    return localStorage.getItem("tempo_music_seen") === "true";
+    return localStorage.getItem("foci_music_seen") === "true" || localStorage.getItem("tempo_music_seen") === "true";
   });
 
   // Remember that the user has seen the music section
   useEffect(() => {
     if (!collapsed) {
-      try { localStorage.setItem("tempo_music_seen", "true"); } catch {}
+      try { localStorage.setItem("foci_music_seen", "true"); } catch {}
     }
   }, [collapsed]);
 

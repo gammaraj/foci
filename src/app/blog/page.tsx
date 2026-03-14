@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 
-const title = "Blog – Tempo | Productivity & Focus Tips";
+const title = "Blog – Foci | Productivity & Focus Tips";
 const description =
   "Practical guides on the Pomodoro technique, focus strategies, and time management to help you get more done.";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title,
     description,
-    url: "https://usetempo.app/blog",
+    url: "https://usefoci.app/blog",
     type: "website",
   },
 };

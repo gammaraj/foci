@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return {};
   const { meta } = post;
   return {
-    title: `${meta.title} – Tempo Blog`,
+    title: `${meta.title} – Foci Blog`,
     description: meta.description,
     alternates: { canonical: `/blog/${meta.slug}` },
     openGraph: {
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: meta.description,
       type: "article",
       publishedTime: meta.date,
-      url: `https://usetempo.app/blog/${meta.slug}`,
+      url: `https://usefoci.app/blog/${meta.slug}`,
       tags: meta.tags,
     },
   };
@@ -46,10 +46,10 @@ export default async function BlogPostPage({ params }: Props) {
     description: meta.description,
     datePublished: meta.date,
     dateModified: meta.date,
-    author: { "@type": "Organization", name: "Tempo" },
-    publisher: { "@type": "Organization", name: "Tempo" },
-    url: `https://usetempo.app/blog/${meta.slug}`,
-    mainEntityOfPage: `https://usetempo.app/blog/${meta.slug}`,
+    author: { "@type": "Organization", name: "Foci" },
+    publisher: { "@type": "Organization", name: "Foci" },
+    url: `https://usefoci.app/blog/${meta.slug}`,
+    mainEntityOfPage: `https://usefoci.app/blog/${meta.slug}`,
     keywords: meta.tags.join(", "),
   };
 
@@ -106,13 +106,13 @@ export default async function BlogPostPage({ params }: Props) {
                 Ready to try the Pomodoro technique?
               </h2>
               <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                Tempo is a free focus timer — no sign-up required.
+                Foci is a free focus timer — no sign-up required.
               </p>
               <Link
                 href="/app"
                 className="inline-flex items-center justify-center mt-4 px-5 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
               >
-                Try Tempo free
+                Try Foci free
               </Link>
             </div>
           </div>

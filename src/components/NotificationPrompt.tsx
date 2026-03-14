@@ -11,7 +11,7 @@ export default function NotificationPrompt() {
     setPermission(Notification.permission);
     if (Notification.permission !== "default") return;
     // Don't nag if user dismissed before (session-scoped)
-    if (sessionStorage.getItem("tempo_notif_dismissed")) return;
+    if (sessionStorage.getItem("foci_notif_dismissed") || sessionStorage.getItem("tempo_notif_dismissed")) return;
     // Show after a short delay so it's not jarring on load
     const timer = setTimeout(() => setVisible(true), 3000);
     return () => clearTimeout(timer);
@@ -27,7 +27,7 @@ export default function NotificationPrompt() {
 
   const handleDismiss = () => {
     setVisible(false);
-    sessionStorage.setItem("tempo_notif_dismissed", "1");
+    sessionStorage.setItem("foci_notif_dismissed", "1");
   };
 
   if (!visible || permission !== "default") return null;

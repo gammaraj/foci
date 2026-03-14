@@ -159,9 +159,9 @@ function sendBrowserNotification(lines: string[]) {
   if (Notification.permission !== "granted") return;
 
   const body = lines.join("\n");
-  new Notification("Tempo — Task Reminders", {
+  new Notification("Foci — Task Reminders", {
     body,
     icon: "/icon.png",
-    tag: "tempo-due-date-reminder",
+    tag: "foci-due-date-reminder",
   });
 }

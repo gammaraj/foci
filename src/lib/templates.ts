@@ -12,7 +12,7 @@ export interface TimerPreset {
 
 export const TIMER_PRESETS: TimerPreset[] = [
   { label: "Classic Pomodoro", emoji: "🍅", workMin: 25, breakMin: 5, description: "The original Pomodoro technique" },
-  { label: "Tempo Default", emoji: "⏱️", workMin: 30, breakMin: 5, description: "Balanced 30/5 default" },
+  { label: "Foci Default", emoji: "⏱️", workMin: 30, breakMin: 5, description: "Balanced 30/5 default" },
   { label: "Short Sprint", emoji: "⚡", workMin: 15, breakMin: 3, description: "Quick bursts for small tasks" },
   { label: "Deep Work", emoji: "🧠", workMin: 50, breakMin: 10, description: "Extended focus sessions" },
   { label: "52/17 Rule", emoji: "📊", workMin: 52, breakMin: 17, description: "Based on productivity research" },

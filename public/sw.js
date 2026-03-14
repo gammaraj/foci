@@ -1,5 +1,5 @@
 const CACHE_VERSION = "2";
-const CACHE_NAME = `tempo-v${CACHE_VERSION}`;
+const CACHE_NAME = `foci-v${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   "/",
   "/app",

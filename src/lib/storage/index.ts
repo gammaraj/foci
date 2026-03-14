@@ -41,11 +41,11 @@ async function doActivateSupabase(): Promise<void> {
     // Migrate local data to Supabase if any exists
     if (typeof window !== "undefined") {
       try {
-        const localTasks = localStorage.getItem("tempo_tasks");
-        const localProjects = localStorage.getItem("tempo_projects");
-        const localSettings = localStorage.getItem("tempo_settings");
-        const localStreak = localStorage.getItem("tempo_streak_history");
-        const localGoal = localStorage.getItem("tempo_daily_goal");
+        const localTasks = localStorage.getItem("foci_tasks") || localStorage.getItem("tempo_tasks");
+        const localProjects = localStorage.getItem("foci_projects") || localStorage.getItem("tempo_projects");
+        const localSettings = localStorage.getItem("foci_settings") || localStorage.getItem("tempo_settings");
+        const localStreak = localStorage.getItem("foci_streak_history") || localStorage.getItem("tempo_streak_history");
+        const localGoal = localStorage.getItem("foci_daily_goal") || localStorage.getItem("tempo_daily_goal");
 
         // Only migrate if there's local data and Supabase has no tasks yet
         if (localTasks) {
@@ -75,6 +75,12 @@ async function doActivateSupabase(): Promise<void> {
 
         // Clear local storage only after successful migration
         const keys = [
+          "foci_settings",
+          "foci_daily_goal",
+          "foci_streak_history",
+          "foci_tasks",
+          "foci_projects",
+          "foci_selected_project",
           "tempo_settings",
           "tempo_daily_goal",
           "tempo_streak_history",

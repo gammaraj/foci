@@ -75,7 +75,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
   const onSessionCompleteCbRef = useRef<(() => void) | null>(null);
 
   // ── Timer state persistence across navigation ──
-  const TIMER_STATE_KEY = "tempo_timer_state";
+  const TIMER_STATE_KEY = "foci_timer_state";
 
   const saveTimerState = useCallback((state: {
     endTime?: number;
@@ -189,10 +189,10 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
           }
         }
       }).catch((err) => {
-        console.error("[Tempo] Failed to load daily goal data:", err);
+        console.error("[Foci] Failed to load daily goal data:", err);
       });
     }).catch((err) => {
-      console.error("[Tempo] Failed to load settings:", err);
+      console.error("[Foci] Failed to load settings:", err);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user?.id]);
@@ -318,10 +318,10 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
     const goalMet = dgd.sessionCount >= s.dailyGoal;
     recordDayCompletion(new Date(), dgd.sessionCount, goalMet).catch((err) => {
-      console.error("[Tempo] Failed to record day completion:", err);
+      console.error("[Foci] Failed to record day completion:", err);
     });
     saveDailyGoalData(dgd).catch((err) => {
-      console.error("[Tempo] Failed to save daily goal data:", err);
+      console.error("[Foci] Failed to save daily goal data:", err);
     });
     setDailyGoalData({ ...dgd });
     dailyGoalRef.current = dgd;
@@ -454,7 +454,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
       setSettings(newSettings);
       settingsRef.current = newSettings;
       persistSettings(newSettings).catch((err) => {
-        console.error("[Tempo] Failed to save settings:", err);
+        console.error("[Foci] Failed to save settings:", err);
       });
 
       // If idle, update the displayed timer
@@ -484,7 +484,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
           setDailyGoalData(goal);
           dailyGoalRef.current = goal;
         }).catch((err) => {
-          console.error("[Tempo] Failed to reload daily goal data:", err);
+          console.error("[Foci] Failed to reload daily goal data:", err);
         });
       }
     };

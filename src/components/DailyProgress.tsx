@@ -30,7 +30,7 @@ export default function DailyProgress({
     if (authLoading) return;
     if (showCalendar) {
       loadStreakHistory().then(setStreakHistory).catch((err) => {
-        console.error("[Tempo] Failed to load streak history:", err);
+        console.error("[Foci] Failed to load streak history:", err);
       });
     }
   }, [showCalendar, dailyGoalData, authLoading]);

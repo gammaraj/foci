@@ -264,7 +264,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
     const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
     if (result.error) {
-      console.error("[Tempo] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
+      console.error("[Foci] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
       throw new Error(result.error.message);
     }
   }
@@ -287,7 +287,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     };
     const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
     if (result.error) {
-      console.error("[Tempo] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
+      console.error("[Foci] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
       throw new Error(result.error.message);
     }
   }
@@ -354,7 +354,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
     const result = await this.supabase.from("projects").upsert(rows, { onConflict: "user_id,id" }).select("id");
     if (result.error) {
-      console.error("[Tempo] Supabase saveProjects error:", result.error.message, result.error.details, result.error.hint);
+      console.error("[Foci] Supabase saveProjects error:", result.error.message, result.error.details, result.error.hint);
       throw new Error(result.error.message);
     }
   }

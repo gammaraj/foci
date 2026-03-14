@@ -112,7 +112,7 @@ export default function TaskList({
             { id: crypto.randomUUID(), title: "Write unit tests", completed: false, sessions: 0, timeSpent: 0, createdAt: Date.now(), projectId: DEFAULT_PROJECT_ID, subtasks: [] },
           ];
           saveTasks(samples).catch((err) => {
-            console.error("[Tempo] Failed to save sample tasks:", err);
+            console.error("[Foci] Failed to save sample tasks:", err);
           });
           setTasks(samples);
         } else {
@@ -123,22 +123,22 @@ export default function TaskList({
           }));
           if (migrated.some((t, i) => t.projectId !== existing[i]?.projectId)) {
             saveTasks(migrated).catch((err) => {
-              console.error("[Tempo] Failed to save migrated tasks:", err);
+              console.error("[Foci] Failed to save migrated tasks:", err);
             });
           }
           setTasks(migrated);
         }
       }
     ).catch((err) => {
-      console.error("[Tempo] Failed to load data:", err);
+      console.error("[Foci] Failed to load data:", err);
     });
 
     const handleUpdate = () => {
       loadTasks().then(setTasks).catch((err) => {
-        console.error("[Tempo] Failed to reload tasks:", err);
+        console.error("[Foci] Failed to reload tasks:", err);
       });
       loadProjects().then(setProjects).catch((err) => {
-        console.error("[Tempo] Failed to reload projects:", err);
+        console.error("[Foci] Failed to reload projects:", err);
       });
     };
     window.addEventListener("tempo-tasks-updated", handleUpdate);
@@ -169,7 +169,7 @@ export default function TaskList({
             : t
         );
         saveTasks(updated).catch(err => {
-          console.error("[Tempo] Failed to save session update:", err);
+          console.error("[Foci] Failed to save session update:", err);
         });
         return updated;
       });
@@ -183,7 +183,7 @@ export default function TaskList({
     try {
       await saveTasks(updated);
     } catch (err) {
-      console.error("[Tempo] Failed to save tasks:", err);
+      console.error("[Foci] Failed to save tasks:", err);
       showToast("Failed to save tasks. Changes may be lost.", "error");
     }
   }, [showToast]);
@@ -194,7 +194,7 @@ export default function TaskList({
     try {
       await saveOneTask(changedTask);
     } catch (err) {
-      console.error("[Tempo] Failed to save task:", err);
+      console.error("[Foci] Failed to save task:", err);
       showToast("Failed to save task. Changes may be lost.", "error");
     }
   }, [showToast]);
@@ -202,7 +202,7 @@ export default function TaskList({
   const persistProjects = useCallback((updated: Project[]) => {
     setProjects(updated);
     saveProjects(updated).catch((err) => {
-      console.error("[Tempo] Failed to save projects:", err);
+      console.error("[Foci] Failed to save projects:", err);
       showToast("Failed to save projects.", "error");
     });
   }, [showToast]);
@@ -210,7 +210,7 @@ export default function TaskList({
   const selectProject = (id: string) => {
     setSelectedProjectId(id);
     saveSelectedProjectId(id).catch((err) => {
-      console.error("[Tempo] Failed to save selected project:", err);
+      console.error("[Foci] Failed to save selected project:", err);
     });
     setShowProjectMenu(false);
   };
@@ -253,7 +253,7 @@ export default function TaskList({
     try {
       await removeProjectFromDB(id);
     } catch (err) {
-      console.error("[Tempo] Failed to delete project:", err);
+      console.error("[Foci] Failed to delete project:", err);
       showToast("Failed to delete project.", "error");
     }
     if (selectedProjectId === id) selectProject(DEFAULT_PROJECT_ID);
@@ -299,7 +299,7 @@ export default function TaskList({
     try {
       await removeTaskFromDB(id);
     } catch (err) {
-      console.error("[Tempo] Failed to delete task:", err);
+      console.error("[Foci] Failed to delete task:", err);
     }
     if (activeTaskId === id) onSelectTask(null);
   };
@@ -333,7 +333,7 @@ export default function TaskList({
     try {
       await removeTasksFromDB(toRemove);
     } catch (err) {
-      console.error("[Tempo] Failed to clear completed tasks:", err);
+      console.error("[Foci] Failed to clear completed tasks:", err);
     }
   };
 
@@ -362,7 +362,7 @@ export default function TaskList({
     try {
       await removeTasksFromDB(toRemove);
     } catch (err) {
-      console.error("[Tempo] Failed to delete archived tasks:", err);
+      console.error("[Foci] Failed to delete archived tasks:", err);
     }
   };
 

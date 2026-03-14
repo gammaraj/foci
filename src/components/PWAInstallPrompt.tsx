@@ -14,7 +14,7 @@ export default function PWAInstallPrompt() {
 
   useEffect(() => {
     // Don't show if already dismissed this session or already installed
-    if (localStorage.getItem("tempo_pwa_dismissed")) {
+    if (localStorage.getItem("foci_pwa_dismissed") || localStorage.getItem("tempo_pwa_dismissed")) {
       setDismissed(true);
       return;
     }
@@ -41,7 +41,7 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setDismissed(true);
-    localStorage.setItem("tempo_pwa_dismissed", "1");
+    localStorage.setItem("foci_pwa_dismissed", "1");
   };
 
   return (
@@ -49,14 +49,18 @@ export default function PWAInstallPrompt() {
       <div className="flex items-start gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-neutral-900 dark:bg-neutral-800 flex-shrink-0">
           <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="13" stroke="white" strokeWidth="2.5" strokeOpacity="0.3" fill="none"/>
-            <circle cx="16" cy="16" r="13" stroke="white" strokeWidth="2.5" fill="none" strokeDasharray="81.7" strokeDashoffset="20.4" strokeLinecap="round" transform="rotate(-90 16 16)"/>
-            <path d="M18 6L12 17h5l-2 10 8-13h-6l3-8z" fill="white"/>
+            <circle cx="16" cy="16" r="11" stroke="white" strokeWidth="2" strokeOpacity="0.25" fill="none"/>
+            <circle cx="16" cy="16" r="7" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" fill="none"/>
+            <circle cx="16" cy="16" r="3" fill="white"/>
+            <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+            <line x1="16" y1="26" x2="16" y2="30" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+            <line x1="2" y1="16" x2="6" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+            <line x1="26" y1="16" x2="30" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
           </svg>
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-slate-900 dark:text-white">
-            Install Tempo
+            Install Foci
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Add to your home screen for quick access and offline use.

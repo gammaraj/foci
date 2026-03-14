@@ -10,36 +10,38 @@ import {
 import type { StorageAdapter } from "./types";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
-const SETTINGS_KEY = "tempo_settings";
-const DAILY_GOAL_KEY = "tempo_daily_goal";
-const STREAK_HISTORY_KEY = "tempo_streak_history";
-const TASKS_KEY = "tempo_tasks";
-const PROJECTS_KEY = "tempo_projects";
-const SELECTED_PROJECT_KEY = "tempo_selected_project";
+const SETTINGS_KEY = "foci_settings";
+const DAILY_GOAL_KEY = "foci_daily_goal";
+const STREAK_HISTORY_KEY = "foci_streak_history";
+const TASKS_KEY = "foci_tasks";
+const PROJECTS_KEY = "foci_projects";
+const SELECTED_PROJECT_KEY = "foci_selected_project";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
-/** One-time migration from old "lockin_*" keys to "tempo_*" keys */
-function migrateFromLockIn(): void {
+/** One-time migration from old "lockin_*" / "tempo_*" keys to "foci_*" keys */
+function migrateOldKeys(): void {
   if (!isBrowser()) return;
-  const OLD_PREFIX = "lockin_";
-  const NEW_PREFIX = "tempo_";
+  const prefixes = ["lockin_", "tempo_"];
+  const NEW_PREFIX = "foci_";
   const suffixes = ["settings", "daily_goal", "streak_history", "tasks", "projects", "selected_project"];
-  for (const suffix of suffixes) {
-    const oldKey = OLD_PREFIX + suffix;
-    const newKey = NEW_PREFIX + suffix;
-    const existing = localStorage.getItem(oldKey);
-    if (existing !== null && localStorage.getItem(newKey) === null) {
-      localStorage.setItem(newKey, existing);
-      localStorage.removeItem(oldKey);
+  for (const oldPrefix of prefixes) {
+    for (const suffix of suffixes) {
+      const oldKey = oldPrefix + suffix;
+      const newKey = NEW_PREFIX + suffix;
+      const existing = localStorage.getItem(oldKey);
+      if (existing !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, existing);
+        localStorage.removeItem(oldKey);
+      }
     }
   }
 }
 
 // Run migration eagerly on module load
-migrateFromLockIn();
+migrateOldKeys();
 
 /** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
 function migrateDate(dateStr: string): string {

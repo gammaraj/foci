@@ -26,7 +26,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // On mount, read saved preference
   useEffect(() => {
-    const saved = localStorage.getItem("tempo_theme") as Theme | null;
+    const saved = (localStorage.getItem("foci_theme") || localStorage.getItem("tempo_theme")) as Theme | null;
     if (saved && ["light", "dark", "system"].includes(saved)) {
       setThemeState(saved);
     }
@@ -63,7 +63,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    localStorage.setItem("tempo_theme", t);
+    localStorage.setItem("foci_theme", t);
   };
 
   return (

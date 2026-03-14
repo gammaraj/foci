@@ -1,6 +1,6 @@
 {
-  "name": "Tempo",
-  "short_name": "Tempo",
+  "name": "Foci",
+  "short_name": "Foci",
   "description": "Free Pomodoro focus timer with task tracking, daily goals, and streak stats.",
   "start_url": "/app",
   "display": "standalone",
