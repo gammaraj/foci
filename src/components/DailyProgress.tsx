@@ -101,7 +101,7 @@ export default function DailyProgress({
 
         {/* Status text */}
         <div
-          className={`text-sm text-center font-medium ${
+          className={`hidden sm:block text-sm text-center font-medium ${
             goalMet
               ? "text-green-600 dark:text-green-300"
               : "text-slate-600 dark:text-slate-300"
