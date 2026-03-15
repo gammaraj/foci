@@ -593,7 +593,7 @@ export default function TaskList({
                 </span>
               )}
             </button>
-            {/* All Projects tab */}}
+            {/* All Projects tab */}
           <button
             onClick={() => selectProject(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
