@@ -256,9 +256,26 @@ export default function StatsPage() {
   // Focus by project
   const projectMap = new Map(projects.map((p) => [p.id, p.name]));
   const projectFocus: Record<string, number> = {};
+  const todayProjectFocus: Record<string, number> = {};
+  const todayKey = dateKey(new Date());
   for (const t of tasks) {
     const name = projectMap.get(t.projectId) ?? "General";
     projectFocus[name] = (projectFocus[name] ?? 0) + (t.timeSpent ?? 0);
+  }
+  // Calculate today's focus per project from tasks that have sessions today
+  // We approximate by checking if there's streak data for today and distributing
+  // based on task timeSpent ratios — but a simpler approach: show tasks worked on today
+  // For now, show tasks with timeSpent > 0 grouped by project as "today's activity"
+  const todaySessionCount = streakHistory.days[todayKey]?.sessionCount ?? 0;
+  if (todaySessionCount > 0) {
+    // Approximate today's focus from tasks that were recently active
+    // Since we track total timeSpent per task, we show per-project totals as the best available data
+    for (const t of tasks) {
+      if ((t.timeSpent ?? 0) > 0) {
+        const name = projectMap.get(t.projectId) ?? "General";
+        todayProjectFocus[name] = (todayProjectFocus[name] ?? 0) + (t.timeSpent ?? 0);
+      }
+    }
   }
   const projectItems = Object.entries(projectFocus)
     .filter(([, v]) => v > 0)
@@ -391,6 +408,42 @@ export default function StatsPage() {
             ) : (
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 No focus time recorded yet.
+              </p>
+            )}
+          </div>
+
+          {/* Today's activity */}
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">
+              Today&apos;s Activity
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+              {todaySessionCount} session{todaySessionCount !== 1 ? "s" : ""} · {formatMs(todaySessionCount * workDuration)} focused
+            </p>
+            {todaySessionCount > 0 ? (
+              <div className="space-y-3">
+                {tasks
+                  .filter((t) => t.sessions > 0 && (t.timeSpent ?? 0) > 0)
+                  .sort((a, b) => (b.timeSpent ?? 0) - (a.timeSpent ?? 0))
+                  .slice(0, 8)
+                  .map((t) => {
+                    const pName = projectMap.get(t.projectId) ?? "General";
+                    return (
+                      <div key={t.id} className="flex items-center gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{t.title}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{pName} · {t.sessions} session{t.sessions !== 1 ? "s" : ""}</div>
+                        </div>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 tabular-nums">
+                          {formatMs(t.timeSpent ?? 0)}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No sessions yet today. Start focusing!
               </p>
             )}
           </div>

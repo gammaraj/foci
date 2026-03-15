@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Task, Project, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, Subtask } from "@/lib/types";
+import { Task, Project, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, Subtask } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, loadSelectedProjectId, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB } from "@/lib/storage";
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
@@ -270,7 +270,7 @@ export default function TaskList({
       sessions: 0,
       timeSpent: 0,
       createdAt: Date.now(),
-      projectId: isAllProjects ? DEFAULT_PROJECT_ID : selectedProjectId,
+      projectId: (isAllProjects || isTodayFilter) ? DEFAULT_PROJECT_ID : selectedProjectId,
       subtasks: [],
     };
 
@@ -489,9 +489,14 @@ export default function TaskList({
 
   // Filter tasks for the selected project
   const isAllProjects = selectedProjectId === ALL_PROJECTS_ID;
-  const projectTasks = isAllProjects
-    ? tasks.filter((t) => !t.archivedAt)
-    : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
+  const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
+  const today = getToday();
+  const todayTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= today));
+  const projectTasks = isTodayFilter
+    ? todayTasks
+    : isAllProjects
+      ? tasks.filter((t) => !t.archivedAt)
+      : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
   const pendingTasks = projectTasks
     .filter((t) => !t.completed)
     .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
@@ -568,7 +573,27 @@ export default function TaskList({
       <div className="px-4 pt-3 pb-1 relative" ref={projectMenuRef}>
         <div className="relative">
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide pr-6">
-            {/* All Projects tab */}
+            {/* Today filter tab */}
+            <button
+              onClick={() => selectProject(TODAY_FILTER_ID)}
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                isTodayFilter
+                  ? "bg-orange-500 text-white"
+                  : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
+              }`}
+            >
+              <span className="truncate">Today</span>
+              {todayTasks.length > 0 && (
+                <span className={`text-xs ${
+                  isTodayFilter
+                    ? "text-orange-200"
+                    : "text-orange-500 dark:text-orange-400"
+                }`}>
+                  {todayTasks.length}
+                </span>
+              )}
+            </button>
+            {/* All Projects tab */}}
           <button
             onClick={() => selectProject(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
@@ -788,7 +813,7 @@ export default function TaskList({
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder={`Add a task to ${isAllProjects ? "General" : currentProject?.name ?? "General"}...`}
+            placeholder={`Add a task to ${isAllProjects || isTodayFilter ? "General" : currentProject?.name ?? "General"}...`}
             maxLength={MAX_TASK_TITLE}
             className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
@@ -822,7 +847,7 @@ export default function TaskList({
                     key={tpl.label}
                     type="button"
                     onClick={() => {
-                      const newTasks = templateToTasks(tpl, isAllProjects ? DEFAULT_PROJECT_ID : selectedProjectId);
+                      const newTasks = templateToTasks(tpl, (isAllProjects || isTodayFilter) ? DEFAULT_PROJECT_ID : selectedProjectId);
                       persist([...tasks, ...newTasks]);
                       setShowTemplateMenu(false);
                     }}
@@ -847,8 +872,8 @@ export default function TaskList({
         {pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
             <div className="text-center mb-4">
-              <p className="text-slate-500 dark:text-slate-300 text-base mb-1">No tasks yet</p>
-              <p className="text-slate-400 dark:text-slate-400 text-sm">Add a task above or pick a template to get started</p>
+              <p className="text-slate-500 dark:text-slate-300 text-base mb-1">{isTodayFilter ? "No tasks due today" : "No tasks yet"}</p>
+              <p className="text-slate-400 dark:text-slate-400 text-sm">{isTodayFilter ? "Set due dates on tasks to see them here" : "Add a task above or pick a template to get started"}</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {TASK_TEMPLATES.map((tpl) => (
@@ -856,7 +881,7 @@ export default function TaskList({
                   key={tpl.label}
                   type="button"
                   onClick={() => {
-                    const newTasks = templateToTasks(tpl, isAllProjects ? DEFAULT_PROJECT_ID : selectedProjectId);
+                    const newTasks = templateToTasks(tpl, (isAllProjects || isTodayFilter) ? DEFAULT_PROJECT_ID : selectedProjectId);
                     persist([...tasks, ...newTasks]);
                   }}
                   className="text-left p-3 rounded-xl border border-slate-100 dark:border-[#1e3050] hover:border-purple-200 dark:hover:border-purple-700 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-all group"
@@ -959,7 +984,7 @@ export default function TaskList({
                     onDoubleClick={() => startEditing(task)}
                   >
                     {task.title}
-                    {isAllProjects && (
+                    {(isAllProjects || isTodayFilter) && (
                       <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle">
                         {getProjectName(task.projectId)}
                       </span>
@@ -1052,7 +1077,7 @@ export default function TaskList({
                     ? "text-blue-500 dark:text-blue-400 p-1"
                     : hasSubtasks
                       ? "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 px-1.5 py-0.5"
-                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1"
+                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 hidden sm:flex opacity-0 sm:group-hover:opacity-100 p-1"
                 }`}
                 title={isExpanded ? "Collapse subtasks" : hasSubtasks ? "Expand subtasks" : "Add subtask"}
               >
@@ -1072,9 +1097,9 @@ export default function TaskList({
 
               {/* Start / Select / In-progress button */}
               {activeTaskId === task.id && isTimerRunning ? (
-                <span className="flex-shrink-0 px-2 py-1 text-sm font-medium rounded bg-blue-600 text-white flex items-center gap-1">
+                <span className="flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded bg-blue-600 text-white flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  In progress
+                  <span className="hidden sm:inline">In progress</span>
                 </span>
               ) : (
                 <button
@@ -1085,10 +1110,10 @@ export default function TaskList({
                       onStartTask(task.id);
                     }
                   }}
-                  className={`flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded transition-colors flex items-center gap-1 ${
+                  className={`flex-shrink-0 rounded transition-colors flex items-center justify-center ${
                     activeTaskId === task.id
-                      ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                      : "bg-blue-600 text-white hover:bg-blue-700 sm:opacity-0 sm:group-hover:opacity-100"
+                      ? "px-2 py-1 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                      : "w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 sm:opacity-0 sm:group-hover:opacity-100"
                   }`}
                   title={
                     activeTaskId === task.id
@@ -1102,10 +1127,10 @@ export default function TaskList({
                     "Selected"
                   ) : (
                     <>
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
                       </svg>
-                      {isTimerRunning ? "Switch" : "Start"}
+                      <span className="hidden sm:inline ml-1">{isTimerRunning ? "Switch" : "Start"}</span>
                     </>
                   )}
                 </button>
@@ -1289,7 +1314,7 @@ export default function TaskList({
                   </button>
                   <span className="text-sm text-slate-400 dark:text-slate-400 line-through truncate">
                     {task.title}
-                    {isAllProjects && (
+                    {(isAllProjects || isTodayFilter) && (
                       <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle no-underline">
                         {getProjectName(task.projectId)}
                       </span>
