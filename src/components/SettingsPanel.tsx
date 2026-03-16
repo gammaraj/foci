@@ -46,6 +46,15 @@ export default function SettingsPanel({
   };
   const [saved, setSaved] = useState(false);
 
+  // Close on ESC key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -120,7 +129,7 @@ export default function SettingsPanel({
         <form onSubmit={handleSubmit} className="p-5 space-y-5">
           {/* Quick Presets */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2" />
               Quick Presets
             </h4>
@@ -153,7 +162,7 @@ export default function SettingsPanel({
 
           {/* Timer Settings */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
               Timer Settings
             </h4>
@@ -173,7 +182,7 @@ export default function SettingsPanel({
                   max={120}
                   value={workMin}
                   onChange={(e) => setWorkMin(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-sm bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
               </div>
 
@@ -192,7 +201,7 @@ export default function SettingsPanel({
                   max={60}
                   value={breakMin}
                   onChange={(e) => setBreakMin(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-sm bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
               </div>
 
@@ -210,9 +219,9 @@ export default function SettingsPanel({
                   min={1}
                   value={inactivityMin}
                   onChange={(e) => setInactivityMin(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-sm bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                   Auto-pause when inactive
                 </div>
               </div>
@@ -232,7 +241,7 @@ export default function SettingsPanel({
                   max={20}
                   value={dailyGoal}
                   onChange={(e) => setDailyGoal(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-sm bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {GOAL_PRESETS.map((gp) => (
@@ -257,7 +266,7 @@ export default function SettingsPanel({
 
           {/* Preferences */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <div className="w-2 h-2 bg-slate-500 rounded-full mr-2" />
               Preferences
             </h4>
@@ -285,7 +294,7 @@ export default function SettingsPanel({
 
           {/* Notifications */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <span className="text-base mr-2">🔔</span>
               Notifications
             </h4>
@@ -316,19 +325,19 @@ export default function SettingsPanel({
               {/* Browser permission status */}
               <div className="mt-2 px-2">
                 {browserPerm === "granted" ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-600 dark:text-green-400">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-600 dark:text-green-400">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     Browser notifications enabled
                   </span>
                 ) : browserPerm === "denied" ? (
-                  <span className="text-xs text-red-500 dark:text-red-400">
+                  <span className="text-sm text-red-500 dark:text-red-400">
                     Notifications blocked — please enable them in your browser&apos;s site settings
                   </span>
                 ) : (
                   <button
                     type="button"
                     onClick={requestPermission}
-                    className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     Allow browser notifications →
                   </button>
@@ -339,7 +348,7 @@ export default function SettingsPanel({
 
           {/* Import / Export */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <span className="text-base mr-2">📦</span>
               Import &amp; Export Tasks
             </h4>

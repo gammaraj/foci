@@ -65,7 +65,7 @@ export default function NotificationPrompt() {
           </div>
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 p-1 -mt-1 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="flex-shrink-0 p-2 -mt-1 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
             aria-label="Dismiss"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

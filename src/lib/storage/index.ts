@@ -11,6 +11,7 @@ export { SupabaseStorageAdapter } from "./supabase";
 
 import { LocalStorageAdapter } from "./local";
 import { SupabaseStorageAdapter } from "./supabase";
+import { CachedSupabaseAdapter, clearOfflineCache } from "./cached-supabase";
 import type { StorageAdapter } from "./types";
 import { createClient } from "../supabase/client";
 
@@ -36,7 +37,7 @@ async function doActivateSupabase(): Promise<void> {
   try {
     const supabase = createClient();
     supabaseAdapter = new SupabaseStorageAdapter(supabase);
-    currentAdapter = supabaseAdapter;
+    currentAdapter = new CachedSupabaseAdapter(supabaseAdapter);
 
     // Migrate local data to Supabase if any exists
     if (typeof window !== "undefined") {
@@ -104,6 +105,7 @@ async function doActivateSupabase(): Promise<void> {
 export function activateLocalStorage(): void {
   supabaseAdapter = null;
   currentAdapter = localAdapter;
+  clearOfflineCache();
 }
 
 /**

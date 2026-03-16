@@ -97,7 +97,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 50;
-  width: 480px;
+  width: 540px;
   max-width: 95vw;
   max-height: 90vh;
   overflow-y: auto;
@@ -127,7 +127,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: default;
   transition: all 0.2s;
@@ -135,9 +135,9 @@ body {
 
 @media (max-width: 640px) {
   .calendar-day {
-    width: 36px;
-    height: 36px;
-    font-size: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 13px;
   }
 }
 

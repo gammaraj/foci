@@ -68,7 +68,7 @@ export default function DailyProgress({
               <span className="text-slate-400">/</span>
               {dailyGoal}
             </div>
-            <div className="text-[11px] text-slate-400 dark:text-slate-500">
+            <div className="text-xs text-slate-400 dark:text-slate-500">
               sessions / goal: {dailyGoal}
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function DailyProgress({
 
         {/* Status text */}
         <div
-          className={`hidden sm:block text-sm text-center font-medium ${
+          className={`text-sm text-center font-medium ${
             goalMet
               ? "text-green-600 dark:text-green-300"
               : "text-slate-600 dark:text-slate-300"

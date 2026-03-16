@@ -73,7 +73,7 @@ function BarChart({
         const pct = (d.value / max) * 100;
         return (
           <div key={d.key} className="flex flex-col items-center flex-1 min-w-0 h-full justify-end">
-            <span className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-300 mb-1 truncate">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1 truncate">
               {d.value > 0 ? `${d.value}${valueSuffix}` : ""}
             </span>
             <div
@@ -84,7 +84,7 @@ function BarChart({
                 minHeight: d.value > 0 ? 4 : 0,
               }}
             />
-            <span className="text-[9px] sm:text-[11px] text-gray-500 dark:text-gray-400 mt-1 truncate w-full text-center">
+            <span className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1 truncate w-full text-center">
               {labelFn(d.key)}
             </span>
           </div>

@@ -370,7 +370,7 @@ export default function AmbientSounds() {
                 className="flex-1 h-1 accent-blue-500 dark:accent-blue-400"
                 aria-label="Volume"
               />
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 w-7 text-right">
+              <span className="text-xs text-slate-400 dark:text-slate-500 w-7 text-right">
                 {Math.round(volume * 100)}%
               </span>
             </div>
@@ -423,7 +423,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {ytStream.label}
               </span>
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-slate-500">
                 {ytStream.channel}
               </span>
             </div>
@@ -466,7 +466,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {spotifyPlaylist.label}
               </span>
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-slate-500">
                 {spotifyPlaylist.desc}
               </span>
             </div>
@@ -478,7 +478,7 @@ export default function AmbientSounds() {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
             </button>
           </div>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center pb-2 px-3">
+          <p className="text-xs text-slate-400 dark:text-slate-500 text-center pb-2 px-3">
             Log in to Spotify for full tracks
           </p>
         </div>
@@ -554,7 +554,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {scPlaylist.label}
               </span>
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-slate-500">
                 {scPlaylist.desc}
               </span>
             </div>
@@ -571,14 +571,14 @@ export default function AmbientSounds() {
 
       {/* SomaFM external links */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">SomaFM:</span>
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">SomaFM:</span>
         {SOMAFM_STATIONS.map((s) => (
           <a
             key={s.slug}
             href={`https://somafm.com/player/#/now-playing/${s.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
+            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
             title={s.desc}
           >
             <svg className="w-2.5 h-2.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>

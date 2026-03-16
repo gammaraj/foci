@@ -94,7 +94,7 @@ export default function AppPage() {
       <Navbar />
       <DueDateReminders />
       <div className="flex items-start justify-center flex-1 p-3 pt-2 sm:p-4 sm:pt-3">
-      <div className="w-full max-w-[1080px] flex flex-col lg:flex-row gap-4 sm:gap-5">
+      <div className="w-full max-w-[1280px] flex flex-col lg:flex-row gap-4 sm:gap-5">
         {/* Timer column */}
         <div className="w-full lg:w-[400px] lg:flex-shrink-0">
           <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">

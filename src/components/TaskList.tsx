@@ -244,6 +244,8 @@ export default function TaskList({
 
   const deleteProject = async (id: string) => {
     if (id === DEFAULT_PROJECT_ID) return;
+    const project = projects.find((p) => p.id === id);
+    if (!window.confirm(`Delete project "${project?.name ?? ""}"? Tasks will be moved to General.`)) return;
     // Move tasks from deleted project to General
     const updated = tasks.map((t) =>
       t.projectId === id ? { ...t, projectId: DEFAULT_PROJECT_ID } : t
@@ -295,6 +297,8 @@ export default function TaskList({
   };
 
   const deleteTask = async (id: string) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!window.confirm(`Delete "${task?.title ?? "this task"}"?`)) return;
     persist(tasks.filter((t) => t.id !== id));
     try {
       await removeTaskFromDB(id);
@@ -356,6 +360,7 @@ export default function TaskList({
   };
 
   const deleteArchivedTasks = async () => {
+    if (!window.confirm(`Delete ${archivedTasks.length} archived task${archivedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`)) return;
     const matchesProject = (t: Task) => isAllProjects || t.projectId === selectedProjectId;
     const toRemove = tasks.filter((t) => t.archivedAt && matchesProject(t)).map((t) => t.id);
     persist(tasks.filter((t) => !(t.archivedAt && matchesProject(t))));
@@ -664,7 +669,7 @@ export default function TaskList({
                   : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
               }`}
             >
-              <span className="truncate max-w-[100px]">{p.name}</span>
+              <span className="truncate max-w-[100px]" title={p.name}>{p.name}</span>
               <span className={`text-xs ${
                 p.id === selectedProjectId
                   ? "text-blue-200"
@@ -1004,7 +1009,7 @@ export default function TaskList({
               {/* Checkbox */}
               <button
                 onClick={() => toggleComplete(task.id)}
-                className="flex-shrink-0 w-6 h-6 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
+                className="flex-shrink-0 w-7 h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
                 aria-label={`Mark "${task.title}" complete`}
               />
 
@@ -1030,7 +1035,7 @@ export default function TaskList({
                   >
                     {task.title}
                     {(isAllProjects || isTimeFilter) && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle">
+                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle">
                         {getProjectName(task.projectId)}
                       </span>
                     )}
@@ -1038,7 +1043,7 @@ export default function TaskList({
                 )}
                 <div className="flex items-center gap-2 mt-1">
                   {/* Inline action buttons — edit & due date */}
-                  <div className="flex items-center gap-1.5 hidden sm:opacity-0 sm:group-hover:opacity-100 sm:flex transition-all">
+                  <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
                     <button
                       onClick={() => startEditing(task)}
                       className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-md transition-colors"
@@ -1122,7 +1127,7 @@ export default function TaskList({
                     ? "text-blue-500 dark:text-blue-400 p-1"
                     : hasSubtasks
                       ? "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 px-1.5 py-0.5"
-                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 hidden sm:flex opacity-0 sm:group-hover:opacity-100 p-1"
+                      : "text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 p-1"
                 }`}
                 title={isExpanded ? "Collapse subtasks" : hasSubtasks ? "Expand subtasks" : "Add subtask"}
               >
@@ -1158,7 +1163,7 @@ export default function TaskList({
                   className={`flex-shrink-0 rounded transition-colors flex items-center justify-center ${
                     activeTaskId === task.id
                       ? "px-2 py-1 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                      : "w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 sm:opacity-0 sm:group-hover:opacity-100"
+                      : "w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
                   }`}
                   title={
                     activeTaskId === task.id
@@ -1169,7 +1174,7 @@ export default function TaskList({
                   }
                 >
                   {activeTaskId === task.id ? (
-                    "Selected"
+                    "Deselect"
                   ) : (
                     <>
                       <svg className="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -1185,7 +1190,7 @@ export default function TaskList({
               {!(isTimerRunning && activeTaskId === task.id) && (
                 <button
                   onClick={() => deleteTask(task.id)}
-                  className="flex-shrink-0 p-1 sm:p-1.5 rounded-md text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                  className="flex-shrink-0 p-1.5 rounded-md text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                   aria-label={`Delete "${task.title}"`}
                 >
                   <svg
@@ -1360,7 +1365,7 @@ export default function TaskList({
                   <span className="text-sm text-slate-400 dark:text-slate-400 line-through truncate">
                     {task.title}
                     {(isAllProjects || isTimeFilter) && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle no-underline">
+                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle no-underline">
                         {getProjectName(task.projectId)}
                       </span>
                     )}
@@ -1528,7 +1533,7 @@ function TaskCalendarView({
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-1 mb-1">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="text-center text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
+          <div key={d} className="text-center text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase">
             {d}
           </div>
         ))}
@@ -1559,7 +1564,7 @@ function TaskCalendarView({
                     : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
               }`}
             >
-              <span className={`text-[11px] font-medium ${isSelected ? "text-white" : ""}`}>{day}</span>
+              <span className={`text-xs font-medium ${isSelected ? "text-white" : ""}`}>{day}</span>
               {dayTasks.length > 0 && (
                 <div className="flex gap-0.5">
                   {dayTasks.slice(0, 3).map((t, i) => (
@@ -1587,7 +1592,7 @@ function TaskCalendarView({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 mt-3 text-[10px] text-slate-400 dark:text-slate-500">
+      <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-slate-400 dark:text-slate-500">
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Pending</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> Done</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> Overdue</div>
