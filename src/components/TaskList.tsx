@@ -497,9 +497,7 @@ export default function TaskList({
   const today = getToday();
   const endOfWeek = (() => {
     const d = new Date();
-    const day = d.getDay();
-    const diff = day === 0 ? 0 : 7 - day;
-    d.setDate(d.getDate() + diff);
+    d.setDate(d.getDate() + 7);
     return formatDateLocal(d);
   })();
   const endOfMonth = (() => {
