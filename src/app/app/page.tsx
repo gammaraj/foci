@@ -174,12 +174,13 @@ export default function AppPage() {
                   isBreak={timer.isBreakMode}
                 />
 
-                {/* On mobile: overlay controls at bottom edge of timer */}
-                <div className="sm:hidden absolute bottom-0 left-1/2 -translate-x-1/2 z-10">
+                {/* On mobile: overlay controls at bottom edge of timer, spread apart */}
+                <div className="sm:hidden absolute bottom-0 left-1/2 -translate-x-1/2 z-10 w-[85%] flex justify-between">
                   <TimerControls
                     isRunning={isRunning}
                     onStartPause={handleStartPause}
                     onReset={timer.reset}
+                    spread
                   />
                 </div>
               </div>

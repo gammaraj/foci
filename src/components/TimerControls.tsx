@@ -6,16 +6,18 @@ interface TimerControlsProps {
   isRunning: boolean;
   onStartPause: () => void;
   onReset: () => void;
+  spread?: boolean;
 }
 
 export default function TimerControls({
   isRunning,
   onStartPause,
   onReset,
+  spread,
 }: TimerControlsProps) {
   return (
     <div
-      className="flex justify-center gap-3 my-0 sm:my-1"
+      className={spread ? "flex justify-between w-full" : "flex justify-center gap-3 my-0 sm:my-1"}
       role="group"
       aria-label="Timer control buttons"
     >
