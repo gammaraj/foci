@@ -1055,8 +1055,12 @@ export default function TaskList({
                       </svg>
                       Edit
                     </button>
-                    <span
-                      className={`relative inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                    <button
+                      onClick={() => {
+                        const input = document.getElementById(`due-${task.id}`) as HTMLInputElement;
+                        if (input) { try { input.showPicker(); } catch { input.click(); } }
+                      }}
+                      className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                         task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
                           ? "text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                           : task.dueDate && !task.completed && task.dueDate === getToday()
@@ -1070,13 +1074,14 @@ export default function TaskList({
                       </svg>
                       {task.dueDate ? formatDueDate(task.dueDate) : "Due date"}
                       {task.dueDate && !task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                      <input
-                        type="date"
-                        className="absolute inset-0 z-10 w-full h-full opacity-[0.01] cursor-pointer"
-                        value={task.dueDate ?? ""}
-                        onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
-                      />
-                    </span>
+                    </button>
+                    <input
+                      id={`due-${task.id}`}
+                      type="date"
+                      style={{ position: 'absolute', visibility: 'hidden', width: 0, height: 0 }}
+                      value={task.dueDate ?? ""}
+                      onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
+                    />
                   </div>
                   {(hasSubtasks || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
                     <span className="text-xs text-slate-400 dark:text-slate-500">·</span>
@@ -1657,16 +1662,24 @@ function TaskCalendarView({
             {unscheduledTasks.slice(0, 8).map((task) => (
               <div key={task.id} className="flex items-center gap-2 p-2 rounded-lg">
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
-                <span className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors cursor-pointer" title="Set due date">
+                <button
+                  className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                  title="Set due date"
+                  onClick={() => {
+                    const input = document.getElementById(`cal-due-${task.id}`) as HTMLInputElement;
+                    if (input) { try { input.showPicker(); } catch { input.click(); } }
+                  }}
+                >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <input
-                    type="date"
-                    className="absolute inset-0 z-10 w-full h-full opacity-[0.01] cursor-pointer"
-                    onChange={(e) => { if (e.target.value) onSetDueDate(task.id, e.target.value); }}
-                  />
-                </span>
+                </button>
+                <input
+                  id={`cal-due-${task.id}`}
+                  type="date"
+                  style={{ position: 'absolute', visibility: 'hidden', width: 0, height: 0 }}
+                  onChange={(e) => { if (e.target.value) onSetDueDate(task.id, e.target.value); }}
+                />
               </div>
             ))}
             {unscheduledTasks.length > 8 && (
