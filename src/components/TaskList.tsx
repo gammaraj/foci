@@ -494,6 +494,7 @@ export default function TaskList({
 
   // Filter tasks for the selected project
   const isAllProjects = selectedProjectId === ALL_PROJECTS_ID;
+  const sortedProjects = [...projects].sort((a, b) => a.name.localeCompare(b.name));
   const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
   const isThisWeekFilter = selectedProjectId === THIS_WEEK_FILTER_ID;
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
@@ -670,7 +671,56 @@ export default function TaskList({
       {/* Project tabs */}
       {viewMode === "list" && (<>
       <div className="px-4 pt-3 pb-1 relative" ref={projectMenuRef}>
-        <div className="relative">
+        {/* Mobile: dropdown select */}
+        <div className="flex sm:hidden items-center gap-1.5">
+          <select
+            value={selectedProjectId}
+            onChange={(e) => selectProject(e.target.value)}
+            className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8"
+          >
+            <option value={ALL_PROJECTS_ID}>
+              All ({tasks.filter((t) => !t.completed && !t.archivedAt).length})
+            </option>
+            {sortedProjects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} ({tasks.filter((t) => t.projectId === p.id && !t.completed).length})
+              </option>
+            ))}
+          </select>
+
+          {/* Add project button */}
+          <button
+            onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
+            className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
+              showAddProject
+                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
+            }`}
+            title="Add project"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+
+          {/* More / manage button */}
+          <button
+            onClick={() => setShowProjectMenu(!showProjectMenu)}
+            className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
+              showProjectMenu
+                ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
+                : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
+            }`}
+            title="Manage projects"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Desktop: horizontal scrolling tabs */}
+        <div className="hidden sm:block relative">
           <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto scrollbar-hide pr-6">
             {/* All Projects tab */}
           <button
@@ -690,7 +740,7 @@ export default function TaskList({
               {tasks.filter((t) => !t.completed && !t.archivedAt).length}
             </span>
           </button>
-          {projects.map((p) => (
+          {sortedProjects.map((p) => (
             <button
               key={p.id}
               onClick={() => selectProject(p.id)}
@@ -779,7 +829,7 @@ export default function TaskList({
         {showProjectMenu && (
           <div className="absolute left-4 right-4 top-full mt-1 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-lg z-50 overflow-hidden">
             <div className="max-h-48 overflow-y-auto">
-              {projects.map((p) => (
+              {sortedProjects.map((p) => (
                   <div
                   key={p.id}
                   className={`group/proj flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${
