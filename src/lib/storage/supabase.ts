@@ -335,6 +335,10 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           id: row.id,
           name: row.name,
           ...(row.description ? { description: row.description } : {}),
+          ...(row.color ? { color: row.color } : {}),
+          ...(row.due_date ? { dueDate: row.due_date } : {}),
+          ...(row.archived ? { archived: true } : {}),
+          ...(row.sort_order != null ? { order: row.sort_order } : {}),
           createdAt: row.created_at,
         }))
       : [];
@@ -354,6 +358,10 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       user_id: userId,
       name: p.name,
       description: p.description ?? null,
+      color: p.color ?? null,
+      due_date: p.dueDate ?? null,
+      archived: p.archived ?? false,
+      sort_order: p.order ?? null,
       created_at: p.createdAt,
     }));
 

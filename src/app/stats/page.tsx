@@ -15,6 +15,7 @@ import type {
   Project,
   Settings,
 } from "@/lib/types";
+import { PROJECT_COLORS } from "@/lib/types";
 import { formatDateLocal } from "@/lib/dates";
 
 // ── Helpers ──────────────────────────────────────────────
@@ -205,7 +206,7 @@ function Heatmap({
           />
         ))}
       </div>
-      <style jsx>{`
+      <style jsx global>{`
         :root {
           --heatmap-empty: #e5e7eb;
           --heatmap-l1: #bbf7d0;
@@ -335,11 +336,8 @@ function StatCard({
   );
 }
 
-// ── PROJECT COLORS ───────────────────────────────────────
-const PROJECT_COLORS = [
-  "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
-  "#ec4899", "#06b6d4", "#f97316", "#14b8a6", "#6366f1",
-];
+// ── PROJECT COLORS (fallback) ────────────────────────────
+const FALLBACK_COLORS = PROJECT_COLORS;
 
 // ══════════════════════════════════════════════════════════
 // PAGE
@@ -458,6 +456,7 @@ export default function StatsPage() {
 
   // Focus by project
   const projectMap = new Map(projects.map((p) => [p.id, p.name]));
+  const projectColorMap = new Map(projects.map((p) => [p.name, p.color]));
   const projectFocus: Record<string, number> = {};
   const todayKey = dateKey(new Date());
   for (const t of tasks) {
@@ -471,7 +470,7 @@ export default function StatsPage() {
     .map(([label, value], i) => ({
       label,
       value,
-      color: PROJECT_COLORS[i % PROJECT_COLORS.length],
+      color: projectColorMap.get(label) || FALLBACK_COLORS[i % FALLBACK_COLORS.length],
     }));
 
   // Goal completion rate

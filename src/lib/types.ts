@@ -35,10 +35,19 @@ export type TimerStatus =
   | "break"
   | "completed";
 
+export const PROJECT_COLORS = [
+  "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
+  "#ec4899", "#06b6d4", "#f97316", "#14b8a6", "#6366f1",
+];
+
 export interface Project {
   id: string;
   name: string;
   description?: string;
+  color?: string;       // hex color for visual identification
+  dueDate?: string;     // ISO date string (YYYY-MM-DD)
+  archived?: boolean;   // hide without deleting
+  order?: number;       // manual sort order in sidebar
   createdAt: number;
 }
 
@@ -52,6 +61,7 @@ export const DEFAULT_PROJECT_ID = "__general__";
 export const DEFAULT_PROJECT: Project = {
   id: DEFAULT_PROJECT_ID,
   name: "General",
+  color: PROJECT_COLORS[0],
   createdAt: 0,
 };
 
