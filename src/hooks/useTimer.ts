@@ -256,17 +256,25 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
       const tickGap = now - lastTickRef.current;
       lastTickRef.current = now;
 
-      if (tickGap > 60000) {
-        clearTimer();
-        onDeviceSleep();
-        return;
-      }
-
       const rem = Math.max(0, endTime - now);
       setRemainingTime(rem);
 
+      // Check completion FIRST — even if tick gap is large (background tab
+      // throttling), an expired timer must always complete so the notification
+      // fires and the session is recorded.
       if (rem <= 0) {
+        clearTimer();
         onComplete();
+        return;
+      }
+
+      // Only treat as device-sleep when the timer hasn't expired yet.
+      // Threshold raised to 5 min — browsers legitimately throttle background
+      // tabs to ~1 tick/minute, which previously triggered the 60 s check.
+      if (tickGap > 300_000) {
+        clearTimer();
+        onDeviceSleep();
+        return;
       }
     }, 200);
   }, [clearTimer]);
