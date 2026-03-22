@@ -33,7 +33,7 @@ export default function BlogIndexPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
       <Navbar />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight">
           Blog
         </h1>
@@ -43,7 +43,7 @@ export default function BlogIndexPage() {
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-8">
           {posts.map((post) => (
-            <article key={post.slug} className="group">
+            <article key={post.slug} className="group border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 hover:shadow-md dark:hover:shadow-neutral-900 transition-shadow">
               <Link href={`/blog/${post.slug}`} className="block">
                 <div className="flex flex-wrap gap-2 mb-2">
                   {post.tags.slice(0, 3).map((tag) => (
@@ -72,6 +72,9 @@ export default function BlogIndexPage() {
                   <span>·</span>
                   <span>{post.readingTime}</span>
                 </div>
+                <span className="mt-3 inline-block text-xs font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
+                  Read more →
+                </span>
               </Link>
             </article>
           ))}

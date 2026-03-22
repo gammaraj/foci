@@ -69,7 +69,8 @@ export default async function BlogPostPage({ params }: Props) {
       />
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex-1">
+      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 flex-1">
+        <div className="max-w-3xl mx-auto">
         <Link
           href="/blog"
           className="inline-flex items-center gap-1 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors mb-8"
@@ -111,10 +112,10 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 text-center">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Ready to try the Pomodoro technique?
+                Put these ideas into practice
               </h2>
               <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                Foci is a free focus timer — no sign-up required.
+                Foci is a free focus timer and task manager — no sign-up required.
               </p>
               <Link
                 href="/app"
@@ -125,6 +126,7 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </div>
         </article>
+        </div>
       </main>
 
       <footer className="mt-auto py-8 text-center text-xs text-neutral-400 dark:text-neutral-600">
