@@ -121,7 +121,7 @@ export default function AuthForm() {
               autoComplete={
                 mode === "sign-up" ? "new-password" : "current-password"
               }
-              minLength={6}
+              minLength={8}
               className="w-full px-3 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white text-[15px] focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-400 focus:border-transparent placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
               placeholder="••••••••"
             />

@@ -6,6 +6,8 @@ import { ToastProvider } from "@/components/ToastProvider";
 import "./globals.css";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+// Validate GA measurement ID format to prevent script injection
+const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 
 const siteUrl = "https://usefoci.com";
 const title = "Foci – Your Focus System: Timer, Tasks, Smart Plan & Ambient Music";
@@ -130,10 +132,10 @@ export default function RootLayout({
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
       </head>
       <body className="min-h-screen bg-slate-50 dark:bg-[#0b1121]">
-        {GA_ID && (
+        {SAFE_GA_ID && (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${SAFE_GA_ID}`}
               strategy="afterInteractive"
             />
             <Script id="google-analytics" strategy="afterInteractive">
@@ -141,7 +143,7 @@ export default function RootLayout({
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${GA_ID}');
+                gtag('config', '${SAFE_GA_ID}');
               `}
             </Script>
           </>
