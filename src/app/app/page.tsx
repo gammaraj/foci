@@ -195,6 +195,12 @@ export default function AppPage() {
                   onReset={timer.reset}
                 />
               </div>
+              {/* No-task nudge: only shown on desktop when idle and no task selected */}
+              {!activeTaskId && timer.status === "idle" && (
+                <p className="hidden sm:block text-center text-xs text-slate-400 dark:text-slate-400 pb-2 -mt-1">
+                  Pick a task on the right to focus your session
+                </p>
+              )}
             </div>
 
             {timer.lastQuote && (
@@ -289,22 +295,31 @@ function ActiveTaskBanner({
   if (!title) return null;
 
   return (
-    <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-lg px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400">
-      <div className={`w-2 h-2 rounded-full bg-blue-400 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
-      <span className="text-sm font-medium text-blue-700 dark:text-blue-200 truncate flex-1">
-        {title}
-      </span>
-      {!isRunning && (
-        <button
-          onClick={onClear}
-          className="text-blue-400 hover:text-blue-600 transition-colors flex-shrink-0"
-          aria-label="Clear active task"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      )}
+    <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
+            Focusing on
+          </p>
+          <div className="flex items-center gap-1.5">
+            <div className={`w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
+            <span className="text-sm font-semibold text-blue-700 dark:text-blue-100 truncate">
+              {title}
+            </span>
+          </div>
+        </div>
+        {!isRunning && (
+          <button
+            onClick={onClear}
+            className="text-blue-400 hover:text-blue-600 transition-colors flex-shrink-0"
+            aria-label="Clear active task"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

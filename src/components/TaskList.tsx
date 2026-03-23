@@ -868,7 +868,7 @@ export default function TaskList({
               {p.color && (
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
               )}
-              <span className="truncate max-w-[100px]" title={p.name}>{p.name}</span>
+              <span className="truncate max-w-[100px]" title={p.description ? `${p.name} — ${p.description}` : p.name}>{p.name}</span>
               <span className={`text-xs ${
                 p.id === selectedProjectId
                   ? "text-blue-200"
@@ -1471,38 +1471,38 @@ export default function TaskList({
                   <span className="hidden sm:inline">In progress</span>
                 </span>
               ) : (
-                <button
-                  onClick={() => {
-                    if (activeTaskId === task.id) {
-                      onSelectTask(null);
-                    } else {
-                      onStartTask(task.id);
+                  <button
+                    onClick={() => {
+                      if (activeTaskId === task.id) {
+                        onSelectTask(null);
+                      } else {
+                        onStartTask(task.id);
+                      }
+                    }}
+                    className={`flex-shrink-0 rounded transition-colors flex items-center justify-center ${
+                      activeTaskId === task.id
+                        ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                        : "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                    title={
+                      activeTaskId === task.id
+                        ? "Deselect task"
+                        : isTimerRunning
+                          ? "Switch to this task"
+                          : "Start working on this task"
                     }
-                  }}
-                  className={`flex-shrink-0 rounded transition-colors flex items-center justify-center ${
-                    activeTaskId === task.id
-                      ? "px-2 py-1 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                      : "w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
-                  title={
-                    activeTaskId === task.id
-                      ? "Deselect task"
-                      : isTimerRunning
-                        ? "Switch to this task"
-                        : "Start working on this task"
-                  }
-                >
-                  {activeTaskId === task.id ? (
-                    "Deselect"
-                  ) : (
-                    <>
-                      <svg className="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
-                      <span className="hidden sm:inline ml-1">{isTimerRunning ? "Switch" : "Start"}</span>
-                    </>
-                  )}
-                </button>
+                  >
+                    {activeTaskId === task.id ? (
+                      "Deselect"
+                    ) : (
+                      <>
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                        </svg>
+                        <span className="ml-1">{isTimerRunning ? "Switch" : "Start"}</span>
+                      </>
+                    )}
+                  </button>
               )}
 
               {/* Delete (hidden only for the active task while timer runs) */}
