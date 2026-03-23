@@ -6,6 +6,7 @@ import { useAuth } from "./AuthProvider";
 export default function UserMenu() {
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,12 +39,13 @@ export default function UserMenu() {
         aria-label="User menu"
         aria-expanded={open}
       >
-        {avatarUrl ? (
+        {avatarUrl && !avatarError ? (
           <img
             src={avatarUrl}
             alt=""
             className="w-8 h-8 rounded-full object-cover"
             referrerPolicy="no-referrer"
+            onError={() => setAvatarError(true)}
           />
         ) : (
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">

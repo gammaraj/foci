@@ -169,7 +169,7 @@ export default function OnboardingTour() {
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">
             {step.title}
           </h3>
-          <span className="text-xs text-slate-400 dark:text-slate-500">
+          <span className="text-xs text-slate-400 dark:text-slate-400">
             {currentStep + 1}/{STEPS.length}
           </span>
         </div>

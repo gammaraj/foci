@@ -516,14 +516,14 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
                 <li key={i} className="flex items-center gap-1.5 truncate">
                   <span className={t.completed ? "line-through text-slate-400" : ""}>{t.title}</span>
                   {t.dueDate && (
-                    <span className="text-slate-400 dark:text-slate-500 flex-shrink-0">
+                    <span className="text-slate-400 dark:text-slate-400 flex-shrink-0">
                       · {t.dueDate}
                     </span>
                   )}
                 </li>
               ))}
               {importState.tasks.length > 5 && (
-                <li className="text-slate-400 dark:text-slate-500">
+                <li className="text-slate-400 dark:text-slate-400">
                   …and {importState.tasks.length - 5} more
                 </li>
               )}
@@ -608,7 +608,7 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
       </div>
 
       {/* Supported platforms info */}
-      <div className="text-xs text-slate-400 dark:text-slate-500 space-y-1">
+      <div className="text-xs text-slate-400 dark:text-slate-400 space-y-1">
         <p className="font-medium text-slate-500 dark:text-slate-400">Supported import formats:</p>
         <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5">
           <li>• Google Tasks (JSON)</li>

@@ -9,7 +9,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${siteUrl}/blog/${post.slug}`,
     lastModified: new Date(post.date),
     changeFrequency: "monthly" as const,
-    priority: 0.7,
+    priority: 0.75,
+    images: [`${siteUrl}/opengraph-image`],
   }));
 
   return [
@@ -18,24 +19,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 1.0,
+      images: [`${siteUrl}/opengraph-image`],
     },
     {
       url: `${siteUrl}/app`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.9,
+      priority: 0.95,
+      images: [`${siteUrl}/opengraph-image`],
     },
     {
       url: `${siteUrl}/blog`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.8,
+      priority: 0.85,
+      images: [`${siteUrl}/opengraph-image`],
     },
     {
       url: `${siteUrl}/stats`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.65,
     },
     {
       url: `${siteUrl}/login`,

@@ -47,6 +47,9 @@ self.addEventListener("fetch", (event) => {
   // Skip non-GET requests
   if (request.method !== "GET") return;
 
+  // Skip cross-origin requests entirely (e.g. Google avatars, GTM, SoundCloud)
+  if (url.origin !== self.location.origin) return;
+
   // Network-only for auth and Supabase API calls
   if (
     url.pathname.startsWith("/auth") ||
@@ -86,6 +89,6 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(request))
+      .catch(() => caches.match(request).then((cached) => cached || new Response("Network error", { status: 408 })))
   );
 });

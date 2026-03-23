@@ -12,6 +12,15 @@ const orgJsonLd = {
   sameAs: [],
 };
 
+const webSiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Foci",
+  url: siteUrl,
+  description: "Free all-in-one focus system: Pomodoro timer, task tracking, Smart Plan, daily goals, streak stats, and built-in ambient music.",
+  inLanguage: "en-US",
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -197,6 +206,10 @@ function AppMockup() {
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}

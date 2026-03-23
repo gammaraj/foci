@@ -165,5 +165,6 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [How to Migrate from Notion to Foci](https://usefoci.com/blog/migrate-from-notion-to-foci) — 2026-03-15
 - [Brown Noise for Studying: Why It Works and How to Use It](https://usefoci.com/blog/brown-noise-for-studying-and-focus) — 2026-03-12
 - [Deep Work in the Age of AI: How to Stay Focused When Everything Is Instant](https://usefoci.com/blog/deep-work-in-the-age-of-ai) — 2026-03-15
+- [Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind](https://usefoci.com/blog/stoicism-and-focus) — 2026-03-21
 
 For the full text of all blog posts, see: https://usefoci.com/llms-full.txt

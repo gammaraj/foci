@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { trackSoundPlayed, trackSoundStopped } from "@/lib/analytics";
 
 // ── Procedural ambient sound generators using Web Audio API ──
 // No external files or streams needed — fully offline-capable.
@@ -222,12 +223,14 @@ export default function AmbientSounds() {
     (type: SoundType) => {
       // If tapping the same sound → toggle off
       if (activeSound === type) {
+        trackSoundStopped(type);
         stopSound();
         setActiveSound(null);
         return;
       }
 
       stopSound();
+      trackSoundPlayed(type);
 
       if (!ctxRef.current) {
         ctxRef.current = new AudioContext();

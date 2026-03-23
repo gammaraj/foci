@@ -21,6 +21,7 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
     { media: "(prefers-color-scheme: dark)", color: "#030712" },
   ],
+  colorScheme: "light dark",
 };
 
 export const metadata: Metadata = {
@@ -84,8 +85,17 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Foci" }],
   creator: "Foci",
+  publisher: "Foci",
   metadataBase: new URL(siteUrl),
   alternates: { canonical: "/" },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Foci",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },
@@ -100,17 +110,29 @@ export const metadata: Metadata = {
     siteName: "Foci",
     title,
     description,
+    images: [
+      {
+        url: `${siteUrl}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "Foci – Focus Timer, Tasks & Ambient Sounds",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
+    images: [`${siteUrl}/twitter-image`],
   },
   category: "productivity",
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true },
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
+  other: {
+    "google": "notranslate",
   },
 };
 

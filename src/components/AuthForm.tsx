@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { trackSignUp, trackLogin } from "@/lib/analytics";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -26,6 +27,7 @@ export default function AuthForm() {
       if (error) {
         setError(error.message);
       } else {
+        trackSignUp("email");
         setMessage("Check your email for a confirmation link.");
       }
     } else {
@@ -35,12 +37,15 @@ export default function AuthForm() {
       });
       if (error) {
         setError(error.message);
+      } else {
+        trackLogin("email");
       }
     }
     setLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
+    trackLogin("google");
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {

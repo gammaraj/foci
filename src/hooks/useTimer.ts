@@ -16,6 +16,12 @@ import {
 } from "@/lib/storage";
 import { getRandomQuote } from "@/lib/quotes";
 import { getToday } from "@/lib/dates";
+import {
+  trackTimerStart,
+  trackTimerPause,
+  trackTimerReset,
+  trackSessionComplete,
+} from "@/lib/analytics";
 
 export interface TimerState {
   // Timer
@@ -331,6 +337,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     }
 
     const goalMet = dgd.sessionCount >= s.dailyGoal;
+    trackSessionComplete(dgd.sessionCount, goalMet);
     recordDayCompletion(new Date(), dgd.sessionCount, goalMet).catch((err) => {
       console.error("[Foci] Failed to record day completion:", err);
     });
@@ -388,6 +395,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
   const startWork = useCallback(() => {
     clearTimer();
     const s = settingsRef.current;
+    trackTimerStart(s.workDuration);
 
     setIsBreakMode(false);
     isBreakModeRef.current = false;
@@ -451,6 +459,8 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
   const pause = useCallback(() => {
     if (statusRef.current === "running") {
       clearTimer();
+      const elapsed = totalDurationRef.current - remainingTime;
+      trackTimerPause(elapsed);
       setStatus("paused");
       statusRef.current = "paused";
       setStatusText("Paused");
@@ -460,6 +470,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
 
   const reset = useCallback(() => {
     clearTimer();
+    trackTimerReset();
     resetToIdle();
     startTimeRef.current = null;
   }, [clearTimer, resetToIdle]);
