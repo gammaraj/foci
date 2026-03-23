@@ -29,6 +29,10 @@ const YOUTUBE_STREAMS = [
 
 // Spotify playlists curated to match SomaFM station vibes (all verified working)
 const SPOTIFY_PLAYLISTS = [
+  // Meditation playlists (default)
+  { uri: "37i9dQZF1DWZqd5JICZI0u", label: "Peaceful Meditation", desc: "Calming meditation music" },
+  { uri: "37i9dQZF1DX9uKNf5jGX6m", label: "Meditation", desc: "Mindfulness & meditation" },
+  { uri: "37i9dQZF1DWXe9gFZP0gtP", label: "Peaceful Guitar", desc: "Serene acoustic meditation" },
   // Groove Salad vibes — ambient/downtempo/chillout
   { uri: "37i9dQZF1DX3Ogo9pFvBkY", label: "Ambient Relaxation", desc: "Groove Salad vibes" },
   { uri: "37i9dQZF1DWZeKCadgRdKQ", label: "Deep Focus", desc: "Ambient focus" },
@@ -41,6 +45,9 @@ const SPOTIFY_PLAYLISTS = [
 
 // SoundCloud playlists — full free playback, no login needed (all verified)
 const SOUNDCLOUD_PLAYLISTS = [
+  // Meditation playlists (default)
+  { url: "https://soundcloud.com/relaxdaily/sets/relaxdaily-music", label: "Meditation & Calm", desc: "Relaxdaily \u2022 Calming focus music" },
+  { url: "https://soundcloud.com/powerthoughts-meditation/sets/meditation-music", label: "Meditation Music", desc: "Power Thoughts \u2022 Deep meditation" },
   { url: "https://soundcloud.com/lofi_girl/sets/lofi-hiphop", label: "Lo-fi Hip Hop", desc: "Lofi Girl \u2022 217 tracks" },
   { url: "https://soundcloud.com/chillhopdotcom/sets/lofihiphop", label: "Chillhop Lo-fi", desc: "Chillhop Music \u2022 89 tracks" },
   { url: "https://soundcloud.com/lofi_girl/sets/synthwave-ambient-chill-music", label: "Synth Ambient", desc: "Lofi Girl \u2022 37 tracks" },
@@ -183,7 +190,7 @@ export default function AmbientSounds() {
   const [ytStreamIdx, setYtStreamIdx] = useState(0);
   const [showYt, setShowYt] = useState(false);
   const [spotifyIdx, setSpotifyIdx] = useState(0);
-  const [scIdx, setScIdx] = useState(3);
+  const [scIdx, setScIdx] = useState(0);
   const [scShuffle, setScShuffle] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 
