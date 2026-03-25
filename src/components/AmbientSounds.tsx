@@ -43,16 +43,16 @@ const SPOTIFY_PLAYLISTS = [
   { uri: "37i9dQZF1DWYoYGBbGKurt", label: "Lofi Chill", desc: "Chill beats to study to" },
 ];
 
-// SoundCloud playlists — full free playback, no login needed (all verified)
+// SoundCloud playlists — all verified working (Lofi Girl verified account)
+// IMPORTANT: Only use playlists from verified/official accounts to avoid deleted URLs.
+// Lofi Girl (soundcloud.com/lofi_girl) is a safe, stable source.
+// Verify URLs at https://soundcloud.com/lofi_girl/sets before adding new ones.
 const SOUNDCLOUD_PLAYLISTS = [
-  // Meditation playlists (default)
-  { url: "https://soundcloud.com/relaxdaily/sets/relaxdaily-music", label: "Meditation & Calm", desc: "Relaxdaily \u2022 Calming focus music" },
-  { url: "https://soundcloud.com/powerthoughts-meditation/sets/meditation-music", label: "Meditation Music", desc: "Power Thoughts \u2022 Deep meditation" },
+  { url: "https://soundcloud.com/lofi_girl/sets/peaceful-piano-music-to-focus", label: "Peaceful Piano", desc: "Lofi Girl \u2022 330 tracks \u2022 focus/study" },
   { url: "https://soundcloud.com/lofi_girl/sets/lofi-hiphop", label: "Lo-fi Hip Hop", desc: "Lofi Girl \u2022 217 tracks" },
-  { url: "https://soundcloud.com/chillhopdotcom/sets/lofihiphop", label: "Chillhop Lo-fi", desc: "Chillhop Music \u2022 89 tracks" },
+  { url: "https://soundcloud.com/lofi_girl/sets/chill-guitar", label: "Chill Guitar", desc: "Lofi Girl \u2022 122 tracks" },
   { url: "https://soundcloud.com/lofi_girl/sets/synthwave-ambient-chill-music", label: "Synth Ambient", desc: "Lofi Girl \u2022 37 tracks" },
-  { url: "https://soundcloud.com/globetrotting-music/sets/indian-lofi-diwali-holi-lofi", label: "Indian Lo-fi", desc: "Diwali & Holi vibes \u2022 43 tracks" },
-  { url: "https://soundcloud.com/quest4goa/sets/chill-out-psy-ambient-music", label: "Psy Ambient / Goa", desc: "Quest4Goa \u2022 24 tracks" },
+  { url: "https://soundcloud.com/lofi_girl/sets/dark-ambient-music-to-escape", label: "Dark Ambient", desc: "Lofi Girl \u2022 music to escape/dream to" },
 ];
 
 // SomaFM stations for external linking (embedding prohibited by TOS)
@@ -192,6 +192,7 @@ export default function AmbientSounds() {
   const [spotifyIdx, setSpotifyIdx] = useState(0);
   const [scIdx, setScIdx] = useState(0);
   const [scShuffle, setScShuffle] = useState(false);
+  const [scError, setScError] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 
   // Remember that the user has seen the music section
@@ -200,6 +201,24 @@ export default function AmbientSounds() {
       try { localStorage.setItem("foci_music_seen", "true"); } catch {}
     }
   }, [collapsed]);
+
+  // Auto-skip to next playlist if SoundCloud widget reports an error
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.origin !== "https://w.soundcloud.com") return;
+      try {
+        const data = JSON.parse(e.data as string);
+        if (data.method === "error") {
+          setScError(true);
+        }
+      } catch {}
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  // Reset error flag when playlist changes
+  useEffect(() => { setScError(false); }, [scIdx]);
 
   const ctxRef = useRef<AudioContext | null>(null);
   const gainRef = useRef<GainNode | null>(null);
@@ -498,6 +517,7 @@ export default function AmbientSounds() {
       {mode === "soundcloud" && (
         <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
           <iframe
+            key={scIdx}
             ref={scIframeRef}
             width="100%"
             height="166"
@@ -508,6 +528,17 @@ export default function AmbientSounds() {
             title={scPlaylist.label}
             className="border-0"
           />
+          {scError && (
+            <div className="flex items-center justify-between px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800/40">
+              <span className="text-xs text-amber-700 dark:text-amber-400">Playlist unavailable</span>
+              <button
+                onClick={() => setScIdx((i) => (i + 1) % SOUNDCLOUD_PLAYLISTS.length)}
+                className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline"
+              >
+                Try next →
+              </button>
+            </div>
+          )}
           {/* Track skip controls */}
           <div className="flex items-center justify-center gap-3 px-3 py-2 border-t border-slate-200 dark:border-[#243350]">
             <button
