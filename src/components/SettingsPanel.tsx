@@ -107,7 +107,7 @@ export default function SettingsPanel({
             background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)",
           }}
         >
-          <h3 className="text-lg font-bold flex items-center gap-2">
+          <h3 className="text-xl font-bold flex items-center gap-2">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -140,13 +140,13 @@ export default function SettingsPanel({
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-3 sm:p-5 space-y-5">
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column */}
           <div className="space-y-5">
           {/* Quick Presets */}
           <div>
-            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2" />
               Quick Presets
             </h4>
@@ -161,7 +161,7 @@ export default function SettingsPanel({
                       setWorkMin(preset.workMin);
                       setBreakMin(preset.breakMin);
                     }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-medium border transition-all ${
                       isActive
                         ? "bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200 ring-1 ring-blue-200 dark:ring-blue-800"
                         : "bg-slate-50 dark:bg-[#131d30] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
@@ -170,7 +170,7 @@ export default function SettingsPanel({
                   >
                     <span>{preset.emoji}</span>
                     <span>{preset.label}</span>
-                    <span className="text-xs text-slate-400 dark:text-slate-500">{preset.workMin}/{preset.breakMin}</span>
+                    <span className="text-sm text-slate-400 dark:text-slate-500">{preset.workMin}/{preset.breakMin}</span>
                   </button>
                 );
               })}
@@ -179,7 +179,7 @@ export default function SettingsPanel({
 
           {/* Timer Settings */}
           <div>
-            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
               Timer Settings
             </h4>
@@ -188,7 +188,7 @@ export default function SettingsPanel({
             <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
                 <label
                   htmlFor="workDuration"
-                  className="flex text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
+                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
                 >
                   <span className="mr-1.5">⏱️</span> Work (min)
                 </label>
@@ -207,7 +207,7 @@ export default function SettingsPanel({
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
                 <label
                   htmlFor="breakDuration"
-                  className="flex text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
+                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
                 >
                   <span className="mr-1.5">🛏️</span> Break (min)
                 </label>
@@ -226,7 +226,7 @@ export default function SettingsPanel({
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
                 <label
                   htmlFor="inactivityThreshold"
-                  className="flex text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
+                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
                 >
                   <span className="mr-1.5">⏸️</span> Inactivity (min)
                 </label>
@@ -238,7 +238,7 @@ export default function SettingsPanel({
                   onChange={(e) => setInactivityMin(Number(e.target.value))}
                   className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
                 />
-                <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                <div className="text-[0.9rem] text-slate-500 dark:text-slate-400 mt-1">
                   Auto-pause when inactive
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function SettingsPanel({
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
                 <label
                   htmlFor="dailyGoal"
-                  className="flex text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
+                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
                 >
                   <span className="mr-1.5">🎯</span> Goal (sessions)
                 </label>
@@ -266,7 +266,7 @@ export default function SettingsPanel({
                       key={gp.label}
                       type="button"
                       onClick={() => setDailyGoal(gp.sessions)}
-                      className={`flex-1 text-sm py-1.5 rounded-lg border transition-all ${
+                      className={`flex-1 text-base py-1.5 rounded-lg border transition-all ${
                         dailyGoal === gp.sessions
                         ? "bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200"
                         : "bg-white dark:bg-[#131d30] border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
@@ -285,7 +285,7 @@ export default function SettingsPanel({
                   <span className="text-base mr-2">🚀</span>
                   <label
                     htmlFor="autoStart"
-                    className="text-sm font-medium text-slate-700 dark:text-slate-200"
+                    className="text-base font-medium text-slate-700 dark:text-slate-200"
                   >
                     Auto-start sessions
                   </label>
@@ -307,7 +307,7 @@ export default function SettingsPanel({
 
           {/* Notifications */}
           <div>
-            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <span className="text-base mr-2">🔔</span>
               Notifications
             </h4>
@@ -317,7 +317,7 @@ export default function SettingsPanel({
                   <span className="text-base mr-2">💬</span>
                   <label
                     htmlFor="notifications"
-                    className="text-sm font-medium text-slate-700 dark:text-slate-200"
+                    className="text-base font-medium text-slate-700 dark:text-slate-200"
                   >
                     Show motivational quotes
                   </label>
@@ -330,7 +330,7 @@ export default function SettingsPanel({
                   className="h-5 w-5 text-blue-600 border-slate-300 rounded"
                 />
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-300 mt-2 px-2">
+              <p className="text-[0.9rem] text-slate-500 dark:text-slate-300 mt-2 px-2">
                 Get inspirational quotes as browser notifications after each work
                 session
               </p>
@@ -338,19 +338,19 @@ export default function SettingsPanel({
               {/* Browser permission status */}
               <div className="mt-2 px-2">
                 {browserPerm === "granted" ? (
-                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-600 dark:text-green-400">
+                  <span className="inline-flex items-center gap-1.5 text-[0.9rem] font-medium text-green-600 dark:text-green-400">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     Browser notifications enabled
                   </span>
                 ) : browserPerm === "denied" ? (
-                  <span className="text-sm text-red-500 dark:text-red-400">
+                  <span className="text-[0.9rem] text-red-500 dark:text-red-400">
                     Notifications blocked — please enable them in your browser&apos;s site settings
                   </span>
                 ) : (
                   <button
                     type="button"
                     onClick={requestPermission}
-                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-[0.9rem] font-medium text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     Allow browser notifications →
                   </button>
@@ -361,7 +361,7 @@ export default function SettingsPanel({
 
           {/* Import / Export */}
           <div>
-            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
               <span className="text-base mr-2">📦</span>
               Import &amp; Export Tasks
             </h4>
