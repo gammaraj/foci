@@ -296,8 +296,9 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center px-4 sm:px-6">
         <section className="text-center pt-12 sm:pt-20 pb-10 sm:pb-14 max-w-2xl mx-auto">
+          <p className="text-xs sm:text-sm font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-4">Get sh**t done</p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white tracking-tight leading-[1.1]">
-            Focus timer &amp; tasks,<br />
+            Focus timer, tasks<br />&amp; ambient music,<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300">
               finally in one place.
             </span>

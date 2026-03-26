@@ -6,7 +6,7 @@ test.describe("Landing Page", () => {
   });
 
   test("renders hero headline and subtitle", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText("Focus timer & tasks");
+    await expect(page.locator("h1")).toContainText("Focus timer, tasks & ambient music");
     await expect(page.locator("h1")).toContainText("finally in one place");
     await expect(page.getByText("Manage tasks, run focused sprints")).toBeVisible();
   });
