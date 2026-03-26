@@ -1191,7 +1191,7 @@ export default function TaskList({
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             Add
           </button>
@@ -1202,7 +1202,7 @@ export default function TaskList({
           <button
             type="button"
             onClick={() => setShowTemplateMenu(!showTemplateMenu)}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-purple-200 dark:border-purple-700 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-200 hover:bg-purple-100 dark:hover:bg-purple-800/40 transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-slate-50 dark:bg-[#131d30] text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
             title="Load task template"
           >
             📋 <span className="hidden sm:inline">Templates</span>

@@ -98,6 +98,21 @@ A: By default, all data is stored in your browser's local storage. If you sign u
 **Q: What browsers does Foci support?**
 A: Foci works in all modern browsers including Chrome, Firefox, Safari, and Edge on desktop and mobile.
 
+**Q: What is time blocking?**
+A: Time blocking means dividing your day into blocks of time, each dedicated to a specific task or group of tasks. Instead of working from an open-ended to-do list, you decide in advance when each task happens. It eliminates decision fatigue, protects deep work, and reduces context switching. Foci's flexible timer presets make it easy to work within time blocks.
+
+**Q: What is task batching?**
+A: Task batching groups similar tasks together and handles them in one dedicated session — for example, processing all email in a single block rather than throughout the day. This reduces context switching (which costs ~23 minutes per switch) and keeps you in the same cognitive mode. Use Foci's session presets to match different batch types.
+
+**Q: What is the 2-minute rule?**
+A: The 2-minute rule comes from David Allen's Getting Things Done: if a task takes less than 2 minutes, do it immediately instead of adding it to your to-do list. James Clear extended the concept in Atomic Habits for habit building: scale any new habit down to a 2-minute version to master showing up consistently. Both versions reduce procrastination and mental clutter.
+
+**Q: How can a morning routine improve productivity?**
+A: A structured morning routine leverages your peak willpower and the quiet window before interruptions begin. The most effective pattern: skip your phone for the first 60 minutes, identify your top 1–3 priorities, then immediately start a timed deep work session on your most important task. Foci's daily goal tracking makes this progress visible.
+
+**Q: How does a digital detox help with focus?**
+A: Reducing recreational screen time reclaims attention fragmented by notifications and continuous partial attention. Even having your phone visible on your desk reduces cognitive performance. Practical steps include phone-free mornings, turning off non-essential notifications, and batching screen time. Foci provides a focused alternative — commit to one task with a timer instead of scattered screen use.
+
 ## How Foci Compares
 
 Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient music, and progress analytics in a single interface. You do not need separate apps for your timer, task list, and background music.
@@ -154,6 +169,11 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - Blog – Migrate from Asana: https://usefoci.com/blog/migrate-from-asana-to-foci
 - Blog – Migrate from Notion: https://usefoci.com/blog/migrate-from-notion-to-foci
 - Blog – Stoicism and Focus: https://usefoci.com/blog/stoicism-and-focus
+- Blog – The 2-Minute Rule: https://usefoci.com/blog/two-minute-rule-productivity
+- Blog – Task Batching: https://usefoci.com/blog/task-batching-productivity
+- Blog – Morning Routine: https://usefoci.com/blog/productive-morning-routine
+- Blog – Digital Detox: https://usefoci.com/blog/digital-detox-for-productivity
+- Blog – Time Blocking: https://usefoci.com/blog/time-blocking-method
 
 ---
 
@@ -682,3 +702,156 @@ Amor fati ("love of fate") means not just accepting what happens, but embracing 
 #### Stoicism isn't about doing more
 
 The Stoics weren't interested in maximizing tasks completed — they were interested in living well, which meant giving full attention to what actually matters. Focus, in the Stoic sense, isn't a productivity strategy. It's an expression of values.
+
+---
+
+### The 2-Minute Rule: The Simplest Productivity Hack That Actually Works
+
+> URL: https://usefoci.com/blog/two-minute-rule-productivity
+> Date: 2026-03-14 | Reading time: 5 min read
+> Tags: 2-minute rule, GTD, productivity, procrastination, habits
+
+Of all the productivity techniques ever invented, the 2-minute rule might have the best effort-to-impact ratio. It takes zero setup, requires no apps, and starts working immediately.
+
+The rule is simple: if a task takes less than 2 minutes, do it right now instead of adding it to your to-do list.
+
+David Allen introduced the 2-minute rule in his 2001 book Getting Things Done (GTD). The logic is straightforward: the overhead of capturing, organizing, and revisiting a tiny task is greater than just doing it immediately.
+
+James Clear later expanded the concept in Atomic Habits, using the 2-minute rule as a strategy for building new habits: scale any habit down to something that takes 2 minutes or less to start.
+
+#### The two versions
+
+**Version 1: The GTD 2-minute rule (doing)** — When processing your inbox: takes less than 2 minutes? Do it now. Takes more? Schedule it, delegate it, or add it to your task list.
+
+**Version 2: The Atomic Habits 2-minute rule (starting)** — Scale any new habit down to 2 minutes. "Study for the exam" becomes "open my notes." Master showing up before worrying about performance.
+
+#### Why it works
+
+- Eliminates decision paralysis by clearing small tasks immediately
+- Builds momentum through quick wins
+- Reduces procrastination by lowering activation energy
+- Keeps your system clean and inbox at zero
+
+#### When NOT to use it
+
+Don't let it hijack your deep work. If you're in a focused session, write down the 2-minute task and handle it during a break.
+
+---
+
+### Task Batching: How to Get More Done by Grouping Similar Work
+
+> URL: https://usefoci.com/blog/task-batching-productivity
+> Date: 2026-03-17 | Reading time: 6 min read
+> Tags: task batching, productivity, context switching, focus, time management
+
+Task batching means grouping similar tasks and doing them all in one dedicated session, rather than scattering them throughout the day. Instead of replying to emails as they arrive, you handle all email in one or two blocks.
+
+#### Why it works
+
+- **Context switching is expensive** — it takes an average of 23 minutes to fully refocus after switching task types
+- **Similar tasks use the same mental mode** — staying in one cognitive mode is faster and reduces errors
+- **It creates predictability** — knowing when email happens means you stop checking compulsively
+
+#### How to implement
+
+1. Audit your typical day and log every task switch
+2. Categorize tasks: deep work, communication, admin, meetings, planning
+3. Assign each category to specific time slots
+4. Communicate your schedule to your team
+5. Protect the batches — don't break deep work for a quick email
+
+#### Works great with Pomodoro
+
+Within each batch, use Pomodoro intervals: deep work gets 25-minute sessions, communication gets 15-minute sprints, admin gets focused 25-minute blocks.
+
+---
+
+### The Productive Morning Routine: How to Win Your Day Before 9 AM
+
+> URL: https://usefoci.com/blog/productive-morning-routine
+> Date: 2026-03-18 | Reading time: 6 min read
+> Tags: morning routine, productivity, habits, focus, routine
+
+Almost every consistently productive person has one thing in common: they don't wing their mornings. The most effective people treat their first few hours as non-negotiable, high-value time.
+
+#### Why mornings matter most
+
+- **Willpower is highest** — self-control depletes throughout the day like a battery
+- **Fewer interruptions** — before the world demands your attention, you have uninterrupted time
+- **It compounds** — a productive morning creates momentum for the entire day
+
+#### A practical framework
+
+**Phase 1 — Wake up intentionally (15 min):** Don't check your phone. Hydrate. Move briefly.
+
+**Phase 2 — Set your intention (10 min):** Review your 1–3 priorities. Visualize your day. Write your plan down.
+
+**Phase 3 — Deep work (60–90 min):** Start your most important task immediately. Use a timer. No phone, no notifications.
+
+#### Common mistakes
+
+- Making it too complicated (start with 2–3 habits, not 17)
+- Checking email first (email is someone else's priority)
+- Skipping it on weekends (consistency builds the habit)
+
+---
+
+### Digital Detox for Productivity: How to Reclaim Your Focus From Screens
+
+> URL: https://usefoci.com/blog/digital-detox-for-productivity
+> Date: 2026-03-20 | Reading time: 7 min read
+> Tags: digital detox, focus, distraction, productivity, screen time
+
+The average person checks their phone 96 times a day. We spend over 7 hours daily staring at screens. Every check, every scroll, every notification chips away at our ability to focus.
+
+A digital detox isn't about abandoning technology — it's about resetting your relationship with screens so you can focus when you need to.
+
+#### Why screens destroy focus
+
+- **The notification trap** — every ping triggers dopamine, training compulsive checking
+- **Continuous partial attention** — never fully focused on anything, always scanning for the next input
+- **The switch cost** — task switching costs 40% of productive time
+
+#### A practical plan
+
+1. **Phone-free morning** — don't touch your phone for the first 60 minutes after waking
+2. **Turn off non-essential notifications** — if it's not a direct message from a real person, disable it
+3. **Use Do Not Disturb blocks** — schedule DND during deep work hours
+4. **Batch screen time** — check email 2–3 times at scheduled intervals, not constantly
+5. **Create physical barriers** — charge your phone in another room while working
+6. **Replace the habit** — swap phone scrolling during breaks with walks, stretches, or tea
+
+#### The focus dividend
+
+Reducing recreational screen time by 1–2 hours daily leads to longer attention spans, better sleep, reduced anxiety, and more time for deep work.
+
+---
+
+### Time Blocking: The Scheduling Method Used by the World's Most Productive People
+
+> URL: https://usefoci.com/blog/time-blocking-method
+> Date: 2026-03-22 | Reading time: 7 min read
+> Tags: time blocking, productivity, scheduling, focus, time management
+
+Cal Newport calls it his "secret weapon." Elon Musk schedules his day in 5-minute blocks. Time blocking means dividing your day into blocks of time, each dedicated to a specific task or group of tasks.
+
+The key difference from a to-do list: you're committing to when, not just what.
+
+#### Why it works
+
+- **Eliminates decision fatigue** — when 10:00 hits, you already know what you're doing
+- **Protects deep work** — explicitly reserving blocks guarantees important work gets done
+- **Makes time visible** — you see exactly how many hours you have for focused work
+- **Reduces context switching** — batching similar work and handling one thing at a time
+
+#### How to start
+
+1. **Identify priorities** — what 2–3 tasks would make today successful?
+2. **Estimate honestly** — add 25–50% buffer to your estimates
+3. **Block deep work first** — before meetings and email fill the gaps
+4. **Include buffer blocks** — leave gaps for overflow and mental breaks
+5. **Review daily** — adjust tomorrow's blocks based on what worked today
+
+#### Time blocking + Pomodoro
+
+Use time blocking to decide what and when — then use Pomodoro sessions within each block to maintain focus. A 90-minute deep work block might contain three 25-minute sessions with 5-minute breaks.

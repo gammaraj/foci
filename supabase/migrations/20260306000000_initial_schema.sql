@@ -8,7 +8,7 @@ create table if not exists public.settings (
   break_duration bigint not null default 300000,
   inactivity_threshold bigint not null default 60000,
   daily_goal int not null default 3,
-  auto_start_enabled boolean not null default true,
+  auto_start_enabled boolean not null default false,
   notifications_enabled boolean not null default true,
   updated_at timestamptz not null default now()
 );

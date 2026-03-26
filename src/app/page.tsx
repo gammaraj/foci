@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { getAllPosts } from "@/lib/blog";
 
 const siteUrl = "https://usefoci.com";
 
@@ -113,43 +114,63 @@ function AppMockup() {
       {/* App content */}
       <div className="bg-[#0a1628] rounded-b-2xl p-4 sm:p-6 border border-[#1e3355] border-t-0 overflow-hidden">
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-          {/* Timer side */}
-          <div className="flex flex-col items-center sm:w-1/3 gap-3">
+          {/* Timer column */}
+          <div className="sm:w-[38%] flex flex-col gap-3">
+            {/* Focus Timer header */}
+            <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)" }}>
+              <span className="text-sm font-semibold text-white tracking-wide">Focus Timer</span>
+              <div className="flex items-center gap-1">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10">
+                  <svg className="w-3.5 h-3.5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                </div>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10">
+                  <svg className="w-3.5 h-3.5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </div>
+              </div>
+            </div>
+
             {/* Circular timer */}
-            <div className="relative w-32 h-32 sm:w-40 sm:h-40">
-              <svg viewBox="0 0 120 120" className="w-full h-full">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3355" strokeWidth="6" />
-                <circle cx="60" cy="60" r="52" fill="none" stroke="#3b82f6" strokeWidth="6"
-                  strokeDasharray="326.7" strokeDashoffset="81.7" strokeLinecap="round"
-                  transform="rotate(-90 60 60)" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl sm:text-3xl font-bold text-white font-mono">22:30</span>
-                <span className="text-xs text-blue-400 mt-0.5">FOCUS</span>
+            <div className="flex flex-col items-center gap-3 py-2">
+              <div className="relative w-32 h-32 sm:w-36 sm:h-36">
+                <svg viewBox="0 0 120 120" className="w-full h-full">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="#1e3355" strokeWidth="6" />
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="#3b82f6" strokeWidth="6"
+                    strokeDasharray="326.7" strokeDashoffset="81.7" strokeLinecap="round"
+                    transform="rotate(-90 60 60)" />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-xs text-gray-400 mb-0.5">Focus Time</span>
+                  <span className="text-2xl sm:text-3xl font-bold text-white font-mono">22:30</span>
+                  <span className="text-[10px] text-blue-400 mt-0.5">Working...</span>
+                </div>
+              </div>
+              {/* Controls */}
+              <div className="flex gap-2 items-center">
+                <div className="w-8 h-8 rounded-full bg-[#1e3355] flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="6" y="4" width="4" height="16" rx="1" />
+                    <rect x="14" y="4" width="4" height="16" rx="1" />
+                  </svg>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-[#1e3355] flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
             </div>
-            {/* Controls */}
-            <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#1e3355] flex items-center justify-center">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
-                <svg className="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 4l15 8-15 8z" />
-                </svg>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-[#1e3355] flex items-center justify-center">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-            </div>
+
+            {/* Nudge text */}
+            <p className="text-[10px] text-gray-500 text-center -mt-1">Working on: Research API integration</p>
+
             {/* Progress */}
-            <div className="w-full bg-[#0f1b33] rounded-xl p-3 text-center">
-              <div className="text-xs text-gray-400 mb-1">Today&apos;s Progress</div>
+            <div className="bg-[#0f1b33] rounded-xl p-3 text-center">
+              <div className="text-xs text-gray-400 mb-1">Today&apos;s Sessions</div>
               <div className="flex items-center gap-2 justify-center">
                 <span className="text-lg font-bold text-white">2</span>
                 <span className="text-xs text-gray-500">/ 3 sessions</span>
@@ -157,25 +178,66 @@ function AppMockup() {
               <div className="w-full bg-[#1a2744] rounded-full h-2 mt-2 overflow-hidden">
                 <div className="h-full rounded-full bg-blue-500" style={{ width: "66%" }} />
               </div>
+              <div className="flex items-center justify-center gap-1 mt-2">
+                <span className="text-yellow-400 text-xs">✨</span>
+                <span className="text-[10px] text-gray-400">3 day streak</span>
+              </div>
+            </div>
+
+            {/* Ambient sounds */}
+            <div className="bg-[#0f1b33] rounded-xl p-3">
+              <div className="text-xs text-gray-400 mb-2">🎵 Music &amp; Sounds</div>
+              <div className="flex gap-1.5">
+                {["Rain", "Café", "Brown"].map((s, i) => (
+                  <div key={s} className={`flex-1 text-center text-[10px] py-1.5 rounded-lg border ${i === 2 ? "border-blue-500/40 bg-blue-600/10 text-blue-300" : "border-[#243350] text-gray-500"}`}>
+                    {s}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Tasks side */}
-          <div className="sm:w-2/3 space-y-2">
-            {/* Project tabs */}
-            <div className="flex gap-1 mb-2">
-              <div className="px-3 py-1 rounded-lg bg-blue-600/20 text-blue-400 text-xs font-medium">General</div>
-              <div className="px-3 py-1 rounded-lg text-gray-500 text-xs">Work</div>
-              <div className="px-3 py-1 rounded-lg text-gray-500 text-xs">Study</div>
+          {/* Tasks column */}
+          <div className="sm:w-[62%] flex flex-col gap-2">
+            {/* Tasks header */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-white">Tasks</span>
+              <div className="flex gap-1">
+                {["Today", "Week"].map((f, i) => (
+                  <span key={f} className={`text-[10px] px-2 py-1 rounded-md ${i === 0 ? "bg-blue-600/20 text-blue-400" : "text-gray-500"}`}>{f}</span>
+                ))}
+              </div>
             </div>
+
+            {/* Smart Plan button */}
+            <button className="w-full flex items-center justify-center gap-1.5 text-[11px] text-blue-400 border border-blue-500/20 rounded-lg py-1.5 bg-blue-600/5">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+              Suggest a Plan
+            </button>
+
+            {/* Project tabs */}
+            <div className="flex gap-1">
+              <div className="px-2.5 py-1 rounded-lg bg-blue-600/20 text-blue-400 text-[11px] font-medium">All <span className="text-blue-400/60">5</span></div>
+              <div className="px-2.5 py-1 rounded-lg text-gray-500 text-[11px]">General <span className="text-gray-600">3</span></div>
+              <div className="px-2.5 py-1 rounded-lg text-gray-500 text-[11px]">Work <span className="text-gray-600">2</span></div>
+            </div>
+
+            {/* Add task input */}
+            <div className="flex gap-1.5">
+              <div className="flex-1 flex items-center bg-[#131d30] border border-[#243350] rounded-lg px-2.5 py-1.5">
+                <span className="text-[11px] text-gray-500">Add a task...</span>
+              </div>
+              <div className="px-2.5 py-1.5 bg-blue-600 text-white text-[11px] font-semibold rounded-lg">Add</div>
+            </div>
+
             {/* Task items */}
             {[
               { title: "Research API integration", sessions: 3, time: "1h 30m", active: true },
-              { title: "Write documentation", sessions: 1, time: "30m", active: false },
+              { title: "Draft design mockups", sessions: 1, time: "30m", active: false },
               { title: "Review pull requests", sessions: 0, time: "0m", done: true },
-              { title: "Update pricing page", sessions: 2, time: "1h", active: false },
+              { title: "Write unit tests", sessions: 2, time: "1h", active: false },
             ].map((task, i) => (
-              <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${
+              <div key={i} className={`flex items-center gap-2.5 px-3 py-2 rounded-xl ${
                 task.active ? "bg-blue-600/10 border border-blue-500/30" : "bg-[#0f1b33] border border-transparent"
               }`}>
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
@@ -190,7 +252,10 @@ function AppMockup() {
                 <span className={`text-sm flex-1 ${task.done ? "line-through text-gray-500" : "text-gray-200"}`}>
                   {task.title}
                 </span>
-                <span className="text-xs text-gray-500 hidden sm:inline">{task.sessions}s · {task.time}</span>
+                <span className="text-[10px] text-gray-500 hidden sm:inline">{task.sessions}s · {task.time}</span>
+                {!task.done && !task.active && (
+                  <span className="text-[10px] text-blue-400 font-medium">Start</span>
+                )}
               </div>
             ))}
           </div>
@@ -358,11 +423,11 @@ export default function LandingPage() {
         {/* Why Foci vs. others */}
         <section className="w-full max-w-3xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-4">
-            Why not just use a browser timer?
+            More than just a countdown timer
           </h2>
           <p className="text-center text-base sm:text-lg text-neutral-500 dark:text-neutral-400 mb-10 max-w-xl mx-auto">
-            You could. But you&apos;ll end up switching between tabs, forgetting what you worked on, and
-            losing track of where your hours go. Foci keeps everything in one place.
+            A simple timer counts down and beeps. Foci gives you tasks, time tracking, ambient
+            music, and streaks — so you actually stay focused and see your progress.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
@@ -379,6 +444,53 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* From the blog */}
+        <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-3">
+            From the blog
+          </h2>
+          <p className="text-center text-base text-neutral-500 dark:text-neutral-400 mb-8 max-w-xl mx-auto">
+            Practical guides on focus, time management, and productivity.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {getAllPosts().slice(0, 3).map((post) => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group bg-white dark:bg-[#0f1b33] rounded-2xl p-5 border border-gray-200 dark:border-[#1e3355] shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all"
+              >
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {post.tags.slice(0, 2).map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                  {post.title}
+                </h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
+                  {post.description}
+                </p>
+                <span className="inline-block mt-3 text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
+                  Read more →
+                </span>
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-6">
+            <Link
+              href="/blog"
+              className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              View all posts →
+            </Link>
           </div>
         </section>
 

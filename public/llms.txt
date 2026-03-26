@@ -92,6 +92,21 @@ A: Foci is a strong choice: it is completely free, requires no account, and comb
 **Q: What browsers does Foci support?**
 A: Foci works in all modern browsers including Chrome, Firefox, Safari, and Edge on desktop and mobile.
 
+**Q: What is time blocking?**
+A: Time blocking means dividing your day into blocks of time, each dedicated to a specific task or group of tasks. Instead of working from an open-ended to-do list, you decide in advance when each task happens. It eliminates decision fatigue, protects deep work, and reduces context switching. Foci's flexible timer presets make it easy to work within time blocks.
+
+**Q: What is task batching?**
+A: Task batching groups similar tasks together and handles them in one dedicated session — for example, processing all email in a single block rather than throughout the day. This reduces context switching (which costs ~23 minutes per switch) and keeps you in the same cognitive mode. Use Foci's session presets to match different batch types.
+
+**Q: What is the 2-minute rule?**
+A: The 2-minute rule comes from David Allen's Getting Things Done: if a task takes less than 2 minutes, do it immediately instead of adding it to your to-do list. James Clear extended the concept in Atomic Habits for habit building: scale any new habit down to a 2-minute version to master showing up consistently. Both versions reduce procrastination and mental clutter.
+
+**Q: How can a morning routine improve productivity?**
+A: A structured morning routine leverages your peak willpower and the quiet window before interruptions begin. The most effective pattern: skip your phone for the first 60 minutes, identify your top 1–3 priorities, then immediately start a timed deep work session on your most important task. Foci's daily goal tracking makes this progress visible.
+
+**Q: How does a digital detox help with focus?**
+A: Reducing recreational screen time reclaims attention fragmented by notifications and continuous partial attention. Even having your phone visible on your desk reduces cognitive performance. Practical steps include phone-free mornings, turning off non-essential notifications, and batching screen time. Foci provides a focused alternative — commit to one task with a timer instead of scattered screen use.
+
 ## How Foci Compares
 
 Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient music, and progress analytics in a single interface. You do not need separate apps for your timer, task list, and background music.
@@ -114,6 +129,11 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - https://usefoci.com/blog/migrate-from-asana-to-foci — How to Migrate from Asana to Foci
 - https://usefoci.com/blog/migrate-from-notion-to-foci — How to Migrate from Notion to Foci
 - https://usefoci.com/blog/stoicism-and-focus — Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind
+- https://usefoci.com/blog/time-blocking-method — Time Blocking: The Scheduling Method Used by the World's Most Productive People
+- https://usefoci.com/blog/digital-detox-for-productivity — Digital Detox for Productivity: How to Reclaim Your Focus From Screens
+- https://usefoci.com/blog/productive-morning-routine — The Productive Morning Routine: How to Win Your Day Before 9 AM
+- https://usefoci.com/blog/task-batching-productivity — Task Batching: How to Get More Done by Grouping Similar Work
+- https://usefoci.com/blog/two-minute-rule-productivity — The 2-Minute Rule: The Simplest Productivity Hack That Actually Works
 
 ## Tech Stack
 
@@ -166,5 +186,10 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [Brown Noise for Studying: Why It Works and How to Use It](https://usefoci.com/blog/brown-noise-for-studying-and-focus) — 2026-03-12
 - [Deep Work in the Age of AI: How to Stay Focused When Everything Is Instant](https://usefoci.com/blog/deep-work-in-the-age-of-ai) — 2026-03-15
 - [Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind](https://usefoci.com/blog/stoicism-and-focus) — 2026-03-21
+- [The 2-Minute Rule: The Simplest Productivity Hack That Actually Works](https://usefoci.com/blog/two-minute-rule-productivity) — 2026-03-14
+- [Task Batching: How to Get More Done by Grouping Similar Work](https://usefoci.com/blog/task-batching-productivity) — 2026-03-17
+- [The Productive Morning Routine: How to Win Your Day Before 9 AM](https://usefoci.com/blog/productive-morning-routine) — 2026-03-18
+- [Digital Detox for Productivity: How to Reclaim Your Focus From Screens](https://usefoci.com/blog/digital-detox-for-productivity) — 2026-03-20
+- [Time Blocking: The Scheduling Method Used by the World's Most Productive People](https://usefoci.com/blog/time-blocking-method) — 2026-03-22
 
 For the full text of all blog posts, see: https://usefoci.com/llms-full.txt

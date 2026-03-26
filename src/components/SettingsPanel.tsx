@@ -141,6 +141,9 @@ export default function SettingsPanel({
 
         {/* Content */}
         <form onSubmit={handleSubmit} className="p-3 sm:p-5 space-y-5">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Left Column */}
+          <div className="space-y-5">
           {/* Quick Presets */}
           <div>
             <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
@@ -180,7 +183,7 @@ export default function SettingsPanel({
               <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
               Timer Settings
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               {/* Work Duration */}
             <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
                 <label
@@ -275,17 +278,9 @@ export default function SettingsPanel({
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Preferences */}
-          <div>
-            <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <div className="w-2 h-2 bg-slate-500 rounded-full mr-2" />
-              Preferences
-            </h4>
-            <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350] space-y-2">
-              <div className="flex items-center justify-between p-3 bg-white dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
+              {/* Auto-start toggle */}
+              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
                 <div className="flex items-center">
                   <span className="text-base mr-2">🚀</span>
                   <label
@@ -305,6 +300,10 @@ export default function SettingsPanel({
               </div>
             </div>
           </div>
+
+          </div>
+          {/* Right Column */}
+          <div className="space-y-5">
 
           {/* Notifications */}
           <div>
@@ -371,6 +370,8 @@ export default function SettingsPanel({
             </div>
           </div>
 
+          </div>
+          </div>
           {/* Save Button */}
           <button
             type="submit"

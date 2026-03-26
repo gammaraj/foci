@@ -91,6 +91,6 @@ export const DEFAULT_SETTINGS: Settings = {
   breakDuration: 5 * 60 * 1000, // 5 minutes
   inactivityThreshold: 1 * 60 * 1000, // 1 minute
   dailyGoal: 3,
-  autoStartEnabled: true,
+  autoStartEnabled: false,
   notificationsEnabled: true,
 };
