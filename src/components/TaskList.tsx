@@ -615,11 +615,11 @@ export default function TaskList({
     <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-hidden min-w-0">
       {/* Header */}
       <div
-        className="px-4 sm:px-5 py-4 text-white rounded-t-2xl"
+        className="px-3 sm:px-5 py-3 sm:py-4 text-white rounded-t-2xl"
         style={{ background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)" }}
       >
-        <div className="flex items-center justify-between min-w-0 overflow-hidden">
-          <h2 className="text-lg font-bold flex items-center gap-2">
+        <div className="flex items-center justify-between min-w-0">
+          <h2 className="text-lg font-bold flex items-center gap-2 flex-shrink-0">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -635,7 +635,7 @@ export default function TaskList({
             </svg>
             Tasks
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
               <button
@@ -785,7 +785,7 @@ export default function TaskList({
 
       {/* Project tabs */}
       {viewMode === "list" && (<>
-      <div className="px-4 pt-3 pb-1 relative" ref={projectMenuRef}>
+      <div className="px-3 sm:px-4 pt-3 pb-1 relative" ref={projectMenuRef}>
         {/* Mobile: dropdown select */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -1122,7 +1122,7 @@ export default function TaskList({
 
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="px-3 sm:p-4 py-3 space-y-3">
         {/* Project description */}
         {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">
@@ -1283,7 +1283,7 @@ export default function TaskList({
               onDragOver={(e) => handleDragOver(e, task.id)}
               onDrop={() => handleDrop(task.id)}
               onDragEnd={handleDragEnd}
-              className={`group flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl border transition-colors ${
+              className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors ${
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 border-l-[3px] border-l-blue-500 dark:border-l-blue-400"
                   : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30]"
@@ -1332,7 +1332,7 @@ export default function TaskList({
               {/* Checkbox */}
               <button
                 onClick={() => toggleComplete(task.id)}
-                className="flex-shrink-0 w-7 h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
+                className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center"
                 aria-label={`Mark "${task.title}" complete`}
               />
 
@@ -1357,6 +1357,9 @@ export default function TaskList({
                     onDoubleClick={() => startEditing(task)}
                   >
                     {task.title}
+                    {activeTaskId === task.id && isTimerRunning && (
+                      <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
+                    )}
                     {(isAllProjects || isTimeFilter) && (
                       <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle">
                         {getProjectName(task.projectId)}
@@ -1441,12 +1444,12 @@ export default function TaskList({
                   setExpandedTaskId(isExpanded ? null : task.id);
                   setNewSubtaskTitle("");
                 }}
-                className={`flex-shrink-0 min-w-[44px] min-h-[44px] rounded-md transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-shrink-0 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] rounded-md transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
                   isExpanded
-                    ? "text-blue-500 dark:text-blue-400 p-1.5"
+                    ? "text-blue-500 dark:text-blue-400 p-1 sm:p-1.5"
                     : hasSubtasks
-                      ? "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 px-2 py-1.5"
-                      : "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 p-1.5"
+                      ? "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 px-1.5 sm:px-2 py-1 sm:py-1.5"
+                      : "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 p-1 sm:p-1.5"
                 }`}
                 title={isExpanded ? "Collapse subtasks" : hasSubtasks ? "Expand subtasks" : "Add subtask"}
               >
@@ -1464,9 +1467,9 @@ export default function TaskList({
                 )}
               </button>
 
-              {/* Start / Select / In-progress button */}
+              {/* Start / Select / In-progress button — hidden on mobile */}
               {activeTaskId === task.id && isTimerRunning ? (
-                <span className="flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded bg-blue-600 text-white flex items-center gap-1">
+                <span className="flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded bg-blue-600 text-white hidden sm:flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                   <span className="hidden sm:inline">In progress</span>
                 </span>
@@ -1479,7 +1482,7 @@ export default function TaskList({
                         onStartTask(task.id);
                       }
                     }}
-                    className={`flex-shrink-0 rounded transition-colors flex items-center justify-center ${
+                    className={`flex-shrink-0 rounded transition-colors hidden sm:flex items-center justify-center ${
                       activeTaskId === task.id
                         ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                         : "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
@@ -1505,11 +1508,11 @@ export default function TaskList({
                   </button>
               )}
 
-              {/* Delete (hidden only for the active task while timer runs) */}
+              {/* Delete — visible on hover (desktop), hidden on mobile to save space */}
               {!(isTimerRunning && activeTaskId === task.id) && (
                 <button
                   onClick={() => deleteTask(task.id)}
-                  className="flex-shrink-0 p-2 rounded-md text-slate-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                  className="flex-shrink-0 p-2 rounded-md text-slate-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                   aria-label={`Delete "${task.title}"`}
                 >
                   <svg
@@ -1649,6 +1652,54 @@ export default function TaskList({
                     Add
                   </button>
                 </form>
+
+                {/* Mobile-only action buttons (start & delete) */}
+                <div className="sm:hidden flex items-center gap-2 px-4 pt-2 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2">
+                  {activeTaskId === task.id && isTimerRunning ? (
+                    <span className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 text-white flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      In progress
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (activeTaskId === task.id) {
+                          onSelectTask(null);
+                        } else {
+                          onStartTask(task.id);
+                        }
+                      }}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+                        activeTaskId === task.id
+                          ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                          : "bg-blue-600 text-white hover:bg-blue-700"
+                      }`}
+                    >
+                      {activeTaskId === task.id ? (
+                        "Deselect"
+                      ) : (
+                        <>
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                          </svg>
+                          {isTimerRunning ? "Switch" : "Start"}
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {!(isTimerRunning && activeTaskId === task.id) && (
+                    <button
+                      onClick={() => deleteTask(task.id)}
+                      className="px-3 py-1.5 text-xs font-medium rounded-md text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"
+                      aria-label={`Delete "${task.title}"`}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
             )}
             </div>
