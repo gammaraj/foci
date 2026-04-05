@@ -38,6 +38,7 @@ export default function AppPage() {
     return false;
   });
   const [focusProjectId, setFocusProjectId] = useState<string | null>(null);
+  const [tasksFullscreen, setTasksFullscreen] = useState(false);
 
   const handleFocusProject = useCallback((projectId: string | null) => {
     setFocusProjectId(projectId);
@@ -113,10 +114,10 @@ export default function AppPage() {
       <Navbar />
       <DueDateReminders />
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
-      <div className={`w-full max-w-[1280px] flex flex-col ${timerCollapsed ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
+      <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
 
         {/* Collapsed timer bar */}
-        {timerCollapsed && (
+        {timerCollapsed && !tasksFullscreen && (
           <div className="w-full">
             <div
               className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#1e3050] bg-white/80 dark:bg-[#111827] backdrop-blur-sm shadow-sm"
@@ -173,7 +174,7 @@ export default function AppPage() {
         )}
 
         {/* Timer column */}
-        {!timerCollapsed && (
+        {!timerCollapsed && !tasksFullscreen && (
         <div className="w-full lg:w-[400px] lg:flex-shrink-0">
           <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
@@ -193,7 +194,7 @@ export default function AppPage() {
                 title="Hide timer panel"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                 </svg>
               </button>
               <button
@@ -323,6 +324,8 @@ export default function AppPage() {
             isTimerRunning={isRunning}
             focusProjectId={focusProjectId}
             onFocusProject={handleFocusProject}
+            isFullscreen={tasksFullscreen}
+            onToggleFullscreen={() => setTasksFullscreen(f => !f)}
           />
         </div>
 

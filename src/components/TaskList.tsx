@@ -44,6 +44,8 @@ interface TaskListProps {
   isTimerRunning: boolean;
   focusProjectId?: string | null;
   onFocusProject?: (projectId: string | null) => void;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
 export default function TaskList({
@@ -54,6 +56,8 @@ export default function TaskList({
   isTimerRunning,
   focusProjectId,
   onFocusProject,
+  isFullscreen,
+  onToggleFullscreen,
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -732,6 +736,25 @@ export default function TaskList({
                 </svg>
               </button>
             </div>
+            {/* Fullscreen toggle */}
+            {onToggleFullscreen && (
+              <button
+                onClick={onToggleFullscreen}
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${isFullscreen ? "bg-white/20 text-white" : "text-white/50 hover:text-white/80 hover:bg-white/10"}`}
+                title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
+                aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
+              >
+                {isFullscreen ? (
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9L4 4m0 0h4M4 4v4m11-1V3m0 0h-4m4 0v4M4 15v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
