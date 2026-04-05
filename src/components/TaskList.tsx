@@ -42,6 +42,8 @@ interface TaskListProps {
   onStartTask: (taskId: string) => void;
   onCompleteTask: (taskId: string) => number; // returns elapsed ms
   isTimerRunning: boolean;
+  focusProjectId?: string | null;
+  onFocusProject?: (projectId: string | null) => void;
 }
 
 export default function TaskList({
@@ -50,6 +52,8 @@ export default function TaskList({
   onStartTask,
   onCompleteTask,
   isTimerRunning,
+  focusProjectId,
+  onFocusProject,
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -99,6 +103,13 @@ export default function TaskList({
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  // Lock project selection in focus mode
+  useEffect(() => {
+    if (focusProjectId) {
+      setSelectedProjectId(focusProjectId);
+    }
+  }, [focusProjectId]);
 
   const userId = user?.id;
   useEffect(() => {
@@ -611,8 +622,41 @@ export default function TaskList({
   const getProjectName = (projectId: string) =>
     projects.find((p) => p.id === projectId)?.name ?? "General";
 
+  const isFocusMode = !!focusProjectId;
+  const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
+
   return (
     <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-hidden min-w-0">
+
+      {/* Focus mode header */}
+      {isFocusMode ? (
+        <div
+          className="px-3 sm:px-5 py-3 sm:py-4 text-white rounded-t-2xl"
+          style={{ background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)" }}
+        >
+          <div className="flex items-center justify-between min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {focusProject?.color && (
+                <span className="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-white/20" style={{ backgroundColor: focusProject.color }} />
+              )}
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50 leading-none mb-0.5">Project Focus</p>
+                <h2 className="text-base sm:text-lg font-bold truncate">{focusProject?.name ?? "Project"}</h2>
+              </div>
+            </div>
+            <button
+              onClick={() => onFocusProject?.(null)}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Exit Focus
+            </button>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* Header */}
       <div
         className="px-3 sm:px-5 py-3 sm:py-4 text-white rounded-t-2xl"
@@ -759,9 +803,11 @@ export default function TaskList({
           </button>
         </div>
       </div>
+      </>
+      )}
 
       {/* Smart Plan view */}
-      {viewMode === "plan" && (
+      {!isFocusMode && viewMode === "plan" && (
         <SmartPlan
           tasks={tasks}
           projects={projects}
@@ -771,7 +817,7 @@ export default function TaskList({
       )}
 
       {/* Calendar view */}
-      {viewMode === "calendar" && (
+      {!isFocusMode && viewMode === "calendar" && (
         <TaskCalendarView
           tasks={tasks}
           calendarDate={calendarDate}
@@ -784,7 +830,7 @@ export default function TaskList({
       )}
 
       {/* Project tabs */}
-      {viewMode === "list" && (<>
+      {!isFocusMode && viewMode === "list" && (<>
       <div className="px-3 sm:px-4 pt-3 pb-1 relative" ref={projectMenuRef}>
         {/* Mobile: dropdown select */}
         <div className="flex sm:hidden items-center gap-1.5">
@@ -802,6 +848,20 @@ export default function TaskList({
               </option>
             ))}
           </select>
+
+          {/* Focus on project button */}
+          {onFocusProject && !isAllProjects && !isTimeFilter && selectedProjectId !== DEFAULT_PROJECT_ID && (
+            <button
+              onClick={() => onFocusProject(selectedProjectId)}
+              className="flex-shrink-0 p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+              title="Focus on this project"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          )}
 
           {/* Add project button */}
           <button
@@ -997,6 +1057,22 @@ export default function TaskList({
                       </span>
                       {p.id !== DEFAULT_PROJECT_ID && (
                         <div className="flex items-center gap-1 opacity-100 transition-opacity">
+                          {onFocusProject && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onFocusProject(p.id);
+                                setShowProjectMenu(false);
+                              }}
+                              className="p-1 text-slate-400 hover:text-orange-500 transition-colors"
+                              title="Focus on this project"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            </button>
+                          )}
                           <input
                             type="date"
                             value={p.dueDate ?? ""}

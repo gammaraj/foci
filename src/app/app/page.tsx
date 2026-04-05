@@ -31,6 +31,24 @@ export default function AppPage() {
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const activeTaskIdRef = useRef<string | null>(null);
   const [taskListKey, setTaskListKey] = useState(0);
+  const [timerCollapsed, setTimerCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("foci-timer-collapsed") === "true";
+    }
+    return false;
+  });
+  const [focusProjectId, setFocusProjectId] = useState<string | null>(null);
+
+  const handleFocusProject = useCallback((projectId: string | null) => {
+    setFocusProjectId(projectId);
+    if (projectId) {
+      setTimerCollapsed(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("foci-timer-collapsed", String(timerCollapsed));
+  }, [timerCollapsed]);
 
   const isRunning = timer.status === "running";
   const displayTime =
@@ -95,8 +113,67 @@ export default function AppPage() {
       <Navbar />
       <DueDateReminders />
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
-      <div className="w-full max-w-[1280px] flex flex-col lg:flex-row gap-4 sm:gap-5">
+      <div className={`w-full max-w-[1280px] flex flex-col ${timerCollapsed ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
+
+        {/* Collapsed timer bar */}
+        {timerCollapsed && (
+          <div className="w-full">
+            <div
+              className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#1e3050] bg-white/80 dark:bg-[#111827] backdrop-blur-sm shadow-sm"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={`text-lg font-mono font-bold tabular-nums ${timer.isBreakMode ? "text-green-600 dark:text-green-400" : isRunning ? "text-blue-600 dark:text-blue-400" : "text-slate-700 dark:text-slate-200"}`}>
+                  {timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}
+                </div>
+                {timer.label && (
+                  <span className="text-xs font-medium text-slate-400 dark:text-slate-400 hidden sm:inline">
+                    {timer.label}
+                  </span>
+                )}
+                {activeTaskId && (
+                  <ActiveTaskBanner
+                    taskId={activeTaskId}
+                    onClear={() => setActiveTaskId(null)}
+                    isRunning={isRunning}
+                    compact
+                  />
+                )}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <TimerControls
+                  isRunning={isRunning}
+                  onStartPause={handleStartPause}
+                  onReset={timer.reset}
+                  compact
+                />
+                <NotificationBell />
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+                  aria-label="Open settings"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setTimerCollapsed(false)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+                  aria-label="Expand timer"
+                  title="Show timer panel"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Timer column */}
+        {!timerCollapsed && (
         <div className="w-full lg:w-[400px] lg:flex-shrink-0">
           <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
@@ -109,6 +186,16 @@ export default function AppPage() {
               <h1 className="text-base font-semibold tracking-wide">Focus Timer</h1>
 
               <div className="flex items-center gap-1">
+              <button
+                onClick={() => setTimerCollapsed(true)}
+                className="text-white/60 hover:text-white transition p-2 rounded-lg hover:bg-white/10"
+                aria-label="Collapse timer"
+                title="Hide timer panel"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                </svg>
+              </button>
               <button
                 onClick={() => document.getElementById('tasks-section')?.scrollIntoView({ behavior: 'smooth' })}
                 className="lg:hidden text-sm text-white/85 hover:text-white transition px-3 py-2 rounded-lg hover:bg-white/10"
@@ -223,6 +310,7 @@ export default function AppPage() {
             <div className="h-2" />
           </div>
         </div>
+        )}
 
         {/* Task list column */}
         <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
@@ -233,6 +321,8 @@ export default function AppPage() {
             onStartTask={handleStartTask}
             onCompleteTask={handleCompleteTask}
             isTimerRunning={isRunning}
+            focusProjectId={focusProjectId}
+            onFocusProject={handleFocusProject}
           />
         </div>
 
@@ -261,10 +351,12 @@ function ActiveTaskBanner({
   taskId,
   onClear,
   isRunning,
+  compact,
 }: {
   taskId: string;
   onClear: () => void;
   isRunning: boolean;
+  compact?: boolean;
 }) {
   const [title, setTitle] = useState("");
 
@@ -293,6 +385,24 @@ function ActiveTaskBanner({
   }, [taskId]);
 
   if (!title) return null;
+
+  if (compact) {
+    return (
+      <div className="flex items-center gap-1.5 min-w-0">
+        <div className={`w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
+        <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate max-w-[200px]">
+          {title}
+        </span>
+        {!isRunning && (
+          <button onClick={onClear} className="text-slate-400 hover:text-slate-600 flex-shrink-0" aria-label="Clear active task">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400">
