@@ -50,6 +50,13 @@ const jsonLd = {
     "Smart Plan: algorithmic day-by-day task scheduling based on due dates and daily goals",
     "Project color coding and due date tracking",
     "Productivity stats dashboard with heatmap, charts, and streak tracking",
+    "Recurring tasks with daily, weekly, monthly, and yearly recurrence",
+    "Subtask due dates for granular deadline tracking",
+    "Move tasks between projects with drag-free reassignment",
+    "Calendar view that auto-sets due dates when selecting a day",
+    "Fullscreen task mode for distraction-free task management",
+    "Indian classical music playlists via SoundCloud for deep focus",
+    "Due date reminder notifications for upcoming and overdue tasks",
   ],
 };
 
@@ -90,6 +97,11 @@ const faqJsonLd = {
     { "@type": "Question", name: "Can I organize tasks with project colors?", acceptedAnswer: { "@type": "Answer", text: "Yes. Each project in Foci can have a custom color, due date, and description. Color-coded dots appear on project tabs and in task lists for quick visual identification. You can also archive completed projects." } },
     { "@type": "Question", name: "Can Stoic philosophy help with focus and productivity?", acceptedAnswer: { "@type": "Answer", text: "Yes. Stoic concepts map directly onto focus practice. The dichotomy of control reminds you that only your attention is fully in your control — not interruptions or notifications. Premeditatio malorum (premeditation of adversity) helps you plan for distraction before it happens. Memento mori reframes procrastination as squandering finite time. And amor fati encourages embracing the friction of deep work rather than resenting it. Foci's timer and task system support exactly this kind of intentional, values-driven focus." } },
     { "@type": "Question", name: "What is premeditatio malorum and how does it help focus?", acceptedAnswer: { "@type": "Answer", text: "Premeditatio malorum is a Stoic practice of mentally rehearsing potential obstacles before starting a task. Applied to focus, it means asking before a work session: what will try to pull my attention away? Which distractions can I eliminate now, and how will I respond to the rest? This preparation removes the element of surprise and makes you far less likely to be derailed by interruptions." } },
+    { "@type": "Question", name: "Does Foci support recurring tasks?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can set any task to repeat on a daily, weekly, monthly, or yearly schedule. When you complete a recurring task, Foci automatically creates the next occurrence with the correct due date so you never have to recreate it manually." } },
+    { "@type": "Question", name: "Can I set due dates on subtasks?", acceptedAnswer: { "@type": "Answer", text: "Yes. Each subtask can have its own due date, letting you break large tasks into deadline-tracked steps. Subtask due dates are factored into Smart Plan scheduling and the Today/This Week filters." } },
+    { "@type": "Question", name: "Can I move tasks between projects?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can reassign any task to a different project directly from the task's edit menu. There's no need to delete and recreate — just pick the target project and the task moves instantly." } },
+    { "@type": "Question", name: "Does Foci have a calendar view?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes a calendar view where clicking a date automatically sets it as the due date for a new or existing task. It gives you a visual overview of deadlines across the month." } },
+    { "@type": "Question", name: "Does Foci have Indian classical music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes curated Indian classical music playlists (sitar, flute, veena) via SoundCloud — ideal for long study sessions or deep work. You can switch between Indian classical, lo-fi, and ambient sounds." } },
   ],
 };
 

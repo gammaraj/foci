@@ -26,6 +26,13 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Smart Plan**: Algorithmic day-by-day task scheduler. Analyzes tasks, due dates, and daily session goals to generate an execution plan. Flags overdue and at-risk items. No AI required.
 - **Project Metadata**: Assign colors, due dates, and descriptions to projects. Archive completed projects. Color-coded dots for visual organization.
 - **Productivity Stats**: Dashboard with session heatmap, per-project charts, streak history, and daily/weekly/monthly analytics.
+- **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly. Completing a recurring task auto-creates the next occurrence with the correct due date.
+- **Subtask Due Dates**: Assign individual due dates to subtasks for granular deadline tracking. Integrated with Smart Plan and smart filters.
+- **Move Tasks Between Projects**: Reassign any task to a different project from the edit menu — no delete-and-recreate needed.
+- **Calendar View**: Click any date to auto-set it as a task's due date. Visual overview of deadlines across the month.
+- **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
+- **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
+- **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
 
 ## How to Use Foci
 
@@ -85,6 +92,21 @@ A: Yes. Stoic concepts map directly onto focus practice. The dichotomy of contro
 
 **Q: What is premeditatio malorum?**
 A: Premeditatio malorum is a Stoic practice of mentally rehearsing potential obstacles before starting a task. Before a focus session, ask: what will try to pull my attention away? Which distractions can I eliminate now? How will I respond to the rest? This preparation removes surprise and makes you far less likely to be derailed.
+
+**Q: Does Foci support recurring tasks?**
+A: Yes. Set any task to repeat daily, weekly, monthly, or yearly. When you complete a recurring task, Foci auto-creates the next occurrence with the correct due date — no manual re-entry required.
+
+**Q: Can I set due dates on subtasks?**
+A: Yes. Each subtask can have its own due date for granular deadline tracking. Subtask due dates integrate with Smart Plan scheduling and the Today/This Week filters.
+
+**Q: Can I move tasks between projects?**
+A: Yes. Reassign any task to a different project from the edit menu. The task moves instantly with all its subtasks, time logs, and metadata.
+
+**Q: Does Foci have a calendar view?**
+A: Yes. Foci includes a calendar view where clicking a date auto-sets it as the due date for a task. It provides a visual overview of deadlines across the month.
+
+**Q: Does Foci have Indian classical music?**
+A: Yes. Foci includes curated Indian classical music playlists (sitar, flute, veena) via SoundCloud, alongside lo-fi and ambient sounds — ideal for long study or deep work sessions.
 
 **Q: What is the best free Pomodoro timer?**
 A: Foci is a strong choice: it is completely free, requires no account, and combines a Pomodoro timer with task tracking, ambient music, daily goals, and streak tracking in a single tool. It works on any device and can be installed as a PWA.

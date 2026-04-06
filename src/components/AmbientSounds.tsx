@@ -196,7 +196,7 @@ export default function AmbientSounds() {
   const [scIdx, setScIdx] = useState(0);
   const [scShuffle, setScShuffle] = useState(false);
   const [scError, setScError] = useState(false);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
 
   // Remember that the user has seen the music section
   useEffect(() => {
@@ -311,7 +311,7 @@ export default function AmbientSounds() {
       >
         <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">🎵 Music & Sounds</span>
         <svg
-          className={`w-5 h-5 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
+          className={`w-5 h-5 text-slate-400 dark:text-slate-400 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -389,7 +389,7 @@ export default function AmbientSounds() {
           {/* Volume control — only show when a sound is active */}
           {activeSound && (
             <div className="flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-[#243350]">
-              <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
               </svg>
               <input
@@ -402,7 +402,7 @@ export default function AmbientSounds() {
                 className="flex-1 h-1 accent-blue-500 dark:accent-blue-400"
                 aria-label="Volume"
               />
-              <span className="text-xs text-slate-400 dark:text-slate-500 w-7 text-right">
+              <span className="text-xs text-slate-400 dark:text-slate-400 w-7 text-right">
                 {Math.round(volume * 100)}%
               </span>
             </div>
@@ -455,7 +455,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {ytStream.label}
               </span>
-              <span className="text-xs text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-slate-400">
                 {ytStream.channel}
               </span>
             </div>
@@ -498,7 +498,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {spotifyPlaylist.label}
               </span>
-              <span className="text-xs text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-slate-400">
                 {spotifyPlaylist.desc}
               </span>
             </div>
@@ -510,7 +510,7 @@ export default function AmbientSounds() {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
             </button>
           </div>
-          <p className="text-xs text-slate-400 dark:text-slate-500 text-center pb-2 px-3">
+          <p className="text-xs text-slate-400 dark:text-slate-400 text-center pb-2 px-3">
             Log in to Spotify for full tracks
           </p>
         </div>
@@ -598,7 +598,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {scPlaylist.label}
               </span>
-              <span className="text-xs text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-slate-400">
                 {scPlaylist.desc}
               </span>
             </div>
@@ -615,7 +615,7 @@ export default function AmbientSounds() {
 
       {/* SomaFM external links */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">SomaFM:</span>
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-400">SomaFM:</span>
         {SOMAFM_STATIONS.map((s) => (
           <a
             key={s.slug}

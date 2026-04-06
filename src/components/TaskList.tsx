@@ -715,7 +715,7 @@ export default function TaskList({
                 <span className="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-white/20" style={{ backgroundColor: focusProject.color }} />
               )}
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50 leading-none mb-0.5">Project Focus</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/50 leading-none mb-0.5">Project Focus</p>
                 <h2 className="text-base sm:text-lg font-bold truncate">{focusProject?.name ?? "Project"}</h2>
               </div>
             </div>
@@ -860,7 +860,7 @@ export default function TaskList({
             </button>
           </div>
           {showPlanInfo && (
-            <div className="mt-2 p-2.5 bg-slate-900 text-white text-[11px] sm:text-xs rounded-lg shadow-xl leading-relaxed">
+            <div className="mt-2 p-2.5 bg-slate-900 text-white text-xs rounded-lg shadow-xl leading-relaxed">
               Analyzes your tasks, due dates, and daily goals to create a day-by-day execution plan. Flags overdue and at-risk items.
             </div>
           )}
@@ -869,28 +869,28 @@ export default function TaskList({
         <div className="flex sm:hidden items-center gap-1 bg-white/10 rounded-lg p-0.5 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-xs font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
             title="Show tasks due today"
           >
             Today
           </button>
           <button
             onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-xs font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
             title="Show tasks due this week"
           >
             Week
           </button>
           <button
             onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-xs font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
             title="Show tasks due this month"
           >
             Month
           </button>
           <button
             onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-xs font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
             title="Show tasks due this year"
           >
             Year
@@ -1144,7 +1144,7 @@ export default function TaskList({
                         {p.name}
                       </span>
                       {p.dueDate && (
-                        <span className={`text-[10px] ${isDueDateOverdue(p.dueDate) ? "text-red-500" : "text-slate-400 dark:text-slate-400"}`}>
+                        <span className={`text-xs ${isDueDateOverdue(p.dueDate) ? "text-red-500" : "text-slate-400 dark:text-slate-300"}`}>
                           {formatDueDate(p.dueDate)}
                         </span>
                       )}
@@ -1400,7 +1400,7 @@ export default function TaskList({
                       <span className="text-base">{tpl.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium text-slate-700 dark:text-slate-200">{tpl.label}</div>
-                        <div className="text-xs text-slate-400 dark:text-slate-400">{tpl.description} · {tpl.tasks.length} tasks</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-300">{tpl.description} · {tpl.tasks.length} tasks</div>
                       </div>
                     </div>
                   </button>
@@ -1431,7 +1431,7 @@ export default function TaskList({
           <div className="py-4">
             <div className="text-center mb-4">
               <p className="text-slate-500 dark:text-slate-300 text-base mb-1">{isTimeFilter ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` : "No tasks yet"}</p>
-              <p className="text-slate-400 dark:text-slate-400 text-sm">{isTimeFilter ? "Set due dates on tasks to see them here" : "Add a task above or pick a template to get started"}</p>
+              <p className="text-slate-400 dark:text-slate-300 text-sm">{isTimeFilter ? "Set due dates on tasks to see them here" : "Add a task above or pick a template to get started"}</p>
             </div>
             {!isTimeFilter && (
             <div className="grid grid-cols-2 gap-2">
@@ -1447,7 +1447,7 @@ export default function TaskList({
                 >
                   <div className="text-xl mb-1">{tpl.emoji}</div>
                   <div className="text-sm font-medium text-slate-700 dark:text-slate-100 group-hover:text-purple-700 dark:group-hover:text-purple-200 transition-colors">{tpl.label}</div>
-                  <div className="text-sm text-slate-400 dark:text-slate-400">{tpl.tasks.length} tasks</div>
+                  <div className="text-sm text-slate-400 dark:text-slate-300">{tpl.tasks.length} tasks</div>
                 </button>
               ))}
             </div>
@@ -1551,7 +1551,7 @@ export default function TaskList({
                       <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
                     )}
                     {(isAllProjects || isTimeFilter) && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle">
+                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle">
                         {getProjectName(task.projectId)}
                       </span>
                     )}
@@ -1562,7 +1562,7 @@ export default function TaskList({
                   <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
                     <button
                       onClick={() => startEditing(task)}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-md transition-colors"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-md transition-colors"
                       aria-label={`Edit "${task.title}"`}
                       title="Edit task"
                     >
@@ -1572,12 +1572,12 @@ export default function TaskList({
                       Edit
                     </button>
                     <div
-                      className={`relative inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition-colors ${
+                      className={`relative inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
                         task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
                           ? "text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                           : task.dueDate && !task.completed && task.dueDate === getToday()
                             ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                            : "text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                            : "text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
                       }`}
                       title={task.dueDate ? `Due: ${formatDueDate(task.dueDate)}` : "Set due date"}
                     >
@@ -1596,17 +1596,17 @@ export default function TaskList({
                     </div>
                   </div>
                   {(hasSubtasks || task.description || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-400 dark:text-slate-400">·</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
                   )}
                   {task.description && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-0.5" title="Has description">
+                    <span className="text-xs text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" />
                       </svg>
                     </span>
                   )}
                   {task.description && (hasSubtasks || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-400 dark:text-slate-400">·</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
                   )}
                   {hasSubtasks && (
                     <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -1627,8 +1627,8 @@ export default function TaskList({
                   )}
                   {task.recurrence && (
                     <>
-                      <span className="text-xs text-slate-400 dark:text-slate-400">·</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
+                      <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
@@ -1773,7 +1773,7 @@ export default function TaskList({
                 {/* Move to project */}
                 {activeProjects.length > 1 && (
                   <div className="px-4 pb-2 flex items-center gap-2">
-                    <span className="text-xs text-slate-400 dark:text-slate-400 flex-shrink-0">Move to:</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-300 flex-shrink-0">Move to:</span>
                     <select
                       value={task.projectId}
                       onChange={(e) => moveTaskToProject(task.id, e.target.value)}
@@ -1787,7 +1787,7 @@ export default function TaskList({
                 )}
                 {/* Repeat schedule */}
                 <div className="px-4 pb-2 flex items-center gap-2">
-                  <span className="text-xs text-slate-400 dark:text-slate-400 flex-shrink-0">
+                  <span className="text-xs text-slate-400 dark:text-slate-300 flex-shrink-0">
                     <svg className="w-3.5 h-3.5 inline -mt-0.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
@@ -1859,7 +1859,7 @@ export default function TaskList({
                       title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}
                     >
                       {sub.dueDate ? (
-                        <span className="text-[11px] font-medium">{formatDueDate(sub.dueDate)}</span>
+                        <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
                       ) : (
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -2026,7 +2026,7 @@ export default function TaskList({
                   <span className="text-sm text-slate-400 dark:text-slate-400 line-through truncate">
                     {task.title}
                     {(isAllProjects || isTimeFilter) && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 align-middle no-underline">
+                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle no-underline">
                         {getProjectName(task.projectId)}
                       </span>
                     )}
@@ -2197,7 +2197,7 @@ function TaskCalendarView({
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-1 mb-1">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="text-center text-[11px] font-medium text-slate-400 dark:text-slate-400 uppercase">
+          <div key={d} className="text-center text-xs font-medium text-slate-400 dark:text-slate-300 uppercase">
             {d}
           </div>
         ))}
@@ -2246,7 +2246,7 @@ function TaskCalendarView({
                     />
                   ))}
                   {dayTasks.length > 3 && (
-                    <span className={`text-[8px] leading-none ${isSelected ? "text-white/70" : "text-slate-400"}`}>+{dayTasks.length - 3}</span>
+                    <span className={`text-[10px] leading-none ${isSelected ? "text-white/70" : "text-slate-400"}`}>+{dayTasks.length - 3}</span>
                   )}
                 </div>
               )}
@@ -2256,7 +2256,7 @@ function TaskCalendarView({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-slate-400 dark:text-slate-400">
+      <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-400 dark:text-slate-300">
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Pending</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> Done</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> Overdue</div>

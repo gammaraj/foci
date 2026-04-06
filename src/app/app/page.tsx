@@ -410,7 +410,7 @@ function ActiveTaskBanner({
     <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400">
       <div className="flex items-center gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
             Focusing on
           </p>
           <div className="flex items-center gap-1.5">

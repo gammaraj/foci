@@ -59,7 +59,7 @@ export default function DailyProgress({
           <div>
             <h2
               id="daily-progress-heading"
-              className="text-xs sm:text-base font-bold text-slate-800 dark:text-slate-50 mb-0 sm:mb-1"
+              className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-50 mb-0 sm:mb-1"
             >
               Today&apos;s Sessions
             </h2>
@@ -68,7 +68,7 @@ export default function DailyProgress({
               <span className="text-slate-400 dark:text-slate-300">/</span>
               {dailyGoal}
             </div>
-            <div className="hidden sm:block text-xs text-slate-400 dark:text-slate-400">
+            <div className="hidden sm:block text-xs text-slate-400 dark:text-slate-300">
               sessions / goal: {dailyGoal}
             </div>
           </div>

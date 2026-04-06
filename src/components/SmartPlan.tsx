@@ -47,20 +47,20 @@ function TaskRow({
             {t.title}
           </span>
           {st.overdue && (
-            <span className="text-[10px] font-medium text-red-500 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
+            <span className="text-xs font-medium text-red-500 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
               Overdue
             </span>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 mt-0.5">
-          <span className="text-[11px] text-slate-400 dark:text-slate-400">{st.projectName}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-300">{st.projectName}</span>
           {t.sessions > 0 && (
-            <span className="text-[11px] text-slate-400 dark:text-slate-400">
+            <span className="text-xs text-slate-400 dark:text-slate-300">
               · {t.sessions}s ({formatDuration(t.timeSpent)})
             </span>
           )}
           {subtaskProgress && (
-            <span className="text-[11px] text-slate-400 dark:text-slate-400">
+            <span className="text-xs text-slate-400 dark:text-slate-300">
               · {subtaskProgress}
             </span>
           )}
@@ -100,11 +100,11 @@ function DaySection({
           <h3 className={`text-sm font-semibold flex-shrink-0 ${isToday ? "text-blue-600 dark:text-blue-400" : "text-slate-700 dark:text-slate-200"}`}>
             {day.label}
           </h3>
-          <span className="text-[11px] text-slate-400 dark:text-slate-400 truncate">
+          <span className="text-xs text-slate-400 dark:text-slate-300 truncate">
             {day.date}
           </span>
         </div>
-        <span className="text-[11px] text-slate-400 dark:text-slate-400 flex-shrink-0 whitespace-nowrap">
+        <span className="text-xs text-slate-400 dark:text-slate-300 flex-shrink-0 whitespace-nowrap">
           {day.tasks.length} task{day.tasks.length !== 1 ? "s" : ""} · ~{totalTime}m
         </span>
       </div>
@@ -115,7 +115,7 @@ function DaySection({
           ))}
         </div>
       ) : (
-        <div className="px-3 py-3 text-sm text-slate-400 dark:text-slate-400 italic">
+        <div className="px-3 py-3 text-sm text-slate-400 dark:text-slate-300 italic">
           No tasks planned
         </div>
       )}
@@ -147,28 +147,28 @@ export default function SmartPlan({
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl px-3 py-2.5 text-center">
           <div className="text-lg font-bold text-slate-800 dark:text-white">{plan.summary.totalTasks}</div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400">Open Tasks</div>
+          <div className="text-xs text-slate-500 dark:text-slate-300">Open Tasks</div>
         </div>
         <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl px-3 py-2.5 text-center">
           <div className="text-lg font-bold text-slate-800 dark:text-white">{plan.summary.daysNeeded}</div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400">Days to Clear</div>
+          <div className="text-xs text-slate-500 dark:text-slate-300">Days to Clear</div>
         </div>
         {plan.summary.overdueCount > 0 && (
           <div className="bg-red-50 dark:bg-red-900/15 rounded-xl px-3 py-2.5 text-center">
             <div className="text-lg font-bold text-red-600 dark:text-red-400">{plan.summary.overdueCount}</div>
-            <div className="text-[11px] text-red-500 dark:text-red-400">Overdue</div>
+            <div className="text-xs text-red-500 dark:text-red-400">Overdue</div>
           </div>
         )}
         {plan.summary.atRiskCount > 0 && (
           <div className="bg-amber-50 dark:bg-amber-900/15 rounded-xl px-3 py-2.5 text-center">
             <div className="text-lg font-bold text-amber-600 dark:text-amber-400">{plan.summary.atRiskCount}</div>
-            <div className="text-[11px] text-amber-500 dark:text-amber-400">At Risk</div>
+            <div className="text-xs text-amber-500 dark:text-amber-400">At Risk</div>
           </div>
         )}
       </div>
 
       {/* Capacity note */}
-      <div className="text-[11px] text-slate-400 dark:text-slate-400 px-1">
+      <div className="text-xs text-slate-400 dark:text-slate-300 px-1">
         Based on {settings.dailyGoal} session{settings.dailyGoal !== 1 ? "s" : ""}/day × {workDurationMin}min
       </div>
 
@@ -178,7 +178,7 @@ export default function SmartPlan({
           <DaySection key={day.date} day={day} onStartTask={onStartTask} workDurationMin={workDurationMin} />
         ))
       ) : (
-        <div className="text-center py-8 text-slate-400 dark:text-slate-400">
+        <div className="text-center py-8 text-slate-400 dark:text-slate-300">
           <svg className="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -191,10 +191,10 @@ export default function SmartPlan({
       {plan.unscheduled.length > 0 && (
         <div className="mt-4">
           <div className="flex items-center gap-2 mb-1.5 px-1">
-            <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300">
               Backlog
             </h3>
-            <span className="text-[11px] text-slate-400 dark:text-slate-400">
+            <span className="text-xs text-slate-400 dark:text-slate-300">
               {plan.unscheduled.length} tasks beyond {plan.days.length}-day window
             </span>
           </div>

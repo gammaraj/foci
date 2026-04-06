@@ -45,7 +45,7 @@ export default function NotificationPrompt() {
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
               Enable notifications
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-slate-300 mt-0.5 leading-relaxed">
               Get notified when your focus sessions end and receive motivational quotes — even when this tab is in the background.
             </p>
             <div className="flex items-center gap-2 mt-3">
