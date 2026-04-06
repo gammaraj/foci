@@ -69,7 +69,10 @@ export interface Subtask {
   id: string;
   title: string;
   completed: boolean;
+  dueDate?: string; // ISO date string (YYYY-MM-DD)
 }
+
+export type RecurrenceType = "daily" | "weekly" | "monthly" | "yearly";
 
 export interface Task {
   id: string;
@@ -84,6 +87,7 @@ export interface Task {
   archivedAt?: number; // timestamp when archived, undefined = not archived
   order?: number; // manual sort order for drag-and-drop
   dueDate?: string; // ISO date string (YYYY-MM-DD), undefined = no due date
+  recurrence?: RecurrenceType; // if set, task repeats on this schedule
 }
 
 export const DEFAULT_SETTINGS: Settings = {

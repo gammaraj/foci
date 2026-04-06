@@ -48,6 +48,9 @@ const SPOTIFY_PLAYLISTS = [
 // Lofi Girl (soundcloud.com/lofi_girl) is a safe, stable source.
 // Verify URLs at https://soundcloud.com/lofi_girl/sets before adding new ones.
 const SOUNDCLOUD_PLAYLISTS = [
+  { url: "https://soundcloud.com/prabhdyal-singh-rai/sets/indian-classical-instrumental", label: "Indian Classical", desc: "Santoor, Flute & Sitar \u2022 44 tracks" },
+  { url: "https://soundcloud.com/abhijeet-mokal-abhi/sets/instrumental-different", label: "Indian Ragas", desc: "Ravi Shankar, Zakir Hussain \u2022 43 tracks" },
+  { url: "https://soundcloud.com/gurgeet-singh/sets/indian-classical-instrumental", label: "Indian Instrumental", desc: "Sarangi, Tabla & more \u2022 75 tracks" },
   { url: "https://soundcloud.com/lofi_girl/sets/peaceful-piano-music-to-focus", label: "Peaceful Piano", desc: "Lofi Girl \u2022 330 tracks \u2022 focus/study" },
   { url: "https://soundcloud.com/lofi_girl/sets/lofi-hiphop", label: "Lo-fi Hip Hop", desc: "Lofi Girl \u2022 217 tracks" },
   { url: "https://soundcloud.com/lofi_girl/sets/chill-guitar", label: "Chill Guitar", desc: "Lofi Girl \u2022 122 tracks" },

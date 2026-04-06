@@ -241,6 +241,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       ...(row.due_date ? { dueDate: row.due_date } : {}),
       ...(row.order !== null && row.order !== undefined ? { order: row.order } : {}),
       ...(row.archived_at ? { archivedAt: row.archived_at } : {}),
+      ...(row.recurrence ? { recurrence: row.recurrence } : {}),
     }));
   }
 
@@ -262,6 +263,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       due_date: t.dueDate ?? null,
       "order": t.order ?? null,
       archived_at: t.archivedAt ?? null,
+      recurrence: t.recurrence ?? null,
     }));
 
     const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
@@ -287,6 +289,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       due_date: task.dueDate ?? null,
       "order": task.order ?? null,
       archived_at: task.archivedAt ?? null,
+      recurrence: task.recurrence ?? null,
     };
     const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
     if (result.error) {

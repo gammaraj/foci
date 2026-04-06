@@ -99,6 +99,7 @@ body {
   background: rgba(15, 23, 42, 0.4);
   z-index: 40;
   backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
 }
 
 .settings-panel {
@@ -115,6 +116,7 @@ body {
   border-radius: 20px;
   box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
   border: none;
+  animation: scaleIn 0.2s ease-out;
 }
 
 @media (max-width: 640px) {
@@ -164,6 +166,26 @@ body {
 
 .animate-slide-up {
   animation: slideUp 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes checkBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.animate-check-bounce {
+  animation: checkBounce 0.3s ease-out;
 }
 
 .goal-completed {

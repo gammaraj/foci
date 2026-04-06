@@ -147,6 +147,7 @@ export default function AppPage() {
                   onReset={timer.reset}
                   compact
                 />
+                <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
                 <NotificationBell />
                 <button
                   onClick={() => setShowSettings(true)}
@@ -173,9 +174,24 @@ export default function AppPage() {
           </div>
         )}
 
-        {/* Timer column */}
-        {!timerCollapsed && !tasksFullscreen && (
-        <div className="w-full lg:w-[400px] lg:flex-shrink-0">
+        {/* Task list column */}
+        <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
+          <TaskList
+            key={taskListKey}
+            activeTaskId={activeTaskId}
+            onSelectTask={setActiveTaskId}
+            onStartTask={handleStartTask}
+            onCompleteTask={handleCompleteTask}
+            isTimerRunning={isRunning}
+            focusProjectId={focusProjectId}
+            onFocusProject={handleFocusProject}
+            isFullscreen={tasksFullscreen}
+            onToggleFullscreen={() => setTasksFullscreen(f => !f)}
+          />
+        </div>
+
+        {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
+        <div className={`w-full lg:w-[400px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
           <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
             <header
@@ -194,7 +210,7 @@ export default function AppPage() {
                 title="Hide timer panel"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7m-8-14l7 7-7 7" />
                 </svg>
               </button>
               <button
@@ -286,15 +302,15 @@ export default function AppPage() {
               {/* No-task nudge: only shown on desktop when idle and no task selected */}
               {!activeTaskId && timer.status === "idle" && (
                 <p className="hidden sm:block text-center text-xs text-slate-400 dark:text-slate-400 pb-2 -mt-1">
-                  Pick a task on the right to focus your session
+                  Pick a task on the left to focus your session
                 </p>
               )}
             </div>
 
             {timer.lastQuote && (
-              <div className="px-4 pb-3">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:bg-[#131d30] dark:from-transparent dark:to-transparent rounded-xl p-3.5 border border-blue-100/80 dark:border-[#243350] text-center">
-                  <p className="text-sm italic text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="px-4 pb-3 animate-slide-up">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-[#131d30] dark:to-[#1a2540] rounded-xl p-5 border border-blue-200/80 dark:border-[#243350] text-center shadow-sm">
+                  <p className="text-base sm:text-lg italic text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
                     &ldquo;{timer.lastQuote}&rdquo;
                   </p>
                 </div>
@@ -310,23 +326,6 @@ export default function AppPage() {
 
             <div className="h-2" />
           </div>
-        </div>
-        )}
-
-        {/* Task list column */}
-        <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
-          <TaskList
-            key={taskListKey}
-            activeTaskId={activeTaskId}
-            onSelectTask={setActiveTaskId}
-            onStartTask={handleStartTask}
-            onCompleteTask={handleCompleteTask}
-            isTimerRunning={isRunning}
-            focusProjectId={focusProjectId}
-            onFocusProject={handleFocusProject}
-            isFullscreen={tasksFullscreen}
-            onToggleFullscreen={() => setTasksFullscreen(f => !f)}
-          />
         </div>
 
         <div className="sr-only" aria-live="polite" aria-atomic="true" />

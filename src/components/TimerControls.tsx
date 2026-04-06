@@ -22,7 +22,7 @@ export default function TimerControls({
       <div className="flex items-center gap-1" role="group" aria-label="Timer control buttons">
         <button
           onClick={onStartPause}
-          className={`p-1.5 rounded-lg transition-colors ${isRunning ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"}`}
+          className={`p-1.5 rounded-lg transition-all active:scale-90 ${isRunning ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"}`}
           aria-label={isRunning ? "Pause timer" : "Start timer"}
         >
           {isRunning ? (

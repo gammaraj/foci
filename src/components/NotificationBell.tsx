@@ -44,7 +44,7 @@ export default function NotificationBell() {
   return (
     <button
       onClick={handleClick}
-      className="relative text-white hover:text-slate-200 transition p-2 rounded-full hover:bg-white/10"
+      className="relative text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10"
       aria-label={title}
       title={title}
     >
