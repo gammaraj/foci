@@ -33,6 +33,13 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
 - **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
 - **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
+- **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly. Completing a recurring task auto-creates the next occurrence with the correct due date.
+- **Subtask Due Dates**: Assign individual due dates to subtasks for granular deadline tracking. Integrated with Smart Plan and smart filters.
+- **Move Tasks Between Projects**: Reassign any task to a different project from the edit menu — no delete-and-recreate needed.
+- **Calendar View**: Click any date to auto-set it as a task's due date. Visual overview of deadlines across the month.
+- **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
+- **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
+- **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
 
 ## How to Use Foci
 
@@ -196,6 +203,8 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - Blog – Morning Routine: https://usefoci.com/blog/productive-morning-routine
 - Blog – Digital Detox: https://usefoci.com/blog/digital-detox-for-productivity
 - Blog – Time Blocking: https://usefoci.com/blog/time-blocking-method
+- Blog – ADHD Focus Strategies: https://usefoci.com/blog/adhd-focus-strategies
+- Blog – Best Music for Studying: https://usefoci.com/blog/best-music-for-studying-and-focus
 
 ---
 
@@ -877,3 +886,87 @@ The key difference from a to-do list: you're committing to when, not just what.
 #### Time blocking + Pomodoro
 
 Use time blocking to decide what and when — then use Pomodoro sessions within each block to maintain focus. A 90-minute deep work block might contain three 25-minute sessions with 5-minute breaks.
+
+---
+
+### ADHD Focus Strategies: How to Stay on Task When Your Brain Won't Cooperate
+
+> URL: https://usefoci.com/blog/adhd-focus-strategies
+> Date: 2026-04-06 | Reading time: 8 min read
+> Tags: ADHD, focus, productivity, study tips, attention
+
+If you have ADHD, you already know the paradox: you can hyperfocus for six hours on something interesting, but you can't make yourself start a 20-minute task that actually matters. The issue was never willpower — it's a neurological difference in how your brain manages attention, rewards, and dopamine.
+
+#### Why traditional productivity advice fails for ADHD
+
+Most productivity advice assumes you can regulate your attention — the exact thing ADHD makes difficult. Key challenges: dopamine dysregulation (low-stimulation tasks feel physically uncomfortable), impaired working memory, time blindness, difficulty with task initiation, and emotional dysregulation.
+
+#### Strategy 1: External timers over internal motivation
+
+The Pomodoro technique works for ADHD because the timer creates artificial urgency. Start with short sessions (10-15 min). Use a visible countdown timer. Commit to just one session — momentum carries you from there.
+
+#### Strategy 2: Make tasks smaller than they need to be
+
+Break every task into absurdly small first steps. "Write the report" becomes "open the document and type the first sentence." Small tasks don't trigger avoidance, starting creates momentum, and completion generates dopamine.
+
+#### Strategy 3: Brown noise and ambient sound
+
+Brown noise addresses two ADHD challenges: it masks distracting sounds and provides just enough stimulation to prevent restless novelty-seeking. Better than white noise for ADHD — warmer, less fatiguing over long sessions. Keep volume at 40-50%.
+
+#### Strategy 4: One task visible at a time
+
+Filter to Today. Select your task before starting the timer. Use fullscreen mode. Reduce decisions — every decision point is a potential exit ramp.
+
+#### Strategy 5: Streaks as external accountability
+
+ADHD brains are incentive-driven. Streaks provide immediate reward, leverage loss aversion, and make the goal binary. Set a deliberately low daily goal — consistency beats intensity.
+
+#### Strategy 6: Reduce the activation energy to start
+
+Install your focus tool as a PWA. Keep it one click away. Use the same routine every session. Routine eliminates decisions.
+
+#### Strategy 7: Recurring tasks for routines your brain forgets
+
+ADHD working memory is unreliable. Set daily and weekly recurring tasks so the system remembers for you — freeing cognitive bandwidth for actual work.
+
+#### Strategy 8: Body doubling (virtually)
+
+Working in the presence of another person creates social accountability. Cafe ambient sound simulates the body doubling effect without the commute.
+
+The full system: Open app, filter to today, pick task, start brown noise, start timer, work, break, repeat. Every step works with an ADHD brain.
+
+---
+
+### Best Music for Studying and Focus: A Complete Guide (2026)
+
+> URL: https://usefoci.com/blog/best-music-for-studying-and-focus
+> Date: 2026-04-06 | Reading time: 7 min read
+> Tags: study music, focus, ambient sounds, productivity, lo-fi
+
+Music can be a powerful focus tool or a total distraction. Research shows background music improves performance on repetitive tasks but can impair complex reasoning. The key: music should be instrumental, predictable, low-complexity, and consistent volume.
+
+#### Tier 1: Ambient noise (brown noise, rain, cafe)
+
+Best for deep reading, writing, programming. Brown noise masks distracting sounds without high-frequency fatigue. Rain has organic texture. Cafe ambiance (~70 dB) enhances creative thinking per University of Chicago research. All work offline in Foci via Web Audio API.
+
+#### Tier 2: Lo-fi hip-hop
+
+Best for routine studying, note-taking, flashcard review. No lyrics, repetitive chords, ~70-90 BPM. Less effective for deep comprehension tasks since even instrumental beats engage the motor cortex.
+
+#### Tier 3: Classical music (Western and Indian)
+
+Best for long sessions (2+ hours). Baroque at ~60 BPM supports memory encoding. Indian classical ragas (Yaman, Bhairavi, Darbari) are built for sustained mood — drone-based, long-form, gradual development, no lyrics in instrumental renditions. Foci includes curated Indian classical playlists via SoundCloud.
+
+#### Tier 4: Video game soundtracks
+
+Best for repetitive tasks. Literally designed to keep you focused without distraction. Recommended: Stardew Valley, Minecraft, Zelda, Animal Crossing.
+
+#### What to avoid
+
+Lyrics in your language, shuffle across genres, discovery playlists, podcasts and audiobooks.
+
+#### Matching music to tasks
+
+Deep reading: brown noise. Writing: brown noise or quiet classical. Note-taking: lo-fi or Indian classical. Brainstorming: cafe ambiance. Programming: brown noise, lo-fi, or game OSTs. Math: brown noise or silence.
+
+Volume rule: keep at 40-60%. Moderate volume outperforms both silence and loud music.

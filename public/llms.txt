@@ -216,5 +216,7 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [The Productive Morning Routine: How to Win Your Day Before 9 AM](https://usefoci.com/blog/productive-morning-routine) — 2026-03-18
 - [Digital Detox for Productivity: How to Reclaim Your Focus From Screens](https://usefoci.com/blog/digital-detox-for-productivity) — 2026-03-20
 - [Time Blocking: The Scheduling Method Used by the World's Most Productive People](https://usefoci.com/blog/time-blocking-method) — 2026-03-22
+- [ADHD Focus Strategies: How to Stay on Task When Your Brain Won't Cooperate](https://usefoci.com/blog/adhd-focus-strategies) — 2026-04-06
+- [Best Music for Studying and Focus: A Complete Guide (2026)](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-04-06
 
 For the full text of all blog posts, see: https://usefoci.com/llms-full.txt
