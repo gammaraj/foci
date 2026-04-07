@@ -4,33 +4,28 @@
       <stop offset="0%" stop-color="#1a1a36"/>
       <stop offset="100%" stop-color="#0c0c18"/>
     </linearGradient>
-    <radialGradient id="bgSheen" cx="256" cy="200" r="350" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.025)"/>
-      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    <radialGradient id="glow" cx="256" cy="256" r="140" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(217,119,6,0.15)"/>
+      <stop offset="100%" stop-color="rgba(217,119,6,0)"/>
     </radialGradient>
-    <linearGradient id="ringOuter" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.5)"/>
-      <stop offset="50%" stop-color="rgba(255,255,255,0.08)"/>
-      <stop offset="100%" stop-color="rgba(255,255,255,0.3)"/>
+    <linearGradient id="arcOuter" x1="76" y1="76" x2="436" y2="436" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="50%" stop-color="#c2410c"/>
+      <stop offset="100%" stop-color="#d97706"/>
     </linearGradient>
-    <linearGradient id="ringInner" x1="140" y1="140" x2="372" y2="372" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
-      <stop offset="50%" stop-color="rgba(255,255,255,0.15)"/>
-      <stop offset="100%" stop-color="rgba(255,255,255,0.5)"/>
+    <linearGradient id="arcInner" x1="146" y1="146" x2="366" y2="366" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(217,119,6,0.65)"/>
+      <stop offset="50%" stop-color="rgba(194,65,12,0.65)"/>
+      <stop offset="100%" stop-color="rgba(217,119,6,0.65)"/>
     </linearGradient>
-    <radialGradient id="glow" cx="256" cy="256" r="100" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="rgba(195,210,255,0.18)"/>
-      <stop offset="100%" stop-color="rgba(195,210,255,0)"/>
-    </radialGradient>
     <radialGradient id="core" cx="0.4" cy="0.35" r="0.6">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#c8d4ff"/>
+      <stop offset="100%" stop-color="#fde68a"/>
     </radialGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect width="512" height="512" rx="112" fill="url(#bgSheen)"/>
-  <circle cx="256" cy="256" r="100" fill="url(#glow)"/>
-  <circle cx="256" cy="256" r="170" stroke="url(#ringOuter)" stroke-width="16" fill="none"/>
-  <circle cx="256" cy="256" r="102" stroke="url(#ringInner)" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="551.9 89.0" transform="rotate(120 256 256)"/>
-  <circle cx="256" cy="256" r="36" fill="url(#core)"/>
+  <circle cx="256" cy="256" r="140" fill="url(#glow)"/>
+  <circle cx="256" cy="256" r="180" stroke="url(#arcOuter)" stroke-width="18" fill="none" stroke-linecap="round" stroke-dasharray="282.74 94.25" transform="rotate(-90 256 256)"/>
+  <circle cx="256" cy="256" r="110" stroke="url(#arcInner)" stroke-width="13" fill="none" stroke-linecap="round" stroke-dasharray="172.79 57.60" transform="rotate(-30 256 256)"/>
+  <circle cx="256" cy="256" r="40" fill="url(#core)"/>
 </svg>

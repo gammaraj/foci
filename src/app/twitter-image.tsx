@@ -30,21 +30,19 @@ export default function Image() {
           }}
         >
           {/* Icon background */}
-          <div style={{ position: "absolute", width: 96, height: 96, borderRadius: 24, background: "linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)" }} />
-          {/* Crosshair circle */}
-          <div style={{ position: "absolute", width: 60, height: 60, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.85)" }} />
-          {/* Inner dashed ring */}
-          <div style={{ position: "absolute", width: 36, height: 36, borderRadius: "50%", border: "2px dashed rgba(255,255,255,0.5)" }} />
-          {/* Top tick */}
-          <div style={{ position: "absolute", width: 3, height: 14, borderRadius: 2, background: "rgba(255,255,255,0.85)", top: 4 }} />
-          {/* Bottom tick */}
-          <div style={{ position: "absolute", width: 3, height: 14, borderRadius: 2, background: "rgba(255,255,255,0.85)", bottom: 4 }} />
-          {/* Left tick */}
-          <div style={{ position: "absolute", width: 14, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.85)", left: 4 }} />
-          {/* Right tick */}
-          <div style={{ position: "absolute", width: 14, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.85)", right: 4 }} />
+          <div style={{ position: "absolute", width: 96, height: 96, borderRadius: 24, background: "linear-gradient(135deg, #d97706 0%, #c2410c 100%)" }} />
+          {/* Outer ring */}
+          <div style={{ position: "absolute", width: 64, height: 64, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.85)" }} />
+          {/* Inner ring */}
+          <div style={{ position: "absolute", width: 38, height: 38, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.3)" }} />
+          {/* Blade 1 */}
+          <div style={{ position: "absolute", width: 3, height: 14, borderRadius: 2, background: "rgba(255,255,255,0.8)", top: 21, left: 46.5, transform: "rotate(30deg)" }} />
+          {/* Blade 2 */}
+          <div style={{ position: "absolute", width: 3, height: 14, borderRadius: 2, background: "rgba(255,255,255,0.8)", top: 51, left: 63.5, transform: "rotate(150deg)" }} />
+          {/* Blade 3 */}
+          <div style={{ position: "absolute", width: 3, height: 14, borderRadius: 2, background: "rgba(255,255,255,0.8)", top: 51, left: 29.5, transform: "rotate(270deg)" }} />
           {/* Focal point */}
-          <div style={{ width: 14, height: 14, borderRadius: "50%", background: "white" }} />
+          <div style={{ width: 15, height: 15, borderRadius: "50%", background: "white" }} />
         </div>
         <div
           style={{

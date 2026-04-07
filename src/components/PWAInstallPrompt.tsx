@@ -49,13 +49,9 @@ export default function PWAInstallPrompt() {
       <div className="flex items-start gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-neutral-900 dark:bg-neutral-800 flex-shrink-0">
           <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="11" stroke="white" strokeWidth="2" strokeOpacity="0.25" fill="none"/>
-            <circle cx="16" cy="16" r="7" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" fill="none"/>
-            <circle cx="16" cy="16" r="3" fill="white"/>
-            <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
-            <line x1="16" y1="26" x2="16" y2="30" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
-            <line x1="2" y1="16" x2="6" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
-            <line x1="26" y1="16" x2="30" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+            <circle cx="16" cy="16" r="12" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeDasharray="18.85 6.28" transform="rotate(-90 16 16)"/>
+            <circle cx="16" cy="16" r="7" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeDasharray="11 3.67" transform="rotate(-30 16 16)" opacity="0.6"/>
+            <circle cx="16" cy="16" r="2.5" fill="white"/>
           </svg>
         </div>
         <div className="flex-1 min-w-0">

@@ -13,72 +13,67 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)",
+          background: "linear-gradient(135deg, #d97706 0%, #c2410c 100%)",
           borderRadius: 40,
         }}
       >
-        {/* Crosshair circle */}
+        {/* Outer ring */}
         <div
           style={{
             position: "absolute",
-            width: 108,
-            height: 108,
+            width: 120,
+            height: 120,
             borderRadius: "50%",
-            border: "5.5px solid rgba(255, 255, 255, 0.85)",
+            border: "5px solid rgba(255, 255, 255, 0.85)",
           }}
         />
-        {/* Inner dashed ring */}
+        {/* Inner ring */}
         <div
           style={{
             position: "absolute",
-            width: 60,
-            height: 60,
+            width: 70,
+            height: 70,
             borderRadius: "50%",
-            border: "3.5px dashed rgba(255, 255, 255, 0.5)",
+            border: "3px solid rgba(255, 255, 255, 0.3)",
           }}
         />
-        {/* Top tick */}
+        {/* Blade 1 - upper left */}
         <div
           style={{
             position: "absolute",
             width: 5.5,
             height: 26,
             borderRadius: 3,
-            background: "rgba(255, 255, 255, 0.85)",
-            top: 8,
+            background: "rgba(255, 255, 255, 0.8)",
+            top: 40,
+            left: 87,
+            transform: "rotate(30deg)",
           }}
         />
-        {/* Bottom tick */}
+        {/* Blade 2 - lower right */}
         <div
           style={{
             position: "absolute",
             width: 5.5,
             height: 26,
             borderRadius: 3,
-            background: "rgba(255, 255, 255, 0.85)",
-            bottom: 8,
+            background: "rgba(255, 255, 255, 0.8)",
+            top: 96,
+            left: 119,
+            transform: "rotate(150deg)",
           }}
         />
-        {/* Left tick */}
+        {/* Blade 3 - lower left */}
         <div
           style={{
             position: "absolute",
-            width: 26,
-            height: 5.5,
+            width: 5.5,
+            height: 26,
             borderRadius: 3,
-            background: "rgba(255, 255, 255, 0.85)",
-            left: 8,
-          }}
-        />
-        {/* Right tick */}
-        <div
-          style={{
-            position: "absolute",
-            width: 26,
-            height: 5.5,
-            borderRadius: 3,
-            background: "rgba(255, 255, 255, 0.85)",
-            right: 8,
+            background: "rgba(255, 255, 255, 0.8)",
+            top: 96,
+            left: 55,
+            transform: "rotate(270deg)",
           }}
         />
         {/* Focal point */}

@@ -43,15 +43,11 @@ export default function Navbar() {
     <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl shadow-sm" style={{ background: "linear-gradient(135deg, #f59e0b, #ea580c)", boxShadow: "0 1px 3px rgba(245,158,11,0.25)" }}>
+          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl shadow-sm" style={{ background: "linear-gradient(135deg, #d97706, #c2410c)", boxShadow: "0 1px 3px rgba(217,119,6,0.3)" }}>
             <svg width="18" height="18" viewBox="0 0 32 32" fill="none" className="sm:w-5 sm:h-5">
-              <circle cx="16" cy="16" r="10" stroke="white" strokeWidth="2" fill="none"/>
-              <circle cx="16" cy="16" r="5" stroke="white" strokeWidth="1.5" fill="none" strokeDasharray="4 3"/>
-              <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <line x1="16" y1="26" x2="16" y2="30" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <line x1="2" y1="16" x2="6" y2="16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <line x1="26" y1="16" x2="30" y2="16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <circle cx="16" cy="16" r="2" fill="white"/>
+              <circle cx="16" cy="16" r="12" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeDasharray="18.85 6.28" transform="rotate(-90 16 16)"/>
+              <circle cx="16" cy="16" r="7" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeDasharray="11 3.67" transform="rotate(-30 16 16)" opacity="0.6"/>
+              <circle cx="16" cy="16" r="2.5" fill="white"/>
             </svg>
           </div>
           <span className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white">Foci</span>
