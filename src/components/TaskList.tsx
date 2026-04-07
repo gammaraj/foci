@@ -1006,12 +1006,14 @@ export default function TaskList({
             <span className={`text-xs ${
               isAllProjects
                 ? "text-blue-200"
-                : "text-slate-500 dark:text-slate-300"
+                : "text-slate-400 dark:text-slate-500"
             }`}>
               {tasks.filter((t) => !t.completed && !t.archivedAt).length}
             </span>
           </button>
-          {sortedProjects.map((p) => (
+          {sortedProjects.map((p) => {
+            const count = tasks.filter((t) => t.projectId === p.id && !t.completed).length;
+            return (
             <button
               key={p.id}
               onClick={() => selectProject(p.id)}
@@ -1025,15 +1027,18 @@ export default function TaskList({
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
               )}
               <span className="truncate max-w-[100px]" title={p.description ? `${p.name} — ${p.description}` : p.name}>{p.name}</span>
-              <span className={`text-xs ${
-                p.id === selectedProjectId
-                  ? "text-blue-200"
-                  : "text-slate-500 dark:text-slate-300"
-              }`}>
-                {tasks.filter((t) => t.projectId === p.id && !t.completed).length}
-              </span>
+              {count > 0 && (
+                <span className={`text-xs ${
+                  p.id === selectedProjectId
+                    ? "text-blue-200"
+                    : "text-slate-400 dark:text-slate-500"
+                }`}>
+                  {count}
+                </span>
+              )}
             </button>
-          ))}
+            );
+          })}
 
           {/* Add project button */}
           <button
@@ -1683,10 +1688,10 @@ export default function TaskList({
                         onStartTask(task.id);
                       }
                     }}
-                    className={`flex-shrink-0 rounded transition-colors hidden sm:flex items-center justify-center ${
+                    className={`flex-shrink-0 rounded transition-all hidden sm:flex items-center justify-center ${
                       activeTaskId === task.id
                         ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        : "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                        : "px-2.5 py-1.5 text-xs sm:text-sm font-medium text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 hover:bg-blue-600 hover:text-white hover:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white dark:hover:border-blue-600"
                     }`}
                     title={
                       activeTaskId === task.id
