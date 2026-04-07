@@ -759,31 +759,31 @@ export default function TaskList({
             <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
                 title="Show tasks due today"
               >
-                Today{todayTasks.length > 0 && <span> ({todayTasks.length})</span>}
+                Today
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
                 title="Show tasks due this week"
               >
-                Week{thisWeekTasks.length > 0 && <span> ({thisWeekTasks.length})</span>}
+                Week
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
                 title="Show tasks due this month"
               >
-                Month{thisMonthTasks.length > 0 && <span> ({thisMonthTasks.length})</span>}
+                Month
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
                 title="Show tasks due this year"
               >
-                Year{thisYearTasks.length > 0 && <span> ({thisYearTasks.length})</span>}
+                Year
               </button>
             </div>
             {/* View mode toggles */}
@@ -869,28 +869,28 @@ export default function TaskList({
         <div className="flex sm:hidden items-center gap-1 bg-white/10 rounded-lg p-0.5 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
             title="Show tasks due today"
           >
             Today
           </button>
           <button
             onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
             title="Show tasks due this week"
           >
             Week
           </button>
           <button
             onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
             title="Show tasks due this month"
           >
             Month
           </button>
           <button
             onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white/90 hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
             title="Show tasks due this year"
           >
             Year
