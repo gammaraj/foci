@@ -52,11 +52,15 @@ export default function WeatherTime() {
 
     async function fetchWeather() {
       try {
-        // Try geolocation
-        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
-        });
-        const { latitude, longitude } = pos.coords;
+        // Get location from IP (no permission needed)
+        const ipRes = await fetch("https://ipapi.co/json/");
+        if (!ipRes.ok) throw new Error("IP geolocation failed");
+        const ipData = await ipRes.json();
+        const latitude = ipData.latitude;
+        const longitude = ipData.longitude;
+        const city = ipData.city || "";
+
+        if (!latitude || !longitude) throw new Error("No coordinates from IP");
 
         // Get weather from Open-Meteo (free, no API key)
         const res = await fetch(
@@ -64,20 +68,6 @@ export default function WeatherTime() {
         );
         if (!res.ok) throw new Error("Weather API error");
         const data = await res.json();
-
-        // Get city name via reverse geocoding (Open-Meteo geocoding)
-        let city = "";
-        try {
-          const geoRes = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`
-          );
-          if (geoRes.ok) {
-            const geoData = await geoRes.json();
-            city = geoData.address?.city || geoData.address?.town || geoData.address?.county || "";
-          }
-        } catch {
-          // City name is optional
-        }
 
         if (cancelled) return;
 
@@ -87,7 +77,7 @@ export default function WeatherTime() {
 
         setWeather({ temp, description: desc, icon, city });
       } catch {
-        // Geolocation denied or API failed — just show clock
+        // IP geolocation or weather API failed — just show clock
       } finally {
         if (!cancelled) setLoading(false);
       }
