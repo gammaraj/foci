@@ -686,14 +686,14 @@ export default function TaskList({
       // Pin the active task to the top
       if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
       if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
-      // If both have manual order, respect it
-      if (a.order != null && b.order != null) return a.order - b.order;
-      if (a.order != null) return -1;
-      if (b.order != null) return 1;
       // Tasks with due dates come first, sorted by due date ascending
       if (a.dueDate && !b.dueDate) return -1;
       if (!a.dueDate && b.dueDate) return 1;
       if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
+      // Within same due date (or both without), respect manual order
+      if (a.order != null && b.order != null) return a.order - b.order;
+      if (a.order != null) return -1;
+      if (b.order != null) return 1;
       // Otherwise newest first by created date
       return (b.createdAt || 0) - (a.createdAt || 0);
     });
