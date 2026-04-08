@@ -14,6 +14,7 @@ import OnboardingTour from "@/components/OnboardingTour";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import DueDateReminders from "@/components/DueDateReminders";
 import NotificationBell from "@/components/NotificationBell";
+import WeatherTime from "@/components/WeatherTime";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import Link from "next/link";
@@ -216,6 +217,7 @@ export default function AppPage() {
 
         {/* Task list column */}
         <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
+          <WeatherTime />
           <TaskList
             key={taskListKey}
             activeTaskId={activeTaskId}

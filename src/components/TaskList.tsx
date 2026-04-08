@@ -334,6 +334,19 @@ export default function TaskList({
     if (!title) return;
 
     const dueDate = newTaskDueDate || (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined);
+
+    // For tasks without a due date, place them at the top by assigning an order
+    // value below all existing manually-ordered tasks
+    let newOrder: number | undefined;
+    if (!dueDate) {
+      const orderedNoDueDateOrders = tasks
+        .filter((t) => !t.completed && !t.archivedAt && !t.dueDate && t.order != null)
+        .map((t) => t.order as number);
+      if (orderedNoDueDateOrders.length > 0) {
+        newOrder = Math.min(...orderedNoDueDateOrders) - 1;
+      }
+    }
+
     const task: Task = {
       id: crypto.randomUUID(),
       title,
@@ -344,12 +357,14 @@ export default function TaskList({
       projectId: (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId,
       subtasks: [],
       ...(dueDate ? { dueDate } : {}),
+      ...(newOrder != null ? { order: newOrder } : {}),
     };
 
     persist([...tasks, task]);
     trackTaskAdded();
     setNewTaskTitle("");
     setNewTaskDueDate("");
+    setExpandedTaskId(task.id);
   };
 
   const toggleComplete = (id: string) => {
@@ -1504,7 +1519,11 @@ export default function TaskList({
               onDragOver={(e) => handleDragOver(e, task.id)}
               onDrop={() => handleDrop(task.id)}
               onDragEnd={handleDragEnd}
-              className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors ${
+              onClick={() => {
+                setExpandedTaskId(isExpanded ? null : task.id);
+                setNewSubtaskTitle("");
+              }}
+              className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors cursor-pointer ${
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 border-l-[3px] border-l-blue-500 dark:border-l-blue-400"
                   : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30]"
@@ -1552,78 +1571,27 @@ export default function TaskList({
               </div>
               {/* Checkbox */}
               <button
-                onClick={() => toggleComplete(task.id)}
+                onClick={(e) => { e.stopPropagation(); toggleComplete(task.id); }}
                 className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
                 aria-label={`Mark "${task.title}" complete`}
               />
 
               {/* Task content */}
               <div className="flex-1 min-w-0">
-                {editingId === task.id ? (
-                  <input
-                    type="text"
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    onBlur={() => saveEdit(task.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") saveEdit(task.id);
-                      if (e.key === "Escape") setEditingId(null);
-                    }}
-                    className="w-full px-2 py-1 text-[15px] border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                    autoFocus
-                  />
-                ) : (
-                  <div
-                    className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words cursor-pointer leading-snug"
-                    onDoubleClick={() => startEditing(task)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === "Enter") startEditing(task); }}
-                  >
-                    {task.title}
-                    {activeTaskId === task.id && isTimerRunning && (
-                      <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
-                    )}
-                    {(isAllProjects || isTimeFilter) && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle">
-                        {getProjectName(task.projectId)}
-                      </span>
-                    )}
-                  </div>
-                )}
+                <div
+                  className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words leading-snug"
+                >
+                  {task.title}
+                  {activeTaskId === task.id && isTimerRunning && (
+                    <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
+                  )}
+                  {(isAllProjects || isTimeFilter) && (
+                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle">
+                      {getProjectName(task.projectId)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2 mt-1">
-                  {/* Inline action buttons — edit (hover-only) */}
-                  <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-                    <button
-                      onClick={() => startEditing(task)}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-md transition-colors"
-                      aria-label={`Edit "${task.title}"`}
-                      title="Edit task"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                      Edit
-                    </button>
-                    {!task.dueDate && (
-                      <div
-                        className="relative inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                        title="Set due date"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Due date
-                        <input
-                          type="date"
-                          value=""
-                          onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
-                          onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
-                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                        />
-                      </div>
-                    )}
-                  </div>
                   {/* Due date — always visible when set */}
                   {task.dueDate && (
                     <div
@@ -1694,34 +1662,19 @@ export default function TaskList({
                 </div>
               </div>
 
-              {/* Expand subtasks toggle */}
-              <button
-                onClick={() => {
-                  setExpandedTaskId(isExpanded ? null : task.id);
-                  setNewSubtaskTitle("");
-                }}
-                className={`flex-shrink-0 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] rounded-md transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+              {/* Expand chevron indicator */}
+              <div
+                className={`flex-shrink-0 min-w-[28px] sm:min-w-[36px] min-h-[28px] sm:min-h-[36px] rounded-md flex items-center justify-center ${
                   isExpanded
-                    ? "text-blue-500 dark:text-blue-400 p-1 sm:p-1.5"
-                    : hasSubtasks
-                      ? "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 px-1.5 sm:px-2 py-1 sm:py-1.5"
-                      : "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 p-1 sm:p-1.5"
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-slate-300 dark:text-slate-500"
                 }`}
-                title={isExpanded ? "Collapse subtasks" : hasSubtasks ? "Expand subtasks" : "Add subtask"}
+                title={isExpanded ? "Collapse" : "Expand"}
               >
-                {hasSubtasks && !isExpanded ? (
-                  <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    <span className="text-sm font-medium">{completedSubtasks}/{subtasks.length}</span>
-                  </>
-                ) : (
-                  <svg className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-45" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                )}
-              </button>
+                <svg className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
 
               {/* Start / Select / In-progress button — hidden on mobile */}
               {activeTaskId === task.id && isTimerRunning ? (
@@ -1731,7 +1684,8 @@ export default function TaskList({
                 </span>
               ) : (
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (activeTaskId === task.id) {
                         onSelectTask(null);
                       } else {
@@ -1767,7 +1721,7 @@ export default function TaskList({
               {/* Delete — visible on hover (desktop), hidden on mobile to save space */}
               {!(isTimerRunning && activeTaskId === task.id) && (
                 <button
-                  onClick={() => deleteTask(task.id)}
+                  onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
                   className="flex-shrink-0 p-2 rounded-md text-slate-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                   aria-label={`Delete "${task.title}"`}
                 >
@@ -1788,13 +1742,39 @@ export default function TaskList({
               )}
             </div>
 
-            {/* Subtasks panel */}
+            {/* Task detail panel */}
             {isExpanded && (
-              <div className={`border border-t-0 rounded-b-xl py-3 space-y-1 ${
+              <div onClick={(e) => e.stopPropagation()} className={`border border-t-0 rounded-b-xl py-3 space-y-2 ${
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
                   : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
               }`}>
+                {/* Editable title */}
+                <div className="px-4 pb-1">
+                  {editingId === task.id ? (
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      onBlur={() => saveEdit(task.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEdit(task.id);
+                        if (e.key === "Escape") setEditingId(null);
+                      }}
+                      className="w-full px-2 py-1.5 text-[15px] font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                      autoFocus
+                    />
+                  ) : (
+                    <button
+                      onClick={() => startEditing(task)}
+                      className="w-full text-left px-2 py-1.5 text-[15px] font-medium text-slate-800 dark:text-slate-50 rounded-lg border border-transparent hover:border-slate-200 dark:hover:border-[#243350] hover:bg-white dark:hover:bg-[#131d30] transition-colors"
+                      title="Click to edit title"
+                    >
+                      {task.title}
+                    </button>
+                  )}
+                </div>
+
                 {/* Description */}
                 <div className="px-4 pb-2">
                   {editingDescId === task.id ? (
@@ -1825,41 +1805,83 @@ export default function TaskList({
                     </button>
                   )}
                 </div>
-                {/* Move to project */}
-                {activeProjects.length > 1 && (
-                  <div className="px-4 pb-2 flex items-center gap-2">
-                    <span className="text-xs text-slate-400 dark:text-slate-300 flex-shrink-0">Move to:</span>
-                    <select
-                      value={task.projectId}
-                      onChange={(e) => moveTaskToProject(task.id, e.target.value)}
-                      className="flex-1 text-xs px-2 py-1 rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] dark:text-white outline-none cursor-pointer"
-                    >
-                      {activeProjects.map((p) => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
-                      ))}
-                    </select>
+                {/* Task metadata — due date, recurrence, project */}
+                <div className="px-4 pb-2 flex flex-wrap items-center gap-2">
+                  {/* Due date */}
+                  <div
+                    className={`relative inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+                      task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
+                        ? "border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20"
+                        : task.dueDate && task.dueDate === getToday()
+                          ? "border-orange-200 dark:border-orange-800 text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
+                          : task.dueDate
+                            ? "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 bg-white dark:bg-[#131d30]"
+                            : "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500"
+                    }`}
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {task.dueDate ? (
+                      <>
+                        {formatDueDate(task.dueDate)}
+                        {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                      </>
+                    ) : (
+                      "Set due date"
+                    )}
+                    <input
+                      type="date"
+                      value={task.dueDate ?? ""}
+                      onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
+                      onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                    />
                   </div>
-                )}
-                {/* Repeat schedule */}
-                <div className="px-4 pb-2 flex items-center gap-2">
-                  <span className="text-xs text-slate-400 dark:text-slate-300 flex-shrink-0">
-                    <svg className="w-3.5 h-3.5 inline -mt-0.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {/* Recurrence */}
+                  <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
+                    <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    Repeat:
-                  </span>
-                  <select
-                    value={task.recurrence ?? ""}
-                    onChange={(e) => setTaskRecurrence(task.id, (e.target.value || undefined) as RecurrenceType | undefined)}
-                    className="flex-1 text-xs px-2 py-1 rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] dark:text-white outline-none cursor-pointer"
-                  >
-                    <option value="">Never</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                  </select>
+                    <select
+                      value={task.recurrence ?? ""}
+                      onChange={(e) => setTaskRecurrence(task.id, (e.target.value || undefined) as RecurrenceType | undefined)}
+                      className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
+                    >
+                      <option value="">No repeat</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                      <option value="yearly">Yearly</option>
+                    </select>
+                  </div>
+                  {/* Move to project */}
+                  {activeProjects.length > 1 && (
+                    <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
+                      <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                      </svg>
+                      <select
+                        value={task.projectId}
+                        onChange={(e) => moveTaskToProject(task.id, e.target.value)}
+                        className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
+                      >
+                        {activeProjects.map((p) => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
+
+                {/* Subtasks section */}
+                {(hasSubtasks || true) && (
+                  <div className="border-t border-slate-100 dark:border-[#1e3050] pt-2 mt-1">
+                    {hasSubtasks && (
+                      <div className="px-4 pb-1">
+                        <span className="text-xs font-medium text-slate-400 dark:text-slate-400 uppercase tracking-wide">Subtasks ({completedSubtasks}/{subtasks.length})</span>
+                      </div>
+                    )}
                 {/* Existing subtasks */}
                 {subtasks.map((sub) => (
                   <div key={sub.id} className="group/sub flex items-center gap-2.5 py-1 pl-6 pr-4 ml-4 border-l-2 border-slate-200 dark:border-[#243350]">
@@ -1968,6 +1990,8 @@ export default function TaskList({
                     Add
                   </button>
                 </form>
+                  </div>
+                )}
 
                 {/* Mobile-only action buttons (start & delete) */}
                 <div className="sm:hidden flex items-center gap-2 px-4 pt-2 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2">
