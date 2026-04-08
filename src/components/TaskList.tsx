@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, loadSelectedProjectId, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import SmartPlan from "@/components/SmartPlan";
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
@@ -135,13 +135,9 @@ export default function TaskList({
     if (authLoading) return;
 
     // Load projects
-    Promise.all([loadProjects(), loadSelectedProjectId(), loadTasks()]).then(
-      ([existingProjects, savedProjectId, existing]) => {
+    Promise.all([loadProjects(), loadTasks()]).then(
+      ([existingProjects, existing]) => {
         setProjects(existingProjects);
-        const specialIds = [ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID];
-        if (specialIds.includes(savedProjectId) || existingProjects.find((p) => p.id === savedProjectId)) {
-          setSelectedProjectId(savedProjectId);
-        }
 
         // Seed sample tasks only for logged-out users with no tasks
         if (existing.length === 0 && !user) {
