@@ -6,6 +6,7 @@ import {
   Project,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
+  TODAY_FILTER_ID,
 } from "../types";
 import type { StorageAdapter } from "./types";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
@@ -273,7 +274,7 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async loadSelectedProjectId(): Promise<string> {
     if (!isBrowser()) return DEFAULT_PROJECT.id;
-    return localStorage.getItem(SELECTED_PROJECT_KEY) || DEFAULT_PROJECT.id;
+    return localStorage.getItem(SELECTED_PROJECT_KEY) || TODAY_FILTER_ID;
   }
 
   async saveSelectedProjectId(id: string): Promise<void> {

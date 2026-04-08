@@ -18,6 +18,7 @@ import {
   Project,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
+  TODAY_FILTER_ID,
 } from "../types";
 
 // Cache keys — prefixed to avoid collision with guest localStorage keys
@@ -215,7 +216,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       cacheSet(CACHE_KEYS.selectedProject, result);
       return result;
     } catch {
-      return cacheGet<string>(CACHE_KEYS.selectedProject) ?? DEFAULT_PROJECT.id;
+      return cacheGet<string>(CACHE_KEYS.selectedProject) ?? TODAY_FILTER_ID;
     }
   }
 
