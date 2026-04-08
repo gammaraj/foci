@@ -50,17 +50,39 @@ export default function WeatherTime() {
   useEffect(() => {
     let cancelled = false;
 
+    async function getLocationFromIP(): Promise<{ latitude: number; longitude: number; city: string }> {
+      // Try multiple free IP geolocation services as fallbacks
+      const services = [
+        {
+          url: "https://ipwho.is/",
+          parse: (d: Record<string, unknown>) => ({ latitude: d.latitude as number, longitude: d.longitude as number, city: (d.city as string) || "" }),
+        },
+        {
+          url: "https://ipapi.co/json/",
+          parse: (d: Record<string, unknown>) => ({ latitude: d.latitude as number, longitude: d.longitude as number, city: (d.city as string) || "" }),
+        },
+        {
+          url: "https://get.geojs.io/v1/ip/geo.json",
+          parse: (d: Record<string, unknown>) => ({ latitude: parseFloat(d.latitude as string), longitude: parseFloat(d.longitude as string), city: (d.city as string) || "" }),
+        },
+      ];
+      for (const svc of services) {
+        try {
+          const res = await fetch(svc.url, { signal: AbortSignal.timeout(5000) });
+          if (!res.ok) continue;
+          const data = await res.json();
+          const loc = svc.parse(data);
+          if (loc.latitude && loc.longitude) return loc;
+        } catch {
+          continue;
+        }
+      }
+      throw new Error("All IP geolocation services failed");
+    }
+
     async function fetchWeather() {
       try {
-        // Get location from IP (no permission needed)
-        const ipRes = await fetch("https://ipapi.co/json/");
-        if (!ipRes.ok) throw new Error("IP geolocation failed");
-        const ipData = await ipRes.json();
-        const latitude = ipData.latitude;
-        const longitude = ipData.longitude;
-        const city = ipData.city || "";
-
-        if (!latitude || !longitude) throw new Error("No coordinates from IP");
+        const { latitude, longitude, city } = await getLocationFromIP();
 
         // Get weather from Open-Meteo (free, no API key)
         const res = await fetch(
@@ -77,7 +99,7 @@ export default function WeatherTime() {
 
         setWeather({ temp, description: desc, icon, city });
       } catch {
-        // IP geolocation or weather API failed — just show clock
+        // All services failed — just show clock
       } finally {
         if (!cancelled) setLoading(false);
       }
