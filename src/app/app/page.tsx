@@ -16,6 +16,45 @@ import DueDateReminders from "@/components/DueDateReminders";
 import NotificationBell from "@/components/NotificationBell";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
+import Link from "next/link";
+
+function SignUpBanner() {
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("foci_signup_dismissed")) {
+      setDismissed(true);
+    }
+  }, []);
+  if (dismissed) return null;
+  return (
+    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm">
+      <div className="max-w-[1280px] mx-auto px-4 py-2 flex items-center justify-between gap-3">
+        <p className="flex-1 min-w-0">
+          <span className="font-medium">Sign up free</span>
+          <span className="hidden sm:inline"> — sync your tasks across devices, never lose your progress</span>
+          <span className="sm:hidden"> to sync across devices</span>
+        </p>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Link
+            href="/login"
+            className="px-3 py-1 bg-white text-blue-700 font-semibold rounded-lg text-xs hover:bg-blue-50 transition-colors"
+          >
+            Sign up
+          </Link>
+          <button
+            onClick={() => { setDismissed(true); sessionStorage.setItem("foci_signup_dismissed", "1"); }}
+            className="p-1 text-white/70 hover:text-white transition-colors"
+            aria-label="Dismiss"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function formatTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -112,6 +151,7 @@ export default function AppPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b1121]">
       <Navbar />
+      {!user && !loading && <SignUpBanner />}
       <DueDateReminders />
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
       <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>

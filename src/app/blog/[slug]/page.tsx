@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 
 interface Props {
@@ -125,6 +125,38 @@ export default async function BlogPostPage({ params }: Props) {
               </Link>
             </div>
           </div>
+
+          {/* Related posts */}
+          {(() => {
+            const related = getRelatedPosts(slug, 3);
+            if (related.length === 0) return null;
+            return (
+              <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+                <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-6">
+                  Related articles
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {related.map((rp) => (
+                    <Link
+                      key={rp.slug}
+                      href={`/blog/${rp.slug}`}
+                      className="group block p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:shadow-md dark:hover:shadow-neutral-900 transition-shadow"
+                    >
+                      <h3 className="text-sm font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {rp.title}
+                      </h3>
+                      <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
+                        {rp.description}
+                      </p>
+                      <span className="mt-2 inline-block text-xs text-neutral-400 dark:text-neutral-500">
+                        {rp.readingTime}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </article>
         </div>
       </main>

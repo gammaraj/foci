@@ -52,3 +52,17 @@ export function getPostBySlug(slug: string) {
     content,
   };
 }
+
+export function getRelatedPosts(currentSlug: string, limit = 3): PostMeta[] {
+  const all = getAllPosts();
+  const current = all.find((p) => p.slug === currentSlug);
+  if (!current) return all.filter((p) => p.slug !== currentSlug).slice(0, limit);
+  const currentTags = new Set(current.tags);
+  const others = all.filter((p) => p.slug !== currentSlug);
+  const scored = others.map((p) => ({
+    post: p,
+    score: p.tags.filter((t) => currentTags.has(t)).length,
+  }));
+  scored.sort((a, b) => b.score - a.score || new Date(b.post.date).getTime() - new Date(a.post.date).getTime());
+  return scored.slice(0, limit).map((s) => s.post);
+}
