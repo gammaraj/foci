@@ -75,12 +75,13 @@ export default function TaskList({
   const { showToast } = useToast();
   const [tasksReady, setTasksReady] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDueDate, setNewTaskDueDate] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
   // Project state
   const [projects, setProjects] = useState<Project[]>([DEFAULT_PROJECT]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>(DEFAULT_PROJECT_ID);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(TODAY_FILTER_ID);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [showAddProject, setShowAddProject] = useState(false);
@@ -137,7 +138,8 @@ export default function TaskList({
     Promise.all([loadProjects(), loadSelectedProjectId(), loadTasks()]).then(
       ([existingProjects, savedProjectId, existing]) => {
         setProjects(existingProjects);
-        if (existingProjects.find((p) => p.id === savedProjectId)) {
+        const specialIds = [ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID];
+        if (specialIds.includes(savedProjectId) || existingProjects.find((p) => p.id === savedProjectId)) {
           setSelectedProjectId(savedProjectId);
         }
 
@@ -335,6 +337,7 @@ export default function TaskList({
     const title = newTaskTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
 
+    const dueDate = newTaskDueDate || (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined);
     const task: Task = {
       id: crypto.randomUUID(),
       title,
@@ -344,12 +347,13 @@ export default function TaskList({
       createdAt: Date.now(),
       projectId: (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId,
       subtasks: [],
-      ...(viewMode === "calendar" && calendarSelectedDay ? { dueDate: calendarSelectedDay } : {}),
+      ...(dueDate ? { dueDate } : {}),
     };
 
     persist([...tasks, task]);
     trackTaskAdded();
     setNewTaskTitle("");
+    setNewTaskDueDate("");
   };
 
   const toggleComplete = (id: string) => {
@@ -686,7 +690,11 @@ export default function TaskList({
       if (a.order != null && b.order != null) return a.order - b.order;
       if (a.order != null) return -1;
       if (b.order != null) return 1;
-      // Otherwise newest first
+      // Tasks with due dates come first, sorted by due date ascending
+      if (a.dueDate && !b.dueDate) return -1;
+      if (!a.dueDate && b.dueDate) return 1;
+      if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
+      // Otherwise newest first by created date
       return (b.createdAt || 0) - (a.createdAt || 0);
     });
   const completedTasks = projectTasks.filter((t) => t.completed);
@@ -1365,6 +1373,31 @@ export default function TaskList({
             maxLength={MAX_TASK_TITLE}
             className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
+          <div className="relative">
+            <input
+              type="date"
+              value={newTaskDueDate}
+              onChange={(e) => setNewTaskDueDate(e.target.value)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              title="Set due date"
+            />
+            <button
+              type="button"
+              className={`h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
+                newTaskDueDate
+                  ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                  : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+              }`}
+              title={newTaskDueDate ? `Due: ${formatDueDate(newTaskDueDate)}` : "Set due date"}
+            >
+              <span className="flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {newTaskDueDate ? <span className="hidden sm:inline text-xs">{formatDueDate(newTaskDueDate)}</span> : null}
+              </span>
+            </button>
+          </div>
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
@@ -1563,7 +1596,7 @@ export default function TaskList({
                   </div>
                 )}
                 <div className="flex items-center gap-2 mt-1">
-                  {/* Inline action buttons — edit & due date */}
+                  {/* Inline action buttons — edit (hover-only) */}
                   <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
                     <button
                       onClick={() => startEditing(task)}
@@ -1576,30 +1609,51 @@ export default function TaskList({
                       </svg>
                       Edit
                     </button>
+                    {!task.dueDate && (
+                      <div
+                        className="relative inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                        title="Set due date"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Due date
+                        <input
+                          type="date"
+                          value=""
+                          onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
+                          onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
+                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {/* Due date — always visible when set */}
+                  {task.dueDate && (
                     <div
                       className={`relative inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
-                        task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
+                        !task.completed && isDueDateOverdue(task.dueDate)
                           ? "text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                          : task.dueDate && !task.completed && task.dueDate === getToday()
+                          : !task.completed && task.dueDate === getToday()
                             ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             : "text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
                       }`}
-                      title={task.dueDate ? `Due: ${formatDueDate(task.dueDate)}` : "Set due date"}
+                      title={`Due: ${formatDueDate(task.dueDate)}`}
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      {task.dueDate ? formatDueDate(task.dueDate) : "Due date"}
-                      {task.dueDate && !task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                      {formatDueDate(task.dueDate)}
+                      {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
                       <input
                         type="date"
-                        value={task.dueDate ?? ""}
+                        value={task.dueDate}
                         onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
                         onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
                         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
                       />
                     </div>
-                  </div>
+                  )}
                   {(hasSubtasks || task.description || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
                     <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
                   )}
