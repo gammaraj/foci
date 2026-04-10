@@ -1,7 +1,7 @@
 {
   "name": "Foci",
   "short_name": "Foci",
-  "description": "Free all-in-one focus system: Pomodoro timer, task tracking with recurring tasks, Smart Plan scheduling, ambient music (including Indian classical), daily goals, streak stats, and productivity analytics.",
+  "description": "Free all-in-one focus system: Pomodoro timer with presets, task tracking with templates and recurring tasks, Smart Plan scheduling, ambient music (brown noise, lo-fi, Indian classical, Spotify), daily goals, streak stats, weather widget, and productivity analytics.",
   "start_url": "/app",
   "display": "standalone",
   "background_color": "#030712",

@@ -47,7 +47,7 @@ export default function PWAInstallPrompt() {
   return (
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-50 animate-in slide-in-from-bottom">
       <div className="flex items-start gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-neutral-900 dark:bg-neutral-800 flex-shrink-0">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900 dark:bg-slate-800 flex-shrink-0">
           <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
             <circle cx="16" cy="16" r="12" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeDasharray="18.85 6.28" transform="rotate(-90 16 16)"/>
             <circle cx="16" cy="16" r="7" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeDasharray="11 3.67" transform="rotate(-30 16 16)" opacity="0.6"/>

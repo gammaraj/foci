@@ -236,6 +236,15 @@ input:focus-visible {
   border-color: #243350;
 }
 
+.dark .reset-button:hover {
+  background: #1a2d4a;
+  color: #f1f5f9;
+}
+
+.dark .settings-overlay {
+  background: rgba(2, 6, 15, 0.6);
+}
+
 .dark .settings-panel {
   background: #131d30;
   border-color: #243350;

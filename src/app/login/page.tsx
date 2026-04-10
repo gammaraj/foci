@@ -20,7 +20,7 @@ export default function LoginPage() {
   if (loading || user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-slate-200 dark:border-gray-700 border-t-blue-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-slate-200 dark:border-slate-700 border-t-blue-500 rounded-full animate-spin" />
       </div>
     );
   }
@@ -31,7 +31,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-[360px]">
           <div className="text-center mb-8">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">Sign in to sync your tasks and streaks across devices</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Sign in to sync your tasks and streaks across devices</p>
           </div>
           <AuthForm />
         </div>

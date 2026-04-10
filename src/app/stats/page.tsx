@@ -66,7 +66,7 @@ function BarChart({
         const pct = (d.value / max) * 100;
         return (
           <div key={d.key} className="group flex flex-col items-center flex-1 min-w-0 h-full justify-end">
-            <span className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-300 mb-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 mb-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
               {d.value > 0 ? `${d.value}${valueSuffix}` : ""}
             </span>
             <div
@@ -77,7 +77,7 @@ function BarChart({
                 minHeight: d.value > 0 ? 4 : 0,
               }}
             />
-            <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1.5 truncate w-full text-center">
+            <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1.5 truncate w-full text-center">
               {labelFn(d.key)}
             </span>
           </div>
@@ -100,19 +100,19 @@ function HorizontalBar({
       {items.map((item) => (
         <div key={item.label}>
           <div className="flex justify-between text-sm mb-1">
-            <span className="font-medium text-gray-700 dark:text-gray-200 truncate mr-2">
+            <span className="font-medium text-slate-700 dark:text-slate-200 truncate mr-2">
               {item.label}
             </span>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-xs text-gray-400 dark:text-gray-500">
+              <span className="text-xs text-slate-400 dark:text-slate-500">
                 {total > 0 ? Math.round((item.value / total) * 100) : 0}%
               </span>
-              <span className="text-gray-500 dark:text-gray-400 font-medium">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">
                 {formatMs(item.value)}
               </span>
             </div>
           </div>
-          <div className="w-full bg-gray-100 dark:bg-[#1a2744] rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-[#1a2744] rounded-full h-2.5 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -186,7 +186,7 @@ function Heatmap({
         {dayLabels.map((label, row) => (
           <div
             key={`label-${row}`}
-            className="text-[10px] text-gray-400 dark:text-gray-500 pr-2 flex items-center justify-end"
+            className="text-[10px] text-slate-400 dark:text-slate-500 pr-2 flex items-center justify-end"
             style={{ gridColumn: 1, gridRow: row + 1 }}
           >
             {label}
@@ -278,19 +278,19 @@ function DonutChart({
           })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-lg font-bold text-gray-900 dark:text-white">{formatMs(total)}</span>
-          <span className="text-[10px] text-gray-500 dark:text-gray-400">Total</span>
+          <span className="text-lg font-bold text-slate-900 dark:text-white">{formatMs(total)}</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-400">Total</span>
         </div>
       </div>
       <div className="flex flex-col gap-2 min-w-0">
         {items.slice(0, 5).map((item) => (
           <div key={item.label} className="flex items-center gap-2 min-w-0">
             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-            <span className="text-xs text-gray-700 dark:text-gray-300 truncate">{item.label}</span>
+            <span className="text-xs text-slate-700 dark:text-slate-300 truncate">{item.label}</span>
           </div>
         ))}
         {items.length > 5 && (
-          <span className="text-xs text-gray-400 dark:text-gray-500">+{items.length - 5} more</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500">+{items.length - 5} more</span>
         )}
       </div>
     </div>
@@ -315,7 +315,7 @@ function StatCard({
   accentText?: string;
 }) {
   return (
-    <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-[#1e3355] shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-[#1e3355] shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${accentBg ?? "bg-blue-50 dark:bg-blue-900/30"} ${accentText ?? "text-blue-600 dark:text-blue-400"}`}>
           {icon}
@@ -330,8 +330,8 @@ function StatCard({
           </span>
         )}
       </div>
-      <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
-      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{label}</p>
+      <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{value}</p>
+      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">{label}</p>
     </div>
   );
 }
@@ -496,7 +496,7 @@ export default function StatsPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0b1121]">
         <Navbar />
-        <div className="max-w-[1280px] mx-auto px-4 py-12 text-center text-gray-500 dark:text-gray-400">
+        <div className="max-w-[1280px] mx-auto px-4 py-12 text-center text-slate-500 dark:text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
         </div>
       </div>
@@ -511,23 +511,23 @@ export default function StatsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
               Stats &amp; Analytics
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Track your focus habits and productivity trends
             </p>
           </div>
           {/* Range toggle */}
-          <div className="flex gap-1.5 bg-gray-100 dark:bg-[#162a4a] rounded-lg p-1">
+          <div className="flex gap-1.5 bg-slate-100 dark:bg-[#162a4a] rounded-lg p-1">
             {([7, 30] as const).map((r) => (
               <button
                 key={r}
                 onClick={() => setRange(r)}
                 className={`px-3 sm:px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
                   range === r
-                    ? "bg-white dark:bg-[#0f1b33] text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    ? "bg-white dark:bg-[#0f1b33] text-slate-900 dark:text-white shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
                 {r}D
@@ -586,12 +586,12 @@ export default function StatsPage() {
         </div>
 
         {/* Heatmap */}
-        <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm mb-6">
+        <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
               Activity
             </h2>
-            <div className="flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-gray-500">
+            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500">
               <span>Less</span>
               <div className="flex gap-[3px]">
                 {["var(--heatmap-empty)", "var(--heatmap-l1)", "var(--heatmap-l2)", "var(--heatmap-l3)", "var(--heatmap-l4)"].map((c, i) => (
@@ -607,8 +607,8 @@ export default function StatsPage() {
         {/* Charts row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
           {/* Sessions per day */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Sessions per Day
             </h2>
             <BarChart
@@ -619,8 +619,8 @@ export default function StatsPage() {
           </div>
 
           {/* Focus time per day */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Focus Time per Day
             </h2>
             <BarChart
@@ -635,8 +635,8 @@ export default function StatsPage() {
         {/* Project breakdown + Today's activity row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           {/* Project distribution donut + bars */}
-          <div className="lg:col-span-2 bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-5">
+          <div className="lg:col-span-2 bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-5">
               Focus by Project
             </h2>
             {projectItems.length > 0 ? (
@@ -645,7 +645,7 @@ export default function StatsPage() {
                 <HorizontalBar items={projectItems} />
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-gray-400 dark:text-gray-500">
+              <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-slate-500">
                 <svg className="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
@@ -656,11 +656,11 @@ export default function StatsPage() {
           </div>
 
           {/* Today's activity */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
               Today&apos;s Activity
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
               {todaySessionCount} session{todaySessionCount !== 1 ? "s" : ""} · {formatMs(todaySessionCount * workDuration)} focused
             </p>
             {todaySessionCount > 0 ? (
@@ -674,10 +674,10 @@ export default function StatsPage() {
                     return (
                       <div key={t.id} className="flex items-center gap-3">
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{t.title}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{pName} · {t.sessions} session{t.sessions !== 1 ? "s" : ""}</div>
+                          <div className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{t.title}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">{pName} · {t.sessions} session{t.sessions !== 1 ? "s" : ""}</div>
                         </div>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 tabular-nums">
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 tabular-nums">
                           {formatMs(t.timeSpent ?? 0)}
                         </span>
                       </div>
@@ -685,7 +685,7 @@ export default function StatsPage() {
                   })}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-6 text-gray-400 dark:text-gray-500">
+              <div className="flex flex-col items-center justify-center py-6 text-slate-400 dark:text-slate-500">
                 <svg className="w-10 h-10 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
@@ -698,14 +698,14 @@ export default function StatsPage() {
         {/* Bottom insights row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Goal completion */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Goal Completion
             </h2>
             <div className="flex items-center justify-center mb-4">
               <div className="relative w-28 h-28">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="10" className="text-gray-100 dark:text-[#1a2744]" />
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="10" className="text-slate-100 dark:text-[#1a2744]" />
                   <circle
                     cx="60" cy="60" r="50" fill="none"
                     strokeWidth="10" strokeLinecap="round"
@@ -714,18 +714,18 @@ export default function StatsPage() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">{goalRate}%</span>
+                  <span className="text-2xl font-bold text-slate-900 dark:text-white">{goalRate}%</span>
                 </div>
               </div>
             </div>
-            <div className="text-center text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-center text-xs text-slate-500 dark:text-slate-400">
               {goalDays} of {activeDays} active days
             </div>
           </div>
 
           {/* Best day + insights */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Weekly Pattern
             </h2>
             <div className="flex items-end gap-1.5 h-24 mb-4">
@@ -738,42 +738,42 @@ export default function StatsPage() {
                 return (
                   <div key={d} className="flex-1 flex flex-col items-center h-full justify-end">
                     <div
-                      className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-blue-500 dark:bg-blue-400" : "bg-gray-200 dark:bg-[#1a2744]"}`}
+                      className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-blue-500 dark:bg-blue-400" : "bg-slate-200 dark:bg-[#1a2744]"}`}
                       style={{ height: `${Math.max(pct, val > 0 ? 6 : 2)}%` }}
                     />
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{d.slice(0, 2)}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">{d.slice(0, 2)}</span>
                   </div>
                 );
               })}
             </div>
             {Math.max(...dayOfWeekSessions) > 0 && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-300 text-center">
                 Most productive on <span className="font-semibold text-blue-600 dark:text-blue-400">{bestDayName}s</span>
               </p>
             )}
           </div>
 
           {/* Overview stats */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Overview
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{longestStreak}d</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Longest Streak</p>
+              <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-slate-900 dark:text-white">{longestStreak}d</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Longest Streak</p>
               </div>
-              <div className="bg-gray-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{activeDays}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Active Days</p>
+              <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-slate-900 dark:text-white">{activeDays}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Active Days</p>
               </div>
-              <div className="bg-gray-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{goalDays}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Goals Met</p>
+              <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-slate-900 dark:text-white">{goalDays}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Goals Met</p>
               </div>
-              <div className="bg-gray-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Total Tasks</p>
+              <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-slate-900 dark:text-white">{tasks.length}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total Tasks</p>
               </div>
             </div>
           </div>

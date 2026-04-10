@@ -56,11 +56,11 @@ export default function AuthForm() {
 
   return (
     <div className="w-full">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-0.5 text-center">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-0.5 text-center">
           {mode === "sign-in" ? "Welcome back" : "Create account"}
         </h2>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-5 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-5 text-center">
           {mode === "sign-in"
             ? "Sign in to sync your data"
             : "Sign up to save your progress"}
@@ -70,7 +70,7 @@ export default function AuthForm() {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white text-[15px] font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+          className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-[15px] font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
@@ -83,10 +83,10 @@ export default function AuthForm() {
 
         <div className="relative my-5">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-neutral-200 dark:border-neutral-800" />
+            <div className="w-full border-t border-slate-200 dark:border-slate-800" />
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-white dark:bg-neutral-900 px-3 text-neutral-400 dark:text-neutral-500 uppercase tracking-wide">or</span>
+            <span className="bg-white dark:bg-slate-900 px-3 text-slate-400 dark:text-slate-500 uppercase tracking-wide">or</span>
           </div>
         </div>
 
@@ -94,7 +94,7 @@ export default function AuthForm() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
             >
               Email
             </label>
@@ -105,7 +105,7 @@ export default function AuthForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full px-3 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white text-[15px] focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-400 focus:border-transparent placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-[15px] focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
               placeholder="you@example.com"
             />
           </div>
@@ -113,7 +113,7 @@ export default function AuthForm() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
             >
               Password
             </label>
@@ -127,7 +127,7 @@ export default function AuthForm() {
                 mode === "sign-up" ? "new-password" : "current-password"
               }
               minLength={8}
-              className="w-full px-3 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white text-[15px] focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-400 focus:border-transparent placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-[15px] focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
               placeholder="••••••••"
             />
           </div>
@@ -144,7 +144,7 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 px-4 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-[15px] font-medium hover:bg-neutral-800 dark:hover:bg-neutral-100 disabled:opacity-50 transition-colors"
+            className="w-full py-2.5 px-4 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[15px] font-medium hover:bg-slate-800 dark:hover:bg-slate-100 disabled:opacity-50 transition-colors"
           >
             {loading
               ? "Loading..."
@@ -162,7 +162,7 @@ export default function AuthForm() {
               setError(null);
               setMessage(null);
             }}
-            className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             {mode === "sign-in"
               ? "Don't have an account? Sign up"

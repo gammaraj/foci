@@ -164,6 +164,8 @@ function CalendarView({
   const emptyCells = Array.from({ length: startingDayOfWeek });
   const dayCells = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
   const getDayStyle = (day: number) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     const cellDate = new Date(year, month, day);
@@ -171,13 +173,13 @@ function CalendarView({
     const isToday = dateStr === todayStr;
     const dayData = streakHistory.days[dateStr];
 
-    let bg = "#e5e7eb";
-    let color = "#6b7280";
+    let bg = isDark ? "#1e293b" : "#e2e8f0"; // slate-800 / slate-200
+    let color = isDark ? "#94a3b8" : "#64748b"; // slate-400 / slate-500
     let title = "";
 
     if (isFuture) {
-      bg = "#f3f4f6";
-      color = "#9ca3af";
+      bg = isDark ? "#0f172a" : "#f1f5f9"; // slate-900 / slate-100
+      color = isDark ? "#475569" : "#94a3b8"; // slate-600 / slate-400
     } else if (dayData) {
       const sessions = dayData.sessionCount || 0;
       if (dayData.goalMet) {

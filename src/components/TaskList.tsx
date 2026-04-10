@@ -1591,7 +1591,7 @@ export default function TaskList({
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-1">
+                {!isExpanded && <div className="flex items-center gap-2 mt-1">
                   {/* Due date — always visible when set */}
                   {task.dueDate && (
                     <div
@@ -1659,7 +1659,7 @@ export default function TaskList({
                       </span>
                     </>
                   )}
-                </div>
+                </div>}
               </div>
 
               {/* Expand chevron indicator */}

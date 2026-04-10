@@ -33,13 +33,13 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
 - **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
 - **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
-- **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly. Completing a recurring task auto-creates the next occurrence with the correct due date.
-- **Subtask Due Dates**: Assign individual due dates to subtasks for granular deadline tracking. Integrated with Smart Plan and smart filters.
-- **Move Tasks Between Projects**: Reassign any task to a different project from the edit menu — no delete-and-recreate needed.
-- **Calendar View**: Click any date to auto-set it as a task's due date. Visual overview of deadlines across the month.
-- **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
-- **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
-- **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
+- **Onboarding Tour**: Guided walkthrough for new users covering timer, tasks, daily progress, and settings.
+- **Weather & Time Widget**: Shows local weather, temperature, live clock, and date above the task list.
+- **Task Templates**: One-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review.
+- **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).
+- **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
+- **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
+- **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
 
 ## How to Use Foci
 
@@ -142,6 +142,24 @@ A: A structured morning routine leverages your peak willpower and the quiet wind
 **Q: How does a digital detox help with focus?**
 A: Reducing recreational screen time reclaims attention fragmented by notifications and continuous partial attention. Even having your phone visible on your desk reduces cognitive performance. Practical steps include phone-free mornings, turning off non-essential notifications, and batching screen time. Foci provides a focused alternative — commit to one task with a timer instead of scattered screen use.
 
+**Q: Does Foci have task templates?**
+A: Yes. Foci includes one-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review. Each template creates a set of pre-configured tasks so you can start working immediately.
+
+**Q: Does Foci have timer presets?**
+A: Yes. Choose from built-in timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20). You can also set custom durations.
+
+**Q: Does Foci show weather?**
+A: Yes. Foci displays your local weather, temperature, live clock, and date above the task list — so you never need to leave the app to check the time or weather.
+
+**Q: Does Foci have Spotify playlists?**
+A: Yes. Foci includes 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill — alongside built-in offline ambient sounds and SoundCloud Indian classical music.
+
+**Q: What are the best ADHD focus tools?**
+A: Foci is designed to work with ADHD brains. Its timer externalizes time perception, task tracking removes the burden on working memory, brown noise provides sensory anchoring, and the daily goal system creates visible momentum. Read more at usefoci.com/blog/adhd-focus-strategies.
+
+**Q: What is the best music for studying?**
+A: Research shows the best study music is instrumental, predictable, and consistent volume. Brown noise and rain are ideal for deep reading and writing. Lo-fi hip-hop works for routine studying. Classical music (Western or Indian ragas) suits long sessions. Avoid lyrics in your language and shuffle playlists. Foci includes all of these built-in.
+
 ## How Foci Compares
 
 Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient music, and progress analytics in a single interface. You do not need separate apps for your timer, task list, and background music.
@@ -175,6 +193,9 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - `src/lib/smartplan.ts` – Smart Plan scoring algorithm and day-by-day task distribution engine.
 - `src/components/SmartPlan.tsx` – Smart Plan UI with summary cards, day sections, and task rows.
 - `src/components/TaskImportExport.tsx` – Import tasks from Google Tasks, Todoist, Asana, Notion, CSV. Export as JSON/CSV.
+- `src/components/OnboardingTour.tsx` – 4-step guided walkthrough for new users.
+- `src/components/WeatherTime.tsx` – Local weather, temperature, live clock, and date widget.
+- `src/lib/templates.ts` – Task templates, timer presets, and daily goal presets.
 - `src/hooks/useTimer.ts` – Core timer logic hook (work/break cycles, callbacks).
 - `src/lib/types.ts` – TypeScript type definitions (Settings, Task, TimerStatus, etc.).
 - `src/lib/quotes.ts` – Array of motivational quotes.
@@ -198,6 +219,13 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - Blog – Migrate from Asana: https://usefoci.com/blog/migrate-from-asana-to-foci
 - Blog – Migrate from Notion: https://usefoci.com/blog/migrate-from-notion-to-foci
 - Blog – Stoicism and Focus: https://usefoci.com/blog/stoicism-and-focus
+- Blog – Time Blocking: https://usefoci.com/blog/time-blocking-method
+- Blog – Digital Detox: https://usefoci.com/blog/digital-detox-for-productivity
+- Blog – Morning Routine: https://usefoci.com/blog/productive-morning-routine
+- Blog – Task Batching: https://usefoci.com/blog/task-batching-productivity
+- Blog – 2-Minute Rule: https://usefoci.com/blog/two-minute-rule-productivity
+- Blog – ADHD Focus Strategies: https://usefoci.com/blog/adhd-focus-strategies
+- Blog – Best Music for Studying: https://usefoci.com/blog/best-music-for-studying-and-focus
 - Blog – The 2-Minute Rule: https://usefoci.com/blog/two-minute-rule-productivity
 - Blog – Task Batching: https://usefoci.com/blog/task-batching-productivity
 - Blog – Morning Routine: https://usefoci.com/blog/productive-morning-routine

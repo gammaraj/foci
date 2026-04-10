@@ -34,16 +34,16 @@ export default function BlogIndexPage() {
       <Navbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
           Blog
         </h1>
-        <p className="mt-3 text-neutral-500 dark:text-neutral-400 text-lg">
+        <p className="mt-3 text-slate-500 dark:text-slate-400 text-lg">
           Tips on focus, productivity, and getting more done.
         </p>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-8">
           {posts.map((post) => (
-            <article key={post.slug} className="group border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 hover:shadow-md dark:hover:shadow-neutral-900 transition-shadow">
+            <article key={post.slug} className="group border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:shadow-md dark:hover:shadow-slate-900 transition-shadow">
               <Link href={`/blog/${post.slug}`} className="block">
                 <div className="flex flex-wrap gap-2 mb-2">
                   {post.tags.slice(0, 3).map((tag) => (
@@ -55,13 +55,13 @@ export default function BlogIndexPage() {
                     </span>
                   ))}
                 </div>
-                <h2 className="text-xl font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {post.title}
                 </h2>
-                <p className="mt-1.5 text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed">
+                <p className="mt-1.5 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
                   {post.description}
                 </p>
-                <div className="mt-2 flex items-center gap-3 text-xs text-neutral-400 dark:text-neutral-500">
+                <div className="mt-2 flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
                   <time dateTime={post.date}>
                     {new Date(post.date).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -81,7 +81,7 @@ export default function BlogIndexPage() {
         </div>
       </main>
 
-      <footer className="mt-auto py-8 text-center text-xs text-neutral-400 dark:text-neutral-600">
+      <footer className="mt-auto py-8 text-center text-xs text-slate-400 dark:text-slate-600">
         Built for focus. Free forever.
       </footer>
     </div>

@@ -57,6 +57,13 @@ const jsonLd = {
     "Fullscreen task mode for distraction-free task management",
     "Indian classical music playlists via SoundCloud for deep focus",
     "Due date reminder notifications for upcoming and overdue tasks",
+    "Task templates for common workflows: Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review",
+    "Timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, Ultra Focus (90/20)",
+    "Weather and time widget with local temperature and live clock",
+    "Curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi",
+    "Collapsible timer panel for full-width task management",
+    "Guided onboarding tour for new users",
+    "Daily goal presets: Light (4), Standard (8), Intense (12)",
   ],
 };
 
@@ -102,6 +109,10 @@ const faqJsonLd = {
     { "@type": "Question", name: "Can I move tasks between projects?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can reassign any task to a different project directly from the task's edit menu. There's no need to delete and recreate — just pick the target project and the task moves instantly." } },
     { "@type": "Question", name: "Does Foci have a calendar view?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes a calendar view where clicking a date automatically sets it as the due date for a new or existing task. It gives you a visual overview of deadlines across the month." } },
     { "@type": "Question", name: "Does Foci have Indian classical music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes curated Indian classical music playlists (sitar, flute, veena) via SoundCloud — ideal for long study sessions or deep work. You can switch between Indian classical, lo-fi, and ambient sounds." } },
+    { "@type": "Question", name: "Does Foci have task templates?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes one-click task templates for Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review. Each creates a set of pre-configured tasks so you can start immediately." } },
+    { "@type": "Question", name: "Does Foci have timer presets?", acceptedAnswer: { "@type": "Answer", text: "Yes. Choose from Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20), or set custom durations." } },
+    { "@type": "Question", name: "What are the best ADHD focus tools?", acceptedAnswer: { "@type": "Answer", text: "Foci is designed to work with ADHD brains. Its timer externalizes time perception, task tracking removes the burden on working memory, brown noise provides sensory anchoring, and the daily goal system creates visible momentum." } },
+    { "@type": "Question", name: "What is the best music for studying?", acceptedAnswer: { "@type": "Answer", text: "Research shows the best study music is instrumental, predictable, and consistent volume. Brown noise and rain are ideal for deep reading and writing. Lo-fi hip-hop works for routine studying. Classical music (Western or Indian ragas) suits long sessions. Foci includes all of these built-in." } },
   ],
 };
 
@@ -117,7 +128,7 @@ function AppMockup() {
           <div className="w-3 h-3 rounded-full bg-[#28c840]" />
         </div>
         <div className="flex-1 flex justify-center">
-          <div className="bg-[#0d1117] rounded-md px-4 py-1 text-xs text-gray-400 font-mono">
+          <div className="bg-[#0d1117] rounded-md px-4 py-1 text-xs text-slate-400 font-mono">
             usefoci.com/app
           </div>
         </div>
@@ -151,7 +162,7 @@ function AppMockup() {
                     transform="rotate(-90 60 60)" />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xs text-gray-400 mb-0.5">Focus Time</span>
+                  <span className="text-xs text-slate-400 mb-0.5">Focus Time</span>
                   <span className="text-2xl sm:text-3xl font-bold text-white font-mono">22:30</span>
                   <span className="text-[10px] text-blue-400 mt-0.5">Working...</span>
                 </div>
@@ -159,7 +170,7 @@ function AppMockup() {
               {/* Controls */}
               <div className="flex gap-2 items-center">
                 <div className="w-8 h-8 rounded-full bg-[#1e3355] flex items-center justify-center">
-                  <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </div>
@@ -170,7 +181,7 @@ function AppMockup() {
                   </svg>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-[#1e3355] flex items-center justify-center">
-                  <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -178,30 +189,30 @@ function AppMockup() {
             </div>
 
             {/* Nudge text */}
-            <p className="text-[10px] text-gray-500 text-center -mt-1">Working on: Research API integration</p>
+            <p className="text-[10px] text-slate-500 text-center -mt-1">Working on: Research API integration</p>
 
             {/* Progress */}
             <div className="bg-[#0f1b33] rounded-xl p-3 text-center">
-              <div className="text-xs text-gray-400 mb-1">Today&apos;s Sessions</div>
+              <div className="text-xs text-slate-400 mb-1">Today&apos;s Sessions</div>
               <div className="flex items-center gap-2 justify-center">
                 <span className="text-lg font-bold text-white">2</span>
-                <span className="text-xs text-gray-500">/ 3 sessions</span>
+                <span className="text-xs text-slate-500">/ 3 sessions</span>
               </div>
               <div className="w-full bg-[#1a2744] rounded-full h-2 mt-2 overflow-hidden">
                 <div className="h-full rounded-full bg-blue-500" style={{ width: "66%" }} />
               </div>
               <div className="flex items-center justify-center gap-1 mt-2">
                 <span className="text-yellow-400 text-xs">✨</span>
-                <span className="text-[10px] text-gray-400">3 day streak</span>
+                <span className="text-[10px] text-slate-400">3 day streak</span>
               </div>
             </div>
 
             {/* Ambient sounds */}
             <div className="bg-[#0f1b33] rounded-xl p-3">
-              <div className="text-xs text-gray-400 mb-2">🎵 Music &amp; Sounds</div>
+              <div className="text-xs text-slate-400 mb-2">🎵 Music &amp; Sounds</div>
               <div className="flex gap-1.5">
                 {["Rain", "Café", "Brown"].map((s, i) => (
-                  <div key={s} className={`flex-1 text-center text-[10px] py-1.5 rounded-lg border ${i === 2 ? "border-blue-500/40 bg-blue-600/10 text-blue-300" : "border-[#243350] text-gray-500"}`}>
+                  <div key={s} className={`flex-1 text-center text-[10px] py-1.5 rounded-lg border ${i === 2 ? "border-blue-500/40 bg-blue-600/10 text-blue-300" : "border-[#243350] text-slate-500"}`}>
                     {s}
                   </div>
                 ))}
@@ -216,7 +227,7 @@ function AppMockup() {
               <span className="text-sm font-semibold text-white">Tasks</span>
               <div className="flex gap-1">
                 {["Today", "Week"].map((f, i) => (
-                  <span key={f} className={`text-[10px] px-2 py-1 rounded-md ${i === 0 ? "bg-blue-600/20 text-blue-400" : "text-gray-500"}`}>{f}</span>
+                  <span key={f} className={`text-[10px] px-2 py-1 rounded-md ${i === 0 ? "bg-blue-600/20 text-blue-400" : "text-slate-500"}`}>{f}</span>
                 ))}
               </div>
             </div>
@@ -230,14 +241,14 @@ function AppMockup() {
             {/* Project tabs */}
             <div className="flex gap-1">
               <div className="px-2.5 py-1 rounded-lg bg-blue-600/20 text-blue-400 text-[11px] font-medium">All <span className="text-blue-400/60">5</span></div>
-              <div className="px-2.5 py-1 rounded-lg text-gray-500 text-[11px]">General <span className="text-gray-600">3</span></div>
-              <div className="px-2.5 py-1 rounded-lg text-gray-500 text-[11px]">Work <span className="text-gray-600">2</span></div>
+              <div className="px-2.5 py-1 rounded-lg text-slate-500 text-[11px]">General <span className="text-slate-600">3</span></div>
+              <div className="px-2.5 py-1 rounded-lg text-slate-500 text-[11px]">Work <span className="text-slate-600">2</span></div>
             </div>
 
             {/* Add task input */}
             <div className="flex gap-1.5">
               <div className="flex-1 flex items-center bg-[#131d30] border border-[#243350] rounded-lg px-2.5 py-1.5">
-                <span className="text-[11px] text-gray-500">Add a task...</span>
+                <span className="text-[11px] text-slate-500">Add a task...</span>
               </div>
               <div className="px-2.5 py-1.5 bg-blue-600 text-white text-[11px] font-semibold rounded-lg">Add</div>
             </div>
@@ -253,7 +264,7 @@ function AppMockup() {
                 task.active ? "bg-blue-600/10 border border-blue-500/30" : "bg-[#0f1b33] border border-transparent"
               }`}>
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  task.done ? "border-green-500 bg-green-500" : task.active ? "border-blue-500" : "border-gray-600"
+                  task.done ? "border-green-500 bg-green-500" : task.active ? "border-blue-500" : "border-slate-600"
                 }`}>
                   {task.done && (
                     <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,10 +272,10 @@ function AppMockup() {
                     </svg>
                   )}
                 </div>
-                <span className={`text-sm flex-1 ${task.done ? "line-through text-gray-500" : "text-gray-200"}`}>
+                <span className={`text-sm flex-1 ${task.done ? "line-through text-slate-500" : "text-slate-200"}`}>
                   {task.title}
                 </span>
-                <span className="text-[10px] text-gray-500 hidden sm:inline">{task.sessions}s · {task.time}</span>
+                <span className="text-[10px] text-slate-500 hidden sm:inline">{task.sessions}s · {task.time}</span>
                 {!task.done && !task.active && (
                   <span className="text-[10px] text-blue-400 font-medium">Start</span>
                 )}
@@ -308,27 +319,27 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center px-4 sm:px-6">
         <section className="text-center pt-12 sm:pt-20 pb-10 sm:pb-14 max-w-2xl mx-auto">
-          <p className="text-xs sm:text-sm font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-4">Get sh**t done</p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white tracking-tight leading-[1.1]">
+          <p className="text-xs sm:text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">Get sh**t done</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1]">
             Focus timer, tasks<br />&amp; ambient music,<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300">
               finally in one place.
             </span>
           </h1>
-          <p className="mt-5 text-lg sm:text-xl text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
+          <p className="mt-5 text-lg sm:text-xl text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
             Manage tasks, run focused sprints, track time per task, and build streaks — with ambient music to keep you in the zone. All in one window.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-base hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-md"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-base hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-md"
             >
               Start focusing — free
             </Link>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium text-base hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-base hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               Try without an account
             </Link>
@@ -342,7 +353,7 @@ export default function LandingPage() {
 
         {/* Social proof bar */}
         <section className="w-full max-w-3xl mx-auto pb-10 sm:pb-14">
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm sm:text-base text-neutral-500 dark:text-neutral-400">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm sm:text-base text-slate-500 dark:text-slate-400">
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -378,12 +389,12 @@ export default function LandingPage() {
 
         {/* How it works — replaces flat feature icons */}
         <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-10">
             How Foci works
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* Step 1 */}
-            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
+            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
               <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 1
               </div>
@@ -392,14 +403,14 @@ export default function LandingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">Add your tasks</h3>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Add your tasks</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                 Create tasks, organize them into projects, and break them into subtasks. Pick one to focus on.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
+            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
               <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 2
               </div>
@@ -409,14 +420,14 @@ export default function LandingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">Start the timer</h3>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Start the timer</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                 Hit play. Foci runs a focused work sprint, then gives you a break. Sessions are tracked per-task automatically.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-gray-200 dark:border-[#1e3355] shadow-sm">
+            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
               <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 3
               </div>
@@ -425,8 +436,8 @@ export default function LandingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">Build your streak</h3>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Build your streak</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                 Hit your daily session goal and watch your streak grow. Stats, charts, and a calendar show your progress over time.
               </p>
             </div>
@@ -435,10 +446,10 @@ export default function LandingPage() {
 
         {/* Why Foci vs. others */}
         <section className="w-full max-w-3xl mx-auto pb-12 sm:pb-20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             More than just a countdown timer
           </h2>
-          <p className="text-center text-base sm:text-lg text-neutral-500 dark:text-neutral-400 mb-10 max-w-xl mx-auto">
+          <p className="text-center text-base sm:text-lg text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto">
             A simple timer counts down and beeps. Foci gives you tasks, time tracking, ambient
             music, and streaks — so you actually stay focused and see your progress.
           </p>
@@ -449,11 +460,11 @@ export default function LandingPage() {
               { icon: "📊", title: "Automatic time logging", desc: "Every session is tracked per-task. See exactly where your hours go." },
               { icon: "🔥", title: "Streaks that stick", desc: "Daily goals and streak tracking keep you coming back." },
             ].map((item, i) => (
-              <div key={i} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0f1b33] border border-gray-200 dark:border-[#1e3355]">
+              <div key={i} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0f1b33] border border-slate-200 dark:border-[#1e3355]">
                 <span className="text-2xl flex-shrink-0">{item.icon}</span>
                 <div>
-                  <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-0.5">{item.title}</h3>
-                  <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 leading-relaxed">{item.desc}</p>
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-0.5">{item.title}</h3>
+                  <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -462,10 +473,10 @@ export default function LandingPage() {
 
         {/* From the blog */}
         <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white text-center mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-3">
             From the blog
           </h2>
-          <p className="text-center text-base text-neutral-500 dark:text-neutral-400 mb-8 max-w-xl mx-auto">
+          <p className="text-center text-base text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto">
             Practical guides on focus, time management, and productivity.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -473,7 +484,7 @@ export default function LandingPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group bg-white dark:bg-[#0f1b33] rounded-2xl p-5 border border-gray-200 dark:border-[#1e3355] shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all"
+                className="group bg-white dark:bg-[#0f1b33] rounded-2xl p-5 border border-slate-200 dark:border-[#1e3355] shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all"
               >
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {post.tags.slice(0, 2).map((tag) => (
@@ -485,10 +496,10 @@ export default function LandingPage() {
                     </span>
                   ))}
                 </div>
-                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
                   {post.title}
                 </h3>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">
                   {post.description}
                 </p>
                 <span className="inline-block mt-3 text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
@@ -500,7 +511,7 @@ export default function LandingPage() {
           <div className="text-center mt-6">
             <Link
               href="/blog"
-              className="text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               View all posts →
             </Link>
@@ -509,22 +520,22 @@ export default function LandingPage() {
 
         {/* Final CTA */}
         <section className="w-full max-w-2xl mx-auto text-center pb-16 sm:pb-24">
-          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-3">
             Ready to focus?
           </h2>
-          <p className="text-neutral-500 dark:text-neutral-400 mb-6">
+          <p className="text-slate-500 dark:text-slate-400 mb-6">
             No credit card. No setup. Just start a timer.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-base hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-md"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-base hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-md"
             >
               Get started — it&apos;s free
             </Link>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium text-base hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-base hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               Try without account
             </Link>
@@ -533,7 +544,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-sm text-neutral-400 dark:text-neutral-600">
+      <footer className="py-6 text-center text-sm text-slate-400 dark:text-slate-600">
         Built for focus.
       </footer>
     </div>

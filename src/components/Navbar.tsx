@@ -50,7 +50,7 @@ export default function Navbar() {
               <circle cx="16" cy="16" r="2.5" fill="white"/>
             </svg>
           </div>
-          <span className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white">Foci</span>
+          <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Foci</span>
         </Link>
 
         {/* Desktop nav */}
@@ -61,8 +61,8 @@ export default function Navbar() {
               href={link.href}
               className={`text-base font-medium transition-colors ${
                 pathname === link.href
-                  ? "text-neutral-900 dark:text-white"
-                  : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  ? "text-slate-900 dark:text-white"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {link.label}
@@ -70,7 +70,7 @@ export default function Navbar() {
           ))}
           <button
             onClick={cycleTheme}
-            className="p-2 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white transition-colors"
+            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
             aria-label={`Theme: ${theme}. Click to change.`}
             title={`Theme: ${theme}`}
           >
@@ -81,7 +81,7 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="text-sm font-medium px-4 py-2 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
             >
               Log in
             </Link>
@@ -92,7 +92,7 @@ export default function Navbar() {
         <div className="flex sm:hidden items-center gap-2">
           <button
             onClick={cycleTheme}
-            className="p-2 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white transition-colors"
+            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
             aria-label={`Theme: ${theme}. Click to change.`}
           >
             {themeIcon}
@@ -100,7 +100,7 @@ export default function Navbar() {
           {user ? (
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               aria-label="Toggle menu"
             >
               {menuOpen ? (
@@ -116,7 +116,7 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="text-sm font-medium px-3.5 py-1.5 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+              className="text-sm font-medium px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
             >
               Log in
             </Link>
@@ -126,7 +126,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="sm:hidden mt-3 pb-3 border-t border-neutral-200 dark:border-neutral-700">
+        <div className="sm:hidden mt-3 pb-3 border-t border-slate-200 dark:border-slate-700">
           <div className="flex flex-col gap-1 pt-3">
             {navLinks.map((link) => (
               <Link
@@ -135,8 +135,8 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === link.href
-                    ? "text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800"
-                    : "text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white"
+                    ? "text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {link.label}
@@ -150,7 +150,7 @@ export default function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMenuOpen(false)}
-                className="mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+                className="mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
               >
                 Log in
               </Link>

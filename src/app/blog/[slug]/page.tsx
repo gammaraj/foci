@@ -73,7 +73,7 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="max-w-3xl mx-auto">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-1 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-8"
         >
           ← All posts
         </Link>
@@ -89,10 +89,10 @@ export default async function BlogPostPage({ params }: Props) {
                 </span>
               ))}
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
               {meta.title}
             </h1>
-            <div className="mt-3 flex items-center gap-3 text-sm text-neutral-400 dark:text-neutral-500">
+            <div className="mt-3 flex items-center gap-3 text-sm text-slate-400 dark:text-slate-500">
               <time dateTime={meta.date}>
                 {new Date(meta.date).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -109,17 +109,17 @@ export default async function BlogPostPage({ params }: Props) {
             <MDXRemote source={content} />
           </div>
 
-          <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 text-center">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 Put these ideas into practice
               </h2>
-              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Foci is a free focus timer and task manager — no sign-up required.
               </p>
               <Link
                 href="/app"
-                className="inline-flex items-center justify-center mt-4 px-5 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+                className="inline-flex items-center justify-center mt-4 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
               >
                 Try Foci free
               </Link>
@@ -131,8 +131,8 @@ export default async function BlogPostPage({ params }: Props) {
             const related = getRelatedPosts(slug, 3);
             if (related.length === 0) return null;
             return (
-              <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
-                <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-6">
+              <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">
                   Related articles
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -140,15 +140,15 @@ export default async function BlogPostPage({ params }: Props) {
                     <Link
                       key={rp.slug}
                       href={`/blog/${rp.slug}`}
-                      className="group block p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:shadow-md dark:hover:shadow-neutral-900 transition-shadow"
+                      className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md dark:hover:shadow-slate-900 transition-shadow"
                     >
-                      <h3 className="text-sm font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                         {rp.title}
                       </h3>
-                      <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
+                      <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
                         {rp.description}
                       </p>
-                      <span className="mt-2 inline-block text-xs text-neutral-400 dark:text-neutral-500">
+                      <span className="mt-2 inline-block text-xs text-slate-400 dark:text-slate-500">
                         {rp.readingTime}
                       </span>
                     </Link>
@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </main>
 
-      <footer className="mt-auto py-8 text-center text-xs text-neutral-400 dark:text-neutral-600">
+      <footer className="mt-auto py-8 text-center text-xs text-slate-400 dark:text-slate-600">
         Built for focus. Free forever.
       </footer>
     </div>
