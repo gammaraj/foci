@@ -118,7 +118,7 @@ export default function DueDateReminders() {
             r.type === "overdue"
               ? "bg-red-50/95 dark:bg-red-950/90 border-red-200 dark:border-red-800"
               : r.type === "today"
-                ? "bg-orange-50/95 dark:bg-orange-950/90 border-orange-200 dark:border-orange-800"
+                ? "bg-amber-50/95 dark:bg-amber-950/90 border-amber-200 dark:border-amber-800"
                 : "bg-blue-50/95 dark:bg-blue-950/90 border-blue-200 dark:border-blue-800"
           }`}
         >
@@ -127,7 +127,7 @@ export default function DueDateReminders() {
               {r.type === "overdue" ? "🔴" : r.type === "today" ? "🟠" : "🔵"}
             </span>
             <span className={`text-[8px] sm:text-[9px] font-bold uppercase leading-none ${
-              r.type === "overdue" ? "text-red-500" : r.type === "today" ? "text-orange-500" : "text-blue-500"
+              r.type === "overdue" ? "text-red-500" : r.type === "today" ? "text-amber-600" : "text-blue-500"
             }`}>
               {r.type === "overdue" ? "Late" : r.type === "today" ? "Today" : "Soon"}
             </span>
@@ -137,7 +137,7 @@ export default function DueDateReminders() {
               r.type === "overdue"
                 ? "text-red-600 dark:text-red-400"
                 : r.type === "today"
-                  ? "text-orange-600 dark:text-orange-400"
+                  ? "text-amber-600 dark:text-amber-400"
                   : "text-blue-600 dark:text-blue-400"
             }`}>
               {r.type === "overdue" ? "Overdue" : r.type === "today" ? "Due Today" : "Due Tomorrow"}

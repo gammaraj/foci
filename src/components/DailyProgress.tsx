@@ -187,7 +187,7 @@ function CalendarView({
         color = "#ffffff";
         title = `${sessions} sessions (Goal met!)`;
       } else if (sessions > 0) {
-        bg = "#fb923c";
+        bg = "#d97706";
         color = "#ffffff";
         title = `${sessions} sessions`;
       }

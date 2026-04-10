@@ -146,7 +146,7 @@ export default function NotificationBell() {
         {isGranted ? (
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-green-400 ring-1 ring-green-500/50" />
         ) : (
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-1 ring-amber-500/50 animate-pulse" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-600 ring-1 ring-amber-600/50 animate-pulse" />
         )}
       </button>
 
