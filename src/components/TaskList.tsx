@@ -720,7 +720,7 @@ export default function TaskList({
   const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
 
   return (
-    <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-hidden min-w-0">
+    <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-hidden min-w-0">
 
       {/* Focus mode header */}
       {isFocusMode ? (
@@ -1524,7 +1524,7 @@ export default function TaskList({
               className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors cursor-pointer ${
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 border-l-[3px] border-l-blue-500 dark:border-l-blue-400"
-                  : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30]"
+                  : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
               } ${isExpanded ? "rounded-b-none" : ""} ${
                 dragTaskId === task.id ? "opacity-50" : ""
               } ${
@@ -1693,7 +1693,7 @@ export default function TaskList({
                     className={`flex-shrink-0 rounded transition-all hidden sm:flex items-center justify-center ${
                       activeTaskId === task.id
                         ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        : "px-2.5 py-1.5 text-xs sm:text-sm font-medium text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 hover:bg-blue-600 hover:text-white hover:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white dark:hover:border-blue-600"
+                        : "px-2.5 py-1.5 text-xs sm:text-sm font-medium text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 hover:bg-orange-500 hover:text-white hover:border-orange-500 dark:hover:bg-orange-500 dark:hover:text-white dark:hover:border-orange-500"
                     }`}
                     title={
                       activeTaskId === task.id

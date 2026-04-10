@@ -300,7 +300,7 @@ export default function AppPage() {
             )}
 
             {/* Main content */}
-            <div className="bg-white/60 dark:bg-[#111827] backdrop-blur-sm px-4 py-0 sm:py-2">
+            <div className="bg-white/60 dark:bg-[#111827] backdrop-blur-sm px-4 py-0 sm:py-1">
               <div className="relative pb-6 sm:pb-0">
                 <CircularTimer
                   remainingTime={timer.remainingTime}
@@ -363,7 +363,7 @@ export default function AppPage() {
 
             <AmbientSounds />
 
-            <div className="h-2" />
+            <div className="h-1" />
           </div>
         </div>
 

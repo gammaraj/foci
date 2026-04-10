@@ -122,9 +122,16 @@ export default function DueDateReminders() {
                 : "bg-blue-50/95 dark:bg-blue-950/90 border-blue-200 dark:border-blue-800"
           }`}
         >
-          <span className="text-sm sm:text-base mt-0.5">
-            {r.type === "overdue" ? "🔴" : r.type === "today" ? "🟠" : "🔵"}
-          </span>
+          <div className="flex flex-col items-center gap-0.5 mt-0.5">
+            <span className="text-sm sm:text-base">
+              {r.type === "overdue" ? "🔴" : r.type === "today" ? "🟠" : "🔵"}
+            </span>
+            <span className={`text-[8px] sm:text-[9px] font-bold uppercase leading-none ${
+              r.type === "overdue" ? "text-red-500" : r.type === "today" ? "text-orange-500" : "text-blue-500"
+            }`}>
+              {r.type === "overdue" ? "Late" : r.type === "today" ? "Today" : "Soon"}
+            </span>
+          </div>
           <div className="flex-1 min-w-0">
             <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wide ${
               r.type === "overdue"

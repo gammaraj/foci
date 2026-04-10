@@ -49,7 +49,7 @@ export default function DailyProgress({
   };
 
   return (
-    <section className="px-4 py-1 sm:py-3" aria-labelledby="daily-progress-heading">
+    <section className="px-4 py-0 sm:py-1" aria-labelledby="daily-progress-heading">
       <div
         id="dailyGoalProgress"
         className="bg-gradient-to-br from-white to-slate-50/80 dark:from-[#131d30] dark:to-[#131d30] rounded-xl shadow-sm border border-slate-200/80 dark:border-[#243350] p-2 sm:p-5"

@@ -196,7 +196,12 @@ export default function AmbientSounds() {
   const [scIdx, setScIdx] = useState(0);
   const [scShuffle, setScShuffle] = useState(false);
   const [scError, setScError] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("foci_music_seen") !== "true";
+    }
+    return true;
+  });
 
   // Remember that the user has seen the music section
   useEffect(() => {
