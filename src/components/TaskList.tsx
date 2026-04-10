@@ -725,22 +725,21 @@ export default function TaskList({
       {/* Focus mode header */}
       {isFocusMode ? (
         <div
-          className="px-3 sm:px-5 py-3 sm:py-4 text-white rounded-t-2xl"
-          style={{ background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)" }}
+          className="section-header-gradient px-3 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
         >
           <div className="flex items-center justify-between min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
               {focusProject?.color && (
-                <span className="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-white/20" style={{ backgroundColor: focusProject.color }} />
+                <span className="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-slate-300 dark:ring-white/20" style={{ backgroundColor: focusProject.color }} />
               )}
               <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/50 leading-none mb-0.5">Project Focus</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/50 leading-none mb-0.5">Project Focus</p>
                 <h2 className="text-base sm:text-lg font-bold truncate">{focusProject?.name ?? "Project"}</h2>
               </div>
             </div>
             <button
               onClick={() => onFocusProject?.(null)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-white/80 hover:bg-slate-300/60 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -753,8 +752,7 @@ export default function TaskList({
       <>
       {/* Header */}
       <div
-        className="px-3 sm:px-5 py-3 sm:py-4 text-white rounded-t-2xl"
-        style={{ background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)" }}
+        className="section-header-gradient px-3 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
       >
         <div className="flex items-center justify-between min-w-0">
           <h2 className="text-lg font-bold flex items-center gap-2 flex-shrink-0">
@@ -775,41 +773,41 @@ export default function TaskList({
           </h2>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
-            <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
+            <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
                 title="Show tasks due today"
               >
                 Today
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
                 title="Show tasks due this week"
               >
                 Week
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
                 title="Show tasks due this month"
               >
                 Month
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
                 title="Show tasks due this year"
               >
                 Year
               </button>
             </div>
             {/* View mode toggles */}
-            <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
+            <div className="flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-1.5 sm:p-2 rounded-md transition-colors ${viewMode === "list" ? "bg-white/20 text-white" : "text-white/50 hover:text-white/80"}`}
+                className={`p-1.5 sm:p-2 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="List view"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -818,7 +816,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => setViewMode("calendar")}
-                className={`p-1.5 sm:p-2 rounded-md transition-colors ${viewMode === "calendar" ? "bg-white/20 text-white" : "text-white/50 hover:text-white/80"}`}
+                className={`p-1.5 sm:p-2 rounded-md transition-colors ${viewMode === "calendar" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="Calendar view"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -830,7 +828,7 @@ export default function TaskList({
             {onToggleFullscreen && (
               <button
                 onClick={onToggleFullscreen}
-                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${isFullscreen ? "bg-white/20 text-white" : "text-white/50 hover:text-white/80 hover:bg-white/10"}`}
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${isFullscreen ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
                 title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
                 aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
               >
@@ -859,7 +857,7 @@ export default function TaskList({
               className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                 viewMode === "plan"
                   ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md shadow-blue-500/20"
-                  : "bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
+                  : "bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-white/80 hover:bg-slate-300/60 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -870,7 +868,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={() => setShowPlanInfo(!showPlanInfo)}
-              className="p-2 rounded-lg text-white/50 hover:text-white/80 hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
               aria-label="What is Smart Plan?"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -879,37 +877,37 @@ export default function TaskList({
             </button>
           </div>
           {showPlanInfo && (
-            <div className="mt-2 p-2.5 bg-slate-900 text-white text-xs rounded-lg shadow-xl leading-relaxed">
+            <div className="mt-2 p-2.5 bg-slate-200 dark:bg-slate-900 text-slate-700 dark:text-white text-xs rounded-lg shadow-xl leading-relaxed">
               Analyzes your tasks, due dates, and daily goals to create a day-by-day execution plan. Flags overdue and at-risk items.
             </div>
           )}
         </div>
         {/* Time filters - mobile: own row below title */}
-        <div className="flex sm:hidden items-center gap-1 bg-white/10 rounded-lg p-0.5 mt-3">
+        <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
             title="Show tasks due today"
           >
             Today
           </button>
           <button
             onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
             title="Show tasks due this week"
           >
             Week
           </button>
           <button
             onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
             title="Show tasks due this month"
           >
             Month
           </button>
           <button
             onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
             title="Show tasks due this year"
           >
             Year

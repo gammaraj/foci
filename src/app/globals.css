@@ -30,6 +30,14 @@ body {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
+/* ===== Section Header Gradient ===== */
+.section-header-gradient {
+  background: linear-gradient(135deg, #e2e8f0 0%, #eef2ff 100%);
+}
+.dark .section-header-gradient {
+  background: linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%);
+}
+
 /* ===== Timer Control Buttons ===== */
 .pause-button {
   display: flex;
@@ -40,7 +48,7 @@ body {
   transition: all 0.2s ease;
   border: none;
   cursor: pointer;
-  background: #475569;
+  background: #94a3b8;
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   min-width: 48px;
@@ -48,7 +56,7 @@ body {
 }
 
 .pause-button:hover {
-  background: #334155;
+  background: #64748b;
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
 }

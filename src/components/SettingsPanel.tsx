@@ -102,10 +102,7 @@ export default function SettingsPanel({
       <div className="settings-panel">
         {/* Header */}
         <div
-          className="px-4 sm:px-6 py-3 sm:py-4 text-white flex justify-between items-center rounded-t-[20px]"
-          style={{
-            background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)",
-          }}
+          className="section-header-gradient px-4 sm:px-6 py-3 sm:py-4 text-slate-700 dark:text-white flex justify-between items-center rounded-t-[20px]"
         >
           <h3 className="text-xl font-bold flex items-center gap-2">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -119,7 +116,7 @@ export default function SettingsPanel({
           </h3>
           <button
             onClick={onClose}
-            className="text-white hover:text-slate-200 transition p-2 rounded-lg hover:bg-white/20"
+            className="hover:text-slate-900 dark:text-white dark:hover:text-slate-200 transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/20"
             aria-label="Close settings"
           >
             <svg

@@ -237,17 +237,14 @@ export default function AppPage() {
           <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
             <header
-              className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-white rounded-t-2xl"
-              style={{
-                background: "linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%)",
-              }}
+              className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
             >
               <h1 className="text-base font-semibold tracking-wide">Focus Timer</h1>
 
               <div className="flex items-center gap-1">
               <button
                 onClick={() => setTimerCollapsed(true)}
-                className="text-white/60 hover:text-white transition p-2 rounded-lg hover:bg-white/10"
+                className="text-slate-400 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10"
                 aria-label="Collapse timer"
                 title="Hide timer panel"
               >
@@ -257,14 +254,14 @@ export default function AppPage() {
               </button>
               <button
                 onClick={() => document.getElementById('tasks-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="lg:hidden text-sm text-white/85 hover:text-white transition px-3 py-2 rounded-lg hover:bg-white/10"
+                className="lg:hidden text-sm text-slate-500 dark:text-white/85 hover:text-slate-700 dark:hover:text-white transition px-3 py-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10"
               >
                 Tasks
               </button>
               <NotificationBell />
               <button
                 onClick={() => setShowSettings(true)}
-                className="text-white hover:text-slate-200 transition p-2 rounded-full hover:bg-white/10"
+                className="hover:text-slate-900 dark:text-white dark:hover:text-slate-200 transition p-2 rounded-full hover:bg-slate-200/60 dark:hover:bg-white/10"
                 aria-label="Open settings"
               >
                 <svg
