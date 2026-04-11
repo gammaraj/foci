@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Settings } from "@/lib/types";
 import { TIMER_PRESETS, GOAL_PRESETS } from "@/lib/templates";
 import TaskImportExport from "@/components/TaskImportExport";
@@ -59,22 +59,42 @@ export default function SettingsPanel({
     }
   }, [notifications]);
   const [saved, setSaved] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  // Close on ESC key
+  // Focus trap + ESC to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") { onClose(); return; }
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+        }
+      }
     };
     document.addEventListener("keydown", handleKeyDown);
+    // Focus the panel on open
+    panelRef.current?.focus();
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (workMin <= 0 || breakMin <= 0 || inactivityMin <= 0 || dailyGoal <= 0) {
-      return;
-    }
+    const errors: Record<string, string> = {};
+    if (workMin <= 0 || workMin > 120) errors.workMin = "Must be 1–120";
+    if (breakMin <= 0 || breakMin > 60) errors.breakMin = "Must be 1–60";
+    if (inactivityMin <= 0) errors.inactivityMin = "Must be > 0";
+    if (dailyGoal <= 0 || dailyGoal > 20) errors.dailyGoal = "Must be 1–20";
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     const newSettings: Settings = {
       workDuration: workMin * 60 * 1000,
@@ -99,7 +119,7 @@ export default function SettingsPanel({
       <div className="settings-overlay" onClick={onClose} />
 
       {/* Panel */}
-      <div className="settings-panel">
+      <div className="settings-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Settings" tabIndex={-1}>
         {/* Header */}
         <div
           className="section-header-gradient px-4 sm:px-6 py-3 sm:py-4 text-slate-700 dark:text-white flex justify-between items-center rounded-t-[20px]"
@@ -137,7 +157,7 @@ export default function SettingsPanel({
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto">
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column */}
           <div className="space-y-5">
@@ -195,9 +215,10 @@ export default function SettingsPanel({
                   min={1}
                   max={120}
                   value={workMin}
-                  onChange={(e) => setWorkMin(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  onChange={(e) => { setWorkMin(Number(e.target.value)); setValidationErrors((v) => { const { workMin: _, ...rest } = v; return rest; }); }}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.workMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
+                {validationErrors.workMin && <p className="text-xs text-red-500 mt-1">{validationErrors.workMin}</p>}
               </div>
 
               {/* Break Duration */}
@@ -214,9 +235,10 @@ export default function SettingsPanel({
                   min={1}
                   max={60}
                   value={breakMin}
-                  onChange={(e) => setBreakMin(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  onChange={(e) => { setBreakMin(Number(e.target.value)); setValidationErrors((v) => { const { breakMin: _, ...rest } = v; return rest; }); }}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.breakMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
+                {validationErrors.breakMin && <p className="text-xs text-red-500 mt-1">{validationErrors.breakMin}</p>}
               </div>
 
               {/* Inactivity Threshold */}
@@ -232,9 +254,10 @@ export default function SettingsPanel({
                   id="inactivityThreshold"
                   min={1}
                   value={inactivityMin}
-                  onChange={(e) => setInactivityMin(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  onChange={(e) => { setInactivityMin(Number(e.target.value)); setValidationErrors((v) => { const { inactivityMin: _, ...rest } = v; return rest; }); }}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.inactivityMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
+                {validationErrors.inactivityMin && <p className="text-xs text-red-500 mt-1">{validationErrors.inactivityMin}</p>}
                 <div className="text-[0.9rem] text-slate-500 dark:text-slate-400 mt-1">
                   Auto-pause when inactive
                 </div>
@@ -254,9 +277,10 @@ export default function SettingsPanel({
                   min={1}
                   max={20}
                   value={dailyGoal}
-                  onChange={(e) => setDailyGoal(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-[#243350] rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  onChange={(e) => { setDailyGoal(Number(e.target.value)); setValidationErrors((v) => { const { dailyGoal: _, ...rest } = v; return rest; }); }}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.dailyGoal ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
+                {validationErrors.dailyGoal && <p className="text-xs text-red-500 mt-1">{validationErrors.dailyGoal}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {GOAL_PRESETS.map((gp) => (
                     <button

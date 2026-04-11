@@ -144,10 +144,16 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 px-4 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[15px] font-medium hover:bg-slate-800 dark:hover:bg-slate-100 disabled:opacity-50 transition-colors"
+            className="w-full py-2.5 px-4 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[15px] font-medium hover:bg-slate-800 dark:hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
+            {loading && (
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            )}
             {loading
-              ? "Loading..."
+              ? "Signing in..."
               : mode === "sign-in"
                 ? "Sign In"
                 : "Sign Up"}

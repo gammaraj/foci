@@ -5,6 +5,7 @@ import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PRO
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import SmartPlan from "@/components/SmartPlan";
+import ConfirmModal from "@/components/ConfirmModal";
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -105,6 +106,13 @@ export default function TaskList({
   const [showPlanInfo, setShowPlanInfo] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [calendarSelectedDay, setCalendarSelectedDay] = useState<string | null>(null);
+  const [pendingConfirm, setPendingConfirm] = useState<{
+    title: string;
+    message: string;
+    confirmLabel: string;
+    onConfirm: () => void;
+  } | null>(null);
+  const [undoTask, setUndoTask] = useState<{ task: Task; timer: ReturnType<typeof setTimeout> } | null>(null);
   const projectMenuRef = useRef<HTMLDivElement>(null);
   const templateMenuRef = useRef<HTMLDivElement>(null);
 
@@ -313,20 +321,26 @@ export default function TaskList({
   const deleteProject = async (id: string) => {
     if (id === DEFAULT_PROJECT_ID) return;
     const project = projects.find((p) => p.id === id);
-    if (!window.confirm(`Delete project "${project?.name ?? ""}"? Tasks will be moved to General.`)) return;
-    // Move tasks from deleted project to General
-    const updated = tasks.map((t) =>
-      t.projectId === id ? { ...t, projectId: DEFAULT_PROJECT_ID } : t
-    );
-    persist(updated);
-    persistProjects(projects.filter((p) => p.id !== id));
-    try {
-      await removeProjectFromDB(id);
-    } catch (err) {
-      console.error("[Foci] Failed to delete project:", err);
-      showToast("Failed to delete project.", "error");
-    }
-    if (selectedProjectId === id) selectProject(DEFAULT_PROJECT_ID);
+    setPendingConfirm({
+      title: "Delete project",
+      message: `Delete "${project?.name ?? ""}"? Tasks will be moved to General.`,
+      confirmLabel: "Delete",
+      onConfirm: async () => {
+        setPendingConfirm(null);
+        const updated = tasks.map((t) =>
+          t.projectId === id ? { ...t, projectId: DEFAULT_PROJECT_ID } : t
+        );
+        persist(updated);
+        persistProjects(projects.filter((p) => p.id !== id));
+        try {
+          await removeProjectFromDB(id);
+        } catch (err) {
+          console.error("[Foci] Failed to delete project:", err);
+          showToast("Failed to delete project.", "error");
+        }
+        if (selectedProjectId === id) selectProject(DEFAULT_PROJECT_ID);
+      },
+    });
   };
 
   const addTask = () => {
@@ -384,7 +398,15 @@ export default function TaskList({
     const changed = updated.find((t) => t.id === id)!;
     if (isCompleting) {
       trackTaskCompleted((changed.timeSpent || 0));
-      showToast(task.recurrence ? "Task completed! Next occurrence created." : "Task completed!", "success");
+      const snapshot = tasks;
+      showToast(
+        task.recurrence ? "Task completed! Next occurrence created." : "Task completed!",
+        "success",
+        {
+          label: "Undo",
+          onClick: () => persist(snapshot),
+        }
+      );
       // Auto-create next occurrence for repeating tasks
       if (task.recurrence) {
         const nextTask: Task = {
@@ -409,15 +431,23 @@ export default function TaskList({
 
   const deleteTask = async (id: string) => {
     const task = tasks.find((t) => t.id === id);
-    if (!window.confirm(`Delete "${task?.title ?? "this task"}"?`)) return;
-    trackTaskDeleted();
-    persist(tasks.filter((t) => t.id !== id));
-    try {
-      await removeTaskFromDB(id);
-    } catch (err) {
-      console.error("[Foci] Failed to delete task:", err);
-    }
-    if (activeTaskId === id) onSelectTask(null);
+    setPendingConfirm({
+      title: "Delete task",
+      message: `Delete "${task?.title ?? "this task"}"? This cannot be undone.`,
+      confirmLabel: "Delete",
+      onConfirm: async () => {
+        setPendingConfirm(null);
+        trackTaskDeleted();
+        persist(tasks.filter((t) => t.id !== id));
+        try {
+          await removeTaskFromDB(id);
+        } catch (err) {
+          console.error("[Foci] Failed to delete task:", err);
+          showToast("Failed to delete task.", "error");
+        }
+        if (activeTaskId === id) onSelectTask(null);
+      },
+    });
   };
 
   const setDueDate = (id: string, date: string | undefined) => {
@@ -472,15 +502,23 @@ export default function TaskList({
   };
 
   const deleteArchivedTasks = async () => {
-    if (!window.confirm(`Delete ${archivedTasks.length} archived task${archivedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`)) return;
-    const matchesProject = (t: Task) => isAllProjects || t.projectId === selectedProjectId;
-    const toRemove = tasks.filter((t) => t.archivedAt && matchesProject(t)).map((t) => t.id);
-    persist(tasks.filter((t) => !(t.archivedAt && matchesProject(t))));
-    try {
-      await removeTasksFromDB(toRemove);
-    } catch (err) {
-      console.error("[Foci] Failed to delete archived tasks:", err);
-    }
+    setPendingConfirm({
+      title: "Delete archived tasks",
+      message: `Delete ${archivedTasks.length} archived task${archivedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`,
+      confirmLabel: "Delete all",
+      onConfirm: async () => {
+        setPendingConfirm(null);
+        const matchesProject = (t: Task) => isAllProjects || t.projectId === selectedProjectId;
+        const toRemove = tasks.filter((t) => t.archivedAt && matchesProject(t)).map((t) => t.id);
+        persist(tasks.filter((t) => !(t.archivedAt && matchesProject(t))));
+        try {
+          await removeTasksFromDB(toRemove);
+        } catch (err) {
+          console.error("[Foci] Failed to delete archived tasks:", err);
+          showToast("Failed to delete archived tasks.", "error");
+        }
+      },
+    });
   };
 
   const handleDragStart = (taskId: string) => {
@@ -807,8 +845,9 @@ export default function TaskList({
             <div className="flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-1.5 sm:p-2 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                className={`p-2.5 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="List view"
+                aria-label="List view"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -816,8 +855,9 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => setViewMode("calendar")}
-                className={`p-1.5 sm:p-2 rounded-md transition-colors ${viewMode === "calendar" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                className={`p-2.5 rounded-md transition-colors ${viewMode === "calendar" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="Calendar view"
+                aria-label="Calendar view"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -828,7 +868,7 @@ export default function TaskList({
             {onToggleFullscreen && (
               <button
                 onClick={onToggleFullscreen}
-                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${isFullscreen ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+                className={`p-2.5 rounded-lg transition-colors ${isFullscreen ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
                 title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
                 aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
               >
@@ -2063,9 +2103,15 @@ export default function TaskList({
                 </button>
                 <button
                   onClick={() => {
-                    if (window.confirm(`Delete ${completedTasks.length} completed task${completedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`)) {
-                      clearCompleted();
-                    }
+                    setPendingConfirm({
+                      title: "Clear completed tasks",
+                      message: `Delete ${completedTasks.length} completed task${completedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`,
+                      confirmLabel: "Delete",
+                      onConfirm: () => {
+                        setPendingConfirm(null);
+                        clearCompleted();
+                      },
+                    });
                   }}
                   className="text-sm text-slate-400 hover:text-red-500 transition-colors"
                 >
@@ -2170,6 +2216,18 @@ export default function TaskList({
         )}
       </div>
       </>)}
+
+      {/* Confirmation Modal */}
+      {pendingConfirm && (
+        <ConfirmModal
+          title={pendingConfirm.title}
+          message={pendingConfirm.message}
+          confirmLabel={pendingConfirm.confirmLabel}
+          variant="danger"
+          onConfirm={pendingConfirm.onConfirm}
+          onCancel={() => setPendingConfirm(null)}
+        />
+      )}
     </div>
   );
 }

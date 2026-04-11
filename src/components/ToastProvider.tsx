@@ -8,10 +8,11 @@ interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  action?: { label: string; onClick: () => void };
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (message: string, type?: ToastType, action?: { label: string; onClick: () => void }) => void;
 }
 
 const ToastContext = createContext<ToastContextType>({
@@ -32,12 +33,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  const showToast = useCallback((message: string, type: ToastType = "error") => {
+  const showToast = useCallback((message: string, type: ToastType = "error", action?: { label: string; onClick: () => void }) => {
     const id = crypto.randomUUID();
     setToasts((prev) => {
-      // Deduplicate: don't show same message if already visible
       if (prev.some((t) => t.message === message)) return prev;
-      return [...prev.slice(-4), { id, message, type }];
+      return [...prev.slice(-4), { id, message, type, action }];
     });
     const timer = setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -84,6 +84,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           >
             <span className="flex-shrink-0">{iconMap[toast.type]}</span>
             <span className="flex-1">{toast.message}</span>
+            {toast.action && (
+              <button
+                onClick={() => { toast.action!.onClick(); dismiss(toast.id); }}
+                className="flex-shrink-0 font-semibold text-white underline underline-offset-2 hover:no-underline ml-1"
+              >
+                {toast.action.label}
+              </button>
+            )}
             <button
               onClick={() => dismiss(toast.id)}
               className="flex-shrink-0 text-white/70 hover:text-white ml-2"

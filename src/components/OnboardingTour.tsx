@@ -57,9 +57,19 @@ export default function OnboardingTour() {
       supabase.auth.updateUser({ data: { onboarding_done: true } });
       return;
     }
-    // Delay to allow the page to render
-    const timer = setTimeout(() => setCurrentStep(0), 1000);
-    return () => clearTimeout(timer);
+    // Delay until the page has actually rendered
+    let cancelled = false;
+    const waitForTargets = () => {
+      const firstTarget = document.querySelector(STEPS[0].target);
+      if (firstTarget && !cancelled) {
+        setCurrentStep(0);
+      } else if (!cancelled) {
+        requestAnimationFrame(waitForTargets);
+      }
+    };
+    // Give initial render a moment to settle
+    const timer = setTimeout(() => requestAnimationFrame(waitForTargets), 300);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [user]);
 
   const positionTooltip = useCallback(() => {
@@ -163,6 +173,9 @@ export default function OnboardingTour() {
       {/* Tooltip */}
       <div
         style={tooltipStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-label={step.title}
         className="w-[300px] max-w-[90vw] bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-[9999]"
       >
         <div className="flex items-center justify-between mb-1">

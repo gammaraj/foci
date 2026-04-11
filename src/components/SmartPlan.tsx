@@ -38,6 +38,7 @@ function TaskRow({
         <span
           className="w-2 h-2 rounded-full flex-shrink-0"
           style={{ backgroundColor: st.projectColor }}
+          aria-hidden="true"
         />
       )}
 
@@ -48,7 +49,12 @@ function TaskRow({
           </span>
           {st.overdue && (
             <span className="text-xs font-medium text-red-500 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
-              Overdue
+              ⚠ Overdue
+            </span>
+          )}
+          {st.atRisk && !st.overdue && (
+            <span className="text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
+              ⏳ At Risk
             </span>
           )}
         </div>
@@ -70,8 +76,9 @@ function TaskRow({
       {/* Start button — always visible on mobile */}
       <button
         onClick={(e) => { e.stopPropagation(); onStartTask(t.id); }}
-        className="flex-shrink-0 p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all sm:opacity-0 sm:group-hover:opacity-100"
+        className="flex-shrink-0 p-2.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all sm:opacity-0 sm:group-hover:opacity-100"
         title="Start this task"
+        aria-label={`Start task: ${t.title}`}
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M8 5v14l11-7z" />
