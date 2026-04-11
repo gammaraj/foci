@@ -1576,10 +1576,34 @@ export default function TaskList({
 
               {/* Task content */}
               <div className="flex-1 min-w-0">
-                {!isExpanded && <div
+                <div
                   className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words leading-snug"
                 >
-                  {task.title}
+                  {isExpanded && editingId === task.id ? (
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      onBlur={() => saveEdit(task.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEdit(task.id);
+                        if (e.key === "Escape") setEditingId(null);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full px-1 py-0.5 text-[15px] font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                      autoFocus
+                    />
+                  ) : isExpanded ? (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                      className="text-left px-1 py-0.5 rounded-lg border border-transparent hover:border-slate-200 dark:hover:border-[#243350] hover:bg-white dark:hover:bg-[#131d30] transition-colors"
+                      title="Click to edit title"
+                    >
+                      {task.title}
+                    </button>
+                  ) : (
+                    <>{task.title}</>
+                  )}
                   {activeTaskId === task.id && isTimerRunning && (
                     <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
                   )}
@@ -1588,7 +1612,7 @@ export default function TaskList({
                       {getProjectName(task.projectId)}
                     </span>
                   )}
-                </div>}
+                </div>
                 {!isExpanded && <div className="flex items-center gap-2 mt-1">
                   {/* Due date — always visible when set */}
                   {task.dueDate && (
@@ -1747,32 +1771,6 @@ export default function TaskList({
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
                   : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
               }`}>
-                {/* Editable title */}
-                <div className="px-4 pb-1">
-                  {editingId === task.id ? (
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      onBlur={() => saveEdit(task.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") saveEdit(task.id);
-                        if (e.key === "Escape") setEditingId(null);
-                      }}
-                      className="w-full px-2 py-1.5 text-[15px] font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                      autoFocus
-                    />
-                  ) : (
-                    <button
-                      onClick={() => startEditing(task)}
-                      className="w-full text-left px-2 py-1.5 text-[15px] font-medium text-slate-800 dark:text-slate-50 rounded-lg border border-transparent hover:border-slate-200 dark:hover:border-[#243350] hover:bg-white dark:hover:bg-[#131d30] transition-colors"
-                      title="Click to edit title"
-                    >
-                      {task.title}
-                    </button>
-                  )}
-                </div>
-
                 {/* Description */}
                 <div className="px-4 pb-2">
                   {editingDescId === task.id ? (
