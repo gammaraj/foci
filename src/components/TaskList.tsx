@@ -1576,7 +1576,7 @@ export default function TaskList({
 
               {/* Task content */}
               <div className="flex-1 min-w-0">
-                <div
+                {!isExpanded && <div
                   className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words leading-snug"
                 >
                   {task.title}
@@ -1588,7 +1588,7 @@ export default function TaskList({
                       {getProjectName(task.projectId)}
                     </span>
                   )}
-                </div>
+                </div>}
                 {!isExpanded && <div className="flex items-center gap-2 mt-1">
                   {/* Due date — always visible when set */}
                   {task.dueDate && (
