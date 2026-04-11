@@ -54,7 +54,8 @@ export default function OnboardingTour() {
     if (Date.now() - createdAt > 5 * 60 * 1000) {
       localStorage.setItem("foci_onboarding_done", "1");
       const supabase = createClient();
-      supabase.auth.updateUser({ data: { onboarding_done: true } });
+      supabase.auth.updateUser({ data: { onboarding_done: true } })
+        .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
       return;
     }
     // Delay until the page has actually rendered
@@ -132,7 +133,8 @@ export default function OnboardingTour() {
     localStorage.setItem("foci_onboarding_done", "1");
     // Persist to Supabase user metadata so it survives across devices/browsers
     const supabase = createClient();
-    supabase.auth.updateUser({ data: { onboarding_done: true } });
+    supabase.auth.updateUser({ data: { onboarding_done: true } })
+      .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
   };
 
   const next = () => {

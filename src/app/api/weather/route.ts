@@ -1,6 +1,27 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_WINDOW = 60_000;
+const RATE_LIMIT_MAX = 20;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    if (rateLimitMap.size > 10_000) {
+      for (const [key, val] of rateLimitMap) {
+        if (now > val.resetAt) rateLimitMap.delete(key);
+      }
+    }
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT_MAX;
+}
+
 interface GeoResult {
   latitude: number;
   longitude: number;
@@ -62,16 +83,23 @@ function weatherCodeToInfo(code: number): { description: string; icon: string } 
   return { description: "Unknown", icon: "unknown" };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const hdrs = await headers();
     const forwarded = hdrs.get("x-forwarded-for");
-    const ip = forwarded?.split(",")[0]?.trim() || ""; 
+    const ip = forwarded?.split(",")[0]?.trim() || "";
+
+    if (isRateLimited(ip || "unknown")) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const unit = searchParams.get("unit") === "celsius" ? "celsius" : "fahrenheit"; 
 
     const { latitude, longitude, city } = await getLocationFromIP(ip);
 
     const weatherRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=${unit}&timezone=auto`,
       { signal: AbortSignal.timeout(5000) }
     );
     if (!weatherRes.ok) throw new Error("Weather API error");
@@ -82,7 +110,7 @@ export async function GET() {
     const { description, icon } = weatherCodeToInfo(weatherCode);
 
     return NextResponse.json(
-      { temp, description, icon, city },
+      { temp, description, icon, city, unit },
       { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300" } }
     );
   } catch {

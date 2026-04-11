@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { headers } from "next/headers";
 import { AuthProvider } from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import "./globals.css";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -174,16 +176,19 @@ const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||l
 
 const swRegisterScript = `if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")})}`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const hdrs = await headers();
+  const nonce = hdrs.get("x-nonce") ?? "";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <script dangerouslySetInnerHTML={{ __html: swRegisterScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: swRegisterScript }} />
         <link rel="help" href="/llms.txt" type="text/plain" />
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
       </head>
@@ -193,8 +198,9 @@ export default function RootLayout({
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${SAFE_GA_ID}`}
               strategy="afterInteractive"
+              nonce={nonce}
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="afterInteractive" nonce={nonce}>
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
@@ -206,7 +212,9 @@ export default function RootLayout({
         )}
         <ThemeProvider>
           <ToastProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <ErrorBoundary>
+              <AuthProvider>{children}</AuthProvider>
+            </ErrorBoundary>
           </ToastProvider>
         </ThemeProvider>
       </body>

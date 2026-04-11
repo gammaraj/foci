@@ -10,6 +10,12 @@ function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
   if (!entry || now > entry.resetAt) {
+    // Periodic cleanup to prevent unbounded growth
+    if (rateLimitMap.size > 10_000) {
+      for (const [key, val] of rateLimitMap) {
+        if (now > val.resetAt) rateLimitMap.delete(key);
+      }
+    }
     rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
     return false;
   }

@@ -17,11 +17,13 @@ self.addEventListener("install", (event) => {
 // Activate: clean old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+    Promise.all([
+      caches.keys().then((keys) =>
+        Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      ),
+      self.clients.claim(),
+    ])
   );
-  event.waitUntil(self.clients.claim());
 });
 
 // Notification click: focus or open the app
@@ -89,6 +91,9 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(request).then((cached) => cached || new Response("Network error", { status: 408 })))
+      .catch(() => caches.match(request).then((cached) => cached || new Response(
+        '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline — Foci</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#030712;color:#e2e8f0;text-align:center}h1{font-size:1.5rem;margin-bottom:.5rem}p{color:#94a3b8;font-size:.875rem}button{margin-top:1rem;padding:.5rem 1.25rem;border:1px solid #334155;border-radius:.5rem;background:transparent;color:#e2e8f0;cursor:pointer}</style></head><body><div><h1>You\'re offline</h1><p>Check your connection and try again.</p><button onclick="location.reload()">Retry</button></div></body></html>',
+        { status: 408, headers: { "Content-Type": "text/html" } }
+      )))
   );
 });

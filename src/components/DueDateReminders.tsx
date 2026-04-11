@@ -169,7 +169,7 @@ function sendBrowserNotification(lines: string[]) {
   const title = "Foci — Task Reminders";
   const options = {
     body,
-    icon: "/icon.png",
+    icon: "/favicon.svg",
     tag: "foci-due-date-reminder",
   };
 

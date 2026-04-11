@@ -299,7 +299,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
         ? `Congratulations! You've completed ${sessionCount}/${dailyGoal} sessions today!\n\n"${quote}"`
         : `Session ${sessionCount} complete! Keep going to reach your goal of ${dailyGoal}!\n\n"${quote}"`;
 
-      const options = { body, icon: "/icon.png" };
+      const options = { body, icon: "/favicon.svg" };
 
       // Prefer ServiceWorkerRegistration.showNotification for reliability
       // in PWA / background-tab contexts; fall back to Notification constructor.

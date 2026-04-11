@@ -20,6 +20,7 @@ import {
   DEFAULT_PROJECT,
   TODAY_FILTER_ID,
 } from "../types";
+import { formatDateLocal } from "../dates";
 
 // Cache keys — prefixed to avoid collision with guest localStorage keys
 const CACHE_PREFIX = "foci_cache_";
@@ -130,7 +131,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   ): Promise<void> {
     // Update cache optimistically
     const cached = cacheGet<StreakHistory>(CACHE_KEYS.streakHistory) ?? { days: {} };
-    const dateKey = date.toISOString().slice(0, 10);
+    const dateKey = formatDateLocal(date);
     cached.days[dateKey] = { sessionCount, goalMet, timestamp: Date.now() };
     cacheSet(CACHE_KEYS.streakHistory, cached);
 

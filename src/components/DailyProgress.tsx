@@ -5,6 +5,7 @@ import { DailyGoalData } from "@/lib/types";
 import { loadStreakHistory } from "@/lib/storage";
 import type { StreakHistory } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface DailyProgressProps {
   dailyGoalData: DailyGoalData;
@@ -164,7 +165,8 @@ function CalendarView({
   const emptyCells = Array.from({ length: startingDayOfWeek });
   const dayCells = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const getDayStyle = (day: number) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;

@@ -7,6 +7,7 @@ interface WeatherData {
   description: string;
   icon: string;
   city: string;
+  unit: "fahrenheit" | "celsius";
 }
 
 const ICON_MAP: Record<string, string> = {
@@ -38,6 +39,10 @@ export default function WeatherTime() {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
+  // Detect locale preference for temperature unit
+  const prefersCelsius = typeof navigator !== "undefined"
+    && !navigator.language?.startsWith("en-US");
+
   // Update clock every minute
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
@@ -48,7 +53,7 @@ export default function WeatherTime() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/weather")
+    fetch(`/api/weather${prefersCelsius ? "?unit=celsius" : ""}`)
       .then((res) => {
         if (!res.ok) throw new Error("Weather API error");
         return res.json();
@@ -61,6 +66,7 @@ export default function WeatherTime() {
             description: data.description,
             icon: ICON_MAP[data.icon] || "🌡️",
             city: data.city || "",
+            unit: data.unit || "fahrenheit",
           });
         }
       })
@@ -93,7 +99,7 @@ export default function WeatherTime() {
           </span>
           <div>
             <p className="text-lg font-semibold text-slate-800 dark:text-slate-100 tabular-nums">
-              {weather.temp}°F
+              {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
             </p>
             {weather.city && (
               <p className="text-xs text-slate-400 dark:text-slate-400 truncate max-w-[120px]">
