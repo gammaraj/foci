@@ -55,7 +55,7 @@ export default function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
+        <div className="absolute right-0 mt-2 w-48 sm:w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
             <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
               {name}

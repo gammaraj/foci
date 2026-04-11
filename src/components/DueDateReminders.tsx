@@ -101,7 +101,7 @@ export default function DueDateReminders() {
   if (visible.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-1.5 sm:gap-2 max-w-[280px] sm:max-w-sm w-full">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 flex flex-col gap-1.5 sm:gap-2 max-w-[280px] sm:max-w-sm w-auto sm:w-full">
       {/* Dismiss all button for 3+ reminders */}
       {visible.length >= 3 && (
         <button
