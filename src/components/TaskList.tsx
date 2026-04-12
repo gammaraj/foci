@@ -1422,12 +1422,12 @@ export default function TaskList({
             maxLength={MAX_TASK_TITLE}
             className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
-          <div className="relative">
+          <div className="relative z-0">
             <input
               type="date"
               value={newTaskDueDate}
               onChange={(e) => setNewTaskDueDate(e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               title="Set due date"
             />
             <button
@@ -1450,7 +1450,7 @@ export default function TaskList({
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="relative z-20 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             Add
           </button>
