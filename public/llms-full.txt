@@ -246,13 +246,11 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - Blog – 2-Minute Rule: https://usefoci.com/blog/two-minute-rule-productivity
 - Blog – ADHD Focus Strategies: https://usefoci.com/blog/adhd-focus-strategies
 - Blog – Best Music for Studying: https://usefoci.com/blog/best-music-for-studying-and-focus
-- Blog – The 2-Minute Rule: https://usefoci.com/blog/two-minute-rule-productivity
-- Blog – Task Batching: https://usefoci.com/blog/task-batching-productivity
-- Blog – Morning Routine: https://usefoci.com/blog/productive-morning-routine
-- Blog – Digital Detox: https://usefoci.com/blog/digital-detox-for-productivity
-- Blog – Time Blocking: https://usefoci.com/blog/time-blocking-method
-- Blog – ADHD Focus Strategies: https://usefoci.com/blog/adhd-focus-strategies
-- Blog – Best Music for Studying: https://usefoci.com/blog/best-music-for-studying-and-focus
+- Blog – Foci vs Forest App: https://usefoci.com/blog/foci-vs-forest-app
+- Blog – Best Free Pomodoro Apps 2026: https://usefoci.com/blog/best-free-pomodoro-apps-2026
+- Blog – Foci vs Todoist: https://usefoci.com/blog/foci-vs-todoist
+- Blog – Foci vs Focus@Will: https://usefoci.com/blog/foci-vs-focusatwill
+- Blog – Forest App Alternatives: https://usefoci.com/blog/forest-app-alternatives
 
 ---
 
