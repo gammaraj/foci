@@ -32,6 +32,28 @@ export interface CollaborationInvite {
   expiresAt: string;
 }
 
+// Account-level invite (shares ALL projects)
+export interface AccountInvite {
+  id: string;
+  ownerEmail: string;
+  ownerName?: string;
+  ownerId: string;
+  role: CollaboratorRole;
+  status: "pending" | "accepted" | "declined" | "expired";
+  createdAt: string;
+  expiresAt: string;
+}
+
+// Account-level collaborator info
+export interface AccountCollaboratorInfo {
+  userId: string;
+  email: string;
+  displayName?: string;
+  avatarUrl?: string;
+  role: CollaboratorRole;
+  addedAt: string;
+}
+
 export interface SharedProject extends Project {
   _isShared: true;
   _ownerId: string;
@@ -124,4 +146,35 @@ export interface StorageAdapter {
   
   // Leave a shared project
   leaveProject(projectId: string, ownerId: string): Promise<void>;
+
+  // ── Account-Level Sharing ─────────────────────────────
+  // Get users who have account-level access to all my projects
+  getAccountCollaborators(): Promise<AccountCollaboratorInfo[]>;
+  
+  // Invite someone to access all projects
+  inviteAccountCollaborator(email: string, role: CollaboratorRole): Promise<void>;
+  
+  // Remove account-level access
+  removeAccountCollaborator(collaboratorId: string): Promise<void>;
+  
+  // Update account collaborator role
+  updateAccountCollaboratorRole(collaboratorId: string, role: CollaboratorRole): Promise<void>;
+  
+  // Get pending account-level invites I've sent
+  getSentAccountInvites(): Promise<AccountInvite[]>;
+  
+  // Cancel an account-level invite
+  cancelAccountInvite(inviteId: string): Promise<void>;
+  
+  // Get account-level invites I've received
+  getReceivedAccountInvites(): Promise<AccountInvite[]>;
+  
+  // Accept an account-level invite
+  acceptAccountInvite(inviteId: string): Promise<void>;
+  
+  // Decline an account-level invite
+  declineAccountInvite(inviteId: string): Promise<void>;
+  
+  // Get accounts I have full access to (via account-level sharing)
+  getSharedAccounts(): Promise<{ ownerId: string; ownerEmail: string; ownerName?: string; role: CollaboratorRole }[]>;
 }

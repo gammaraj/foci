@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Settings } from "@/lib/types";
 import { TIMER_PRESETS, GOAL_PRESETS } from "@/lib/templates";
 import TaskImportExport from "@/components/TaskImportExport";
+import AccountSharingModal from "@/components/AccountSharingModal";
+import { useAuth } from "@/components/AuthProvider";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -18,6 +20,8 @@ export default function SettingsPanel({
   onClose,
   onTasksImported,
 }: SettingsPanelProps) {
+  const { user } = useAuth();
+  const [showAccountSharing, setShowAccountSharing] = useState(false);
   const [workMin, setWorkMin] = useState(
     Math.floor(settings.workDuration / 60000)
   );
@@ -391,6 +395,31 @@ export default function SettingsPanel({
             </div>
           </div>
 
+          {/* Account Sharing */}
+          {user && (
+            <div>
+              <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
+                <span className="text-base mr-2">👥</span>
+                Account Sharing
+              </h4>
+              <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                  Share all your projects with someone. They&apos;ll have access to every project you create.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowAccountSharing(true)}
+                  className="w-full px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                  Manage Account Sharing
+                </button>
+              </div>
+            </div>
+          )}
+
           </div>
           </div>
           {/* Save Button */}
@@ -436,6 +465,12 @@ export default function SettingsPanel({
           </button>
         </form>
       </div>
+
+      {/* Account Sharing Modal */}
+      <AccountSharingModal
+        isOpen={showAccountSharing}
+        onClose={() => setShowAccountSharing(false)}
+      />
     </>
   );
 }

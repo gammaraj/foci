@@ -10,7 +10,7 @@ import {
   DEFAULT_PROJECT,
   TODAY_FILTER_ID,
 } from "../types";
-import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole } from "./types";
+import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 /** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
@@ -714,7 +714,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   async getSharedProjects(): Promise<SharedProject[]> {
     const userId = await this.getUserId();
     
-    const { data, error } = await this.supabase
+    // Get project-level shared projects
+    const { data: projectData, error: projectError } = await this.supabase
       .from("project_collaborators")
       .select(`
         role,
@@ -736,23 +737,40 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       `)
       .eq("collaborator_id", userId);
       
-    if (error) {
-      console.error("[Foci] getSharedProjects error:", error);
-      throw new Error(error.message);
+    if (projectError) {
+      console.error("[Foci] getSharedProjects (project-level) error:", projectError);
+      throw new Error(projectError.message);
     }
     
-    if (!data) return [];
+    // Get account-level shared projects (all projects from shared accounts)
+    const { data: accountData, error: accountError } = await this.supabase
+      .from("account_collaborators")
+      .select(`
+        role,
+        owner_id,
+        user_profiles!account_collaborators_owner_id_fkey (
+          email,
+          display_name
+        )
+      `)
+      .eq("collaborator_id", userId);
+      
+    if (accountError) {
+      console.error("[Foci] getSharedProjects (account-level) error:", accountError);
+      throw new Error(accountError.message);
+    }
     
-    return data
-      .filter((row) => row.projects !== null)
-      .map((row) => {
+    const result: SharedProject[] = [];
+    
+    // Process project-level shared projects
+    if (projectData) {
+      for (const row of projectData) {
+        if (!row.projects) continue;
         const project = Array.isArray(row.projects) ? row.projects[0] : row.projects;
         const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
-        if (!project) {
-          // This shouldn't happen due to the filter, but TypeScript needs it
-          throw new Error("Project is null");
-        }
-        return {
+        if (!project) continue;
+        
+        result.push({
           id: project.id,
           name: project.name,
           description: project.description ?? undefined,
@@ -766,8 +784,54 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           _ownerEmail: profile?.email ?? "",
           _ownerName: profile?.display_name ?? undefined,
           _myRole: row.role as CollaboratorRole,
-        };
-      });
+        });
+      }
+    }
+    
+    // Process account-level shared projects
+    if (accountData) {
+      for (const accountRow of accountData) {
+        const profile = Array.isArray(accountRow.user_profiles) ? accountRow.user_profiles[0] : accountRow.user_profiles;
+        
+        // Fetch all projects for this owner
+        const { data: ownerProjects, error: ownerError } = await this.supabase
+          .from("projects")
+          .select("*")
+          .eq("user_id", accountRow.owner_id);
+          
+        if (ownerError) {
+          console.error("[Foci] getSharedProjects (fetch owner projects) error:", ownerError);
+          continue;
+        }
+        
+        if (ownerProjects) {
+          for (const project of ownerProjects) {
+            // Skip if already added via project-level sharing
+            if (result.some((p) => p.id === project.id && p._ownerId === project.user_id)) {
+              continue;
+            }
+            
+            result.push({
+              id: project.id,
+              name: project.name,
+              description: project.description ?? undefined,
+              color: project.color ?? undefined,
+              dueDate: project.due_date ?? undefined,
+              archived: project.archived ?? undefined,
+              order: project.sort_order ?? undefined,
+              createdAt: project.created_at,
+              _isShared: true as const,
+              _ownerId: project.user_id,
+              _ownerEmail: profile?.email ?? "",
+              _ownerName: profile?.display_name ?? undefined,
+              _myRole: accountRow.role as CollaboratorRole,
+            });
+          }
+        }
+      }
+    }
+    
+    return result;
   }
 
   async loadSharedProjectTasks(projectId: string, ownerId: string): Promise<Task[]> {
@@ -846,5 +910,332 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       console.error("[Foci] leaveProject error:", error);
       throw new Error(error.message);
     }
+  }
+
+  // ── Account-Level Sharing ─────────────────────────────────────
+
+  async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {
+    const userId = await this.getUserId();
+    
+    const { data, error } = await this.supabase
+      .from("account_collaborators")
+      .select(`
+        collaborator_id,
+        role,
+        created_at,
+        user_profiles!account_collaborators_collaborator_id_fkey (
+          email,
+          display_name,
+          avatar_url
+        )
+      `)
+      .eq("owner_id", userId);
+      
+    if (error) {
+      console.error("[Foci] getAccountCollaborators error:", error);
+      throw new Error(error.message);
+    }
+    
+    if (!data) return [];
+    
+    return data.map((row) => {
+      const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+      return {
+        userId: row.collaborator_id,
+        email: profile?.email ?? "",
+        displayName: profile?.display_name ?? undefined,
+        avatarUrl: profile?.avatar_url ?? undefined,
+        role: row.role as CollaboratorRole,
+        addedAt: row.created_at,
+      };
+    });
+  }
+
+  async inviteAccountCollaborator(email: string, role: CollaboratorRole): Promise<void> {
+    const userId = await this.getUserId();
+    
+    // Check if user exists
+    const { data: existingUser } = await this.supabase
+      .from("user_profiles")
+      .select("user_id")
+      .eq("email", email.toLowerCase())
+      .single();
+    
+    // Check for existing collaboration
+    if (existingUser) {
+      const { data: existing } = await this.supabase
+        .from("account_collaborators")
+        .select("id")
+        .eq("owner_id", userId)
+        .eq("collaborator_id", existingUser.user_id)
+        .single();
+        
+      if (existing) {
+        throw new Error("This user already has access to your account");
+      }
+      
+      // Directly add as collaborator
+      const { error } = await this.supabase
+        .from("account_collaborators")
+        .insert({
+          owner_id: userId,
+          collaborator_id: existingUser.user_id,
+          role,
+        });
+        
+      if (error) {
+        console.error("[Foci] inviteAccountCollaborator direct add error:", error);
+        throw new Error(error.message);
+      }
+      return;
+    }
+    
+    // Create invite for non-existing user
+    const { error } = await this.supabase
+      .from("account_invites")
+      .insert({
+        owner_id: userId,
+        invitee_email: email.toLowerCase(),
+        role,
+      });
+      
+    if (error) {
+      if (error.code === "23505") {
+        throw new Error("An invite has already been sent to this email");
+      }
+      console.error("[Foci] inviteAccountCollaborator error:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async removeAccountCollaborator(collaboratorId: string): Promise<void> {
+    const userId = await this.getUserId();
+    
+    const { error } = await this.supabase
+      .from("account_collaborators")
+      .delete()
+      .eq("owner_id", userId)
+      .eq("collaborator_id", collaboratorId);
+      
+    if (error) {
+      console.error("[Foci] removeAccountCollaborator error:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async updateAccountCollaboratorRole(collaboratorId: string, role: CollaboratorRole): Promise<void> {
+    const userId = await this.getUserId();
+    
+    const { error } = await this.supabase
+      .from("account_collaborators")
+      .update({ role })
+      .eq("owner_id", userId)
+      .eq("collaborator_id", collaboratorId);
+      
+    if (error) {
+      console.error("[Foci] updateAccountCollaboratorRole error:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async getSentAccountInvites(): Promise<AccountInvite[]> {
+    const userId = await this.getUserId();
+    
+    const { data, error } = await this.supabase
+      .from("account_invites")
+      .select("*")
+      .eq("owner_id", userId)
+      .eq("status", "pending");
+      
+    if (error) {
+      console.error("[Foci] getSentAccountInvites error:", error);
+      throw new Error(error.message);
+    }
+    
+    if (!data) return [];
+    
+    // Get current user's email for owner info
+    const { data: profile } = await this.supabase
+      .from("user_profiles")
+      .select("email, display_name")
+      .eq("user_id", userId)
+      .single();
+    
+    return data.map((row) => ({
+      id: row.id,
+      ownerEmail: profile?.email ?? "",
+      ownerName: profile?.display_name ?? undefined,
+      ownerId: userId,
+      role: row.role as CollaboratorRole,
+      status: row.status as "pending" | "accepted" | "declined" | "expired",
+      createdAt: row.created_at,
+      expiresAt: row.expires_at,
+    }));
+  }
+
+  async cancelAccountInvite(inviteId: string): Promise<void> {
+    const userId = await this.getUserId();
+    
+    const { error } = await this.supabase
+      .from("account_invites")
+      .delete()
+      .eq("id", inviteId)
+      .eq("owner_id", userId);
+      
+    if (error) {
+      console.error("[Foci] cancelAccountInvite error:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async getReceivedAccountInvites(): Promise<AccountInvite[]> {
+    const userId = await this.getUserId();
+    
+    // Get user email
+    const { data: { user } } = await this.supabase.auth.getUser();
+    const userEmail = user?.email?.toLowerCase();
+    
+    const { data, error } = await this.supabase
+      .from("account_invites")
+      .select(`
+        id,
+        owner_id,
+        role,
+        status,
+        created_at,
+        expires_at,
+        user_profiles!account_invites_owner_id_fkey (
+          email,
+          display_name
+        )
+      `)
+      .or(`invitee_id.eq.${userId},invitee_email.ilike.${userEmail}`)
+      .eq("status", "pending");
+      
+    if (error) {
+      console.error("[Foci] getReceivedAccountInvites error:", error);
+      throw new Error(error.message);
+    }
+    
+    if (!data) return [];
+    
+    // Filter out expired invites
+    const now = new Date();
+    return data
+      .filter((row: { expires_at: string }) => new Date(row.expires_at) > now)
+      .map((row) => {
+        const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+        return {
+          id: row.id,
+          ownerEmail: profile?.email ?? "",
+          ownerName: profile?.display_name ?? undefined,
+          ownerId: row.owner_id,
+          role: row.role as CollaboratorRole,
+          status: row.status as "pending" | "accepted" | "declined" | "expired",
+          createdAt: row.created_at,
+          expiresAt: row.expires_at,
+        };
+      });
+  }
+
+  async acceptAccountInvite(inviteId: string): Promise<void> {
+    const userId = await this.getUserId();
+    
+    // Get invite details
+    const { data: invite, error: fetchError } = await this.supabase
+      .from("account_invites")
+      .select("*")
+      .eq("id", inviteId)
+      .single();
+      
+    if (fetchError || !invite) {
+      throw new Error("Invite not found");
+    }
+    
+    if (invite.status !== "pending") {
+      throw new Error("Invite is no longer pending");
+    }
+    
+    if (new Date(invite.expires_at) < new Date()) {
+      throw new Error("Invite has expired");
+    }
+    
+    // Add as account collaborator
+    const { error: insertError } = await this.supabase
+      .from("account_collaborators")
+      .insert({
+        owner_id: invite.owner_id,
+        collaborator_id: userId,
+        role: invite.role,
+      });
+      
+    if (insertError) {
+      console.error("[Foci] acceptAccountInvite insert error:", insertError);
+      throw new Error(insertError.message);
+    }
+    
+    // Update invite status
+    const { error: updateError } = await this.supabase
+      .from("account_invites")
+      .update({ 
+        status: "accepted",
+        accepted_at: new Date().toISOString(),
+        invitee_id: userId,
+      })
+      .eq("id", inviteId);
+      
+    if (updateError) {
+      console.error("[Foci] acceptAccountInvite update error:", updateError);
+    }
+  }
+
+  async declineAccountInvite(inviteId: string): Promise<void> {
+    const userId = await this.getUserId();
+    
+    const { error } = await this.supabase
+      .from("account_invites")
+      .update({ 
+        status: "declined",
+        invitee_id: userId,
+      })
+      .eq("id", inviteId);
+      
+    if (error) {
+      console.error("[Foci] declineAccountInvite error:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async getSharedAccounts(): Promise<{ ownerId: string; ownerEmail: string; ownerName?: string; role: CollaboratorRole }[]> {
+    const userId = await this.getUserId();
+    
+    const { data, error } = await this.supabase
+      .from("account_collaborators")
+      .select(`
+        owner_id,
+        role,
+        user_profiles!account_collaborators_owner_id_fkey (
+          email,
+          display_name
+        )
+      `)
+      .eq("collaborator_id", userId);
+      
+    if (error) {
+      console.error("[Foci] getSharedAccounts error:", error);
+      throw new Error(error.message);
+    }
+    
+    if (!data) return [];
+    
+    return data.map((row) => {
+      const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+      return {
+        ownerId: row.owner_id,
+        ownerEmail: profile?.email ?? "",
+        ownerName: profile?.display_name ?? undefined,
+        role: row.role as CollaboratorRole,
+      };
+    });
   }
 }

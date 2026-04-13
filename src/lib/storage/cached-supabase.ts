@@ -9,7 +9,7 @@
  *           then attempt Supabase write (fire-and-forget error logging on failure).
  */
 
-import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole } from "./types";
+import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
 import {
   Settings,
   DailyGoalData,
@@ -278,5 +278,47 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async leaveProject(projectId: string, ownerId: string): Promise<void> {
     return this.remote.leaveProject(projectId, ownerId);
+  }
+
+  // ── Account-Level Sharing ─────────────────────────────────
+
+  async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {
+    return this.remote.getAccountCollaborators();
+  }
+
+  async inviteAccountCollaborator(email: string, role: CollaboratorRole): Promise<void> {
+    return this.remote.inviteAccountCollaborator(email, role);
+  }
+
+  async removeAccountCollaborator(collaboratorId: string): Promise<void> {
+    return this.remote.removeAccountCollaborator(collaboratorId);
+  }
+
+  async updateAccountCollaboratorRole(collaboratorId: string, role: CollaboratorRole): Promise<void> {
+    return this.remote.updateAccountCollaboratorRole(collaboratorId, role);
+  }
+
+  async getSentAccountInvites(): Promise<AccountInvite[]> {
+    return this.remote.getSentAccountInvites();
+  }
+
+  async cancelAccountInvite(inviteId: string): Promise<void> {
+    return this.remote.cancelAccountInvite(inviteId);
+  }
+
+  async getReceivedAccountInvites(): Promise<AccountInvite[]> {
+    return this.remote.getReceivedAccountInvites();
+  }
+
+  async acceptAccountInvite(inviteId: string): Promise<void> {
+    return this.remote.acceptAccountInvite(inviteId);
+  }
+
+  async declineAccountInvite(inviteId: string): Promise<void> {
+    return this.remote.declineAccountInvite(inviteId);
+  }
+
+  async getSharedAccounts(): Promise<{ ownerId: string; ownerEmail: string; ownerName?: string; role: CollaboratorRole }[]> {
+    return this.remote.getSharedAccounts();
   }
 }

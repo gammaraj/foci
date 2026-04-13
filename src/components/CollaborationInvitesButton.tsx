@@ -7,13 +7,18 @@ import {
   getReceivedInvites,
   acceptInvite,
   declineInvite,
+  getReceivedAccountInvites,
+  acceptAccountInvite,
+  declineAccountInvite,
   CollaborationInvite,
+  AccountInvite,
 } from "@/lib/storage";
 
 export default function CollaborationInvitesButton() {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [invites, setInvites] = useState<CollaborationInvite[]>([]);
+  const [projectInvites, setProjectInvites] = useState<CollaborationInvite[]>([]);
+  const [accountInvites, setAccountInvites] = useState<AccountInvite[]>([]);
   const [showPanel, setShowPanel] = useState(false);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -22,14 +27,19 @@ export default function CollaborationInvitesButton() {
   // Load invites when user is logged in
   const loadInvites = useCallback(async () => {
     if (!user) {
-      setInvites([]);
+      setProjectInvites([]);
+      setAccountInvites([]);
       return;
     }
 
     setLoading(true);
     try {
-      const received = await getReceivedInvites();
-      setInvites(received);
+      const [projectReceived, accountReceived] = await Promise.all([
+        getReceivedInvites(),
+        getReceivedAccountInvites(),
+      ]);
+      setProjectInvites(projectReceived);
+      setAccountInvites(accountReceived);
     } catch (err) {
       console.error("[Foci] Failed to load invites:", err);
     } finally {
@@ -72,7 +82,7 @@ export default function CollaborationInvitesButton() {
     setProcessingId(inviteId);
     try {
       await acceptInvite(inviteId);
-      setInvites((prev) => prev.filter((i) => i.id !== inviteId));
+      setProjectInvites((prev) => prev.filter((i) => i.id !== inviteId));
       showToast("Invite accepted! Project added to your sidebar.", "success");
       // Dispatch event to refresh projects in TaskList
       window.dispatchEvent(new Event("tempo-tasks-updated"));
@@ -88,7 +98,36 @@ export default function CollaborationInvitesButton() {
     setProcessingId(inviteId);
     try {
       await declineInvite(inviteId);
-      setInvites((prev) => prev.filter((i) => i.id !== inviteId));
+      setProjectInvites((prev) => prev.filter((i) => i.id !== inviteId));
+      showToast("Invite declined", "success");
+    } catch (err) {
+      showToast("Failed to decline invite", "error");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleAcceptAccountInvite = async (inviteId: string) => {
+    setProcessingId(inviteId);
+    try {
+      await acceptAccountInvite(inviteId);
+      setAccountInvites((prev) => prev.filter((i) => i.id !== inviteId));
+      showToast("You now have access to all their projects!", "success");
+      // Dispatch event to refresh projects in TaskList
+      window.dispatchEvent(new Event("tempo-tasks-updated"));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to accept invite";
+      showToast(message, "error");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleDeclineAccountInvite = async (inviteId: string) => {
+    setProcessingId(inviteId);
+    try {
+      await declineAccountInvite(inviteId);
+      setAccountInvites((prev) => prev.filter((i) => i.id !== inviteId));
       showToast("Invite declined", "success");
     } catch (err) {
       showToast("Failed to decline invite", "error");
@@ -100,7 +139,7 @@ export default function CollaborationInvitesButton() {
   // Don't render if no user
   if (!user) return null;
 
-  const inviteCount = invites.length;
+  const inviteCount = projectInvites.length + accountInvites.length;
 
   return (
     <div className="relative" ref={panelRef}>
@@ -159,7 +198,7 @@ export default function CollaborationInvitesButton() {
               <div className="flex items-center justify-center py-8">
                 <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
               </div>
-            ) : invites.length === 0 ? (
+            ) : inviteCount === 0 ? (
               <div className="py-8 text-center text-slate-500 dark:text-slate-400">
                 <svg className="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -168,7 +207,48 @@ export default function CollaborationInvitesButton() {
               </div>
             ) : (
               <ul className="divide-y divide-slate-200 dark:divide-[#2a3a5c]">
-                {invites.map((invite) => (
+                {/* Account-level invites */}
+                {accountInvites.map((invite) => (
+                  <li key={`account-${invite.id}`} className="p-4 bg-purple-50/50 dark:bg-purple-900/10">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                          {invite.ownerName || invite.ownerEmail.split("@")[0]}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          invited you to access <span className="font-medium text-purple-600 dark:text-purple-400">all their projects</span>
+                        </p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                          as {invite.role === "editor" ? "Editor" : "Viewer"} • Expires{" "}
+                          {new Date(invite.expiresAt).toLocaleDateString()}
+                        </p>
+                        <div className="flex gap-2 mt-3">
+                          <button
+                            onClick={() => handleAcceptAccountInvite(invite.id)}
+                            disabled={processingId === invite.id}
+                            className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 rounded-lg transition-colors"
+                          >
+                            {processingId === invite.id ? "..." : "Accept"}
+                          </button>
+                          <button
+                            onClick={() => handleDeclineAccountInvite(invite.id)}
+                            disabled={processingId === invite.id}
+                            className="flex-1 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 rounded-lg transition-colors"
+                          >
+                            Decline
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+                {/* Project-level invites */}
+                {projectInvites.map((invite) => (
                   <li key={invite.id} className="p-4">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
@@ -184,7 +264,7 @@ export default function CollaborationInvitesButton() {
                           invited you to collaborate on
                         </p>
                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mt-1">
-                          "{invite.projectName}"
+                          &quot;{invite.projectName}&quot;
                         </p>
                         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                           as {invite.role === "editor" ? "Editor" : "Viewer"} • Expires{" "}

@@ -8,7 +8,7 @@ import {
   DEFAULT_PROJECT,
   TODAY_FILTER_ID,
 } from "../types";
-import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole } from "./types";
+import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 const SETTINGS_KEY = "foci_settings";
@@ -336,5 +336,47 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async leaveProject(): Promise<void> {
     throw new Error("Sign in to leave projects");
+  }
+
+  // ── Account-Level Sharing (requires auth) ─────────────────
+
+  async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {
+    return [];
+  }
+
+  async inviteAccountCollaborator(): Promise<void> {
+    throw new Error("Sign in to share your account");
+  }
+
+  async removeAccountCollaborator(): Promise<void> {
+    throw new Error("Sign in to manage account sharing");
+  }
+
+  async updateAccountCollaboratorRole(): Promise<void> {
+    throw new Error("Sign in to manage account sharing");
+  }
+
+  async getSentAccountInvites(): Promise<AccountInvite[]> {
+    return [];
+  }
+
+  async cancelAccountInvite(): Promise<void> {
+    throw new Error("Sign in to manage invites");
+  }
+
+  async getReceivedAccountInvites(): Promise<AccountInvite[]> {
+    return [];
+  }
+
+  async acceptAccountInvite(): Promise<void> {
+    throw new Error("Sign in to accept invites");
+  }
+
+  async declineAccountInvite(): Promise<void> {
+    throw new Error("Sign in to decline invites");
+  }
+
+  async getSharedAccounts(): Promise<{ ownerId: string; ownerEmail: string; ownerName?: string; role: CollaboratorRole }[]> {
+    return [];
   }
 }

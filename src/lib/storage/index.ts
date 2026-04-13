@@ -5,7 +5,7 @@
  * falls back to LocalStorageAdapter otherwise.
  */
 
-export type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, ProjectListItem, isSharedProject } from "./types";
+export type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, ProjectListItem, isSharedProject, AccountInvite, AccountCollaboratorInfo } from "./types";
 export { isSharedProject as isSharedProjectFn } from "./types";
 export { LocalStorageAdapter } from "./local";
 export { SupabaseStorageAdapter } from "./supabase";
@@ -176,3 +176,21 @@ export const updateSharedTask = (...args: Parameters<StorageAdapter["updateShare
   currentAdapter.updateSharedTask(...args);
 export const leaveProject = (...args: Parameters<StorageAdapter["leaveProject"]>) =>
   currentAdapter.leaveProject(...args);
+
+// ── Account-Level Sharing API ─────────────────────────────
+export const getAccountCollaborators = () => currentAdapter.getAccountCollaborators();
+export const inviteAccountCollaborator = (...args: Parameters<StorageAdapter["inviteAccountCollaborator"]>) =>
+  currentAdapter.inviteAccountCollaborator(...args);
+export const removeAccountCollaborator = (...args: Parameters<StorageAdapter["removeAccountCollaborator"]>) =>
+  currentAdapter.removeAccountCollaborator(...args);
+export const updateAccountCollaboratorRole = (...args: Parameters<StorageAdapter["updateAccountCollaboratorRole"]>) =>
+  currentAdapter.updateAccountCollaboratorRole(...args);
+export const getSentAccountInvites = () => currentAdapter.getSentAccountInvites();
+export const cancelAccountInvite = (...args: Parameters<StorageAdapter["cancelAccountInvite"]>) =>
+  currentAdapter.cancelAccountInvite(...args);
+export const getReceivedAccountInvites = () => currentAdapter.getReceivedAccountInvites();
+export const acceptAccountInvite = (...args: Parameters<StorageAdapter["acceptAccountInvite"]>) =>
+  currentAdapter.acceptAccountInvite(...args);
+export const declineAccountInvite = (...args: Parameters<StorageAdapter["declineAccountInvite"]>) =>
+  currentAdapter.declineAccountInvite(...args);
+export const getSharedAccounts = () => currentAdapter.getSharedAccounts();
