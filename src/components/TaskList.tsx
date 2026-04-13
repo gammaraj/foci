@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import SmartPlan from "@/components/SmartPlan";
 import ConfirmModal from "@/components/ConfirmModal";
+import ShareProjectModal from "@/components/ShareProjectModal";
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -113,6 +114,13 @@ export default function TaskList({
     onConfirm: () => void;
   } | null>(null);
   const [undoTask, setUndoTask] = useState<{ task: Task; timer: ReturnType<typeof setTimeout> } | null>(null);
+  
+  // Collaboration state
+  const [sharedProjects, setSharedProjects] = useState<SharedProject[]>([]);
+  const [sharedTasks, setSharedTasks] = useState<Record<string, Task[]>>({});
+  const [shareModalProject, setShareModalProject] = useState<Project | null>(null);
+  const [selectedSharedProject, setSelectedSharedProject] = useState<SharedProject | null>(null);
+  
   const projectMenuRef = useRef<HTMLDivElement>(null);
   const templateMenuRef = useRef<HTMLDivElement>(null);
 
@@ -142,9 +150,10 @@ export default function TaskList({
     // Wait until auth has resolved so we use the correct adapter (Supabase vs localStorage)
     if (authLoading) return;
 
-    // Load projects
-    Promise.all([loadProjects(), loadTasks()]).then(
-      ([existingProjects, existing]) => {
+    // Load projects (and shared projects for logged-in users)
+    const loadData = async () => {
+      try {
+        const [existingProjects, existing] = await Promise.all([loadProjects(), loadTasks()]);
         setProjects(existingProjects);
 
         // Seed sample tasks only for logged-out users with no tasks
@@ -171,11 +180,24 @@ export default function TaskList({
           }
           setTasks(migrated);
         }
+
+        // Load shared projects for authenticated users
+        if (user) {
+          try {
+            const shared = await getSharedProjects();
+            setSharedProjects(shared);
+          } catch (err) {
+            console.error("[Foci] Failed to load shared projects:", err);
+          }
+        }
+
         setTasksReady(true);
+      } catch (err) {
+        console.error("[Foci] Failed to load data:", err);
       }
-    ).catch((err) => {
-      console.error("[Foci] Failed to load data:", err);
-    });
+    };
+
+    loadData();
 
     const handleUpdate = () => {
       loadTasks().then(setTasks).catch((err) => {
@@ -184,6 +206,12 @@ export default function TaskList({
       loadProjects().then(setProjects).catch((err) => {
         console.error("[Foci] Failed to reload projects:", err);
       });
+      // Also reload shared projects
+      if (user) {
+        getSharedProjects().then(setSharedProjects).catch((err) => {
+          console.error("[Foci] Failed to reload shared projects:", err);
+        });
+      }
     };
     window.addEventListener("tempo-tasks-updated", handleUpdate);
 
@@ -259,6 +287,70 @@ export default function TaskList({
     });
     setShowProjectMenu(false);
   };
+
+  // Select a shared project and load its tasks
+  const selectSharedProject = async (shared: SharedProject) => {
+    setSelectedSharedProject(shared);
+    setSelectedProjectId(`shared:${shared._ownerId}:${shared.id}`);
+    setShowProjectMenu(false);
+    
+    // Load tasks for this shared project if not already loaded
+    const key = `${shared._ownerId}:${shared.id}`;
+    if (!sharedTasks[key]) {
+      try {
+        const tasks = await loadSharedProjectTasks(shared.id, shared._ownerId);
+        setSharedTasks((prev) => ({ ...prev, [key]: tasks }));
+      } catch (err) {
+        console.error("[Foci] Failed to load shared project tasks:", err);
+        showToast("Failed to load shared project tasks", "error");
+      }
+    }
+  };
+
+  // Leave a shared project
+  const handleLeaveSharedProject = async (shared: SharedProject) => {
+    setPendingConfirm({
+      title: "Leave project",
+      message: `Are you sure you want to leave "${shared.name}"? You will lose access to this project and its tasks.`,
+      confirmLabel: "Leave",
+      onConfirm: async () => {
+        try {
+          await leaveProject(shared.id, shared._ownerId);
+          setSharedProjects((prev) => prev.filter((p) => !(p.id === shared.id && p._ownerId === shared._ownerId)));
+          // Clear selected if it was the shared project
+          if (selectedSharedProject?.id === shared.id && selectedSharedProject?._ownerId === shared._ownerId) {
+            setSelectedSharedProject(null);
+            setSelectedProjectId(TODAY_FILTER_ID);
+          }
+          showToast("Left shared project", "success");
+        } catch (err) {
+          showToast("Failed to leave project", "error");
+        }
+        setPendingConfirm(null);
+      },
+    });
+  };
+
+  // Update a task in a shared project
+  const updateTaskInSharedProject = async (task: Task, ownerId: string) => {
+    try {
+      await updateSharedTask(task, ownerId);
+      const key = `${ownerId}:${task.projectId}`;
+      setSharedTasks((prev) => ({
+        ...prev,
+        [key]: (prev[key] || []).map((t) => (t.id === task.id ? task : t)),
+      }));
+    } catch (err) {
+      console.error("[Foci] Failed to update shared task:", err);
+      showToast("Failed to update task", "error");
+    }
+  };
+
+  // Check if currently viewing a shared project
+  const isViewingSharedProject = selectedProjectId.startsWith("shared:");
+  const currentSharedProjectTasks = selectedSharedProject
+    ? sharedTasks[`${selectedSharedProject._ownerId}:${selectedSharedProject.id}`] || []
+    : [];
 
   const addProject = () => {
     const name = newProjectName.trim().slice(0, MAX_PROJECT_NAME);
@@ -1251,6 +1343,21 @@ export default function TaskList({
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                             </svg>
                           </button>
+                          {user && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShareModalProject(p);
+                                setShowProjectMenu(false);
+                              }}
+                              className="p-1 text-slate-400 hover:text-blue-500 transition-colors"
+                              title="Share project"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                              </svg>
+                            </button>
+                          )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1317,6 +1424,49 @@ export default function TaskList({
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {/* Shared with me section */}
+              {user && sharedProjects.length > 0 && (
+                <>
+                  <div className="px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide border-t border-slate-100 dark:border-[#243350] mt-2">
+                    Shared with me
+                  </div>
+                  {sharedProjects.map((sp) => (
+                    <div
+                      key={`${sp._ownerId}:${sp.id}`}
+                      className={`group/proj flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${
+                        selectedSharedProject?.id === sp.id && selectedSharedProject?._ownerId === sp._ownerId
+                          ? "bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200"
+                          : "text-slate-700 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                      }`}
+                      onClick={() => selectSharedProject(sp)}
+                    >
+                      {sp.color && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: sp.color }} />}
+                      <div className="flex-1 min-w-0">
+                        <span className="truncate block">{sp.name}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          {sp._ownerName || sp._ownerEmail.split("@")[0]}
+                          {sp._myRole === "viewer" && (
+                            <span className="text-amber-500 text-[10px]">(view only)</span>
+                          )}
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleLeaveSharedProject(sp); }}
+                        className="p-1 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover/proj:opacity-100"
+                        title="Leave project"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
                       </button>
                     </div>
@@ -2226,6 +2376,15 @@ export default function TaskList({
           variant="danger"
           onConfirm={pendingConfirm.onConfirm}
           onCancel={() => setPendingConfirm(null)}
+        />
+      )}
+
+      {/* Share Project Modal */}
+      {shareModalProject && (
+        <ShareProjectModal
+          project={shareModalProject}
+          isOpen={true}
+          onClose={() => setShareModalProject(null)}
         />
       )}
     </div>

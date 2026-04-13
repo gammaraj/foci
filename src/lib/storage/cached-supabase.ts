@@ -9,7 +9,7 @@
  *           then attempt Supabase write (fire-and-forget error logging on failure).
  */
 
-import type { StorageAdapter } from "./types";
+import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole } from "./types";
 import {
   Settings,
   DailyGoalData,
@@ -224,5 +224,59 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   async saveSelectedProjectId(id: string): Promise<void> {
     cacheSet(CACHE_KEYS.selectedProject, id);
     await this.remote.saveSelectedProjectId(id);
+  }
+
+  // ── Collaboration (delegate to remote, no caching) ────────
+
+  async getProjectCollaborators(projectId: string): Promise<CollaboratorInfo[]> {
+    return this.remote.getProjectCollaborators(projectId);
+  }
+
+  async inviteCollaborator(projectId: string, email: string, role: CollaboratorRole): Promise<void> {
+    return this.remote.inviteCollaborator(projectId, email, role);
+  }
+
+  async removeCollaborator(projectId: string, collaboratorId: string): Promise<void> {
+    return this.remote.removeCollaborator(projectId, collaboratorId);
+  }
+
+  async updateCollaboratorRole(projectId: string, collaboratorId: string, role: CollaboratorRole): Promise<void> {
+    return this.remote.updateCollaboratorRole(projectId, collaboratorId, role);
+  }
+
+  async getSentInvites(projectId: string): Promise<CollaborationInvite[]> {
+    return this.remote.getSentInvites(projectId);
+  }
+
+  async cancelInvite(inviteId: string): Promise<void> {
+    return this.remote.cancelInvite(inviteId);
+  }
+
+  async getReceivedInvites(): Promise<CollaborationInvite[]> {
+    return this.remote.getReceivedInvites();
+  }
+
+  async acceptInvite(inviteId: string): Promise<void> {
+    return this.remote.acceptInvite(inviteId);
+  }
+
+  async declineInvite(inviteId: string): Promise<void> {
+    return this.remote.declineInvite(inviteId);
+  }
+
+  async getSharedProjects(): Promise<SharedProject[]> {
+    return this.remote.getSharedProjects();
+  }
+
+  async loadSharedProjectTasks(projectId: string, ownerId: string): Promise<Task[]> {
+    return this.remote.loadSharedProjectTasks(projectId, ownerId);
+  }
+
+  async updateSharedTask(task: Task, ownerId: string): Promise<void> {
+    return this.remote.updateSharedTask(task, ownerId);
+  }
+
+  async leaveProject(projectId: string, ownerId: string): Promise<void> {
+    return this.remote.leaveProject(projectId, ownerId);
   }
 }

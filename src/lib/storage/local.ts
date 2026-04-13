@@ -8,7 +8,7 @@ import {
   DEFAULT_PROJECT,
   TODAY_FILTER_ID,
 } from "../types";
-import type { StorageAdapter } from "./types";
+import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole } from "./types";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 const SETTINGS_KEY = "foci_settings";
@@ -282,5 +282,59 @@ export class LocalStorageAdapter implements StorageAdapter {
     try {
       localStorage.setItem(SELECTED_PROJECT_KEY, id);
     } catch { /* quota exceeded */ }
+  }
+
+  // ── Collaboration (not available without authentication) ──
+
+  async getProjectCollaborators(): Promise<CollaboratorInfo[]> {
+    return [];
+  }
+
+  async inviteCollaborator(): Promise<void> {
+    throw new Error("Sign in to invite collaborators");
+  }
+
+  async removeCollaborator(): Promise<void> {
+    throw new Error("Sign in to manage collaborators");
+  }
+
+  async updateCollaboratorRole(): Promise<void> {
+    throw new Error("Sign in to manage collaborators");
+  }
+
+  async getSentInvites(): Promise<CollaborationInvite[]> {
+    return [];
+  }
+
+  async cancelInvite(): Promise<void> {
+    throw new Error("Sign in to manage invites");
+  }
+
+  async getReceivedInvites(): Promise<CollaborationInvite[]> {
+    return [];
+  }
+
+  async acceptInvite(): Promise<void> {
+    throw new Error("Sign in to accept invites");
+  }
+
+  async declineInvite(): Promise<void> {
+    throw new Error("Sign in to decline invites");
+  }
+
+  async getSharedProjects(): Promise<SharedProject[]> {
+    return [];
+  }
+
+  async loadSharedProjectTasks(): Promise<Task[]> {
+    return [];
+  }
+
+  async updateSharedTask(): Promise<void> {
+    throw new Error("Sign in to update shared tasks");
+  }
+
+  async leaveProject(): Promise<void> {
+    throw new Error("Sign in to leave projects");
   }
 }

@@ -14,6 +14,7 @@ import OnboardingTour from "@/components/OnboardingTour";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import DueDateReminders from "@/components/DueDateReminders";
 import NotificationBell from "@/components/NotificationBell";
+import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import WeatherTime from "@/components/WeatherTime";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
@@ -189,6 +190,7 @@ export default function AppPage() {
                   compact
                 />
                 <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
+                <CollaborationInvitesButton />
                 <NotificationBell />
                 <button
                   onClick={() => setShowSettings(true)}
@@ -258,6 +260,7 @@ export default function AppPage() {
               >
                 Tasks
               </button>
+              <CollaborationInvitesButton />
               <NotificationBell />
               <button
                 onClick={() => setShowSettings(true)}

@@ -5,7 +5,8 @@
  * falls back to LocalStorageAdapter otherwise.
  */
 
-export type { StorageAdapter } from "./types";
+export type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, ProjectListItem, isSharedProject } from "./types";
+export { isSharedProject as isSharedProjectFn } from "./types";
 export { LocalStorageAdapter } from "./local";
 export { SupabaseStorageAdapter } from "./supabase";
 
@@ -149,3 +150,29 @@ export const deleteProject = (...args: Parameters<StorageAdapter["deleteProject"
 export const loadSelectedProjectId = () => currentAdapter.loadSelectedProjectId();
 export const saveSelectedProjectId = (...args: Parameters<StorageAdapter["saveSelectedProjectId"]>) =>
   currentAdapter.saveSelectedProjectId(...args);
+
+// ── Collaboration API ───────────────────────────────────
+export const getProjectCollaborators = (...args: Parameters<StorageAdapter["getProjectCollaborators"]>) =>
+  currentAdapter.getProjectCollaborators(...args);
+export const inviteCollaborator = (...args: Parameters<StorageAdapter["inviteCollaborator"]>) =>
+  currentAdapter.inviteCollaborator(...args);
+export const removeCollaborator = (...args: Parameters<StorageAdapter["removeCollaborator"]>) =>
+  currentAdapter.removeCollaborator(...args);
+export const updateCollaboratorRole = (...args: Parameters<StorageAdapter["updateCollaboratorRole"]>) =>
+  currentAdapter.updateCollaboratorRole(...args);
+export const getSentInvites = (...args: Parameters<StorageAdapter["getSentInvites"]>) =>
+  currentAdapter.getSentInvites(...args);
+export const cancelInvite = (...args: Parameters<StorageAdapter["cancelInvite"]>) =>
+  currentAdapter.cancelInvite(...args);
+export const getReceivedInvites = () => currentAdapter.getReceivedInvites();
+export const acceptInvite = (...args: Parameters<StorageAdapter["acceptInvite"]>) =>
+  currentAdapter.acceptInvite(...args);
+export const declineInvite = (...args: Parameters<StorageAdapter["declineInvite"]>) =>
+  currentAdapter.declineInvite(...args);
+export const getSharedProjects = () => currentAdapter.getSharedProjects();
+export const loadSharedProjectTasks = (...args: Parameters<StorageAdapter["loadSharedProjectTasks"]>) =>
+  currentAdapter.loadSharedProjectTasks(...args);
+export const updateSharedTask = (...args: Parameters<StorageAdapter["updateSharedTask"]>) =>
+  currentAdapter.updateSharedTask(...args);
+export const leaveProject = (...args: Parameters<StorageAdapter["leaveProject"]>) =>
+  currentAdapter.leaveProject(...args);
