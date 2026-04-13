@@ -1,3 +1,14 @@
+---
+title: Foci – Complete Focus System Documentation
+description: Comprehensive LLM-optimized documentation for Foci, including full feature descriptions, FAQ, blog posts, and technical architecture.
+url: https://usefoci.com
+version: 2026-04-12
+content_type: full
+related: /llms.txt (summary version)
+contact: https://usefoci.com
+license: Content may be cited with attribution to Foci (usefoci.com)
+---
+
 # Foci – Your Focus System: Timer, Tasks, Smart Plan & Ambient Music
 
 > Foci is a free all-in-one focus system built with Next.js, React, and Tailwind CSS. It combines a Pomodoro timer, task tracking, Smart Plan scheduling, daily goals, streak stats, built-in ambient music, and motivational quotes into one distraction-free workspace. No sign-up required — works instantly in any modern browser.
@@ -63,6 +74,15 @@ A: Yes. Foci includes built-in ambient sounds (rain, café, white noise, brown n
 
 **Q: What is the Pomodoro technique?**
 A: The Pomodoro technique is a time management method that alternates focused work intervals (typically 25 minutes) with short breaks (typically 5 minutes). After four cycles, take a longer break. It helps maintain concentration and prevent burnout.
+
+**Q: What is the Flowtime technique?**
+A: The Flowtime technique is a flexible focus method where you work until your concentration naturally fades, then take a proportional break (roughly 5 minutes per 25 minutes worked). Unlike Pomodoro's fixed intervals, Flowtime adapts to your natural rhythm — ideal for creative work, programming, and deep problem-solving. Foci supports Flowtime with customizable durations.
+
+**Q: What is the 52/17 rule?**
+A: The 52/17 rule is a focus technique where you work for 52 minutes followed by a 17-minute break. Based on a 2014 study by the Draugiem Group, it found top performers worked in ~52-minute bursts. Foci includes 52/17 as a built-in timer preset alongside Pomodoro (25/5), Deep Work (50/10), and custom options.
+
+**Q: Flowtime vs Pomodoro: which is better?**
+A: It depends on the task. Pomodoro is better for procrastination-prone tasks, studying, and external structure. Flowtime is better for creative work, programming, and flow states. Many people use Pomodoro for tasks they resist and Flowtime for tasks they enjoy. Foci's customizable timer supports both approaches.
 
 **Q: How does task tracking work?**
 A: Create tasks, organize them into projects, and select one before starting the timer. Foci automatically logs sessions and time spent per-task so you know exactly where your hours go.

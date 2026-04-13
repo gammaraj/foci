@@ -44,9 +44,13 @@ Allow: /
 User-agent: Amazonbot
 Allow: /
 
-Sitemap: https://usefoci.com/sitemap.xml
+User-agent: OAI-SearchBot
+Allow: /
 
-User-agent: Amazonbot
+User-agent: Omgilibot
+Allow: /
+
+User-agent: Diffbot
 Allow: /
 
 Sitemap: https://usefoci.com/sitemap.xml

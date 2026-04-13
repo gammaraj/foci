@@ -3,14 +3,14 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 
-const title = "Blog – Foci | Productivity & Focus Tips";
+const title = "Blog – Foci | Productivity, Focus & Time Management Guides";
 const description =
-  "Practical guides on the Pomodoro technique, focus strategies, and time management to help you get more done.";
+  "In-depth guides on Flowtime technique, Pomodoro method, 52/17 rule, deep work strategies, and ADHD focus tips. Free tools included.";
 
 export const metadata: Metadata = {
   title,
   description,
-  keywords: ["pomodoro technique", "focus tips", "productivity guides", "time management", "study strategies", "deep work", "brown noise studying", "ambient sounds focus", "AI productivity", "adhd focus"],
+  keywords: ["flowtime technique", "flowtime vs pomodoro", "52/17 rule", "pomodoro technique", "focus tips", "productivity guides", "time management", "study strategies", "deep work", "brown noise studying", "ambient sounds focus", "AI productivity", "adhd focus", "flowmodoro", "time blocking", "focus methods comparison"],
   alternates: { canonical: "/blog" },
   openGraph: {
     title,
