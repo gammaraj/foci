@@ -263,5 +263,10 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [Time Blocking: The Scheduling Method Used by the World's Most Productive People](https://usefoci.com/blog/time-blocking-method) — 2026-03-22
 - [ADHD Focus Strategies: How to Stay on Task When Your Brain Won't Cooperate](https://usefoci.com/blog/adhd-focus-strategies) — 2026-04-06
 - [Best Music for Studying and Focus: A Complete Guide (2026)](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-04-06
+- [Foci vs Forest App: The Free Alternative That Does More](https://usefoci.com/blog/foci-vs-forest-app) — 2026-04-12
+- [7 Best Free Pomodoro Apps in 2026: Tested and Ranked](https://usefoci.com/blog/best-free-pomodoro-apps-2026) — 2026-04-12
+- [Foci vs Todoist: Focus System vs Task Manager](https://usefoci.com/blog/foci-vs-todoist) — 2026-04-12
+- [Foci vs Focus@Will: Free All-in-One vs Paid Music Subscription](https://usefoci.com/blog/foci-vs-focusatwill) — 2026-04-12
+- [5 Best Forest App Alternatives in 2026 (Free & Paid)](https://usefoci.com/blog/forest-app-alternatives) — 2026-04-12
 
 For the full text of all blog posts, see: https://usefoci.com/llms-full.txt
