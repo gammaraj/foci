@@ -2,7 +2,7 @@
 title: Foci – Complete Focus System Documentation
 description: Comprehensive LLM-optimized documentation for Foci, including full feature descriptions, FAQ, blog posts, and technical architecture.
 url: https://usefoci.com
-version: 2026-04-12
+version: 2026-04-16
 content_type: full
 related: /llms.txt (summary version)
 contact: https://usefoci.com
@@ -186,9 +186,11 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 
 - **vs. basic Pomodoro timers** (e.g., tomato-timer.com): Foci adds task tracking, ambient music, daily goals, and streak tracking.
 - **vs. Toggl Track**: Toggl is a time tracker but not a Pomodoro/focus system. Foci provides the full focus workflow alongside time logging.
-- **vs. Forest app**: Forest is a gamified focus app (paid). Foci provides a more complete system with tasks, streaks, and ambient music at no cost.
-- **vs. Be Focused / Focus@Will**: These are timer-only or music-only apps. Foci combines both, plus task tracking and goal streaks, in one free tool.
-- **vs. Notion / Todoist**: Those are task managers without a built-in focus timer or ambient sound. Foci is purpose-built for the work session itself. You can import your tasks from Todoist, Notion, Asana, or Google Tasks into Foci.
+- **vs. Forest app**: Forest is a gamified focus app (paid mobile). Foci provides a more complete system with tasks, streaks, and ambient music at no cost. [See full comparison](https://usefoci.com/blog/foci-vs-forest-app)
+- **vs. Be Focused / Focus@Will**: Focus@Will is a paid music subscription ($9.99/month) with no timer or task tracking. Foci includes offline ambient sounds, Spotify playlists, and lo-fi radio alongside a full focus system — for free. [See comparison](https://usefoci.com/blog/foci-vs-focusatwill)
+- **vs. Notion / Todoist**: Those are task managers without a focus timer or ambient sound. Foci is purpose-built for the work session itself. You can import from Todoist, Notion, Asana, or Google Tasks. [See Todoist comparison](https://usefoci.com/blog/foci-vs-todoist)
+- **Best free Pomodoro apps in 2026**: [Full ranked comparison](https://usefoci.com/blog/best-free-pomodoro-apps-2026)
+- **Best Forest app alternatives**: [Top 5 alternatives in 2026](https://usefoci.com/blog/forest-app-alternatives)
 
 ## Tech Stack
 

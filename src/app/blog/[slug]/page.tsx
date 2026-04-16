@@ -54,11 +54,24 @@ export default async function BlogPostPage({ params }: Props) {
     description: meta.description,
     datePublished: meta.date,
     dateModified: meta.date,
-    author: { "@type": "Organization", name: "Foci" },
-    publisher: { "@type": "Organization", name: "Foci" },
+    author: { "@type": "Organization", name: "Foci", url: "https://usefoci.com" },
+    publisher: { "@type": "Organization", name: "Foci", url: "https://usefoci.com" },
     url: `https://usefoci.com/blog/${meta.slug}`,
     mainEntityOfPage: `https://usefoci.com/blog/${meta.slug}`,
+    image: `https://usefoci.com/opengraph-image`,
     keywords: meta.tags.join(", "),
+    inLanguage: "en-US",
+    isPartOf: { "@type": "Blog", name: "Foci Blog", url: "https://usefoci.com/blog" },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://usefoci.com" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://usefoci.com/blog" },
+      { "@type": "ListItem", position: 3, name: meta.title, item: `https://usefoci.com/blog/${meta.slug}` },
+    ],
   };
 
   return (
@@ -66,6 +79,10 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Navbar />
 
