@@ -235,7 +235,7 @@ export default function AppPage() {
         </div>
 
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
-        <div className={`w-full lg:w-[400px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
+        <div className={`w-full lg:w-[360px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
           <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
             <header

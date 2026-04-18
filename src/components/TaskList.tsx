@@ -2580,14 +2580,14 @@ function TaskCalendarView({
                   return (
                     <div
                       key={t.id}
-                      className={`w-full truncate text-[9px] leading-tight px-1 py-0.5 rounded ${chipColor} ${t.completed ? "line-through" : ""}`}
+                      className={`w-full truncate text-[11px] leading-tight px-1 py-0.5 rounded ${chipColor} ${t.completed ? "line-through" : ""}`}
                     >
                       {t.title}
                     </div>
                   );
                 })}
                 {dayTasks.length > 2 && (
-                  <span className={`text-[9px] leading-none px-1 ${isSelected ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`}>
+                  <span className={`text-[10px] leading-none px-1 ${isSelected ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`}>
                     +{dayTasks.length - 2} more
                   </span>
                 )}
