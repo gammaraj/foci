@@ -1063,6 +1063,7 @@ export default function TaskList({
       {!isFocusMode && viewMode === "calendar" && (
         <TaskCalendarView
           tasks={tasks}
+          projects={projects}
           calendarDate={calendarDate}
           setCalendarDate={setCalendarDate}
           onSetDueDate={setDueDate}
@@ -2402,6 +2403,7 @@ const MONTH_NAMES = [
 
 function TaskCalendarView({
   tasks,
+  projects,
   calendarDate,
   setCalendarDate,
   onSetDueDate,
@@ -2412,6 +2414,7 @@ function TaskCalendarView({
   onSelectDay,
 }: {
   tasks: Task[];
+  projects: Project[];
   calendarDate: Date;
   setCalendarDate: (d: Date) => void;
   onSetDueDate: (id: string, date: string | undefined) => void;
@@ -2421,6 +2424,7 @@ function TaskCalendarView({
   selectedDay: string | null;
   onSelectDay: (day: string | null) => void;
 }) {
+  const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS_ID);
 
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
@@ -2430,16 +2434,23 @@ function TaskCalendarView({
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
+  // Filter tasks by selected project
+  const filteredTasks = projectFilter === ALL_PROJECTS_ID
+    ? tasks
+    : tasks.filter((t) => t.projectId === projectFilter);
+
   // Build a map: dateKey → tasks with that due date
   const tasksByDate: Record<string, Task[]> = {};
-  for (const t of tasks) {
+  for (const t of filteredTasks) {
     if (t.dueDate && !t.archivedAt) {
       (tasksByDate[t.dueDate] ??= []).push(t);
     }
   }
 
   // Tasks with no due date
-  const unscheduledTasks = tasks.filter((t) => !t.dueDate && !t.completed && !t.archivedAt);
+  const unscheduledTasks = filteredTasks.filter((t) => !t.dueDate && !t.completed && !t.archivedAt);
+
+  const visibleProjects = projects.filter((p) => !p.archived);
 
   const prevMonth = () => setCalendarDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCalendarDate(new Date(year, month + 1, 1));
@@ -2455,6 +2466,42 @@ function TaskCalendarView({
 
   return (
     <div className="p-4">
+      {/* Project filter */}
+      {visibleProjects.length > 1 && (
+        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
+          <button
+            onClick={() => setProjectFilter(ALL_PROJECTS_ID)}
+            className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-full border transition-colors ${
+              projectFilter === ALL_PROJECTS_ID
+                ? "bg-blue-600 border-blue-600 text-white"
+                : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+            }`}
+          >
+            All
+          </button>
+          {visibleProjects.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setProjectFilter(p.id)}
+              className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                projectFilter === p.id
+                  ? "border-transparent text-white"
+                  : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+              }`}
+              style={projectFilter === p.id && p.color ? { backgroundColor: p.color, borderColor: p.color } : {}}
+            >
+              {p.color && (
+                <span
+                  className={`w-2 h-2 rounded-full flex-shrink-0 ${projectFilter === p.id ? "hidden" : ""}`}
+                  style={{ backgroundColor: p.color }}
+                />
+              )}
+              {p.name}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Month nav */}
       <div className="flex items-center justify-between mb-3">
         <button
@@ -2498,7 +2545,7 @@ function TaskCalendarView({
       {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-1">
         {emptyCells.map((_, i) => (
-          <div key={`e-${i}`} className="aspect-square" />
+          <div key={`e-${i}`} className="min-h-[68px]" />
         ))}
         {dayCells.map((day) => {
           const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -2512,36 +2559,39 @@ function TaskCalendarView({
             <button
               key={day}
               onClick={() => onSelectDay(isSelected ? null : dateStr)}
-              className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 text-xs transition-all relative ${
+              className={`min-h-[68px] rounded-lg flex flex-col p-1 text-xs transition-all w-full text-left ${
                 isSelected
                   ? "bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#111827]"
                   : isToday
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-bold ring-1 ring-blue-300 dark:ring-blue-700"
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
                     : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
               }`}
             >
-              <span className={`text-xs font-medium ${isSelected ? "text-white" : ""}`}>{day}</span>
-              {dayTasks.length > 0 && (
-                <div className="flex gap-0.5">
-                  {dayTasks.slice(0, 3).map((t, i) => (
+              <span className={`text-[11px] font-semibold self-end leading-none mb-1 ${isToday && !isSelected ? "font-bold" : ""}`}>{day}</span>
+              <div className="flex flex-col gap-0.5 w-full">
+                {dayTasks.slice(0, 2).map((t) => {
+                  const chipColor = isSelected
+                    ? "bg-white/20 text-white"
+                    : t.completed
+                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                      : hasOverdue && !t.completed
+                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
+                  return (
                     <div
-                      key={i}
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        isSelected
-                          ? "bg-white/70"
-                          : t.completed
-                            ? "bg-green-400"
-                            : hasOverdue && !t.completed
-                              ? "bg-red-400"
-                              : "bg-blue-400"
-                      }`}
-                    />
-                  ))}
-                  {dayTasks.length > 3 && (
-                    <span className={`text-[10px] leading-none ${isSelected ? "text-white/70" : "text-slate-400"}`}>+{dayTasks.length - 3}</span>
-                  )}
-                </div>
-              )}
+                      key={t.id}
+                      className={`w-full truncate text-[9px] leading-tight px-1 py-0.5 rounded ${chipColor} ${t.completed ? "line-through" : ""}`}
+                    >
+                      {t.title}
+                    </div>
+                  );
+                })}
+                {dayTasks.length > 2 && (
+                  <span className={`text-[9px] leading-none px-1 ${isSelected ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`}>
+                    +{dayTasks.length - 2} more
+                  </span>
+                )}
+              </div>
             </button>
           );
         })}
