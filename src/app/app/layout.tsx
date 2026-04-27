@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     "deep work app",
     "free pomodoro",
     "online timer",
+    "flowtime technique",
+    "52/17 rule timer",
+    "pomodoro technique app",
+    "focus app free",
+    "work break timer",
+    "tomato timer",
+    "concentration timer",
+    "time management app",
   ],
   alternates: { canonical: "/app" },
   openGraph: {
@@ -28,11 +36,20 @@ export const metadata: Metadata = {
     url: "https://usefoci.com/app",
     type: "website",
     siteName: "Foci",
+    images: [
+      {
+        url: "https://usefoci.com/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Foci Focus Timer App",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
+    images: ["https://usefoci.com/twitter-image"],
   },
 };
 

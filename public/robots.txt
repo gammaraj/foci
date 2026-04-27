@@ -53,30 +53,13 @@ Allow: /
 User-agent: Bytespider
 Allow: /
 
-Sitemap: https://usefoci.com/sitemap.xml
-
-User-agent: Bytespider
-Allow: /
-
 User-agent: CCBot
-Allow: /
-
-User-agent: cohere-ai
-Allow: /
-
-User-agent: meta-externalagent
 Allow: /
 
 User-agent: Amazonbot
 Allow: /
 
-User-agent: OAI-SearchBot
-Allow: /
-
 User-agent: Omgilibot
-Allow: /
-
-User-agent: Diffbot
 Allow: /
 
 Sitemap: https://usefoci.com/sitemap.xml

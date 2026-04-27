@@ -18,6 +18,13 @@ export const metadata: Metadata = {
     "streak tracking",
     "daily goals",
     "focus metrics",
+    "pomodoro stats",
+    "work time analysis",
+    "focus session history",
+    "productivity insights",
+    "time management analytics",
+    "session goal tracking",
+    "focus habit tracking",
   ],
   alternates: { canonical: "/stats" },
   openGraph: {
@@ -26,11 +33,20 @@ export const metadata: Metadata = {
     url: "https://usefoci.com/stats",
     type: "website",
     siteName: "Foci",
+    images: [
+      {
+        url: "https://usefoci.com/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Foci Productivity Stats Dashboard",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
+    images: ["https://usefoci.com/twitter-image"],
   },
 };
 

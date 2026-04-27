@@ -10,13 +10,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ? new Date(Math.max(...allPosts.map((p) => new Date(p.date).getTime())))
     : now;
 
-  // Bump priority for comparison/review posts that target high-intent queries
+  // Bump priority for comparison/review posts and migration guides that target high-intent queries
   const comparisonSlugs = new Set([
     "foci-vs-forest-app",
     "foci-vs-todoist",
     "foci-vs-focusatwill",
     "forest-app-alternatives",
     "best-free-pomodoro-apps-2026",
+    "migrate-from-todoist-to-foci",
+    "migrate-from-google-tasks-to-foci",
+    "migrate-from-asana-to-foci",
+    "migrate-from-notion-to-foci",
+    "pomodoro-technique-guide",
+    "pomodoro-vs-flowtime-vs-52-17",
   ]);
 
   const posts = allPosts.map((post) => ({

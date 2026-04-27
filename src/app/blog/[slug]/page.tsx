@@ -55,13 +55,31 @@ export default async function BlogPostPage({ params }: Props) {
     datePublished: meta.date,
     dateModified: meta.date,
     author: { "@type": "Organization", name: "Foci", url: "https://usefoci.com" },
-    publisher: { "@type": "Organization", name: "Foci", url: "https://usefoci.com" },
+    publisher: { 
+      "@type": "Organization", 
+      name: "Foci", 
+      url: "https://usefoci.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://usefoci.com/logo.svg"
+      }
+    },
     url: `https://usefoci.com/blog/${meta.slug}`,
-    mainEntityOfPage: `https://usefoci.com/blog/${meta.slug}`,
-    image: `https://usefoci.com/opengraph-image`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://usefoci.com/blog/${meta.slug}`
+    },
+    image: {
+      "@type": "ImageObject",
+      url: `https://usefoci.com/opengraph-image`,
+      width: 1200,
+      height: 630
+    },
     keywords: meta.tags.join(", "),
     inLanguage: "en-US",
     isPartOf: { "@type": "Blog", name: "Foci Blog", url: "https://usefoci.com/blog" },
+    articleSection: meta.tags[0] || "Productivity",
+    wordCount: content.split(/\s+/).length,
   };
 
   const breadcrumbJsonLd = {

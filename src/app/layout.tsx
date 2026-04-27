@@ -183,6 +183,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: "Foci – Focus Timer, Tasks & Ambient Sounds",
+        type: "image/png",
       },
     ],
   },
@@ -191,6 +192,7 @@ export const metadata: Metadata = {
     title,
     description,
     images: [`${siteUrl}/twitter-image`],
+    creator: "@usefoci",
   },
   category: "productivity",
   robots: {
