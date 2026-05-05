@@ -253,6 +253,7 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - Blog – Foci vs Todoist: https://usefoci.com/blog/foci-vs-todoist
 - Blog – Foci vs Focus@Will: https://usefoci.com/blog/foci-vs-focusatwill
 - Blog – Forest App Alternatives: https://usefoci.com/blog/forest-app-alternatives
+- Blog – How to Stop Procrastinating: https://usefoci.com/blog/how-to-stop-procrastinating
 
 ---
 
@@ -1135,3 +1136,35 @@ People leave Forest for: no task tracking, no ambient sounds, gamification fatig
 #### Verdict
 
 Foci is the best free alternative for people who want a complete focus system, not just a timer with gamification.
+
+---
+
+### How to Stop Procrastinating: The Science and Practical Fixes
+
+> URL: https://usefoci.com/blog/how-to-stop-procrastinating
+> Date: 2026-05-05 | Reading time: 8 min read
+> Tags: procrastination, productivity, focus, habits, psychology
+
+Procrastination isn't a time management problem — it's an emotion regulation problem. You avoid tasks not because you're bad at managing time, but because starting triggers uncomfortable emotions (anxiety, boredom, self-doubt, overwhelm), and your brain seeks immediate relief through distraction.
+
+#### Why it happens
+
+Research from Fuschia Sirois and Timothy Pychyl established that procrastination is a maladaptive coping strategy — you're avoiding how the task makes you feel, not the task itself. The procrastination loop: encounter task → feel negative emotion → seek mood repair (scroll, check phone) → feel temporary relief → guilt and anxiety grow → task feels worse → avoid more.
+
+#### What actually works
+
+1. **Reduce the emotional barrier**: Use the 2-minute start (commit to 2 minutes, not completion) and implementation intentions ("When I sit down at 9 AM, I'll open the document immediately" — increases follow-through by 200–300%).
+2. **Make tasks smaller**: Break into the next physical action. Time-box with a 25-minute Pomodoro session rather than aiming to "finish."
+3. **Manage your environment**: Remove temptation at the source, create a pre-work start ritual, use body doubling (working alongside someone) for accountability.
+4. **Address perfectionism**: Done is better than perfect. Separate drafting from editing. First drafts are supposed to be bad.
+5. **Practice self-compassion**: Forgiving yourself for procrastinating makes you less likely to procrastinate next time (2010 research). Self-criticism amplifies avoidance.
+
+#### Energy and timing
+
+Match task difficulty to your energy curve. Do demanding creative work during peak hours (usually mid-morning). Low-energy periods are for routine tasks. Attempting deep work when fatigued isn't procrastination — it's poor scheduling.
+
+#### Building momentum
+
+Procrastination is a habit. So is starting. Track completed sessions (not just completed tasks) to build the habit of beginning. Foci's streak tracking reinforces consistent showing up.
+
+[Try Foci](https://usefoci.com/app) — free Pomodoro timer and task tracker, no account required.

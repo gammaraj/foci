@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "migrate-from-notion-to-foci",
     "pomodoro-technique-guide",
     "pomodoro-vs-flowtime-vs-52-17",
+    "how-to-stop-procrastinating",
   ]);
 
   const posts = allPosts.map((post) => ({

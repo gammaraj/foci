@@ -285,5 +285,6 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [Foci vs Todoist: Focus System vs Task Manager](https://usefoci.com/blog/foci-vs-todoist) — 2026-04-12
 - [Foci vs Focus@Will: Free All-in-One vs Paid Music Subscription](https://usefoci.com/blog/foci-vs-focusatwill) — 2026-04-12
 - [5 Best Forest App Alternatives in 2026 (Free & Paid)](https://usefoci.com/blog/forest-app-alternatives) — 2026-04-12
+- [How to Stop Procrastinating: The Science and Practical Fixes](https://usefoci.com/blog/how-to-stop-procrastinating) — 2026-05-05
 
 For the full text of all blog posts, see: https://usefoci.com/llms-full.txt
