@@ -589,10 +589,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .single();
       
     if (!profile) return [];
-    
-    const { data, error } = await this.supabase
-      .from("collaboration_invites")
-      .select(`
+
+    // Run two separate queries (by invitee_id and by invitee_email) to avoid
+    // interpolating email into a PostgREST filter string, which could be
+    // manipulated if the email contains filter-delimiter characters.
+    const selectClause = `
         id,
         project_id,
         owner_id,
@@ -607,16 +608,25 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           email,
           display_name
         )
-      `)
-      .or(`invitee_id.eq.${userId},invitee_email.ilike.${profile.email}`)
-      .eq("status", "pending");
-      
-    if (error) {
-      console.error("[Foci] getReceivedInvites error:", error);
-      throw new Error(error.message);
-    }
-    
-    if (!data) return [];
+      `;
+
+    const [{ data: byId, error: err1 }, { data: byEmail, error: err2 }] = await Promise.all([
+      this.supabase.from("collaboration_invites").select(selectClause)
+        .eq("invitee_id", userId).eq("status", "pending"),
+      this.supabase.from("collaboration_invites").select(selectClause)
+        .ilike("invitee_email", profile.email).eq("status", "pending"),
+    ]);
+
+    if (err1) { console.error("[Foci] getReceivedInvites (byId) error:", err1); throw new Error(err1.message); }
+    if (err2) { console.error("[Foci] getReceivedInvites (byEmail) error:", err2); throw new Error(err2.message); }
+
+    // Merge and deduplicate by invite id
+    const seen = new Set<string>();
+    const data = [...(byId ?? []), ...(byEmail ?? [])].filter((row) => {
+      if (seen.has(row.id)) return false;
+      seen.add(row.id);
+      return true;
+    });
     
     // Filter out expired invites
     const now = new Date();
@@ -691,19 +701,35 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async declineInvite(inviteId: string): Promise<void> {
     const userId = await this.getUserId();
-    
-    // Get user's email
+
+    // Fetch the invite first so we can verify ownership in application code
+    // rather than interpolating email into a PostgREST filter string.
+    const { data: invite, error: fetchError } = await this.supabase
+      .from("collaboration_invites")
+      .select("invitee_id, invitee_email")
+      .eq("id", inviteId)
+      .single();
+
+    if (fetchError || !invite) throw new Error("Invite not found");
+
     const { data: profile } = await this.supabase
       .from("user_profiles")
       .select("email")
       .eq("user_id", userId)
       .single();
-      
+
+    const isRecipient =
+      invite.invitee_id === userId ||
+      (invite.invitee_email != null &&
+        profile?.email != null &&
+        invite.invitee_email.toLowerCase() === profile.email.toLowerCase());
+
+    if (!isRecipient) throw new Error("Unauthorized");
+
     const { error } = await this.supabase
       .from("collaboration_invites")
       .update({ status: "declined" })
-      .eq("id", inviteId)
-      .or(`invitee_id.eq.${userId},invitee_email.ilike.${profile?.email ?? ""}`);
+      .eq("id", inviteId);
       
     if (error) {
       console.error("[Foci] declineInvite error:", error);
@@ -1095,9 +1121,9 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const { data: { user } } = await this.supabase.auth.getUser();
     const userEmail = user?.email?.toLowerCase();
     
-    const { data, error } = await this.supabase
-      .from("account_invites")
-      .select(`
+    // Run two separate queries (by invitee_id and by invitee_email) to avoid
+    // interpolating email into a PostgREST filter string.
+    const selectClause = `
         id,
         owner_id,
         role,
@@ -1108,16 +1134,28 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           email,
           display_name
         )
-      `)
-      .or(`invitee_id.eq.${userId},invitee_email.ilike.${userEmail}`)
-      .eq("status", "pending");
-      
-    if (error) {
-      console.error("[Foci] getReceivedAccountInvites error:", error);
-      throw new Error(error.message);
-    }
-    
-    if (!data) return [];
+      `;
+
+    const [{ data: byId, error: err1 }, { data: byEmail, error: err2 }] = await Promise.all([
+      this.supabase.from("account_invites").select(selectClause)
+        .eq("invitee_id", userId).eq("status", "pending"),
+      ...(userEmail
+        ? [this.supabase.from("account_invites").select(selectClause)
+            .ilike("invitee_email", userEmail).eq("status", "pending")]
+        : [Promise.resolve({ data: [], error: null })]
+      ),
+    ]);
+
+    if (err1) { console.error("[Foci] getReceivedAccountInvites (byId) error:", err1); throw new Error(err1.message); }
+    if (err2) { console.error("[Foci] getReceivedAccountInvites (byEmail) error:", err2); throw new Error(err2.message); }
+
+    // Merge and deduplicate by invite id
+    const seen = new Set<string>();
+    const data = [...(byId ?? []), ...(byEmail ?? [])].filter((row) => {
+      if (seen.has(row.id)) return false;
+      seen.add(row.id);
+      return true;
+    });
     
     // Filter out expired invites
     const now = new Date();
