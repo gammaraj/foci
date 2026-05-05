@@ -23,23 +23,28 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
+const SITE_ORIGIN = "https://usefoci.com";
+
 export async function GET(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  // Use the rightmost IP added by the trusted Vercel proxy, not the
+  // leftmost (which can be spoofed by the client).
+  const forwarded = request.headers.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",").at(-1)!.trim() : "unknown";
   if (isRateLimited(ip)) {
     return new NextResponse("Too many requests", { status: 429 });
   }
 
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}/app`);
+      return NextResponse.redirect(`${SITE_ORIGIN}/app`);
     }
   }
 
   // Return to login page on error
-  return NextResponse.redirect(`${origin}/login`);
+  return NextResponse.redirect(`${SITE_ORIGIN}/login`);
 }

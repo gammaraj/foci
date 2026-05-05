@@ -87,7 +87,9 @@ export async function GET(request: Request) {
   try {
     const hdrs = await headers();
     const forwarded = hdrs.get("x-forwarded-for");
-    const ip = forwarded?.split(",")[0]?.trim() || "";
+    // Use the rightmost IP added by the trusted Vercel proxy.
+    // The leftmost IP can be spoofed by the client.
+    const ip = forwarded ? forwarded.split(",").at(-1)!.trim() : "";
 
     if (isRateLimited(ip || "unknown")) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });

@@ -4,6 +4,11 @@ import { getAllPosts } from "@/lib/blog";
 
 const siteUrl = "https://usefoci.com";
 
+/** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
+function safeJsonLd(obj: unknown): string {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
 const orgJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -304,23 +309,23 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(webSiteJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(orgJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(howToJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
       <Navbar />
 

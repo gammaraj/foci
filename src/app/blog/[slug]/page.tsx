@@ -5,6 +5,11 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 
+/** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
+function safeJsonLd(obj: unknown): string {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -96,11 +101,11 @@ export default async function BlogPostPage({ params }: Props) {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <Navbar />
 
