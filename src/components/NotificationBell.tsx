@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 
 function detectBrowser(): string {
   if (typeof navigator === "undefined") return "unknown";
@@ -99,13 +99,13 @@ export default function NotificationBell() {
   const handleClick = useCallback(async () => {
     if (!("Notification" in window)) return;
 
-    if (Notification.permission === "default") {
+    if (permission === "default") {
       const result = await Notification.requestPermission();
       setPermission(result);
-    } else if (Notification.permission === "denied") {
+    } else if (permission === "denied") {
       setShowHelp((prev) => !prev);
     }
-  }, []);
+  }, [permission]);
 
   const isGranted = permission === "granted";
   const isDenied = permission === "denied";
@@ -116,7 +116,7 @@ export default function NotificationBell() {
       ? "Notifications blocked — click for help"
       : "Click to enable notifications";
 
-  const browserInfo = getBrowserInstructions(detectBrowser());
+  const browserInfo = useMemo(() => getBrowserInstructions(detectBrowser()), []);
 
   return (
     <div className="relative" ref={helpRef}>
@@ -145,9 +145,9 @@ export default function NotificationBell() {
         {/* Status dot */}
         {isGranted ? (
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-green-400 ring-1 ring-green-500/50" />
-        ) : (
+        ) : isDenied ? (
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-600 ring-1 ring-amber-600/50 animate-pulse" />
-        )}
+        ) : null}
       </button>
 
       {/* Browser-specific help popup */}
