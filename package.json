@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check:content-integrity": "node scripts/ci/check-content-integrity.cjs",
+    "check:ci": "npm run build && npm run check:content-integrity",
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui"
   },
