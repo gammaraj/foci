@@ -960,6 +960,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       
     if (error) {
       console.error("[Foci] getAccountCollaborators error:", error);
+      console.error("[Foci] getAccountCollaborators error details:", JSON.stringify(error, null, 2));
       throw new Error(error.message);
     }
     
