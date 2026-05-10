@@ -286,27 +286,27 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   // ── Collaboration (not available without authentication) ──
 
-  async getProjectCollaborators(): Promise<CollaboratorInfo[]> {
+  async getProjectCollaborators(_projectId: string): Promise<CollaboratorInfo[]> {
     return [];
   }
 
-  async inviteCollaborator(): Promise<void> {
+  async inviteCollaborator(_projectId: string, _email: string, _role: CollaboratorRole): Promise<void> {
     throw new Error("Sign in to invite collaborators");
   }
 
-  async removeCollaborator(): Promise<void> {
+  async removeCollaborator(_projectId: string, _collaboratorId: string): Promise<void> {
     throw new Error("Sign in to manage collaborators");
   }
 
-  async updateCollaboratorRole(): Promise<void> {
+  async updateCollaboratorRole(_projectId: string, _collaboratorId: string, _role: CollaboratorRole): Promise<void> {
     throw new Error("Sign in to manage collaborators");
   }
 
-  async getSentInvites(): Promise<CollaborationInvite[]> {
+  async getSentInvites(_projectId: string): Promise<CollaborationInvite[]> {
     return [];
   }
 
-  async cancelInvite(): Promise<void> {
+  async cancelInvite(_inviteId: string): Promise<void> {
     throw new Error("Sign in to manage invites");
   }
 
@@ -314,11 +314,11 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
-  async acceptInvite(): Promise<void> {
+  async acceptInvite(_inviteId: string): Promise<void> {
     throw new Error("Sign in to accept invites");
   }
 
-  async declineInvite(): Promise<void> {
+  async declineInvite(_inviteId: string): Promise<void> {
     throw new Error("Sign in to decline invites");
   }
 
@@ -326,15 +326,15 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
-  async loadSharedProjectTasks(): Promise<Task[]> {
+  async loadSharedProjectTasks(_projectId: string, _ownerId: string): Promise<Task[]> {
     return [];
   }
 
-  async updateSharedTask(): Promise<void> {
+  async updateSharedTask(_projectId: string, _ownerId: string, _task: Task): Promise<void> {
     throw new Error("Sign in to update shared tasks");
   }
 
-  async leaveProject(): Promise<void> {
+  async leaveProject(_projectId: string, _ownerId: string): Promise<void> {
     throw new Error("Sign in to leave projects");
   }
 
@@ -344,15 +344,15 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
-  async inviteAccountCollaborator(): Promise<void> {
+  async inviteAccountCollaborator(_email: string, _role: CollaboratorRole): Promise<void> {
     throw new Error("Sign in to share your account");
   }
 
-  async removeAccountCollaborator(): Promise<void> {
+  async removeAccountCollaborator(_collaboratorId: string): Promise<void> {
     throw new Error("Sign in to manage account sharing");
   }
 
-  async updateAccountCollaboratorRole(): Promise<void> {
+  async updateAccountCollaboratorRole(_collaboratorId: string, _role: CollaboratorRole): Promise<void> {
     throw new Error("Sign in to manage account sharing");
   }
 
@@ -360,7 +360,7 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
-  async cancelAccountInvite(): Promise<void> {
+  async cancelAccountInvite(_inviteId: string): Promise<void> {
     throw new Error("Sign in to manage invites");
   }
 
@@ -368,11 +368,11 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
-  async acceptAccountInvite(): Promise<void> {
+  async acceptAccountInvite(_inviteId: string): Promise<void> {
     throw new Error("Sign in to accept invites");
   }
 
-  async declineAccountInvite(): Promise<void> {
+  async declineAccountInvite(_inviteId: string): Promise<void> {
     throw new Error("Sign in to decline invites");
   }
 
