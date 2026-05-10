@@ -12,6 +12,7 @@ export async function middleware(request: NextRequest) {
   const csp = [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com`,
+    `worker-src 'self' blob:`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https://*.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com`,
     `font-src 'self'`,
