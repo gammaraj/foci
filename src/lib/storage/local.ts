@@ -330,7 +330,7 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
-  async updateSharedTask(_projectId: string, _ownerId: string, _task: Task): Promise<void> {
+  async updateSharedTask(_task: Task, _ownerId: string): Promise<void> {
     throw new Error("Sign in to update shared tasks");
   }
 
