@@ -7,7 +7,7 @@ import TaskImportExport from "@/components/TaskImportExport";
 import AccountSharingModal from "@/components/AccountSharingModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
-import { getStorage } from "@/lib/storage";
+import { loadProjects } from "@/lib/storage";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -72,11 +72,10 @@ export default function SettingsPanel({
   useEffect(() => {
     if (!user) return;
     
-    const loadProjects = async () => {
+    const loadProjectsData = async () => {
       setLoadingProjects(true);
       try {
-        const storage = getStorage();
-        const allProjects = await storage.getProjects();
+        const allProjects = await loadProjects();
         // Filter out archived and general project
         setProjects(allProjects.filter(p => !p.archived && p.id !== "__general__"));
       } catch (err) {
@@ -86,7 +85,7 @@ export default function SettingsPanel({
       }
     };
 
-    loadProjects();
+    loadProjectsData();
   }, [user]);
 
   const [saved, setSaved] = useState(false);
