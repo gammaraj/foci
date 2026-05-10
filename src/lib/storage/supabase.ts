@@ -949,7 +949,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         collaborator_id,
         role,
         created_at,
-        user_profiles!account_collaborators_collaborator_id_fkey (
+        user_profiles!account_collaborators_collaborator_profile_fkey (
           email,
           display_name,
           avatar_url
