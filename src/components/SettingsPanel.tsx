@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Settings } from "@/lib/types";
+import { Settings, Project } from "@/lib/types";
 import { TIMER_PRESETS, GOAL_PRESETS } from "@/lib/templates";
 import TaskImportExport from "@/components/TaskImportExport";
 import AccountSharingModal from "@/components/AccountSharingModal";
+import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
+import { getStorage } from "@/lib/storage";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -22,6 +24,9 @@ export default function SettingsPanel({
 }: SettingsPanelProps) {
   const { user } = useAuth();
   const [showAccountSharing, setShowAccountSharing] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [shareModalProject, setShareModalProject] = useState<Project | null>(null);
   const [workMin, setWorkMin] = useState(
     Math.floor(settings.workDuration / 60000)
   );
@@ -62,6 +67,28 @@ export default function SettingsPanel({
       });
     }
   }, [notifications]);
+
+  // Load projects for project sharing section
+  useEffect(() => {
+    if (!user) return;
+    
+    const loadProjects = async () => {
+      setLoadingProjects(true);
+      try {
+        const storage = getStorage();
+        const allProjects = await storage.getProjects();
+        // Filter out archived and general project
+        setProjects(allProjects.filter(p => !p.archived && p.id !== "__general__"));
+      } catch (err) {
+        console.error("[Foci] Failed to load projects:", err);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    loadProjects();
+  }, [user]);
+
   const [saved, setSaved] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const panelRef = useRef<HTMLDivElement>(null);
@@ -161,7 +188,7 @@ export default function SettingsPanel({
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 max-h-[88vh] overflow-y-auto">
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column */}
           <div className="space-y-5">
@@ -395,17 +422,26 @@ export default function SettingsPanel({
             </div>
           </div>
 
-          {/* Account Sharing */}
+          {/* Sharing */}
           {user && (
             <div>
               <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
                 <span className="text-base mr-2">👥</span>
-                Account Sharing
+                Sharing
               </h4>
-              <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                  Share all your projects with someone. They&apos;ll have access to every project you create.
-                </p>
+              
+              {/* Account-level Sharing */}
+              <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350] mb-3">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 mb-1">
+                      Share All Projects
+                    </p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Give someone access to every project (current and future)
+                    </p>
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowAccountSharing(true)}
@@ -416,6 +452,47 @@ export default function SettingsPanel({
                   </svg>
                   Manage Account Sharing
                 </button>
+              </div>
+
+              {/* Project-level Sharing */}
+              <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 mb-1">
+                      Share Individual Projects
+                    </p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Share specific projects with different collaborators
+                    </p>
+                  </div>
+                </div>
+                {loadingProjects ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : projects.length === 0 ? (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 py-2 text-center">
+                    No projects to share
+                  </p>
+                ) : (
+                  <div className="space-y-2 mt-3">
+                    {projects.map((project) => (
+                      <button
+                        key={project.id}
+                        type="button"
+                        onClick={() => setShareModalProject(project)}
+                        className="w-full px-3 py-2 text-sm text-left bg-white dark:bg-[#0a1628] hover:bg-slate-100 dark:hover:bg-[#152340] border border-slate-200 dark:border-[#243350] rounded-lg transition-colors flex items-center justify-between group"
+                      >
+                        <span className="text-slate-800 dark:text-slate-100 truncate">
+                          {project.name}
+                        </span>
+                        <svg className="w-4 h-4 text-slate-400 group-hover:text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -471,6 +548,15 @@ export default function SettingsPanel({
         isOpen={showAccountSharing}
         onClose={() => setShowAccountSharing(false)}
       />
+
+      {/* Project Sharing Modal */}
+      {shareModalProject && (
+        <ShareProjectModal
+          project={shareModalProject}
+          isOpen={true}
+          onClose={() => setShareModalProject(null)}
+        />
+      )}
     </>
   );
 }

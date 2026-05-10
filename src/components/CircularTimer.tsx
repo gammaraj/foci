@@ -24,7 +24,7 @@ export default function CircularTimer({
   const offset = circumference - progress * circumference;
 
   return (
-    <div className="relative mx-auto my-0" style={{ width: 'min(230px, 38vw)', height: 'min(230px, 38vw)' }}>
+    <div className="relative mx-auto my-0" style={{ width: 'min(140px, 32vw)', height: 'min(140px, 32vw)' }}>
       {/* SVG ring */}
       <svg
         className="absolute inset-0 w-full h-full"
@@ -40,14 +40,14 @@ export default function CircularTimer({
           cx="50" cy="50" r="45"
           fill="none"
           className="stroke-slate-200 dark:stroke-slate-500"
-          strokeWidth="3.5"
+          strokeWidth="3"
           opacity="0.8"
         />
         <circle
           cx="50" cy="50" r="45"
           fill="none"
           stroke={isBreak ? "var(--success-green)" : "var(--primary-blue)"}
-          strokeWidth="4"
+          strokeWidth="3.5"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
@@ -59,16 +59,16 @@ export default function CircularTimer({
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="rounded-full flex flex-col items-center justify-center text-center bg-white dark:bg-[#131d30] border-2 border-slate-200 dark:border-slate-500 shadow-lg"
-          style={{ width: 'min(165px, 27vw)', height: 'min(165px, 27vw)' }}
+          style={{ width: 'min(100px, 22vw)', height: 'min(100px, 22vw)' }}
         >
-          <div className="text-xs font-bold mb-0.5 text-slate-700 dark:text-slate-100">
+          <div className="text-[10px] font-bold mb-0.5 text-slate-700 dark:text-slate-100">
             {isBreak ? "🎉 " : ""}
             {label}
           </div>
-          <div className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-none tracking-tight">
+          <div className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white leading-none tracking-tight">
             {displayTime}
           </div>
-          <div className="hidden sm:block text-xs text-slate-500 dark:text-slate-300 mt-0.5">
+          <div className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-300 mt-0.5">
             {statusText}
           </div>
         </div>

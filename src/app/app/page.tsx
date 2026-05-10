@@ -303,8 +303,8 @@ export default function AppPage() {
             )}
 
             {/* Main content */}
-            <div className="bg-white/60 dark:bg-[#111827] backdrop-blur-sm px-4 py-0 sm:py-1">
-              <div className="relative pb-6 sm:pb-0">
+            <div className="bg-white/60 dark:bg-[#111827] backdrop-blur-sm px-4 py-2">
+              <div className="relative pb-3">
                 <CircularTimer
                   remainingTime={timer.remainingTime}
                   totalDuration={
@@ -334,7 +334,7 @@ export default function AppPage() {
               </div>
 
               {/* On desktop: controls below timer */}
-              <div className="hidden sm:block">
+              <div className="hidden sm:block -mt-1">
                 <TimerControls
                   isRunning={isRunning}
                   onStartPause={handleStartPause}
@@ -348,6 +348,9 @@ export default function AppPage() {
                 </p>
               )}
             </div>
+
+            {/* Music & Sounds - moved up for better visibility */}
+            <AmbientSounds />
 
             {timer.lastQuote && (
               <div className="px-4 pb-3 animate-slide-up">
@@ -363,8 +366,6 @@ export default function AppPage() {
               dailyGoalData={timer.dailyGoalData}
               dailyGoal={timer.settings.dailyGoal}
             />
-
-            <AmbientSounds />
 
             <div className="h-1" />
           </div>

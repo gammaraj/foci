@@ -74,6 +74,8 @@ export interface Subtask {
 
 export type RecurrenceType = "daily" | "weekly" | "monthly" | "yearly";
 
+export type TaskPriority = 1 | 2 | 3; // 1=High, 2=Medium, 3=Low
+
 export interface Task {
   id: string;
   title: string;
@@ -88,6 +90,7 @@ export interface Task {
   order?: number; // manual sort order for drag-and-drop
   dueDate?: string; // ISO date string (YYYY-MM-DD), undefined = no due date
   recurrence?: RecurrenceType; // if set, task repeats on this schedule
+  priority?: TaskPriority; // 1=High, 2=Medium, 3=Low, undefined=None
 }
 
 export const DEFAULT_SETTINGS: Settings = {

@@ -242,6 +242,9 @@ export default function ShareProjectModal({
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
             Editors can complete and edit tasks. Viewers can only view.
           </p>
+          <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
+            💡 Want to share <strong>all your projects</strong>? Check out Settings → Sharing → Account Sharing.
+          </p>
         </form>
 
         {loading ? (

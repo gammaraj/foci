@@ -238,6 +238,9 @@ export default function AccountSharingModal({
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
             They&apos;ll see ALL your projects, including ones you create in the future.
           </p>
+          <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
+            💡 Want to share <strong>just one project</strong>? See Individual Projects below.
+          </p>
         </form>
 
         {loading ? (

@@ -53,43 +53,39 @@ export default function DailyProgress({
     <section className="px-4 py-0 sm:py-1" aria-labelledby="daily-progress-heading">
       <div
         id="dailyGoalProgress"
-        className="bg-gradient-to-br from-white to-slate-50/80 dark:from-[#131d30] dark:to-[#131d30] rounded-xl shadow-sm border border-slate-200/80 dark:border-[#243350] p-2 sm:p-5"
+        className="bg-gradient-to-br from-white to-slate-50/80 dark:from-[#131d30] dark:to-[#131d30] rounded-xl shadow-sm border border-slate-200/80 dark:border-[#243350] p-2.5 sm:p-3"
       >
-        {/* Sessions counter */}
-        <div className="flex items-center justify-between mb-1.5 sm:mb-5">
-          <div>
+        {/* Compact single-line layout */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             <h2
               id="daily-progress-heading"
-              className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-50 mb-0 sm:mb-1"
+              className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap"
             >
-              Today&apos;s Sessions
+              Today:
             </h2>
-            <div className="text-xl sm:text-3xl font-bold text-blue-600 dark:text-blue-300" title={`${dailyGoalData.sessionCount} sessions completed / daily goal: ${dailyGoal}`}>
-              {dailyGoalData.sessionCount}
-              <span className="text-slate-400 dark:text-slate-300">/</span>
-              {dailyGoal}
+            <div className="text-base sm:text-lg font-bold text-blue-600 dark:text-blue-300" title={`${dailyGoalData.sessionCount} sessions completed / daily goal: ${dailyGoal}`}>
+              {dailyGoalData.sessionCount}<span className="text-slate-400 dark:text-slate-300 text-sm">/</span>{dailyGoal}
             </div>
-            <div className="hidden sm:block text-xs text-slate-400 dark:text-slate-300">
-              sessions / goal: {dailyGoal}
+            <div className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 truncate">
+              • {dailyGoal - dailyGoalData.sessionCount > 0 ? `${dailyGoal - dailyGoalData.sessionCount} to go` : 'Goal met! 🎉'}
             </div>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1a2d4a] px-2 py-1 rounded-lg transition-colors"
             title="Click to view calendar"
             onClick={() => setShowCalendar(!showCalendar)}
           >
-            <div className="text-sm text-slate-600 dark:text-slate-300 mb-1 font-medium">
-              Streak
-            </div>
-            <div className="bg-gradient-to-r from-slate-50 to-blue-50/50 dark:bg-[#1a2d4a] dark:from-transparent dark:to-transparent text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-[#243350] hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors">
-              {dailyGoalData.streak > 0 ? "🔥" : "✨"} {getStreakText()}
+            <span className="text-base">{dailyGoalData.streak > 0 ? "🔥" : "✨"}</span>
+            <div className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200">
+              {getStreakText()}
             </div>
           </div>
         </div>
 
-        {/* Progress bar */}
+        {/* Compact progress bar */}
         <div
-          className="w-full bg-slate-100 dark:bg-[#1a2d4a] rounded-full h-2 sm:h-3.5 mb-0 sm:mb-4 border border-slate-200/80 dark:border-[#243350] overflow-hidden"
+          className="w-full bg-slate-100 dark:bg-[#1a2d4a] rounded-full h-1.5 mt-2 border border-slate-200/80 dark:border-[#243350] overflow-hidden"
           role="progressbar"
           aria-valuenow={progressPercent}
           aria-valuemin={0}
@@ -101,17 +97,6 @@ export default function DailyProgress({
             }`}
             style={{ width: `${progressPercent}%` }}
           />
-        </div>
-
-        {/* Status text */}
-        <div
-          className={`hidden sm:block text-sm text-center font-medium ${
-            goalMet
-              ? "text-green-600 dark:text-green-300"
-              : "text-slate-600 dark:text-slate-300"
-          }`}
-        >
-          {getStatusText()}
         </div>
 
         {/* Calendar View */}

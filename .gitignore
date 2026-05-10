@@ -32,6 +32,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Sentry
+.sentryclirc
+.sentry-*
+
 # Playwright
 node_modules/
 /test-results/
@@ -39,3 +43,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Sentry Config File
+.env.sentry-build-plugin

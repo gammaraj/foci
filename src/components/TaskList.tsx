@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType } from "@/lib/types";
+import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import SmartPlan from "@/components/SmartPlan";
@@ -807,6 +807,7 @@ export default function TaskList({
   })();
   const endOfYear = `${new Date().getFullYear()}-12-31`;
   const todayTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= today));
+  const overdueTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && isDueDateOverdue(t.dueDate));
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
   const thisMonthTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfMonth));
   const thisYearTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfYear));
@@ -827,11 +828,26 @@ export default function TaskList({
       // Pin the active task to the top
       if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
       if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
-      // Tasks with due dates come first, sorted by due date ascending
+      
+      // Overdue tasks come first (before today)
+      const aOverdue = a.dueDate && isDueDateOverdue(a.dueDate);
+      const bOverdue = b.dueDate && isDueDateOverdue(b.dueDate);
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+      
+      // Within overdue or non-overdue: priority matters (1=High comes first)
+      if (a.priority != null && b.priority == null) return -1;
+      if (a.priority == null && b.priority != null) return 1;
+      if (a.priority != null && b.priority != null && a.priority !== b.priority) {
+        return a.priority - b.priority; // 1 (High) < 2 (Medium) < 3 (Low)
+      }
+      
+      // Tasks with due dates come next, sorted by due date ascending
       if (a.dueDate && !b.dueDate) return -1;
       if (!a.dueDate && b.dueDate) return 1;
       if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
-      // Within same due date (or both without), respect manual order
+      
+      // Within same due date/priority, respect manual order
       if (a.order != null && b.order != null) return a.order - b.order;
       if (a.order != null) return -1;
       if (b.order != null) return 1;
@@ -906,10 +922,15 @@ export default function TaskList({
             <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
-                title="Show tasks due today"
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+                title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Show tasks due today"}
               >
                 Today
+                {overdueTasks.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
+                    {overdueTasks.length}
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
@@ -978,39 +999,44 @@ export default function TaskList({
           </div>
         </div>
 
-        {/* Suggest a plan button */}
-        <div className="mt-3 relative">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setViewMode(viewMode === "plan" ? "list" : "plan");
-                loadSettings().then(setPlanSettings);
-              }}
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                viewMode === "plan"
-                  ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md shadow-blue-500/20"
-                  : "bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-white/80 hover:bg-slate-300/60 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        {/* AI Execution Plan button - prominent feature */}
+        <div className="mt-4">
+          <button
+            onClick={() => {
+              setViewMode(viewMode === "plan" ? "list" : "plan");
+              loadSettings().then(setPlanSettings);
+            }}
+            className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold transition-all shadow-lg ${
+              viewMode === "plan"
+                ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-purple-500/30 hover:shadow-purple-500/50"
+                : "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02]"
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span className="flex items-center gap-1.5">
+              {viewMode === "plan" ? "Viewing AI Plan" : "Get AI Execution Plan"}
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
               </svg>
-              {viewMode === "plan" ? "Viewing Plan" : "Recommend Execution Plan"}
-            </button>
+            </span>
+          </button>
+          {viewMode !== "plan" && (
             <button
               type="button"
               onClick={() => setShowPlanInfo(!showPlanInfo)}
-              className="p-2 rounded-lg text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
-              aria-label="What is Smart Plan?"
+              className="w-full mt-2 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors flex items-center justify-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
+              What's this?
             </button>
-          </div>
+          )}
           {showPlanInfo && (
-            <div className="mt-2 p-2.5 bg-slate-200 dark:bg-slate-900 text-slate-700 dark:text-white text-xs rounded-lg shadow-xl leading-relaxed">
-              Analyzes your tasks, due dates, and daily goals to create a day-by-day execution plan. Flags overdue and at-risk items.
+            <div className="mt-2 p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-slate-700 dark:text-slate-200 text-xs rounded-lg border border-blue-200 dark:border-blue-900/30 leading-relaxed">
+              <strong className="text-blue-600 dark:text-blue-400">AI-powered task planning:</strong> Analyzes your tasks, due dates, priorities, and daily goals to create an optimized day-by-day execution plan. Automatically flags overdue and at-risk items.
             </div>
           )}
         </div>
@@ -1018,10 +1044,15 @@ export default function TaskList({
         <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
-            title="Show tasks due today"
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+            title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Show tasks due today"}
           >
             Today
+            {overdueTasks.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
+                {overdueTasks.length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
@@ -1699,6 +1730,7 @@ export default function TaskList({
             const completedSubtasks = subtasks.filter((s) => s.completed).length;
             const hasSubtasks = subtasks.length > 0;
             const isExpanded = expandedTaskId === task.id;
+            const isOverdue = task.dueDate && isDueDateOverdue(task.dueDate);
 
             return (
             <div key={task.id}>
@@ -1715,7 +1747,9 @@ export default function TaskList({
               className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors cursor-pointer ${
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 border-l-[3px] border-l-blue-500 dark:border-l-blue-400"
-                  : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
+                  : isOverdue
+                    ? "border-red-300 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10 hover:bg-red-100/50 dark:hover:bg-red-900/20 border-l-[3px] border-l-red-500 dark:border-l-red-400 shadow-sm shadow-red-200/50 dark:shadow-red-900/20"
+                    : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
               } ${isExpanded ? "rounded-b-none" : ""} ${
                 dragTaskId === task.id ? "opacity-50" : ""
               } ${
@@ -1797,6 +1831,24 @@ export default function TaskList({
                   )}
                   {activeTaskId === task.id && isTimerRunning && (
                     <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
+                  )}
+                  {/* Overdue indicator */}
+                  {isOverdue && (
+                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 align-middle border border-red-200 dark:border-red-900/50">
+                      OVERDUE
+                    </span>
+                  )}
+                  {/* Priority badge */}
+                  {task.priority && (
+                    <span className={`ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded align-middle ${
+                      task.priority === 1 
+                        ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
+                        : task.priority === 2
+                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50"
+                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50"
+                    }`}>
+                      {task.priority === 1 ? "HIGH" : task.priority === 2 ? "MED" : "LOW"}
+                    </span>
                   )}
                   {(isAllProjects || isTimeFilter) && (
                     <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle">
@@ -2024,6 +2076,33 @@ export default function TaskList({
                       onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
                       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
                     />
+                  </div>
+                  {/* Priority */}
+                  <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
+                    <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                    </svg>
+                    <select
+                      value={task.priority ?? ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setTasks(prev => {
+                          const updated = prev.map(t =>
+                            t.id === task.id
+                              ? { ...t, priority: value ? parseInt(value) as TaskPriority : undefined }
+                              : t
+                          );
+                          persist(updated);
+                          return updated;
+                        });
+                      }}
+                      className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
+                    >
+                      <option value="">No priority</option>
+                      <option value="1">🔴 High</option>
+                      <option value="2">🟡 Medium</option>
+                      <option value="3">🔵 Low</option>
+                    </select>
                   </div>
                   {/* Recurrence */}
                   <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
