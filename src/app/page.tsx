@@ -69,6 +69,9 @@ const jsonLd = {
     "Collapsible timer panel for full-width task management",
     "Guided onboarding tour for new users",
     "Daily goal presets: Light (4), Standard (8), Intense (12)",
+    "Account collaboration with role-based permissions",
+    "Project collaboration invites for team workflows",
+    "Notification bell for invite alerts and reminders",
   ],
 };
 
@@ -126,6 +129,9 @@ const faqJsonLd = {
     { "@type": "Question", name: "Is Foci a good Focus@Will alternative?", acceptedAnswer: { "@type": "Answer", text: "Yes. Focus@Will is a paid music subscription ($9.99/month) with science-backed focus playlists but no task tracking or timer. Foci is completely free and includes built-in offline ambient sounds (rain, café, brown noise, white noise), curated Spotify playlists, SoundCloud Indian classical music, and lo-fi radio — plus a full Pomodoro timer and task manager. Most users find Foci's free sounds work just as well for focus." } },
     { "@type": "Question", name: "What are the best Forest App alternatives in 2026?", acceptedAnswer: { "@type": "Answer", text: "The best Forest App alternatives in 2026 are: 1) Foci — best overall, completely free with timer, tasks, ambient sounds, and streaks; 2) Flora — best gamification with real tree planting; 3) Tide — best premium ambient soundscapes; 4) Be Focused — best native Mac/iOS timer; 5) Pomofocus — best minimalist web timer. Foci is the best choice if you want a complete focus system, not just gamified blocking." } },
     { "@type": "Question", name: "What is the best free Pomodoro app in 2026?", acceptedAnswer: { "@type": "Answer", text: "The best free Pomodoro apps in 2026 are: 1) Foci — most complete: timer + tasks + ambient sounds + goals + streaks, no account required; 2) Pomofocus — best minimalist web timer; 3) Forest — best gamification (freemium); 4) Be Focused — best for Apple devices; 5) Toggl Track — best if time reporting is the priority. Foci stands out because it's the only free option that combines a Pomodoro timer with full task management and offline ambient sounds in a single app." } },
+    { "@type": "Question", name: "Can I collaborate with others on Foci?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer, editor, or admin roles) and Project collaboration (share specific projects with team members). Invites are managed via email with role-based permissions for secure team workflows." } },
+    { "@type": "Question", name: "How do collaboration invites work?", acceptedAnswer: { "@type": "Answer", text: "Send account or project collaboration invites by email from the collaboration settings. Recipients receive real-time notifications in their notification bell and can accept or decline invites. Account invites grant access to all projects based on the assigned role, while project invites are scoped to specific projects. All invites have expiration dates for security." } },
+    { "@type": "Question", name: "Does Foci have notifications?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes a notification bell that displays upcoming task reminders, overdue task alerts, and collaboration invite notifications with a badge counter. Click the bell icon to view all pending notifications and take immediate action on invites or tasks." } },
   ],
 };
 

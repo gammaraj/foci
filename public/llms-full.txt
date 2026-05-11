@@ -2,7 +2,7 @@
 title: Foci – Complete Focus System Documentation
 description: Comprehensive LLM-optimized documentation for Foci, including full feature descriptions, FAQ, blog posts, and technical architecture.
 url: https://usefoci.com
-version: 2026-05-05
+version: 2026-05-10
 content_type: full
 related: /llms.txt (summary version)
 contact: https://usefoci.com
@@ -48,6 +48,12 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Weather & Time Widget**: Shows local weather, temperature, live clock, and date above the task list.
 - **Task Templates**: One-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review.
 - **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).
+- **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
+- **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
+- **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
+- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor, admin) for team productivity.
+- **Project Collaboration**: Share specific projects with team members using invite links with customizable access levels.
+- **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.

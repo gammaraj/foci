@@ -1,8 +1,8 @@
 ---
 title: Foci – Focus System Documentation
-description: LLM-optimized documentation for Foci, a free all-in-one focus system with Pomodoro timer, task tracking, Smart Plan scheduling, and ambient music.
+description: LLM-optimized documentation for Foci, a free all-in-one focus system with Pomodoro timer, task tracking, Smart Plan scheduling, collaboration features, and ambient music.
 url: https://usefoci.com
-version: 2026-05-05
+version: 2026-05-10
 contact: https://usefoci.com
 license: Content may be cited with attribution to Foci (usefoci.com)
 ---
@@ -49,6 +49,9 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
+- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor, admin) for team productivity.
+- **Project Collaboration**: Share specific projects with team members using invite links with customizable access levels.
+- **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
 
 ## How to Use Foci
 
@@ -187,6 +190,15 @@ A: Yes. Foci displays your local weather, temperature, live clock, and date abov
 **Q: Does Foci have Spotify playlists?**
 A: Yes. Foci includes 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill — alongside built-in offline ambient sounds and SoundCloud Indian classical music.
 
+**Q: Can I collaborate with others on Foci?**
+A: Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer, editor, or admin roles) and Project collaboration (share specific projects with customizable access levels). All invites are managed through email with role-based permissions.
+
+**Q: How do collaboration invites work in Foci?**
+A: Send account or project collaboration invites via email. Recipients receive notifications in their notification bell and can accept/decline invites. Account invites grant access to all projects (role-dependent), while project invites are scoped to specific projects. Invites expire automatically for security.
+
+**Q: Does Foci have a notification system?**
+A: Yes. Foci includes a notification bell that shows upcoming task reminders, overdue task alerts, and collaboration invite notifications with a badge counter. Click the bell to view all pending notifications and take action.
+
 **Q: What are the best ADHD focus tools?**
 A: Foci is designed to work with ADHD brains. Its timer externalizes time perception, task tracking removes the burden on working memory, brown noise provides sensory anchoring, and the daily goal system creates visible momentum. Read more at usefoci.com/blog/adhd-focus-strategies.
 
@@ -253,7 +265,9 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - `src/components/TaskImportExport.tsx` – Import tasks from Google Tasks, Todoist, Asana, Notion, CSV. Export as JSON/CSV.
 - `src/components/AmbientSounds.tsx` – Ambient sounds (rain, café, white/brown noise), lo-fi radio, and Indian classical music via SoundCloud.
 - `src/components/DueDateReminders.tsx` – Notification bell with upcoming and overdue task alerts.
-- `src/components/NotificationBell.tsx` – Notification icon and dropdown for reminders.
+- `src/components/NotificationBell.tsx` – Notification icon and dropdown for reminders and collaboration invites.
+- `src/lib/collaboration.ts` – Account and project collaboration logic with role-based access control.
+- `supabase/migrations/` – Database schema migrations including user_profiles, account_invites, collaboration_invites.
 - `src/hooks/useTimer.ts` – Core timer logic hook (work/break cycles, callbacks).
 - `src/lib/types.ts` – TypeScript type definitions (Settings, Task, TimerStatus, etc.).
 - `src/lib/quotes.ts` – Array of motivational quotes.
