@@ -29,8 +29,6 @@ export function createClient() {
       detectSessionInUrl: true,
       // Persist session in localStorage
       persistSession: true,
-      // Storage key to isolate from other apps
-      storageKey: 'foci-auth',
     },
   });
 
