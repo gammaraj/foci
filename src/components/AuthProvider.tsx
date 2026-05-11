@@ -28,15 +28,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check initial session
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      setUser(user);
-      if (user) {
-        await activateSupabaseStorage();
-      } else {
-        activateLocalStorage();
-      }
-      setLoading(false);
-    });
+    supabase.auth.getUser()
+      .then(async ({ data: { user }, error }) => {
+        // Handle lock errors gracefully - they're usually transient
+        if (error && error.name === 'AbortError') {
+          console.warn('[Foci] Auth lock conflict detected, will retry on next auth event');
+          setLoading(false);
+          return;
+        }
+        
+        setUser(user);
+        if (user) {
+          await activateSupabaseStorage();
+        } else {
+          activateLocalStorage();
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        // Catch any other unexpected errors
+        if (err.name === 'AbortError') {
+          console.warn('[Foci] Auth lock conflict detected');
+        } else {
+          console.error('[Foci] Auth initialization error:', err);
+        }
+        setLoading(false);
+      });
 
     // Listen for auth changes
     const {

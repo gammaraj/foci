@@ -17,4 +17,24 @@ Sentry.init({
   // Enable sending user PII (Personally Identifiable Information)
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: true,
+
+  // Filter out known transient errors
+  beforeSend(event, hint) {
+    const error = hint.originalException;
+    
+    // Filter out Supabase lock conflicts - these are transient multi-tab issues
+    if (
+      error &&
+      typeof error === 'object' &&
+      'name' in error &&
+      error.name === 'AbortError' &&
+      'message' in error &&
+      typeof error.message === 'string' &&
+      error.message.includes('Lock broken')
+    ) {
+      return null; // Don't send to Sentry
+    }
+    
+    return event;
+  },
 });
