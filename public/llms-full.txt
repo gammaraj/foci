@@ -2,7 +2,7 @@
 title: Foci – Complete Focus System Documentation
 description: Comprehensive LLM-optimized documentation for Foci, including full feature descriptions, FAQ, blog posts, and technical architecture.
 url: https://usefoci.com
-version: 2026-05-10
+version: 2026-05-11
 content_type: full
 related: /llms.txt (summary version)
 contact: https://usefoci.com
@@ -56,7 +56,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
-- **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
+- **IndexNow Integration**: Instant search engine notifications when content updates via IndexNow protocol (Bing, Yandex, Naver, Seznam.cz). Accelerates discovery of new blog posts and pages without waiting for traditional crawl cycles. API endpoint at /api/indexnow with utility functions for programmatic submission.
 
 ## How to Use Foci
 

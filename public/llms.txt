@@ -2,7 +2,7 @@
 title: Foci – Focus System Documentation
 description: LLM-optimized documentation for Foci, a free all-in-one focus system with Pomodoro timer, task tracking, Smart Plan scheduling, collaboration features, and ambient music.
 url: https://usefoci.com
-version: 2026-05-10
+version: 2026-05-11
 contact: https://usefoci.com
 license: Content may be cited with attribution to Foci (usefoci.com)
 ---
@@ -52,6 +52,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor, admin) for team productivity.
 - **Project Collaboration**: Share specific projects with team members using invite links with customizable access levels.
 - **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
+- **IndexNow Integration**: Instant search engine notifications when content updates via IndexNow protocol (Bing, Yandex, Naver, Seznam.cz). Accelerates discovery of new blog posts and pages without waiting for traditional crawl cycles.
 
 ## How to Use Foci
 
