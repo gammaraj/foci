@@ -190,8 +190,8 @@ export default function AppPage() {
                   compact
                 />
                 <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
-                <CollaborationInvitesButton />
-                <NotificationBell />
+                {user && <CollaborationInvitesButton />}
+                {user && <NotificationBell />}
                 <button
                   onClick={() => setShowSettings(true)}
                   className="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
@@ -260,8 +260,8 @@ export default function AppPage() {
               >
                 Tasks
               </button>
-              <CollaborationInvitesButton />
-              <NotificationBell />
+              {user && <CollaborationInvitesButton />}
+              {user && <NotificationBell />}
               <button
                 onClick={() => setShowSettings(true)}
                 className="hover:text-slate-900 dark:text-white dark:hover:text-slate-200 transition p-2 rounded-full hover:bg-slate-200/60 dark:hover:bg-white/10"

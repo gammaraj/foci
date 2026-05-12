@@ -331,6 +331,12 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     }
 
     dgd.sessionCount++;
+    
+    // Track that at least one session has been completed (for first-time user nudge)
+    if (typeof window !== "undefined" && dgd.sessionCount === 1) {
+      localStorage.setItem("foci_sessions_completed", "1");
+    }
+    
     if (dgd.sessionCount === s.dailyGoal && dgd.lastStreakUpdate !== today) {
       dgd.streak = (dgd.streak || 0) + 1;
       dgd.lastStreakUpdate = today;

@@ -11,6 +11,7 @@ import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getToday, formatDateLocal } from "@/lib/dates";
+import FirstSessionNudge from "@/components/FirstSessionNudge";
 
 const MAX_TASK_TITLE = 200;
 const MAX_PROJECT_NAME = 100;
@@ -1698,9 +1699,18 @@ export default function TaskList({
         {/* Empty state with template gallery */}
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
-            <div className="text-center mb-4">
-              <p className="text-slate-500 dark:text-slate-300 text-base mb-1">{isTimeFilter ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` : "No tasks yet"}</p>
-              <p className="text-slate-400 dark:text-slate-300 text-sm">{isTimeFilter ? "Set due dates on tasks to see them here" : "Add a task above or pick a template to get started"}</p>
+            <div className="text-center mb-6 px-4">
+              <div className="text-5xl mb-3">📝</div>
+              <p className="text-slate-700 dark:text-slate-200 text-lg font-semibold mb-2">
+                {isTimeFilter 
+                  ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` 
+                  : "Your task list is empty"}
+              </p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto">
+                {isTimeFilter 
+                  ? "Set due dates on tasks to see them here" 
+                  : "Add your first task above to get started, or choose a template below"}
+              </p>
             </div>
             {!isTimeFilter && (
             <div className="grid grid-cols-2 gap-2">
@@ -1723,6 +1733,9 @@ export default function TaskList({
             )}
           </div>
         )}
+
+        {/* First session nudge for new users */}
+        {tasksReady && pendingTasks.length > 0 && <FirstSessionNudge />}
 
         <div className="space-y-2">
           {pendingTasks.map((task) => {
