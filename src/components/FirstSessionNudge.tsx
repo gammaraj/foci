@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 
 export default function FirstSessionNudge() {
   const [show, setShow] = useState(false);
+  const DISMISS_KEYS = ["foci_first_session_nudge_dismissed", "tempo_first_session_nudge_dismissed"] as const;
 
   useEffect(() => {
     // Only show if user has never dismissed and has no completed sessions
-    const dismissed = localStorage.getItem("foci_first_session_nudge_dismissed");
+    const dismissed = DISMISS_KEYS.some((key) => localStorage.getItem(key));
     const hasCompletedSession = localStorage.getItem("foci_sessions_completed");
-    
+
+    if (hasCompletedSession) {
+      DISMISS_KEYS.forEach((key) => localStorage.setItem(key, "1"));
+      return;
+    }
+
     if (!dismissed && !hasCompletedSession) {
       setShow(true);
     }
@@ -17,7 +23,7 @@ export default function FirstSessionNudge() {
 
   const dismiss = () => {
     setShow(false);
-    localStorage.setItem("foci_first_session_nudge_dismissed", "1");
+    DISMISS_KEYS.forEach((key) => localStorage.setItem(key, "1"));
   };
 
   if (!show) return null;

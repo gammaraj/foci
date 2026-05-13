@@ -172,7 +172,11 @@ export default function AppPage() {
                 <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span>
               </span>
               <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="truncate">Streak: {timer.dailyGoalData.streak} day{timer.dailyGoalData.streak === 1 ? "" : "s"}</span>
+              <span className="truncate">
+                {timer.dailyGoalData.streak > 0
+                  ? `Streak: ${timer.dailyGoalData.streak} day${timer.dailyGoalData.streak === 1 ? "" : "s"}`
+                  : "Start your streak today!"}
+              </span>
             </div>
             <Link
               href="/stats"
