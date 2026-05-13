@@ -65,6 +65,8 @@ function formatTime(ms: number): string {
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
+const WORK_DURATION_PRESETS = [15, 25, 30, 45] as const;
+
 export default function AppPage() {
   const { user, loading } = useAuth();
   const timer = useTimer({ authLoading: loading, user });
@@ -142,6 +144,12 @@ export default function AppPage() {
     return elapsed;
   }, [timer]);
 
+  const handleSelectWorkPreset = useCallback((minutes: number) => {
+    const nextDuration = minutes * 60 * 1000;
+    if (timer.settings.workDuration === nextDuration) return;
+    timer.saveSettings({ ...timer.settings, workDuration: nextDuration });
+  }, [timer]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -155,6 +163,26 @@ export default function AppPage() {
       <Navbar />
       {!user && !loading && <SignUpBanner />}
       <DueDateReminders />
+      <div className="px-2 sm:px-4 pt-2">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="rounded-xl border border-slate-200 dark:border-[#243350] bg-white/75 dark:bg-[#111827]/85 backdrop-blur-sm px-3 sm:px-4 py-2 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+              <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">
+                <span className="text-sm">Today</span>
+                <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span>
+              </span>
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+              <span className="truncate">Streak: {timer.dailyGoalData.streak} day{timer.dailyGoalData.streak === 1 ? "" : "s"}</span>
+            </div>
+            <Link
+              href="/stats"
+              className="flex-shrink-0 text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors"
+            >
+              View stats
+            </Link>
+          </div>
+        </div>
+      </div>
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
       <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
 
@@ -330,6 +358,29 @@ export default function AppPage() {
                     onReset={timer.reset}
                     spread
                   />
+                </div>
+              </div>
+
+              <div className="pb-2">
+                <div className="flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-[#131d30] rounded-lg p-1 border border-slate-200 dark:border-[#243350]">
+                  {WORK_DURATION_PRESETS.map((minutes) => {
+                    const active = timer.settings.workDuration === minutes * 60 * 1000;
+                    return (
+                      <button
+                        key={minutes}
+                        onClick={() => handleSelectWorkPreset(minutes)}
+                        disabled={timer.status === "running" || timer.status === "break"}
+                        className={`px-2 py-1 rounded-md text-[11px] sm:text-xs font-semibold transition-colors ${
+                          active
+                            ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/70 dark:hover:bg-[#1a2d4a]"
+                        } disabled:opacity-40 disabled:cursor-not-allowed`}
+                        title={`Set work session to ${minutes} minutes`}
+                      >
+                        {minutes}m
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

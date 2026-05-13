@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Task } from "@/lib/types";
-import { loadTasks } from "@/lib/storage";
+import { loadTasks, loadSettings, loadDailyGoalData } from "@/lib/storage";
 
 function todayStr(): string {
   const d = new Date();
@@ -26,6 +26,7 @@ const CHECK_INTERVAL = 60 * 60 * 1000; // re-check every hour
 export default function DueDateReminders() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [todayProgress, setTodayProgress] = useState<{ sessionCount: number; dailyGoal: number } | null>(null);
   const lastCheckDateRef = useRef<string>("");
 
   const checkDueDates = useCallback(async () => {
@@ -68,6 +69,15 @@ export default function DueDateReminders() {
 
     setReminders(newReminders);
 
+    // Also surface today's focus-session progress as encouragement.
+    try {
+      const settings = await loadSettings();
+      const daily = await loadDailyGoalData(settings.dailyGoal);
+      setTodayProgress({ sessionCount: daily.sessionCount, dailyGoal: settings.dailyGoal });
+    } catch {
+      setTodayProgress(null);
+    }
+
     // Browser notification (once per day)
     if (shouldNotify && notificationLines.length > 0) {
       sendBrowserNotification(notificationLines);
@@ -97,11 +107,28 @@ export default function DueDateReminders() {
   };
 
   const visible = reminders.filter((r) => !dismissed.has(r.id));
+  const shownReminders = visible.slice(0, 2);
+  const hiddenCount = Math.max(visible.length - shownReminders.length, 0);
 
   if (visible.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 flex flex-col gap-1.5 sm:gap-2 max-w-[280px] sm:max-w-sm w-auto sm:w-full">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-1.5 sm:gap-2 w-[min(18.5rem,calc(100vw-2rem))] sm:w-[min(20rem,calc(100vw-2rem))]">
+      {todayProgress && (
+        <div className="px-3 sm:px-4 py-2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/95 dark:bg-[#131d30]/95 shadow-lg backdrop-blur-sm">
+          <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">
+            Today&apos;s progress
+          </p>
+          <p className="text-sm sm:text-[15px] font-bold text-blue-600 dark:text-blue-300 leading-tight">
+            {todayProgress.sessionCount}/{todayProgress.dailyGoal} focus sessions
+          </p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            {todayProgress.sessionCount >= todayProgress.dailyGoal
+              ? "Goal met. Keep the momentum."
+              : `${todayProgress.dailyGoal - todayProgress.sessionCount} more to hit your goal`}
+          </p>
+        </div>
+      )}
       {/* Dismiss all button for 3+ reminders */}
       {visible.length >= 3 && (
         <button
@@ -111,7 +138,7 @@ export default function DueDateReminders() {
           Dismiss all
         </button>
       )}
-      {visible.slice(0, 5).map((r) => (
+      {shownReminders.map((r) => (
         <div
           key={r.id}
           className={`flex items-start gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-lg border backdrop-blur-sm animate-in slide-in-from-right-5 ${
@@ -157,6 +184,13 @@ export default function DueDateReminders() {
           </button>
         </div>
       ))}
+      {hiddenCount > 0 && (
+        <div className="px-3 sm:px-4 py-2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/95 dark:bg-[#131d30]/95 shadow-lg backdrop-blur-sm">
+          <p className="text-xs text-slate-600 dark:text-slate-300">
+            +{hiddenCount} more reminder{hiddenCount === 1 ? "" : "s"}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

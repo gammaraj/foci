@@ -15,6 +15,7 @@ import FirstSessionNudge from "@/components/FirstSessionNudge";
 
 const MAX_TASK_TITLE = 200;
 const MAX_PROJECT_NAME = 100;
+const MAX_VISIBLE_PROJECT_TABS = 6;
 
 function formatDuration(ms: number): string {
   const totalMin = Math.floor(ms / 60000);
@@ -86,6 +87,7 @@ export default function TaskList({
   const [projects, setProjects] = useState<Project[]>([DEFAULT_PROJECT]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>(TODAY_FILTER_ID);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [showAddProject, setShowAddProject] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
@@ -130,6 +132,7 @@ export default function TaskList({
     const handleClick = (e: MouseEvent) => {
       if (projectMenuRef.current && !projectMenuRef.current.contains(e.target as Node)) {
         setShowProjectMenu(false);
+        setShowOverflowProjectMenu(false);
       }
       if (templateMenuRef.current && !templateMenuRef.current.contains(e.target as Node)) {
         setShowTemplateMenu(false);
@@ -287,6 +290,7 @@ export default function TaskList({
       console.error("[Foci] Failed to save selected project:", err);
     });
     setShowProjectMenu(false);
+    setShowOverflowProjectMenu(false);
   };
 
   // Select a shared project and load its tasks
@@ -790,6 +794,14 @@ export default function TaskList({
     if (b.order != null) return 1;
     return a.name.localeCompare(b.name);
   });
+  const visibleProjectTabs = (() => {
+    const tabs = sortedProjects.slice(0, MAX_VISIBLE_PROJECT_TABS);
+    if (!sortedProjects.some((p) => p.id === selectedProjectId)) return tabs;
+    if (tabs.some((p) => p.id === selectedProjectId)) return tabs;
+    return [...tabs.slice(0, Math.max(0, MAX_VISIBLE_PROJECT_TABS - 1)), sortedProjects.find((p) => p.id === selectedProjectId)!];
+  })();
+  const visibleProjectTabIds = new Set(visibleProjectTabs.map((p) => p.id));
+  const overflowProjectTabs = sortedProjects.filter((p) => !visibleProjectTabIds.has(p.id));
   const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
   const isThisWeekFilter = selectedProjectId === THIS_WEEK_FILTER_ID;
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
@@ -1193,7 +1205,7 @@ export default function TaskList({
               {tasks.filter((t) => !t.completed && !t.archivedAt).length}
             </span>
           </button>
-          {sortedProjects.map((p) => {
+          {visibleProjectTabs.map((p) => {
             const count = tasks.filter((t) => t.projectId === p.id && !t.completed).length;
             return (
             <button
@@ -1221,6 +1233,26 @@ export default function TaskList({
             </button>
             );
           })}
+
+          {overflowProjectTabs.length > 0 && (
+            <button
+              onClick={() => {
+                setShowOverflowProjectMenu((prev) => !prev);
+                setShowProjectMenu(false);
+              }}
+              className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                showOverflowProjectMenu
+                  ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
+                  : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
+              }`}
+              title="More projects"
+            >
+              More
+              <svg className={`w-3.5 h-3.5 transition-transform ${showOverflowProjectMenu ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
 
           {/* Add project button */}
           <button
@@ -1254,6 +1286,36 @@ export default function TaskList({
           </div>
           {/* Fade hint for scrollable overflow */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-[#111827] to-transparent" />
+
+          {showOverflowProjectMenu && overflowProjectTabs.length > 0 && (
+            <div className="absolute right-10 top-full mt-1 w-64 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-lg z-50 overflow-hidden animate-slide-up">
+              <div className="max-h-64 overflow-y-auto py-1">
+                {overflowProjectTabs.map((p) => {
+                  const count = tasks.filter((t) => t.projectId === p.id && !t.completed).length;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => selectProject(p.id)}
+                      className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
+                        p.id === selectedProjectId
+                          ? "bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200"
+                          : "text-slate-700 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                      }`}
+                      title={p.description ? `${p.name} — ${p.description}` : p.name}
+                    >
+                      {p.color && (
+                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                      )}
+                      <span className="truncate flex-1">{p.name}</span>
+                      {count > 0 && (
+                        <span className="text-xs text-slate-400 dark:text-slate-500">{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Inline add project input */}
@@ -1738,15 +1800,29 @@ export default function TaskList({
         {tasksReady && pendingTasks.length > 0 && <FirstSessionNudge />}
 
         <div className="space-y-2">
-          {pendingTasks.map((task) => {
+          {pendingTasks.map((task, index) => {
             const subtasks = task.subtasks || [];
             const completedSubtasks = subtasks.filter((s) => s.completed).length;
             const hasSubtasks = subtasks.length > 0;
             const isExpanded = expandedTaskId === task.id;
             const isOverdue = task.dueDate && isDueDateOverdue(task.dueDate);
+            const prevTask = index > 0 ? pendingTasks[index - 1] : null;
+            const prevIsOverdue = !!(prevTask?.dueDate && isDueDateOverdue(prevTask.dueDate));
+            const showOverdueHeader = isOverdue && !prevIsOverdue;
+            const showUpcomingHeader = !isOverdue && prevIsOverdue;
 
             return (
             <div key={task.id}>
+            {showOverdueHeader && (
+              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/80 dark:bg-red-900/10 text-[11px] font-semibold uppercase tracking-wide text-red-700 dark:text-red-300">
+                Overdue - needs attention
+              </div>
+            )}
+            {showUpcomingHeader && (
+              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 text-[11px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                Due today and upcoming
+              </div>
+            )}
             <div
               draggable
               onDragStart={() => handleDragStart(task.id)}
