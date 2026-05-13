@@ -1,24 +1,48 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { loadTasks } from "@/lib/storage";
 
 export default function FirstSessionNudge() {
   const [show, setShow] = useState(false);
   const DISMISS_KEYS = ["foci_first_session_nudge_dismissed", "tempo_first_session_nudge_dismissed"] as const;
 
   useEffect(() => {
-    // Only show if user has never dismissed and has no completed sessions
-    const dismissed = DISMISS_KEYS.some((key) => localStorage.getItem(key));
-    const hasCompletedSession = localStorage.getItem("foci_sessions_completed");
+    let cancelled = false;
 
-    if (hasCompletedSession) {
-      DISMISS_KEYS.forEach((key) => localStorage.setItem(key, "1"));
-      return;
-    }
+    const evaluateVisibility = async () => {
+      const dismissed = DISMISS_KEYS.some((key) => localStorage.getItem(key));
+      if (dismissed) {
+        if (!cancelled) setShow(false);
+        return;
+      }
 
-    if (!dismissed && !hasCompletedSession) {
-      setShow(true);
-    }
+      const hasCompletedSession = localStorage.getItem("foci_sessions_completed") || localStorage.getItem("tempo_sessions_completed");
+      if (hasCompletedSession) {
+        DISMISS_KEYS.forEach((key) => localStorage.setItem(key, "1"));
+        if (!cancelled) setShow(false);
+        return;
+      }
+
+      try {
+        const tasks = await loadTasks();
+        const hasHistoricalActivity = tasks.some((t) => t.completed || (t.sessions || 0) > 0 || (t.timeSpent || 0) > 0);
+        if (hasHistoricalActivity) {
+          DISMISS_KEYS.forEach((key) => localStorage.setItem(key, "1"));
+          if (!cancelled) setShow(false);
+          return;
+        }
+      } catch {
+        // Ignore storage read errors and fall back to showing the nudge.
+      }
+
+      if (!cancelled) setShow(true);
+    };
+
+    evaluateVisibility();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const dismiss = () => {

@@ -165,7 +165,11 @@ export default function AppPage() {
       <DueDateReminders />
       <div className="px-2 sm:px-4 pt-2">
         <div className="max-w-[1280px] mx-auto">
-          <div className="rounded-xl border border-slate-200 dark:border-[#243350] bg-white/75 dark:bg-[#111827]/85 backdrop-blur-sm px-3 sm:px-4 py-2 flex items-center justify-between gap-3">
+          <Link
+            href="/stats"
+            title="Open stats and analytics"
+            className="rounded-xl border border-slate-200 dark:border-[#243350] bg-white/75 dark:bg-[#111827]/85 backdrop-blur-sm px-3 sm:px-4 py-2 flex items-center justify-between gap-3 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+          >
             <div className="min-w-0 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
               <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">
                 <span className="text-sm">Today</span>
@@ -178,13 +182,10 @@ export default function AppPage() {
                   : "Start your streak today!"}
               </span>
             </div>
-            <Link
-              href="/stats"
-              className="flex-shrink-0 text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors"
-            >
-              View stats
-            </Link>
-          </div>
+            <span className="flex-shrink-0 text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-300">
+              View stats →
+            </span>
+          </Link>
         </div>
       </div>
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
@@ -268,7 +269,7 @@ export default function AppPage() {
 
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
         <div className={`w-full lg:w-[360px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
-          <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
+          <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
             <header
               className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"

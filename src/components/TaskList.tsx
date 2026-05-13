@@ -107,7 +107,6 @@ export default function TaskList({
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "calendar" | "plan">("list");
   const [planSettings, setPlanSettings] = useState<Settings>(DEFAULT_SETTINGS);
-  const [showPlanInfo, setShowPlanInfo] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [calendarSelectedDay, setCalendarSelectedDay] = useState<string | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState<{
@@ -1029,29 +1028,12 @@ export default function TaskList({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             <span className="flex items-center gap-1.5">
-              {viewMode === "plan" ? "Viewing AI Plan" : "Get AI Execution Plan"}
+              {viewMode === "plan" ? "✦ Viewing AI day plan" : "✦ Plan my day with AI"}
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
               </svg>
             </span>
           </button>
-          {viewMode !== "plan" && (
-            <button
-              type="button"
-              onClick={() => setShowPlanInfo(!showPlanInfo)}
-              className="w-full mt-2 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors flex items-center justify-center gap-1"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              What's this?
-            </button>
-          )}
-          {showPlanInfo && (
-            <div className="mt-2 p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-slate-700 dark:text-slate-200 text-xs rounded-lg border border-blue-200 dark:border-blue-900/30 leading-relaxed">
-              <strong className="text-blue-600 dark:text-blue-400">AI-powered task planning:</strong> Analyzes your tasks, due dates, priorities, and daily goals to create an optimized day-by-day execution plan. Automatically flags overdue and at-risk items.
-            </div>
-          )}
         </div>
         {/* Time filters - mobile: own row below title */}
         <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
@@ -1601,7 +1583,7 @@ export default function TaskList({
 
       </div>
 
-      <div className="px-3 sm:p-4 py-3 space-y-3">
+      <div className="px-3 sm:p-4 pt-4 pb-3 space-y-3">
         {/* Project description */}
         {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">

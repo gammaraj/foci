@@ -80,29 +80,29 @@ export default function WeatherTime() {
   const greeting = getGreeting(now.getHours());
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/80 dark:bg-[#111827] backdrop-blur-sm border border-slate-200 dark:border-[#1e3050] shadow-sm mb-3 sm:mb-4">
+    <div className="flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl bg-white/80 dark:bg-[#111827] backdrop-blur-sm border border-slate-200 dark:border-[#1e3050] shadow-sm mb-3 sm:mb-4">
       <div className="min-w-0">
-        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <p className="text-[13px] sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
           {greeting}
         </p>
-        <p className="text-lg font-semibold text-slate-800 dark:text-slate-100 tabular-nums">
+        <p className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 tabular-nums leading-tight">
           {formatClock(now)}
-          <span className="ml-2 text-sm font-normal text-slate-400 dark:text-slate-400">
+          <span className="ml-2 text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-400 hidden sm:inline">
             {formatDate(now)}
           </span>
         </p>
       </div>
       {weather && (
-        <div className="flex items-center gap-2 flex-shrink-0 text-right">
-          <span className="text-2xl" title={weather.description}>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 text-right">
+          <span className="text-lg sm:text-xl" title={weather.description}>
             {weather.icon}
           </span>
-          <div>
-            <p className="text-lg font-semibold text-slate-800 dark:text-slate-100 tabular-nums">
+          <div className="flex items-center gap-1 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 tabular-nums">
+            <span>
               {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
-            </p>
+            </span>
             {weather.city && (
-              <p className="text-xs text-slate-400 dark:text-slate-400 truncate max-w-[120px]">
+              <p className="text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-400 truncate max-w-[100px] sm:max-w-[120px]">
                 {weather.city}
               </p>
             )}
