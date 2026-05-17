@@ -187,7 +187,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      resolve_invitee_id: {
+        Args: { invitee_email: string }
+        Returns: string | null
+      }
     }
     Enums: {
       [_ in never]: never

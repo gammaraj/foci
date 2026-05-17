@@ -1,26 +1,8 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
-// Simple in-memory rate limiter
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 20;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    if (rateLimitMap.size > 10_000) {
-      for (const [key, val] of rateLimitMap) {
-        if (now > val.resetAt) rateLimitMap.delete(key);
-      }
-    }
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT_MAX;
-}
 
 interface GeoResult {
   latitude: number;
@@ -85,24 +67,20 @@ function weatherCodeToInfo(code: number): { description: string; icon: string } 
 
 export async function GET(request: Request) {
   try {
-    const hdrs = await headers();
-    const forwarded = hdrs.get("x-forwarded-for");
-    // Use the rightmost IP added by the trusted Vercel proxy.
-    // The leftmost IP can be spoofed by the client.
-    const ip = forwarded ? forwarded.split(",").at(-1)!.trim() : "";
+    const ip = getClientIp(request.headers);
 
-    if (isRateLimited(ip || "unknown")) {
+    if ((await rateLimit(`weather:${ip}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW)).limited) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
     const { searchParams } = new URL(request.url);
-    const unit = searchParams.get("unit") === "celsius" ? "celsius" : "fahrenheit"; 
+    const unit = searchParams.get("unit") === "celsius" ? "celsius" : "fahrenheit";
 
     const { latitude, longitude, city } = await getLocationFromIP(ip);
 
     const weatherRes = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=${unit}&timezone=auto`,
-      { signal: AbortSignal.timeout(5000) }
+      { signal: AbortSignal.timeout(5000) },
     );
     if (!weatherRes.ok) throw new Error("Weather API error");
     const weatherData = await weatherRes.json();
@@ -113,7 +91,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       { temp, description, icon, city, unit },
-      { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300" } }
+      { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300" } },
     );
   } catch {
     return NextResponse.json({ error: "Failed to fetch weather" }, { status: 500 });

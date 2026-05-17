@@ -30,15 +30,19 @@ await submitUrlToIndexNow("https://usefoci.com/app");
 
 ### Manual Submission via API
 
+Requires `INDEXNOW_API_SECRET` (set in Vercel env). Use Bearer auth or `x-indexnow-secret` header.
+
 ```bash
 # Submit a single URL
 curl -X POST https://usefoci.com/api/indexnow \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $INDEXNOW_API_SECRET" \
   -d '{"url": "https://usefoci.com/blog/pomodoro-technique-guide"}'
 
 # Submit multiple URLs
 curl -X POST https://usefoci.com/api/indexnow \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $INDEXNOW_API_SECRET" \
   -d '{"urls": ["https://usefoci.com/", "https://usefoci.com/blog"]}'
 ```
 

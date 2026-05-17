@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /auth/
 Disallow: /api/
+Disallow: /sentry-example-page
 
 # LLM / AI content files
 Allow: /llms.txt

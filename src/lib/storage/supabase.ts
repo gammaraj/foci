@@ -453,21 +453,18 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async inviteCollaborator(projectId: string, email: string, role: CollaboratorRole): Promise<void> {
     const userId = await this.getUserId();
-    
-    // Check if user exists
-    const { data: existingUser } = await this.supabase
-      .from("user_profiles")
-      .select("user_id")
-      .ilike("email", email)
-      .maybeSingle();
-    
+
+    const { data: inviteeId } = await this.supabase.rpc("resolve_invitee_id", {
+      invitee_email: email.toLowerCase(),
+    });
+
     const { error } = await this.supabase
       .from("collaboration_invites")
       .insert({
         project_id: projectId,
         owner_id: userId,
         invitee_email: email.toLowerCase(),
-        invitee_id: existingUser?.user_id ?? null,
+        invitee_id: inviteeId ?? null,
         role,
       });
       
@@ -981,36 +978,31 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async inviteAccountCollaborator(email: string, role: CollaboratorRole): Promise<void> {
     const userId = await this.getUserId();
-    
-    // Check if user exists
-    const { data: existingUser } = await this.supabase
-      .from("user_profiles")
-      .select("user_id")
-      .eq("email", email.toLowerCase())
-      .single();
-    
-    // Check for existing collaboration
-    if (existingUser) {
+
+    const { data: inviteeId } = await this.supabase.rpc("resolve_invitee_id", {
+      invitee_email: email.toLowerCase(),
+    });
+
+    if (inviteeId) {
       const { data: existing } = await this.supabase
         .from("account_collaborators")
         .select("id")
         .eq("owner_id", userId)
-        .eq("collaborator_id", existingUser.user_id)
+        .eq("collaborator_id", inviteeId)
         .single();
-        
+
       if (existing) {
         throw new Error("This user already has access to your account");
       }
-      
-      // Directly add as collaborator
+
       const { error } = await this.supabase
         .from("account_collaborators")
         .insert({
           owner_id: userId,
-          collaborator_id: existingUser.user_id,
+          collaborator_id: inviteeId,
           role,
         });
-        
+
       if (error) {
         console.error("[Foci] inviteAccountCollaborator direct add error:", error);
         throw new Error(error.message);
