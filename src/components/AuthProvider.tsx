@@ -24,6 +24,7 @@ export function useAuth() {
 
 const LOCK_RETRY_ATTEMPTS = 4;
 const LOCK_RETRY_BASE_MS = 150;
+const AUTH_INIT_TIMEOUT_MS = 5_000;
 
 async function getSessionWithLockRetry(
   supabase: ReturnType<typeof createClient>,
@@ -50,25 +51,18 @@ async function getSessionWithLockRetry(
   return { session: null, error: lastError };
 }
 
-async function resolveUser(
-  supabase: ReturnType<typeof createClient>,
+function applyAuthState(
   sessionUser: User | null,
-): Promise<User | null> {
-  if (!sessionUser) return null;
-
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (user) return user;
-    if (error && !isAuthLockError(error)) {
-      console.error("[Foci] Session validation failed:", error);
-    }
-  } catch (err) {
-    if (!isAuthLockError(err)) {
-      console.error("[Foci] Session validation error:", err);
-    }
+  setUser: (u: User | null) => void,
+  setLoading: (v: boolean) => void,
+) {
+  setUser(sessionUser);
+  setLoading(false);
+  if (sessionUser) {
+    void activateSupabaseStorage();
+  } else {
+    activateLocalStorage();
   }
-
-  return sessionUser;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -79,6 +73,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
+    const safetyTimeout = setTimeout(() => {
+      if (!cancelled) {
+        console.warn("[Foci] Auth init timed out; continuing as guest");
+        setLoading(false);
+        activateLocalStorage();
+      }
+    }, AUTH_INIT_TIMEOUT_MS);
+
     (async () => {
       const { session, error } = await getSessionWithLockRetry(supabase);
 
@@ -87,36 +89,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error && !isAuthLockError(error)) {
         console.error("[Foci] Auth initialization error:", error);
       } else if (error && isAuthLockError(error)) {
-        console.warn("[Foci] Auth lock busy; waiting for auth state event");
+        console.warn("[Foci] Auth lock busy; using auth state event or guest mode");
       }
 
-      const currentUser = await resolveUser(supabase, session?.user ?? null);
-      if (cancelled) return;
-
-      setUser(currentUser);
-      if (currentUser) {
-        await activateSupabaseStorage();
-      } else {
-        activateLocalStorage();
-      }
-      setLoading(false);
+      applyAuthState(session?.user ?? null, setUser, setLoading);
+      clearTimeout(safetyTimeout);
     })();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const currentUser = await resolveUser(supabase, session?.user ?? null);
-      setUser(currentUser);
-      if (currentUser) {
-        await activateSupabaseStorage();
-      } else {
-        activateLocalStorage();
-      }
-      setLoading(false);
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (cancelled) return;
+      applyAuthState(session?.user ?? null, setUser, setLoading);
+      clearTimeout(safetyTimeout);
     });
 
     return () => {
       cancelled = true;
+      clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
   }, [supabase]);
