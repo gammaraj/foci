@@ -1,40 +1,24 @@
 // This file configures the initialization of Sentry on the client.
-// The added config here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
-import { isAuthLockError } from "@/lib/supabase/auth-errors";
+import {
+  SENTRY_DSN,
+  sentryBeforeSend,
+  sentryReplaysSessionSampleRate,
+  sentrySendDefaultPii,
+  sentryTracesSampleRate,
+} from "@/lib/sentry-options";
 
 Sentry.init({
-  dsn: "https://76fd9a70e5359a186f57e641d2ad2256@o4510225187012608.ingest.us.sentry.io/4511367785283584",
-
-  // Add optional integrations for additional features
+  dsn: SENTRY_DSN,
   integrations: [Sentry.replayIntegration()],
-
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
-  // Enable logs to be sent to Sentry
+  tracesSampleRate: sentryTracesSampleRate,
   enableLogs: true,
-
-  // Define how likely Replay events are sampled.
-  // This sets the sample rate to be 10%. You may want this to be 100% while
-  // in development and sample at a lower rate in production
-  replaysSessionSampleRate: 0.1,
-
-  // Define how likely Replay events are sampled when an error occurs.
+  replaysSessionSampleRate: sentryReplaysSessionSampleRate,
   replaysOnErrorSampleRate: 1.0,
-
-  // Enable sending user PII (Personally Identifiable Information)
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
-
-  // Filter out known transient errors
-  beforeSend(event, hint) {
-    if (isAuthLockError(hint.originalException)) {
-      return null;
-    }
-    return event;
-  },
+  sendDefaultPii: sentrySendDefaultPii,
+  beforeSend: sentryBeforeSend,
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

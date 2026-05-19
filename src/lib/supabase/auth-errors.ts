@@ -4,5 +4,9 @@ export function isAuthLockError(error: unknown): boolean {
   const name = "name" in error ? String(error.name) : "";
   const message = "message" in error ? String(error.message) : "";
   if (name !== "AbortError") return false;
-  return /lock/i.test(message) || message.includes("aborted");
+  return (
+    /lock/i.test(message) ||
+    message.includes("Lock broken") ||
+    message === "The lock request is aborted"
+  );
 }

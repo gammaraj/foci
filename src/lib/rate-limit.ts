@@ -48,11 +48,12 @@ async function getUpstashLimiter(): Promise<RateLimiter | null> {
     const { Redis } = await import("@upstash/redis");
     const redis = new Redis({ url, token });
 
-    const limiters = new Map<number, InstanceType<typeof Ratelimit>>();
+    const limiters = new Map<string, InstanceType<typeof Ratelimit>>();
 
     upstashLimiter = {
       async check(key, limit, windowMs) {
-        let rl = limiters.get(windowMs);
+        const configKey = `${windowMs}:${limit}`;
+        let rl = limiters.get(configKey);
         if (!rl) {
           const windowSec = Math.max(1, Math.round(windowMs / 1000));
           rl = new Ratelimit({
@@ -60,9 +61,9 @@ async function getUpstashLimiter(): Promise<RateLimiter | null> {
             limiter: Ratelimit.slidingWindow(limit, `${windowSec} s`),
             prefix: "foci-rl",
           });
-          limiters.set(windowMs, rl);
+          limiters.set(configKey, rl);
         }
-        const result = await rl.limit(`${key}:${windowMs}`);
+        const result = await rl.limit(`${key}:${configKey}`);
         return { limited: !result.success };
       },
     };

@@ -50,6 +50,27 @@ async function getSessionWithLockRetry(
   return { session: null, error: lastError };
 }
 
+async function resolveUser(
+  supabase: ReturnType<typeof createClient>,
+  sessionUser: User | null,
+): Promise<User | null> {
+  if (!sessionUser) return null;
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (user) return user;
+    if (error && !isAuthLockError(error)) {
+      console.error("[Foci] Session validation failed:", error);
+    }
+  } catch (err) {
+    if (!isAuthLockError(err)) {
+      console.error("[Foci] Session validation error:", err);
+    }
+  }
+
+  return sessionUser;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,11 +87,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error && !isAuthLockError(error)) {
         console.error("[Foci] Auth initialization error:", error);
       } else if (error && isAuthLockError(error)) {
-        // onAuthStateChange will deliver the session once the lock clears
         console.warn("[Foci] Auth lock busy; waiting for auth state event");
       }
 
-      const currentUser = session?.user ?? null;
+      const currentUser = await resolveUser(supabase, session?.user ?? null);
+      if (cancelled) return;
+
       setUser(currentUser);
       if (currentUser) {
         await activateSupabaseStorage();
@@ -82,11 +104,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const currentUser = session?.user ?? null;
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = await resolveUser(supabase, session?.user ?? null);
       setUser(currentUser);
       if (currentUser) {
-        activateSupabaseStorage();
+        await activateSupabaseStorage();
       } else {
         activateLocalStorage();
       }

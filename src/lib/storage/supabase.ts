@@ -649,51 +649,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async acceptInvite(inviteId: string): Promise<void> {
-    const userId = await this.getUserId();
-    
-    // Get invite details
-    const { data: invite, error: fetchError } = await this.supabase
-      .from("collaboration_invites")
-      .select("*")
-      .eq("id", inviteId)
-      .single();
-      
-    if (fetchError || !invite) {
-      throw new Error("Invite not found");
-    }
-    if (invite.status !== "pending") {
-      throw new Error("Invite is no longer valid");
-    }
-    if (new Date(invite.expires_at) < new Date()) {
-      throw new Error("Invite has expired");
-    }
-    
-    // Create collaborator entry
-    const { error: insertError } = await this.supabase
-      .from("project_collaborators")
-      .insert({
-        project_id: invite.project_id,
-        owner_id: invite.owner_id,
-        collaborator_id: userId,
-        role: invite.role,
-      });
-      
-    if (insertError) {
-      console.error("[Foci] acceptInvite insert error:", insertError);
-      throw new Error(insertError.message);
-    }
-    
-    // Update invite status
-    const { error: updateError } = await this.supabase
-      .from("collaboration_invites")
-      .update({ 
-        status: "accepted", 
-        accepted_at: new Date().toISOString() 
-      })
-      .eq("id", inviteId);
-      
-    if (updateError) {
-      console.error("[Foci] acceptInvite update error:", updateError);
+    const { error } = await this.supabase.rpc("accept_collaboration_invite", {
+      invite_id: inviteId,
+    });
+
+    if (error) {
+      console.error("[Foci] acceptInvite error:", error);
+      throw new Error(error.message);
     }
   }
 
@@ -1171,67 +1133,49 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async acceptAccountInvite(inviteId: string): Promise<void> {
-    const userId = await this.getUserId();
-    
-    // Get invite details
-    const { data: invite, error: fetchError } = await this.supabase
-      .from("account_invites")
-      .select("*")
-      .eq("id", inviteId)
-      .single();
-      
-    if (fetchError || !invite) {
-      throw new Error("Invite not found");
-    }
-    
-    if (invite.status !== "pending") {
-      throw new Error("Invite is no longer pending");
-    }
-    
-    if (new Date(invite.expires_at) < new Date()) {
-      throw new Error("Invite has expired");
-    }
-    
-    // Add as account collaborator
-    const { error: insertError } = await this.supabase
-      .from("account_collaborators")
-      .insert({
-        owner_id: invite.owner_id,
-        collaborator_id: userId,
-        role: invite.role,
-      });
-      
-    if (insertError) {
-      console.error("[Foci] acceptAccountInvite insert error:", insertError);
-      throw new Error(insertError.message);
-    }
-    
-    // Update invite status
-    const { error: updateError } = await this.supabase
-      .from("account_invites")
-      .update({ 
-        status: "accepted",
-        accepted_at: new Date().toISOString(),
-        invitee_id: userId,
-      })
-      .eq("id", inviteId);
-      
-    if (updateError) {
-      console.error("[Foci] acceptAccountInvite update error:", updateError);
+    const { error } = await this.supabase.rpc("accept_account_invite", {
+      invite_id: inviteId,
+    });
+
+    if (error) {
+      console.error("[Foci] acceptAccountInvite error:", error);
+      throw new Error(error.message);
     }
   }
 
   async declineAccountInvite(inviteId: string): Promise<void> {
     const userId = await this.getUserId();
-    
+
+    const { data: invite, error: fetchError } = await this.supabase
+      .from("account_invites")
+      .select("invitee_id, invitee_email")
+      .eq("id", inviteId)
+      .single();
+
+    if (fetchError || !invite) throw new Error("Invite not found");
+
+    const { data: profile } = await this.supabase
+      .from("user_profiles")
+      .select("email")
+      .eq("user_id", userId)
+      .single();
+
+    const isRecipient =
+      invite.invitee_id === userId ||
+      (invite.invitee_email != null &&
+        profile?.email != null &&
+        invite.invitee_email.toLowerCase() === profile.email.toLowerCase());
+
+    if (!isRecipient) throw new Error("Unauthorized");
+
     const { error } = await this.supabase
       .from("account_invites")
-      .update({ 
+      .update({
         status: "declined",
         invitee_id: userId,
       })
       .eq("id", inviteId);
-      
+
     if (error) {
       console.error("[Foci] declineAccountInvite error:", error);
       throw new Error(error.message);

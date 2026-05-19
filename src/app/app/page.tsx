@@ -337,7 +337,13 @@ export default function AppPage() {
 
             {/* Main content */}
             <div className="bg-white/60 dark:bg-[#111827] backdrop-blur-sm px-4 py-2">
-              <div className="relative pb-3">
+              <div className="flex items-center justify-center gap-3 sm:gap-5 pb-3">
+                <TimerControls
+                  isRunning={isRunning}
+                  onStartPause={handleStartPause}
+                  onReset={timer.reset}
+                  showReset={false}
+                />
                 <CircularTimer
                   remainingTime={timer.remainingTime}
                   totalDuration={
@@ -354,16 +360,12 @@ export default function AppPage() {
                   }
                   isBreak={timer.isBreakMode}
                 />
-
-                {/* On mobile: overlay controls at bottom edge of timer, spread apart */}
-                <div className="sm:hidden absolute bottom-0 left-1/2 -translate-x-1/2 z-10 w-[85%] flex justify-between">
-                  <TimerControls
-                    isRunning={isRunning}
-                    onStartPause={handleStartPause}
-                    onReset={timer.reset}
-                    spread
-                  />
-                </div>
+                <TimerControls
+                  isRunning={isRunning}
+                  onStartPause={handleStartPause}
+                  onReset={timer.reset}
+                  showStartPause={false}
+                />
               </div>
 
               <div className="pb-2">
@@ -389,17 +391,9 @@ export default function AppPage() {
                 </div>
               </div>
 
-              {/* On desktop: controls below timer */}
-              <div className="hidden sm:block -mt-1">
-                <TimerControls
-                  isRunning={isRunning}
-                  onStartPause={handleStartPause}
-                  onReset={timer.reset}
-                />
-              </div>
-              {/* No-task nudge: only shown on desktop when idle and no task selected */}
+              {/* No-task nudge when idle and no task selected */}
               {!activeTaskId && timer.status === "idle" && (
-                <p className="hidden sm:block text-center text-xs text-slate-400 dark:text-slate-400 pb-2 -mt-1">
+                <p className="text-center text-xs text-slate-400 dark:text-slate-400 pb-2">
                   Pick a task on the left to focus your session
                 </p>
               )}

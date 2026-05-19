@@ -1,40 +1,15 @@
-// This file configures the initialization of Sentry for edge features (middleware, edge routes, and so on).
-// The config you add here will be used whenever one of the edge features is loaded.
-// Note that this config is unrelated to the Vercel Edge Runtime and is also required when running locally.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
 import * as Sentry from "@sentry/nextjs";
+import {
+  SENTRY_DSN,
+  sentryBeforeSend,
+  sentrySendDefaultPii,
+  sentryTracesSampleRate,
+} from "./src/lib/sentry-options";
 
 Sentry.init({
-  dsn: "https://76fd9a70e5359a186f57e641d2ad2256@o4510225187012608.ingest.us.sentry.io/4511367785283584",
-
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
-
-  // Enable logs to be sent to Sentry
+  dsn: SENTRY_DSN,
+  tracesSampleRate: sentryTracesSampleRate,
   enableLogs: true,
-
-  // Enable sending user PII (Personally Identifiable Information)
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
-
-  // Filter out known transient errors
-  beforeSend(event, hint) {
-    const error = hint.originalException;
-    
-    // Filter out Supabase lock conflicts - these are transient multi-tab issues
-    if (
-      error &&
-      typeof error === 'object' &&
-      'name' in error &&
-      error.name === 'AbortError' &&
-      'message' in error &&
-      typeof error.message === 'string' &&
-      error.message.includes('Lock broken')
-    ) {
-      return null; // Don't send to Sentry
-    }
-    
-    return event;
-  },
+  sendDefaultPii: sentrySendDefaultPii,
+  beforeSend: sentryBeforeSend,
 });

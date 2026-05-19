@@ -191,6 +191,14 @@ export type Database = {
         Args: { invitee_email: string }
         Returns: string | null
       }
+      accept_collaboration_invite: {
+        Args: { invite_id: string }
+        Returns: undefined
+      }
+      accept_account_invite: {
+        Args: { invite_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
