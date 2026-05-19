@@ -23,11 +23,8 @@ export function createClient() {
 
   clientInstance = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
-      // Use PKCE flow for better security
-      flowType: 'pkce',
-      // Detect session in URL (for OAuth callbacks)
+      flowType: "pkce",
       detectSessionInUrl: true,
-      // Persist session in localStorage
       persistSession: true,
     },
   });
