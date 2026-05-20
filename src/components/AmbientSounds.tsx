@@ -308,7 +308,7 @@ export default function AmbientSounds() {
   const scPlaylist = SOUNDCLOUD_PLAYLISTS[scIdx];
 
   return (
-    <div className="mx-4 mb-2 sm:mb-3 space-y-2">
+    <div className="mx-2 sm:mx-3 mb-2 sm:mb-3 space-y-2">
       {/* Collapse toggle header */}
       <button
         onClick={() => setCollapsed(!collapsed)}
@@ -316,7 +316,7 @@ export default function AmbientSounds() {
       >
         <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">🎵 Music & Sounds</span>
         <svg
-          className={`w-5 h-5 text-slate-400 dark:text-slate-400 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
+          className={`w-5 h-5 text-slate-400 dark:text-slate-300 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -330,20 +330,20 @@ export default function AmbientSounds() {
       <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#131d30] rounded-lg p-0.5 border border-slate-200 dark:border-[#243350]">
         <button
           onClick={() => { setMode("sounds"); setShowYt(false); }}
-          className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${
+          className={`flex-1 text-xs sm:text-sm font-medium py-1.5 rounded-md transition-colors ${
             mode === "sounds"
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              : "text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100"
           }`}
         >
           🎧 Sounds
         </button>
         <button
           onClick={() => setMode("spotify")}
-          className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${
+          className={`flex-1 text-xs sm:text-sm font-medium py-1.5 rounded-md transition-colors ${
             mode === "spotify"
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              : "text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100"
           }`}
         >
           <svg className="inline-block w-3.5 h-3.5 mr-0.5 -mt-px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
@@ -351,20 +351,20 @@ export default function AmbientSounds() {
         </button>
         <button
           onClick={() => setMode("soundcloud")}
-          className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${
+          className={`flex-1 text-xs sm:text-sm font-medium py-1.5 rounded-md transition-colors ${
             mode === "soundcloud"
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              : "text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100"
           }`}
         >
           ☁️ SoundCloud
         </button>
         <button
           onClick={() => setMode("lofi")}
-          className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${
+          className={`flex-1 text-xs sm:text-sm font-medium py-1.5 rounded-md transition-colors ${
             mode === "lofi"
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              : "text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100"
           }`}
         >
           📺 Lo-fi
@@ -460,7 +460,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {ytStream.label}
               </span>
-              <span className="text-xs text-slate-400 dark:text-slate-400">
+              <span className="text-xs sm:text-sm text-slate-400 dark:text-slate-300">
                 {ytStream.channel}
               </span>
             </div>
@@ -503,7 +503,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {spotifyPlaylist.label}
               </span>
-              <span className="text-xs text-slate-400 dark:text-slate-400">
+              <span className="text-xs sm:text-sm text-slate-400 dark:text-slate-300">
                 {spotifyPlaylist.desc}
               </span>
             </div>
@@ -603,7 +603,7 @@ export default function AmbientSounds() {
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
                 {scPlaylist.label}
               </span>
-              <span className="text-xs text-slate-400 dark:text-slate-400">
+              <span className="text-xs sm:text-sm text-slate-400 dark:text-slate-300">
                 {scPlaylist.desc}
               </span>
             </div>
@@ -619,18 +619,18 @@ export default function AmbientSounds() {
       )}
 
       {/* SomaFM external links */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-400">SomaFM:</span>
+      <div className="flex items-center gap-1 flex-nowrap min-w-0 overflow-x-auto pb-0.5">
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-300 shrink-0">SomaFM:</span>
         {SOMAFM_STATIONS.map((s) => (
           <a
             key={s.slug}
             href={`https://somafm.com/player/#/now-playing/${s.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
+            className="inline-flex items-center gap-0.5 px-2 py-0.5 text-xs font-medium whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
             title={s.desc}
           >
-            <svg className="w-2.5 h-2.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            <svg className="w-2.5 h-2.5 opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
             {s.label}
           </a>
         ))}

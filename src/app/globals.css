@@ -11,6 +11,9 @@
   --muted-slate: #64748b;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
+  /* Light mode surfaces — page slightly darker than cards for depth */
+  --page-bg: #e8edf2;
+  --surface-border: #d4dce6;
 }
 
 /* ===== Base Styles ===== */
@@ -32,10 +35,40 @@ body {
 
 /* ===== Section Header Gradient ===== */
 .section-header-gradient {
-  background: linear-gradient(135deg, #e2e8f0 0%, #eef2ff 100%);
+  background: linear-gradient(135deg, #d8e0ea 0%, #e4e9ff 100%);
+  border-bottom: 1px solid var(--surface-border);
 }
 .dark .section-header-gradient {
   background: linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%);
+  border-bottom: 1px solid #243350;
+}
+
+/* ===== App card elevation (light mode) ===== */
+.app-surface {
+  background: #ffffff;
+  border: 1px solid var(--surface-border);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px -6px rgba(15, 23, 42, 0.1);
+}
+.dark .app-surface {
+  background: #111827;
+  border-color: #1e3050;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 24px -10px rgba(0, 0, 0, 0.55);
+}
+
+/* App page typography — 12px (text-xs) minimum for readable UI copy */
+.app-text-meta {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+@media (min-width: 640px) {
+  .app-text-meta {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
 }
 
 /* ===== Timer Control Buttons ===== */

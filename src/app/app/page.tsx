@@ -159,7 +159,7 @@ export default function AppPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b1121]">
+    <div className="min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
       <Navbar />
       {!user && !loading && <SignUpBanner />}
       <DueDateReminders />
@@ -168,9 +168,9 @@ export default function AppPage() {
           <Link
             href="/stats"
             title="Open stats and analytics"
-            className="rounded-xl border border-slate-200 dark:border-[#243350] bg-white/75 dark:bg-[#111827]/85 backdrop-blur-sm px-3 sm:px-4 py-2 flex items-center justify-between gap-3 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+            className="rounded-xl app-surface dark:bg-[#111827]/85 dark:border-[#243350] px-3 sm:px-4 py-2 flex items-center justify-between gap-3 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
           >
-            <div className="min-w-0 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+            <div className="min-w-0 flex items-center gap-2 sm:gap-3 text-sm text-slate-600 dark:text-slate-300">
               <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">
                 <span className="text-sm">Today</span>
                 <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span>
@@ -182,7 +182,7 @@ export default function AppPage() {
                   : "Start your streak today!"}
               </span>
             </div>
-            <span className="flex-shrink-0 text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-300">
+            <span className="flex-shrink-0 text-sm font-medium text-blue-600 dark:text-blue-300">
               View stats →
             </span>
           </Link>
@@ -195,14 +195,14 @@ export default function AppPage() {
         {timerCollapsed && !tasksFullscreen && (
           <div className="w-full">
             <div
-              className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#1e3050] bg-white/80 dark:bg-[#111827] backdrop-blur-sm shadow-sm"
+              className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl app-surface dark:bg-[#111827] dark:border-[#1e3050]"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className={`text-lg font-mono font-bold tabular-nums ${timer.isBreakMode ? "text-green-600 dark:text-green-400" : isRunning ? "text-blue-600 dark:text-blue-400" : "text-slate-700 dark:text-slate-200"}`}>
                   {timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}
                 </div>
                 {timer.label && (
-                  <span className="text-xs font-medium text-slate-400 dark:text-slate-400 hidden sm:inline">
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-300 hidden sm:inline">
                     {timer.label}
                   </span>
                 )}
@@ -268,13 +268,13 @@ export default function AppPage() {
         </div>
 
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
-        <div className={`w-full lg:w-[360px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
-          <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-visible relative">
+        <div className={`w-full lg:w-[400px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
+          <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative">
             {/* Header */}
             <header
               className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
             >
-              <h1 className="text-base font-semibold tracking-wide">Focus Timer</h1>
+              <h1 className="text-base sm:text-lg font-semibold tracking-wide">Focus Timer</h1>
 
               <div className="flex items-center gap-1">
               <button
@@ -336,7 +336,7 @@ export default function AppPage() {
             )}
 
             {/* Main content */}
-            <div className="bg-white/60 dark:bg-[#111827] backdrop-blur-sm px-4 py-2">
+            <div className="bg-slate-50/80 dark:bg-[#0d1526] px-4 py-2 border-t border-slate-100 dark:border-[#1e3050]/60">
               <div className="flex items-center justify-center gap-3 sm:gap-5 pb-3">
                 <TimerControls
                   isRunning={isRunning}
@@ -377,7 +377,7 @@ export default function AppPage() {
                         key={minutes}
                         onClick={() => handleSelectWorkPreset(minutes)}
                         disabled={timer.status === "running" || timer.status === "break"}
-                        className={`px-2 py-1 rounded-md text-[11px] sm:text-xs font-semibold transition-colors ${
+                        className={`px-2.5 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
                           active
                             ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
                             : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/70 dark:hover:bg-[#1a2d4a]"
@@ -393,7 +393,7 @@ export default function AppPage() {
 
               {/* No-task nudge when idle and no task selected */}
               {!activeTaskId && timer.status === "idle" && (
-                <p className="text-center text-xs text-slate-400 dark:text-slate-400 pb-2">
+                <p className="text-center text-sm text-slate-500 dark:text-slate-300 pb-2">
                   Pick a task on the left to focus your session
                 </p>
               )}
@@ -485,7 +485,7 @@ function ActiveTaskBanner({
     return (
       <div className="flex items-center gap-1.5 min-w-0">
         <div className={`w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
-        <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate max-w-[200px]">
+        <span className="text-sm font-medium text-slate-600 dark:text-slate-300 truncate max-w-[200px]">
           {title}
         </span>
         {!isRunning && (
@@ -503,12 +503,12 @@ function ActiveTaskBanner({
     <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400">
       <div className="flex items-center gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
+          <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
             Focusing on
           </p>
           <div className="flex items-center gap-1.5">
             <div className={`w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
-            <span className="text-sm font-semibold text-blue-700 dark:text-blue-100 truncate">
+            <span className="text-base font-semibold text-blue-700 dark:text-blue-100 truncate">
               {title}
             </span>
           </div>

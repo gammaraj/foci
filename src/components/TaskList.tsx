@@ -878,7 +878,7 @@ export default function TaskList({
   const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
 
   return (
-    <div className="bg-white/80 dark:bg-[#111827] backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-[#1e3050] overflow-hidden min-w-0">
+    <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
 
       {/* Focus mode header */}
       {isFocusMode ? (
@@ -913,7 +913,7 @@ export default function TaskList({
         className="section-header-gradient px-3 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
       >
         <div className="flex items-center justify-between min-w-0">
-          <h2 className="text-lg font-bold flex items-center gap-2 flex-shrink-0">
+          <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 flex-shrink-0">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -1021,7 +1021,7 @@ export default function TaskList({
             className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               viewMode === "plan"
                 ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-700"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+                : "bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-indigo-200 border border-slate-300 dark:border-indigo-500/35 hover:bg-slate-200 dark:hover:bg-[#1a2d4a] dark:hover:border-indigo-400/50"
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1796,12 +1796,12 @@ export default function TaskList({
             return (
             <div key={task.id}>
             {showOverdueHeader && (
-              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/80 dark:bg-red-900/10 text-[11px] font-semibold uppercase tracking-wide text-red-700 dark:text-red-300">
+              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-red-200 dark:border-red-800/50 bg-red-50/80 dark:bg-red-950/35 text-xs font-semibold uppercase tracking-wide text-red-700 dark:text-red-200">
                 Overdue - needs attention
               </div>
             )}
             {showUpcomingHeader && (
-              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 text-[11px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
                 Due today and upcoming
               </div>
             )}
@@ -1819,7 +1819,7 @@ export default function TaskList({
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 border-l-[3px] border-l-blue-500 dark:border-l-blue-400"
                   : isOverdue
-                    ? "border-red-300 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10 hover:bg-red-100/50 dark:hover:bg-red-900/20 border-l-[3px] border-l-red-500 dark:border-l-red-400 shadow-sm shadow-red-200/50 dark:shadow-red-900/20"
+                    ? "border-red-300 dark:border-red-800/45 bg-red-50/50 dark:bg-red-950/25 hover:bg-red-100/50 dark:hover:bg-red-950/40 border-l-[3px] border-l-red-500 dark:border-l-rose-500/90 shadow-sm shadow-red-200/50 dark:shadow-none"
                     : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
               } ${isExpanded ? "rounded-b-none" : ""} ${
                 dragTaskId === task.id ? "opacity-50" : ""
@@ -1873,7 +1873,7 @@ export default function TaskList({
               {/* Task content */}
               <div className="flex-1 min-w-0">
                 <div
-                  className="text-[15px] font-medium text-slate-800 dark:text-slate-50 break-words leading-snug"
+                  className="text-base font-medium text-slate-800 dark:text-slate-50 break-words leading-snug"
                 >
                   {isExpanded && editingId === task.id ? (
                     <input
@@ -1886,7 +1886,7 @@ export default function TaskList({
                         if (e.key === "Escape") setEditingId(null);
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full px-1 py-0.5 text-[15px] font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                      className="w-full px-1 py-0.5 text-base font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
                       autoFocus
                     />
                   ) : isExpanded ? (
@@ -1905,13 +1905,13 @@ export default function TaskList({
                   )}
                   {/* Overdue indicator */}
                   {isOverdue && (
-                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 align-middle border border-red-200 dark:border-red-900/50">
+                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] sm:text-xs font-bold uppercase rounded bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-200 align-middle border border-red-200 dark:border-red-700/50">
                       OVERDUE
                     </span>
                   )}
                   {/* Priority badge */}
                   {task.priority && (
-                    <span className={`ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded align-middle ${
+                    <span className={`ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] sm:text-xs font-semibold uppercase rounded align-middle ${
                       task.priority === 1 
                         ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
                         : task.priority === 2
@@ -1933,7 +1933,7 @@ export default function TaskList({
                     <div
                       className={`relative inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
                         !task.completed && isDueDateOverdue(task.dueDate)
-                          ? "text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
                           : !task.completed && task.dueDate === getToday()
                             ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             : "text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
@@ -1968,7 +1968,7 @@ export default function TaskList({
                     <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
                   )}
                   {hasSubtasks && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <span className="app-text-meta text-slate-500 dark:text-slate-300">
                       {completedSubtasks}/{subtasks.length} subtask{subtasks.length !== 1 ? "s" : ""}
                     </span>
                   )}
@@ -1976,7 +1976,7 @@ export default function TaskList({
                     <span className="text-xs text-slate-400 dark:text-slate-400">·</span>
                   )}
                   {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <span className="app-text-meta text-slate-500 dark:text-slate-300">
                       {task.sessions > 0 && (
                         <>{task.sessions} total session{task.sessions !== 1 ? "s" : ""}</>
                       )}

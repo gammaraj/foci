@@ -80,14 +80,14 @@ export default function WeatherTime() {
   const greeting = getGreeting(now.getHours());
 
   return (
-    <div className="flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl bg-white/80 dark:bg-[#111827] backdrop-blur-sm border border-slate-200 dark:border-[#1e3050] shadow-sm mb-3 sm:mb-4">
+    <div className="flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl app-surface dark:bg-[#111827] dark:border-[#1e3050] mb-3 sm:mb-4">
       <div className="min-w-0">
-        <p className="text-[13px] sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-300 truncate">
           {greeting}
         </p>
-        <p className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 tabular-nums leading-tight">
+        <p className="text-lg sm:text-xl font-semibold text-slate-800 dark:text-slate-100 tabular-nums leading-tight">
           {formatClock(now)}
-          <span className="ml-2 text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-400 hidden sm:inline">
+          <span className="ml-2 text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-300 hidden sm:inline">
             {formatDate(now)}
           </span>
         </p>
@@ -102,7 +102,7 @@ export default function WeatherTime() {
               {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
             </span>
             {weather.city && (
-              <p className="text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-400 truncate max-w-[100px] sm:max-w-[120px]">
+              <p className="text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-300 truncate max-w-[100px] sm:max-w-[120px]">
                 {weather.city}
               </p>
             )}

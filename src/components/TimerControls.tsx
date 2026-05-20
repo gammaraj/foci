@@ -103,7 +103,7 @@ export default function TimerControls({
           </svg>
         )}
       </button>
-      <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400">
+      <span className="text-xs font-medium text-slate-500 dark:text-slate-300">
         {isRunning ? "Pause" : "Start"}
       </span>
     </div>
@@ -132,7 +132,7 @@ export default function TimerControls({
           />
         </svg>
       </button>
-      <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400">
+      <span className="text-xs font-medium text-slate-500 dark:text-slate-300">
         Reset
       </span>
     </div>
