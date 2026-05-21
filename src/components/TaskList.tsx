@@ -40,6 +40,20 @@ function isDueDateOverdue(iso: string): boolean {
   return iso < getToday();
 }
 
+function openDatePicker(input: HTMLInputElement | null) {
+  if (!input) return;
+  input.focus({ preventScroll: true });
+  try {
+    if (typeof input.showPicker === "function") {
+      input.showPicker();
+    } else {
+      input.click();
+    }
+  } catch {
+    input.click();
+  }
+}
+
 function getNextDueDate(currentDue: string | undefined, recurrence: RecurrenceType): string {
   const base = currentDue ? new Date(currentDue + "T00:00:00") : new Date();
   switch (recurrence) {
@@ -125,6 +139,7 @@ export default function TaskList({
   
   const projectMenuRef = useRef<HTMLDivElement>(null);
   const templateMenuRef = useRef<HTMLDivElement>(null);
+  const newTaskDueDateInputRef = useRef<HTMLInputElement>(null);
 
   // Close project/template menus on outside click
   useEffect(() => {
@@ -1649,35 +1664,41 @@ export default function TaskList({
             maxLength={MAX_TASK_TITLE}
             className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
-          <div className="relative z-0">
+          <div className="relative flex-shrink-0">
             <input
+              ref={newTaskDueDateInputRef}
+              id="new-task-due-date"
               type="date"
               value={newTaskDueDate}
               onChange={(e) => setNewTaskDueDate(e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              title="Set due date"
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden="true"
             />
             <button
               type="button"
-              className={`h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
+              onClick={() => openDatePicker(newTaskDueDateInputRef.current)}
+              className={`flex items-center gap-1.5 h-full px-2.5 py-2 text-sm border rounded-lg transition-colors whitespace-nowrap ${
                 newTaskDueDate
                   ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                  : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+                  : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070]"
               }`}
+              aria-label={newTaskDueDate ? `Due date: ${formatDueDate(newTaskDueDate)}. Click to change.` : "Set due date"}
               title={newTaskDueDate ? `Due: ${formatDueDate(newTaskDueDate)}` : "Set due date"}
             >
-              <span className="flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {newTaskDueDate ? <span className="hidden sm:inline text-xs">{formatDueDate(newTaskDueDate)}</span> : null}
-              </span>
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="font-medium">Due Date</span>
+              {newTaskDueDate ? (
+                <span className="text-xs font-semibold">({formatDueDate(newTaskDueDate)})</span>
+              ) : null}
             </button>
           </div>
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="relative z-20 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             Add
           </button>
