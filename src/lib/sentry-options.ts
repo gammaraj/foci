@@ -12,8 +12,22 @@ export const sentryTracesSampleRate = isProd ? 0.1 : 1;
 export const sentryReplaysSessionSampleRate = isProd ? 0.1 : 0.1;
 export const sentrySendDefaultPii = !isProd;
 
+function isServiceWorkerRegistrationNoise(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  if (msg !== "rejected" && !msg.includes("serviceworker")) return false;
+  const stack = error.stack ?? "";
+  return (
+    stack.includes("serviceWorker.register") ||
+    stack.includes("serviceWorkers.navigator")
+  );
+}
+
 export function sentryBeforeSend(event: ErrorEvent, hint: EventHint): ErrorEvent | null {
   if (isAuthLockError(hint.originalException)) {
+    return null;
+  }
+  if (isServiceWorkerRegistrationNoise(hint.originalException)) {
     return null;
   }
   return event;

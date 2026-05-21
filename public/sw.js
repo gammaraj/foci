@@ -1,4 +1,4 @@
-const CACHE_VERSION = "3";
+const CACHE_VERSION = "4";
 const CACHE_NAME = `foci-v${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   "/",
@@ -9,7 +9,9 @@ const STATIC_ASSETS = [
 // Install: pre-cache shell
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(STATIC_ASSETS.map((url) => cache.add(url).catch(() => {})))
+    )
   );
   self.skipWaiting();
 });

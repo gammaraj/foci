@@ -216,7 +216,7 @@ export const metadata: Metadata = {
 
 const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||localStorage.getItem("tempo_theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`;
 
-const swRegisterScript = `if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")})}`;
+const swRegisterScript = `(function(){if(!("serviceWorker"in navigator))return;var p=location.protocol;if(p==="app:"||p==="file:"||!window.isSecureContext)return;window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})})()`;
 
 export default async function RootLayout({
   children,
