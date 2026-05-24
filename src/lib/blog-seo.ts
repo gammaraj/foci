@@ -7,6 +7,71 @@ export const FEATURED_POST_SLUGS = [
   "flowtime-technique-guide",
 ] as const;
 
+export interface GuideLink {
+  slug: string;
+  label: string;
+  description: string;
+}
+
+/** Sitewide internal link hub — boosts rankings via contextual backlinks. */
+export const GUIDE_HUB_LINKS: GuideLink[] = [
+  {
+    slug: "flowtime-technique-guide",
+    label: "Flowtime technique guide",
+    description: "Work with your natural focus rhythm — no rigid 25-minute blocks.",
+  },
+  {
+    slug: "pomodoro-vs-flowtime-vs-52-17",
+    label: "Flowtime vs Pomodoro vs 52/17",
+    description: "Side-by-side comparison with a clear verdict for your work style.",
+  },
+  {
+    slug: "pomodoro-technique-guide",
+    label: "Pomodoro technique guide",
+    description: "The classic 25/5 method — how it works and when to use it.",
+  },
+  {
+    slug: "52-17-rule-guide",
+    label: "52/17 rule guide",
+    description: "Work 52 minutes, break 17 — the DeskTime research explained.",
+  },
+  {
+    slug: "best-free-pomodoro-apps-2026",
+    label: "Best free Pomodoro apps",
+    description: "7 timers tested and ranked — tasks, sounds, and no paywalls.",
+  },
+  {
+    slug: "best-music-for-studying-and-focus",
+    label: "Best music for studying",
+    description: "What type of music helps you focus — lo-fi, brown noise, classical.",
+  },
+  {
+    slug: "how-to-stay-focused-while-studying",
+    label: "How to stay focused while studying",
+    description: "7 evidence-based strategies for longer study sessions.",
+  },
+  {
+    slug: "deep-work-in-the-age-of-ai",
+    label: "Deep work in the age of AI",
+    description: "Protect sustained focus when everything is one click away.",
+  },
+];
+
+/** Slugs that should prominently link to the Flowtime guide (GSC: position ~88). */
+export const FLOWTIME_INBOUND_SLUGS = new Set([
+  "pomodoro-technique-guide",
+  "pomodoro-vs-flowtime-vs-52-17",
+  "52-17-rule-guide",
+  "how-to-stop-procrastinating",
+  "how-to-stay-focused-while-studying",
+  "deep-work-in-the-age-of-ai",
+  "adhd-focus-strategies",
+  "time-blocking-method",
+  "brown-noise-for-studying-and-focus",
+  "best-free-pomodoro-apps-2026",
+  "best-music-for-studying-and-focus",
+]);
+
 export interface BlogFaq {
   question: string;
   answer: string;

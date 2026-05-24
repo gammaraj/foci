@@ -2,6 +2,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
+import GuideLinkHub from "@/components/GuideLinkHub";
 
 const siteUrl = "https://usefoci.com";
 
@@ -16,7 +17,7 @@ const orgJsonLd = {
   name: "Foci",
   url: siteUrl,
   logo: `${siteUrl}/logo.svg`,
-  sameAs: [],
+  sameAs: ["https://twitter.com/usefoci"],
 };
 
 const webSiteJsonLd = {
@@ -96,9 +97,9 @@ const faqJsonLd = {
   "@type": "FAQPage",
   mainEntity: [
     { "@type": "Question", name: "What is Foci?", acceptedAnswer: { "@type": "Answer", text: "Foci is a free all-in-one focus system that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive, in one window." } },
-    { "@type": "Question", name: "What is the Flowtime technique?", acceptedAnswer: { "@type": "Answer", text: "The Flowtime technique is a flexible focus method where you work until your concentration naturally fades, then take a break proportional to how long you worked (roughly 5 minutes per 25 minutes). Unlike Pomodoro's fixed 25-minute sessions, Flowtime adapts to your natural focus rhythm. It's ideal for creative work, programming, and tasks where interruptions are costly. Foci supports Flowtime with customizable timer durations." } },
+    { "@type": "Question", name: "What is the Flowtime technique?", acceptedAnswer: { "@type": "Answer", text: "The Flowtime technique is a flexible focus method where you work until your concentration naturally fades, then take a break proportional to how long you worked (roughly 5 minutes per 25 minutes). Unlike Pomodoro's fixed 25-minute sessions, Flowtime adapts to your natural focus rhythm. Full guide: https://usefoci.com/blog/flowtime-technique-guide" } },
     { "@type": "Question", name: "What is the 52/17 rule?", acceptedAnswer: { "@type": "Answer", text: "The 52/17 rule is a focus technique where you work for 52 minutes followed by a 17-minute break. It's based on a 2014 Draugiem Group study that found top performers worked in ~52-minute bursts. Compared to Pomodoro (25/5), 52/17 allows deeper immersion but requires more sustained focus. Foci includes 52/17 as a built-in timer preset." } },
-    { "@type": "Question", name: "Flowtime vs Pomodoro: which is better?", acceptedAnswer: { "@type": "Answer", text: "Pomodoro is better for procrastination-prone tasks, studying, and when you need external structure. Flowtime is better for creative work, programming, or when you regularly enter flow states. Many people use both: Pomodoro for tasks they resist and Flowtime for tasks they enjoy. Foci lets you switch between techniques with customizable timer durations." } },
+    { "@type": "Question", name: "Flowtime vs Pomodoro: which is better?", acceptedAnswer: { "@type": "Answer", text: "Pomodoro is better for procrastination-prone tasks, studying, and when you need external structure. Flowtime is better for creative work, programming, or when you regularly enter flow states. Comparison guide: https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17" } },
     { "@type": "Question", name: "Is Foci free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices." } },
     { "@type": "Question", name: "Can I use Foci without creating an account?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Click 'Try without account' on the homepage and start using Foci immediately. Your settings, tasks, and progress are saved locally in your browser." } },
     { "@type": "Question", name: "Does Foci have ambient music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes built-in ambient sounds like rain, café, white noise, and brown noise that work offline, plus optional lo-fi YouTube radio streams — perfect for getting in the zone." } },
@@ -124,12 +125,12 @@ const faqJsonLd = {
     { "@type": "Question", name: "Does Foci have task templates?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes one-click task templates for Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review. Each creates a set of pre-configured tasks so you can start immediately." } },
     { "@type": "Question", name: "Does Foci have timer presets?", acceptedAnswer: { "@type": "Answer", text: "Yes. Choose from Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20), or set custom durations." } },
     { "@type": "Question", name: "What are the best ADHD focus tools?", acceptedAnswer: { "@type": "Answer", text: "Foci is designed to work with ADHD brains. Its timer externalizes time perception, task tracking removes the burden on working memory, brown noise provides sensory anchoring, and the daily goal system creates visible momentum." } },
-    { "@type": "Question", name: "What is the best music for studying?", acceptedAnswer: { "@type": "Answer", text: "Research shows the best study music is instrumental, predictable, and consistent volume. Brown noise and rain are ideal for deep reading and writing. Lo-fi hip-hop works for routine studying. Classical music (Western or Indian ragas) suits long sessions. Foci includes all of these built-in." } },
+    { "@type": "Question", name: "What is the best music for studying?", acceptedAnswer: { "@type": "Answer", text: "Research shows the best study music is instrumental, predictable, and consistent volume. Brown noise and rain are ideal for deep reading and writing. Lo-fi hip-hop works for routine studying. Full guide: https://usefoci.com/blog/best-music-for-studying-and-focus" } },
     { "@type": "Question", name: "Is Foci better than Forest App?", acceptedAnswer: { "@type": "Answer", text: "Foci and Forest target different needs. Forest is a gamified focus app where you grow virtual trees — it's motivating but has no task tracking, no ambient sounds, and costs $1.99 on mobile. Foci is completely free and adds a full task manager, per-task time logging, daily goals, streak tracking, and built-in ambient sounds (rain, café, brown noise) alongside the timer. If you want a complete focus system rather than just gamification, Foci gives you more at no cost." } },
     { "@type": "Question", name: "Foci vs Todoist: which should I use?", acceptedAnswer: { "@type": "Answer", text: "Todoist is a powerful task manager but has no built-in focus timer, ambient sounds, or session tracking. Foci is a focus system purpose-built for the work session itself — it combines a Pomodoro timer, task tracking, daily goals, and ambient music in one interface. They serve different roles: use Todoist if you need advanced project management (dependencies, filters, team features), use Foci if your priority is focused execution. You can also import your Todoist tasks into Foci via CSV." } },
     { "@type": "Question", name: "Is Foci a good Focus@Will alternative?", acceptedAnswer: { "@type": "Answer", text: "Yes. Focus@Will is a paid music subscription ($9.99/month) with science-backed focus playlists but no task tracking or timer. Foci is completely free and includes built-in offline ambient sounds (rain, café, brown noise, white noise), curated Spotify playlists, SoundCloud Indian classical music, and lo-fi radio — plus a full Pomodoro timer and task manager. Most users find Foci's free sounds work just as well for focus." } },
     { "@type": "Question", name: "What are the best Forest App alternatives in 2026?", acceptedAnswer: { "@type": "Answer", text: "The best Forest App alternatives in 2026 are: 1) Foci — best overall, completely free with timer, tasks, ambient sounds, and streaks; 2) Flora — best gamification with real tree planting; 3) Tide — best premium ambient soundscapes; 4) Be Focused — best native Mac/iOS timer; 5) Pomofocus — best minimalist web timer. Foci is the best choice if you want a complete focus system, not just gamified blocking." } },
-    { "@type": "Question", name: "What is the best free Pomodoro app in 2026?", acceptedAnswer: { "@type": "Answer", text: "The best free Pomodoro apps in 2026 are: 1) Foci — most complete: timer + tasks + ambient sounds + goals + streaks, no account required; 2) Pomofocus — best minimalist web timer; 3) Forest — best gamification (freemium); 4) Be Focused — best for Apple devices; 5) Toggl Track — best if time reporting is the priority. Foci stands out because it's the only free option that combines a Pomodoro timer with full task management and offline ambient sounds in a single app." } },
+    { "@type": "Question", name: "What is the best free Pomodoro app in 2026?", acceptedAnswer: { "@type": "Answer", text: "The best free Pomodoro apps in 2026 include Foci (timer + tasks + ambient sounds, no account required), Pomofocus, Forest, Be Focused, and Toggl Track. Full ranked comparison: https://usefoci.com/blog/best-free-pomodoro-apps-2026" } },
     { "@type": "Question", name: "Can I collaborate with others on Foci?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer, editor, or admin roles) and Project collaboration (share specific projects with team members). Invites are managed via email with role-based permissions for secure team workflows." } },
     { "@type": "Question", name: "How do collaboration invites work?", acceptedAnswer: { "@type": "Answer", text: "Send account or project collaboration invites by email from the collaboration settings. Recipients receive real-time notifications in their notification bell and can accept or decline invites. Account invites grant access to all projects based on the assigned role, while project invites are scoped to specific projects. All invites have expiration dates for security." } },
     { "@type": "Question", name: "Does Foci have notifications?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes a notification bell that displays upcoming task reminders, overdue task alerts, and collaboration invite notifications with a badge counter. Click the bell icon to view all pending notifications and take immediate action on invites or tasks." } },
@@ -491,6 +492,11 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Focus guides hub — internal links for SEO */}
+        <section className="w-full max-w-5xl mx-auto pb-12 sm:pb-16 px-0">
+          <GuideLinkHub />
+        </section>
+
         {/* From the blog */}
         <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-3">
@@ -564,8 +570,9 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-sm text-slate-400 dark:text-slate-600">
-        Built for focus.
+      <footer className="py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
+        <GuideLinkHub variant="footer" className="mb-4" />
+        <p className="text-sm text-slate-400 dark:text-slate-600">Built for focus.</p>
       </footer>
     </div>
   );

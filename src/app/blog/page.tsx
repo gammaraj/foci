@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts, getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
+import GuideLinkHub from "@/components/GuideLinkHub";
 import Navbar from "@/components/Navbar";
 
 const title = "Blog – Foci | Flowtime, Pomodoro, Study Music & Focus Guides";
@@ -174,8 +175,9 @@ export default function BlogIndexPage() {
         </div>
       </main>
 
-      <footer className="mt-auto py-8 text-center text-xs text-slate-400 dark:text-slate-600">
-        Built for focus. Free forever.
+      <footer className="mt-auto py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
+        <GuideLinkHub variant="footer" className="mb-4" />
+        <p className="text-xs text-slate-400 dark:text-slate-600">Built for focus. Free forever.</p>
       </footer>
     </div>
   );

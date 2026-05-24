@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import { BLOG_POST_FAQS } from "@/lib/blog-seo";
+import GuideLinkHub from "@/components/GuideLinkHub";
 import Navbar from "@/components/Navbar";
 
 /** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(slug);
   if (!post) return {};
   const { meta } = post;
+  const ogImage = `https://usefoci.com/blog/${meta.slug}/opengraph-image`;
   return {
     title: meta.title,
     description: meta.description,
@@ -38,11 +40,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `https://usefoci.com/blog/${meta.slug}`,
       tags: meta.tags,
       siteName: "Foci",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: meta.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: meta.title,
       description: meta.description,
+      images: [ogImage],
     },
   };
 }
@@ -77,9 +88,9 @@ export default async function BlogPostPage({ params }: Props) {
     },
     image: {
       "@type": "ImageObject",
-      url: `https://usefoci.com/opengraph-image`,
+      url: `https://usefoci.com/blog/${meta.slug}/opengraph-image`,
       width: 1200,
-      height: 630
+      height: 630,
     },
     keywords: meta.tags.join(", "),
     inLanguage: "en-US",
@@ -185,6 +196,8 @@ export default async function BlogPostPage({ params }: Props) {
             </section>
           )}
 
+          <GuideLinkHub excludeSlug={slug} variant="compact" className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800" />
+
           <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 text-center">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -237,8 +250,9 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </main>
 
-      <footer className="mt-auto py-8 text-center text-xs text-slate-400 dark:text-slate-600">
-        Built for focus. Free forever.
+      <footer className="mt-auto py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
+        <GuideLinkHub variant="footer" className="mb-4" />
+        <p className="text-xs text-slate-400 dark:text-slate-600">Built for focus. Free forever.</p>
       </footer>
     </div>
   );

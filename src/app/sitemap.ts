@@ -35,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(post.date),
     changeFrequency: "monthly" as const,
     priority: comparisonSlugs.has(post.slug) ? 0.85 : 0.75,
-    images: [`${siteUrl}/opengraph-image`],
+    images: [`${siteUrl}/blog/${post.slug}/opengraph-image`],
   }));
 
   return [
