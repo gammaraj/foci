@@ -25,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "pomodoro-vs-flowtime-vs-52-17",
     "flowtime-technique-guide",
     "52-17-rule-guide",
+    "best-music-for-studying-and-focus",
     "how-to-stop-procrastinating",
     "deep-work-in-the-age-of-ai",
   ]);

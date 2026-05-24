@@ -225,7 +225,7 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 
 - https://usefoci.com/blog/pomodoro-technique-guide — What Is the Pomodoro Technique? A Complete Guide
 - https://usefoci.com/blog/how-to-stay-focused-while-studying — How to Stay Focused While Studying: 7 Proven Strategies
-- https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17 — Pomodoro vs. Flowtime vs. 52/17: Which Focus Technique Is Best?
+- https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17 — Flowtime vs Pomodoro vs 52/17: Which Focus Method Wins? (2026)
 - https://usefoci.com/blog/brown-noise-for-studying-and-focus — Brown Noise for Studying: Why It Works and How to Use It
 - https://usefoci.com/blog/deep-work-in-the-age-of-ai — Deep Work in the Age of AI: How to Stay Focused When Everything Is Instant
 - https://usefoci.com/blog/migrate-from-google-tasks-to-foci — How to Migrate from Google Tasks to Foci
@@ -289,7 +289,7 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 
 - [What Is the Pomodoro Technique? A Complete Guide](https://usefoci.com/blog/pomodoro-technique-guide) — 2026-03-01
 - [How to Stay Focused While Studying: 7 Proven Strategies](https://usefoci.com/blog/how-to-stay-focused-while-studying) — 2026-03-04
-- [Pomodoro vs. Flowtime vs. 52/17: Which Focus Technique Is Best?](https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-03-07
+- [Flowtime vs Pomodoro vs 52/17: Which Focus Method Wins?](https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-05-05
 - [How to Migrate from Google Tasks to Foci](https://usefoci.com/blog/migrate-from-google-tasks-to-foci) — 2026-03-15
 - [How to Migrate from Todoist to Foci](https://usefoci.com/blog/migrate-from-todoist-to-foci) — 2026-03-15
 - [How to Migrate from Asana to Foci](https://usefoci.com/blog/migrate-from-asana-to-foci) — 2026-03-15

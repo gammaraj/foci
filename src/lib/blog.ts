@@ -66,3 +66,10 @@ export function getRelatedPosts(currentSlug: string, limit = 3): PostMeta[] {
   scored.sort((a, b) => b.score - a.score || new Date(b.post.date).getTime() - new Date(a.post.date).getTime());
   return scored.slice(0, limit).map((s) => s.post);
 }
+
+/** Resolve posts by slug order; skips missing slugs. */
+export function getPostsBySlugs(slugs: readonly string[]): PostMeta[] {
+  const all = getAllPosts();
+  const bySlug = new Map(all.map((p) => [p.slug, p]));
+  return slugs.map((slug) => bySlug.get(slug)).filter((p): p is PostMeta => p != null);
+}

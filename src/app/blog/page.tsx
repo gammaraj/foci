@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getPostsBySlugs } from "@/lib/blog";
+import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import Navbar from "@/components/Navbar";
 
-const title = "Blog – Foci | Productivity, Focus & Time Management Guides";
+const title = "Blog – Foci | Flowtime, Pomodoro, Study Music & Focus Guides";
 const description =
-  "In-depth guides on Flowtime technique, Pomodoro method, 52/17 rule, deep work strategies, and ADHD focus tips. Free tools included.";
+  "Free guides on the Flowtime technique, Pomodoro vs 52/17, best free Pomodoro apps, and what music helps you focus. Practical tips with tools included.";
 
 export const metadata: Metadata = {
   title,
@@ -68,9 +69,30 @@ export const metadata: Metadata = {
 
 export default function BlogIndexPage() {
   const posts = getAllPosts();
+  const featuredPosts = getPostsBySlugs(FEATURED_POST_SLUGS);
+  const featuredSlugs = new Set<string>(FEATURED_POST_SLUGS);
+  const remainingPosts = posts.filter((p) => !featuredSlugs.has(p.slug));
+
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Foci Blog – Focus & Productivity Guides",
+    itemListElement: featuredPosts.map((post, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: post.title,
+      url: `https://usefoci.com/blog/${post.slug}`,
+    })),
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(itemListJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <Navbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -78,11 +100,42 @@ export default function BlogIndexPage() {
           Blog
         </h1>
         <p className="mt-3 text-slate-500 dark:text-slate-400 text-lg">
-          Tips on focus, productivity, and getting more done.
+          Guides on Flowtime, Pomodoro, study music, and focus — with free tools to try each method.
         </p>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {posts.map((post) => (
+        {featuredPosts.length > 0 && (
+          <section className="mt-10" aria-labelledby="featured-guides-heading">
+            <h2 id="featured-guides-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
+              Popular guides
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {featuredPosts.map((post) => (
+                <article
+                  key={post.slug}
+                  className="group border-2 border-blue-100 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 rounded-2xl p-5 hover:shadow-md dark:hover:shadow-slate-900 transition-shadow"
+                >
+                  <Link href={`/blog/${post.slug}`} className="block">
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+                      {post.description}
+                    </p>
+                    <span className="mt-3 inline-block text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
+                      Read guide →
+                    </span>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <h2 className="mt-12 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
+          All posts
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          {remainingPosts.map((post) => (
             <article key={post.slug} className="group border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:shadow-md dark:hover:shadow-slate-900 transition-shadow">
               <Link href={`/blog/${post.slug}`} className="block">
                 <div className="flex flex-wrap gap-2 mb-2">

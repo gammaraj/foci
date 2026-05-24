@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { getAllPosts } from "@/lib/blog";
+import { getPostsBySlugs } from "@/lib/blog";
+import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 
 const siteUrl = "https://usefoci.com";
 
@@ -499,7 +500,7 @@ export default function LandingPage() {
             Practical guides on focus, time management, and productivity.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {getAllPosts().slice(0, 3).map((post) => (
+            {getPostsBySlugs(FEATURED_POST_SLUGS).slice(0, 3).map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}

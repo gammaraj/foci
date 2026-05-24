@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
+import { BLOG_POST_FAQS } from "@/lib/blog-seo";
 import Navbar from "@/components/Navbar";
 
 /** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
@@ -97,6 +98,19 @@ export default async function BlogPostPage({ params }: Props) {
     ],
   };
 
+  const postFaqs = BLOG_POST_FAQS[slug];
+  const faqJsonLd = postFaqs?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: postFaqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      }
+    : null;
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
       <script
@@ -107,6 +121,12 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+        />
+      )}
       <Navbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 flex-1">
@@ -148,6 +168,22 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="prose prose-neutral dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline max-w-none">
             <MDXRemote source={content} />
           </div>
+
+          {postFaqs && postFaqs.length > 0 && (
+            <section className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800" aria-labelledby="post-faq-heading">
+              <h2 id="post-faq-heading" className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+                Frequently asked questions
+              </h2>
+              <dl className="space-y-4">
+                {postFaqs.map((faq) => (
+                  <div key={faq.question}>
+                    <dt className="text-base font-semibold text-slate-900 dark:text-white">{faq.question}</dt>
+                    <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{faq.answer}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
 
           <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 text-center">
