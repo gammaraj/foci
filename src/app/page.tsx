@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import { getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import GuideLinkHub from "@/components/GuideLinkHub";
+import SatTutoringPromo from "@/components/SatTutoringPromo";
 
 const siteUrl = "https://usefoci.com";
 
@@ -572,6 +573,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
         <GuideLinkHub variant="footer" className="mb-4" />
+        <SatTutoringPromo variant="footer" className="mb-3" />
         <p className="text-sm text-slate-400 dark:text-slate-600">Built for focus.</p>
       </footer>
     </div>

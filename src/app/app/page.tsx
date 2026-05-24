@@ -5,6 +5,7 @@ import { useTimer } from "@/hooks/useTimer";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
 import DailyProgress from "@/components/DailyProgress";
+import SatTutoringPromo from "@/components/SatTutoringPromo";
 import SettingsPanel from "@/components/SettingsPanel";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
@@ -416,6 +417,8 @@ export default function AppPage() {
               dailyGoalData={timer.dailyGoalData}
               dailyGoal={timer.settings.dailyGoal}
             />
+
+            <SatTutoringPromo variant="sidebar" />
 
             <div className="h-1" />
           </div>

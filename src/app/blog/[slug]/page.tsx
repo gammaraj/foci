@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import { BLOG_POST_FAQS } from "@/lib/blog-seo";
+import { SAT_TUTORING_BLOG_SLUGS } from "@/lib/partner-promos";
 import GuideLinkHub from "@/components/GuideLinkHub";
+import SatTutoringPromo from "@/components/SatTutoringPromo";
 import Navbar from "@/components/Navbar";
 
 /** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
@@ -179,6 +181,10 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="prose prose-neutral dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline max-w-none">
             <MDXRemote source={content} />
           </div>
+
+          {SAT_TUTORING_BLOG_SLUGS.has(slug) && (
+            <SatTutoringPromo variant="inline" className="mt-8" />
+          )}
 
           {postFaqs && postFaqs.length > 0 && (
             <section className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800" aria-labelledby="post-faq-heading">
