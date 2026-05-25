@@ -308,7 +308,7 @@ export default function AmbientSounds() {
   const scPlaylist = SOUNDCLOUD_PLAYLISTS[scIdx];
 
   return (
-    <div className="mx-2 sm:mx-3 mb-2 sm:mb-3 space-y-2">
+    <div id="ambient-sounds" className="mx-2 sm:mx-3 mb-2 sm:mb-3 space-y-2 scroll-mt-24">
       {/* Collapse toggle header */}
       <button
         onClick={() => setCollapsed(!collapsed)}

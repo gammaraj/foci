@@ -4,7 +4,21 @@ import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 10;
-const SITE_ORIGIN = "https://usefoci.com";
+const PRODUCTION_ORIGIN = "https://usefoci.com";
+
+function getSiteOrigin(request: Request): string {
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const host = forwardedHost ?? request.headers.get("host");
+  if (host) {
+    const proto = request.headers.get("x-forwarded-proto") ?? "https";
+    return `${proto}://${host}`;
+  }
+  try {
+    return new URL(request.url).origin;
+  } catch {
+    return PRODUCTION_ORIGIN;
+  }
+}
 
 export async function GET(request: Request) {
   const ip = getClientIp(request.headers);
@@ -12,6 +26,7 @@ export async function GET(request: Request) {
     return new NextResponse("Too many requests", { status: 429 });
   }
 
+  const origin = getSiteOrigin(request);
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
 
@@ -19,9 +34,9 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${SITE_ORIGIN}/app`);
+      return NextResponse.redirect(`${origin}/app`);
     }
   }
 
-  return NextResponse.redirect(`${SITE_ORIGIN}/login`);
+  return NextResponse.redirect(`${origin}/login`);
 }

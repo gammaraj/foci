@@ -1,63 +1,30 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
 import DailyProgress from "@/components/DailyProgress";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
-import SettingsPanel from "@/components/SettingsPanel";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import AmbientSounds from "@/components/AmbientSounds";
-import OnboardingTour from "@/components/OnboardingTour";
-import NotificationPrompt from "@/components/NotificationPrompt";
-import DueDateReminders from "@/components/DueDateReminders";
 import NotificationBell from "@/components/NotificationBell";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
-import WeatherTime from "@/components/WeatherTime";
+import AppMessageQueue from "@/components/AppMessageQueue";
+import MobileTimerBar from "@/components/MobileTimerBar";
+import KeyboardShortcutsModal from "@/components/KeyboardShortcutsModal";
+import SessionCelebration from "@/components/SessionCelebration";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
+import { getFocusModeAuto } from "@/lib/focus-mode";
 import Link from "next/link";
 
-function SignUpBanner() {
-  const [dismissed, setDismissed] = useState(false);
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem("foci_signup_dismissed")) {
-      setDismissed(true);
-    }
-  }, []);
-  if (dismissed) return null;
-  return (
-    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm">
-      <div className="max-w-[1280px] mx-auto px-4 py-2 flex items-center justify-between gap-3">
-        <p className="flex-1 min-w-0">
-          <span className="font-medium">Sign up free</span>
-          <span className="hidden sm:inline"> — sync your tasks across devices, never lose your progress</span>
-          <span className="sm:hidden"> to sync across devices</span>
-        </p>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <Link
-            href="/login"
-            className="px-3 py-1 bg-white text-blue-700 font-semibold rounded-lg text-xs hover:bg-blue-50 transition-colors"
-          >
-            Sign up
-          </Link>
-          <button
-            onClick={() => { setDismissed(true); sessionStorage.setItem("foci_signup_dismissed", "1"); }}
-            className="p-1 text-white/70 hover:text-white transition-colors"
-            aria-label="Dismiss"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
+const AmbientSounds = dynamic(() => import("@/components/AmbientSounds"));
+const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
+const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
+const WeatherTime = dynamic(() => import("@/components/WeatherTime"));
 
 function formatTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -77,12 +44,26 @@ export default function AppPage() {
   const [taskListKey, setTaskListKey] = useState(0);
   const [timerCollapsed, setTimerCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("foci-timer-collapsed") === "true";
+      const saved = localStorage.getItem("foci-timer-collapsed");
+      if (saved !== null) return saved === "true";
+      return window.innerWidth < 1024;
     }
     return false;
   });
   const [focusProjectId, setFocusProjectId] = useState<string | null>(null);
   const [tasksFullscreen, setTasksFullscreen] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  const [timerAnnouncement, setTimerAnnouncement] = useState("");
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [soundsHintDismissed, setSoundsHintDismissed] = useState(false);
+  const [activeTaskTitle, setActiveTaskTitle] = useState("");
+  const prevTimerStatusRef = useRef(timer.status);
+
+  const announceTimer = useCallback((message: string) => {
+    setTimerAnnouncement("");
+    requestAnimationFrame(() => setTimerAnnouncement(message));
+  }, []);
 
   const handleFocusProject = useCallback((projectId: string | null) => {
     setFocusProjectId(projectId);
@@ -94,6 +75,26 @@ export default function AppPage() {
   useEffect(() => {
     localStorage.setItem("foci-timer-collapsed", String(timerCollapsed));
   }, [timerCollapsed]);
+
+  useEffect(() => {
+    setSoundsHintDismissed(localStorage.getItem("foci_sounds_hint_dismissed") === "1");
+  }, []);
+
+  useEffect(() => {
+    if (!activeTaskId) {
+      setActiveTaskTitle("");
+      return;
+    }
+    loadTasks().then((tasks) => {
+      const t = tasks.find((x) => x.id === activeTaskId);
+      setActiveTaskTitle(t?.title ?? "");
+    });
+  }, [activeTaskId]);
+
+  const dismissSoundsHint = useCallback(() => {
+    localStorage.setItem("foci_sounds_hint_dismissed", "1");
+    setSoundsHintDismissed(true);
+  }, []);
 
   const isRunning = timer.status === "running";
   const displayTime =
@@ -119,21 +120,81 @@ export default function AppPage() {
     return () => timer.setOnSessionCompleteCallback(null);
   }, [timer]);
 
-  const handleStartPause = () => {
+  useEffect(() => {
+    const prev = prevTimerStatusRef.current;
+    const next = timer.status;
+    if (prev === next) return;
+    prevTimerStatusRef.current = next;
+
+    // Announce automatic transitions (break start/end) not triggered by handleStartPause
+    if (next === "break" && prev === "running") {
+      announceTimer("Break time started");
+      setShowCelebration(true);
+      localStorage.setItem("foci_sessions_completed", "1");
+    } else if (next === "idle" && prev === "break") {
+      announceTimer("Break finished");
+      setFocusMode(false);
+    } else if (next === "idle" && prev === "running") {
+      announceTimer("Focus session complete");
+      setShowCelebration(true);
+      setFocusMode(false);
+      localStorage.setItem("foci_sessions_completed", "1");
+    }
+  }, [timer.status, announceTimer]);
+
+  const handleStartPause = useCallback(() => {
     if (timer.status === "break") return;
     if (isRunning) {
       timer.pause();
+      announceTimer("Focus timer paused");
     } else {
+      if (getFocusModeAuto()) setFocusMode(true);
       timer.start();
+      announceTimer("Focus timer started");
     }
-  };
+  }, [timer, isRunning, announceTimer]);
+
+  const handleReset = useCallback(() => {
+    timer.reset();
+    setFocusMode(false);
+    announceTimer("Focus session reset");
+  }, [timer, announceTimer]);
 
   const handleStartTask = useCallback((taskId: string) => {
     setActiveTaskId(taskId);
     if (timer.status !== "running" && timer.status !== "break") {
+      if (getFocusModeAuto()) setFocusMode(true);
       timer.start();
     }
   }, [timer]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      if (e.key === "?" && !typing) {
+        e.preventDefault();
+        setShowShortcuts(true);
+        return;
+      }
+      if (typing) return;
+      if (e.key === " " || e.code === "Space") {
+        e.preventDefault();
+        handleStartPause();
+      } else if (e.key === "r" || e.key === "R") {
+        handleReset();
+      } else if (e.key === "n" || e.key === "N") {
+        document.getElementById("new-task-input")?.focus();
+      } else if (e.key === "f" || e.key === "F") {
+        setFocusMode((f) => !f);
+      } else if (e.key === "Escape") {
+        setShowShortcuts(false);
+        setShowSettings(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleStartPause, handleReset]);
 
   /** Complete the active task: return elapsed time, pause the timer, deselect */
   const handleCompleteTask = useCallback((taskId: string): number => {
@@ -159,11 +220,33 @@ export default function AppPage() {
     );
   }
 
+  const goalMet = timer.dailyGoalData.sessionCount >= timer.settings.dailyGoal;
+  const readyToFocus = !!activeTaskId && timer.status === "idle";
+  const mobileDisplayTime =
+    timer.status === "break" ? formatTime(timer.remainingTime) : displayTime;
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
+      <a href="#tasks-section" className="skip-link">Skip to tasks</a>
+      <a href="#timer-panel" className="skip-link">Skip to timer</a>
       <Navbar />
-      {!user && !loading && <SignUpBanner />}
+      <AppMessageQueue user={user} focusMode={focusMode} />
+      {focusMode && (
+        <div className="px-2 sm:px-4 pt-2">
+          <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
+            <span className="text-blue-800 dark:text-blue-200 font-medium">🎯 Focus mode — fewer distractions</span>
+            <button
+              type="button"
+              onClick={() => setFocusMode(false)}
+              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
+            >
+              Exit (F)
+            </button>
+          </div>
+        </div>
+      )}
       <DueDateReminders />
+      {!focusMode && (
       <div className="px-2 sm:px-4 pt-2">
         <div className="max-w-[1280px] mx-auto">
           <Link
@@ -189,7 +272,8 @@ export default function AppPage() {
           </Link>
         </div>
       </div>
-      <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
+      )}
+      <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-20 lg:pb-3 sm:p-4 sm:pt-3">
       <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
 
         {/* Collapsed timer bar */}
@@ -220,7 +304,7 @@ export default function AppPage() {
                 <TimerControls
                   isRunning={isRunning}
                   onStartPause={handleStartPause}
-                  onReset={timer.reset}
+                  onReset={handleReset}
                   compact
                 />
                 <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
@@ -253,7 +337,7 @@ export default function AppPage() {
 
         {/* Task list column */}
         <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
-          <WeatherTime />
+          {!focusMode && <WeatherTime />}
           <TaskList
             key={taskListKey}
             activeTaskId={activeTaskId}
@@ -265,12 +349,14 @@ export default function AppPage() {
             onFocusProject={handleFocusProject}
             isFullscreen={tasksFullscreen}
             onToggleFullscreen={() => setTasksFullscreen(f => !f)}
+            focusMode={focusMode}
+            onOpenSettings={() => setShowSettings(true)}
           />
         </div>
 
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
-        <div className={`w-full lg:w-[400px] lg:flex-shrink-0 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
-          <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative">
+        <div id="timer-panel" className={`w-full lg:w-[400px] lg:flex-shrink-0 scroll-mt-24 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
+          <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""}`}>
             {/* Header */}
             <header
               className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
@@ -278,6 +364,23 @@ export default function AppPage() {
               <h1 className="text-base sm:text-lg font-semibold tracking-wide">Focus Timer</h1>
 
               <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setFocusMode((f) => !f)}
+                className={`hidden sm:flex text-xs px-2 py-1 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-400 dark:text-white/60 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+                title="Toggle focus mode (F)"
+              >
+                Focus
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowShortcuts(true)}
+                className="hidden sm:flex text-slate-400 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 touch-target-sm"
+                aria-label="Keyboard shortcuts"
+                title="Shortcuts (?)"
+              >
+                ?
+              </button>
               <button
                 onClick={() => setTimerCollapsed(true)}
                 className="text-slate-400 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10"
@@ -342,7 +445,7 @@ export default function AppPage() {
                 <TimerControls
                   isRunning={isRunning}
                   onStartPause={handleStartPause}
-                  onReset={timer.reset}
+                  onReset={handleReset}
                   showReset={false}
                 />
                 <CircularTimer
@@ -364,7 +467,7 @@ export default function AppPage() {
                 <TimerControls
                   isRunning={isRunning}
                   onStartPause={handleStartPause}
-                  onReset={timer.reset}
+                  onReset={handleReset}
                   showStartPause={false}
                 />
               </div>
@@ -398,7 +501,29 @@ export default function AppPage() {
                   Pick a task on the left to focus your session
                 </p>
               )}
+              {readyToFocus && (
+                <p className="text-center text-sm font-medium text-blue-600 dark:text-blue-400 pb-2 animate-pulse">
+                  Ready to start — press Play or Space
+                </p>
+              )}
             </div>
+
+            {!soundsHintDismissed && !focusMode && (
+              <div className="px-4 pb-2">
+                <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-800 dark:text-indigo-200">
+                  <button
+                    type="button"
+                    className="text-left flex-1 hover:underline"
+                    onClick={() => document.getElementById("ambient-sounds")?.scrollIntoView({ behavior: "smooth" })}
+                  >
+                    🎵 Try ambient sounds for deeper focus
+                  </button>
+                  <button type="button" onClick={dismissSoundsHint} className="text-indigo-500 hover:text-indigo-700 p-1" aria-label="Dismiss">
+                    ×
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Music & Sounds - moved up for better visibility */}
             <AmbientSounds />
@@ -416,15 +541,18 @@ export default function AppPage() {
             <DailyProgress
               dailyGoalData={timer.dailyGoalData}
               dailyGoal={timer.settings.dailyGoal}
+              hideSessionCount
             />
 
-            <SatTutoringPromo variant="sidebar" />
+            {!focusMode && <SatTutoringPromo variant="sidebar" />}
 
             <div className="h-1" />
           </div>
         </div>
 
-        <div className="sr-only" aria-live="polite" aria-atomic="true" />
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {timerAnnouncement}
+        </div>
       </div>
       </div>
 
@@ -437,8 +565,27 @@ export default function AppPage() {
         />
       )}
 
-      <PWAInstallPrompt />
-      <NotificationPrompt />
+      <MobileTimerBar
+        displayTime={mobileDisplayTime}
+        isRunning={isRunning}
+        isBreak={timer.isBreakMode}
+        status={timer.statusText}
+        activeTaskTitle={activeTaskTitle}
+        onStartPause={handleStartPause}
+        onReset={handleReset}
+        onExpandTimer={() => setTimerCollapsed(false)}
+        onScrollToTasks={() => document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" })}
+      />
+
+      <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
+
+      <SessionCelebration
+        show={showCelebration}
+        goalMet={goalMet}
+        streak={timer.dailyGoalData.streak}
+        onDismiss={() => setShowCelebration(false)}
+      />
+
       <OnboardingTour />
     </div>
   );

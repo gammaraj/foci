@@ -4,9 +4,7 @@ import { isAuthLockError } from "@/lib/supabase/auth-errors";
 const isProd = process.env.NODE_ENV === "production";
 
 export const SENTRY_DSN =
-  process.env.NEXT_PUBLIC_SENTRY_DSN ??
-  process.env.SENTRY_DSN ??
-  "https://76fd9a70e5359a186f57e641d2ad2256@o4510225187012608.ingest.us.sentry.io/4511367785283584";
+  process.env.NEXT_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN ?? undefined;
 
 export const sentryTracesSampleRate = isProd ? 0.1 : 1;
 export const sentryReplaysSessionSampleRate = isProd ? 0.1 : 0.1;

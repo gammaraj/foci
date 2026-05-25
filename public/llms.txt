@@ -49,7 +49,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
-- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor, admin) for team productivity.
+- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor) for team productivity.
 - **Project Collaboration**: Share specific projects with team members using invite links with customizable access levels.
 - **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
 - **IndexNow Integration**: Instant search engine notifications when content updates via IndexNow protocol (Bing, Yandex, Naver, Seznam.cz). Accelerates discovery of new blog posts and pages without waiting for traditional crawl cycles.
@@ -192,7 +192,7 @@ A: Yes. Foci displays your local weather, temperature, live clock, and date abov
 A: Yes. Foci includes 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill — alongside built-in offline ambient sounds and SoundCloud Indian classical music.
 
 **Q: Can I collaborate with others on Foci?**
-A: Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer, editor, or admin roles) and Project collaboration (share specific projects with customizable access levels). All invites are managed through email with role-based permissions.
+A: Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer or editor roles) and Project collaboration (share specific projects with customizable access levels). All invites are managed through email with role-based permissions.
 
 **Q: How do collaboration invites work in Foci?**
 A: Send account or project collaboration invites via email. Recipients receive notifications in their notification bell and can accept/decline invites. Account invites grant access to all projects (role-dependent), while project invites are scoped to specific projects. Invites expire automatically for security.

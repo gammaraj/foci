@@ -4,78 +4,28 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
-import SmartPlan from "@/components/SmartPlan";
+import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getToday, formatDateLocal } from "@/lib/dates";
-import FirstSessionNudge from "@/components/FirstSessionNudge";
+import TaskPanelMenu from "@/components/TaskPanelMenu";
 
-const MAX_TASK_TITLE = 200;
-const MAX_PROJECT_NAME = 100;
-const MAX_VISIBLE_PROJECT_TABS = 6;
-
-function formatDuration(ms: number): string {
-  const totalMin = Math.floor(ms / 60000);
-  if (totalMin < 60) return `${totalMin}m`;
-  const h = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
-}
-
-function formatDueDate(iso: string): string {
-  const today = getToday();
-  if (iso === today) return "Today";
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = formatDateLocal(tomorrow);
-  if (iso === tomorrowStr) return "Tomorrow";
-  const d = new Date(iso + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function isDueDateOverdue(iso: string): boolean {
-  return iso < getToday();
-}
-
-function openDatePicker(input: HTMLInputElement | null) {
-  if (!input) return;
-  input.focus({ preventScroll: true });
-  try {
-    if (typeof input.showPicker === "function") {
-      input.showPicker();
-    } else {
-      input.click();
-    }
-  } catch {
-    input.click();
-  }
-}
-
-function getNextDueDate(currentDue: string | undefined, recurrence: RecurrenceType): string {
-  const base = currentDue ? new Date(currentDue + "T00:00:00") : new Date();
-  switch (recurrence) {
-    case "daily": base.setDate(base.getDate() + 1); break;
-    case "weekly": base.setDate(base.getDate() + 7); break;
-    case "monthly": base.setMonth(base.getMonth() + 1); break;
-    case "yearly": base.setFullYear(base.getFullYear() + 1); break;
-  }
-  return formatDateLocal(base);
-}
-
-interface TaskListProps {
-  activeTaskId: string | null;
-  onSelectTask: (taskId: string | null) => void;
-  onStartTask: (taskId: string) => void;
-  onCompleteTask: (taskId: string) => number; // returns elapsed ms
-  isTimerRunning: boolean;
-  focusProjectId?: string | null;
-  onFocusProject?: (projectId: string | null) => void;
-  isFullscreen?: boolean;
-  onToggleFullscreen?: () => void;
-}
+const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
+import TaskCalendarView from "@/components/task-list/TaskCalendarView";
+import type { TaskListProps } from "@/components/task-list/types";
+import {
+  MAX_TASK_TITLE,
+  MAX_PROJECT_NAME,
+  MAX_VISIBLE_PROJECT_TABS,
+  formatDuration,
+  formatDueDate,
+  isDueDateOverdue,
+  openDatePicker,
+  getNextDueDate,
+} from "@/components/task-list/utils";
 
 export default function TaskList({
   activeTaskId,
@@ -87,6 +37,8 @@ export default function TaskList({
   onFocusProject,
   isFullscreen,
   onToggleFullscreen,
+  focusMode,
+  onOpenSettings,
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -119,7 +71,16 @@ export default function TaskList({
   const [showArchivedProjects, setShowArchivedProjects] = useState(false);
   const [dragTaskId, setDragTaskId] = useState<string | null>(null);
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "calendar" | "plan">("list");
+  const [viewMode, setViewMode] = useState<"list" | "calendar" | "plan">(() => {
+    if (typeof window === "undefined") return "list";
+    const saved = localStorage.getItem("foci_task_view_mode");
+    if (saved === "list" || saved === "calendar" || saved === "plan") return saved;
+    return "list";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("foci_task_view_mode", viewMode);
+  }, [viewMode]);
   const [planSettings, setPlanSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [calendarSelectedDay, setCalendarSelectedDay] = useState<string | null>(null);
@@ -258,9 +219,12 @@ export default function TaskList({
             ? { ...t, sessions: t.sessions + 1, timeSpent: (t.timeSpent || 0) + elapsed }
             : t
         );
-        saveTasks(updated).catch(err => {
-          console.error("[Foci] Failed to save session update:", err);
-        });
+        const changed = updated.find((t) => t.id === taskId);
+        if (changed) {
+          saveOneTask(changed).catch(err => {
+            console.error("[Foci] Failed to save session update:", err);
+          });
+        }
         return updated;
       });
     };
@@ -268,10 +232,14 @@ export default function TaskList({
     return () => window.removeEventListener("tempo-session-complete", handleSessionComplete);
   }, []);
 
-  const persist = useCallback(async (updated: Task[]) => {
+  const persist = useCallback(async (updated: Task[], changedTask?: Task) => {
     setTasks(updated);
     try {
-      await saveTasks(updated);
+      if (changedTask) {
+        await saveOneTask(changedTask);
+      } else {
+        await saveTasks(updated);
+      }
       window.dispatchEvent(new Event("tempo-tasks-updated"));
     } catch (err) {
       console.error("[Foci] Failed to save tasks:", err);
@@ -454,11 +422,11 @@ export default function TaskList({
     });
   };
 
-  const addTask = () => {
-    const title = newTaskTitle.trim().slice(0, MAX_TASK_TITLE);
+  const addTaskWithTitle = (titleRaw: string, dueDateOverride?: string) => {
+    const title = titleRaw.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
 
-    const dueDate = newTaskDueDate || (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined);
+    const dueDate = dueDateOverride ?? (newTaskDueDate || (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined));
 
     // For tasks without a due date, place them at the top by assigning an order
     // value below all existing manually-ordered tasks
@@ -485,12 +453,14 @@ export default function TaskList({
       ...(newOrder != null ? { order: newOrder } : {}),
     };
 
-    persist([...tasks, task]);
+    persist([...tasks, task], task);
     trackTaskAdded();
     setNewTaskTitle("");
     setNewTaskDueDate("");
     setExpandedTaskId(task.id);
   };
+
+  const addTask = () => addTaskWithTitle(newTaskTitle);
 
   const toggleComplete = (id: string) => {
     const task = tasks.find((t) => t.id === id);
@@ -518,7 +488,6 @@ export default function TaskList({
           onClick: () => persist(snapshot),
         }
       );
-      // Auto-create next occurrence for repeating tasks
       if (task.recurrence) {
         const nextTask: Task = {
           id: crypto.randomUUID(),
@@ -534,9 +503,14 @@ export default function TaskList({
           recurrence: task.recurrence,
         };
         updated = [...updated, nextTask];
+        persist(updated, changed);
+        saveOneTask(nextTask).catch((err) => console.error("[Foci] Failed to save recurring task:", err));
+      } else {
+        persistOne(updated, changed);
       }
+    } else {
+      persistOne(updated, changed);
     }
-    persist(updated);
     if (activeTaskId === id) onSelectTask(null);
   };
 
@@ -609,7 +583,8 @@ export default function TaskList({
     const updated = tasks.map((t) =>
       t.id === id ? { ...t, archivedAt: undefined } : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === id)!;
+    persistOne(updated, changed);
   };
 
   const deleteArchivedTasks = async () => {
@@ -704,7 +679,8 @@ export default function TaskList({
     const updated = tasks.map((t) =>
       t.id === taskId ? { ...t, subtasks: [...(t.subtasks || []), subtask] } : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === taskId)!;
+    persistOne(updated, changed);
     setNewSubtaskTitle("");
   };
 
@@ -719,7 +695,8 @@ export default function TaskList({
           }
         : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === taskId)!;
+    persistOne(updated, changed);
   };
 
   const deleteSubtask = (taskId: string, subtaskId: string) => {
@@ -728,7 +705,8 @@ export default function TaskList({
         ? { ...t, subtasks: (t.subtasks || []).filter((s) => s.id !== subtaskId) }
         : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === taskId)!;
+    persistOne(updated, changed);
   };
 
   const startEditingSubtask = (sub: Subtask) => {
@@ -749,7 +727,8 @@ export default function TaskList({
           }
         : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === taskId)!;
+    persistOne(updated, changed);
     setEditingSubtaskId(null);
   };
 
@@ -764,7 +743,8 @@ export default function TaskList({
           }
         : t
     );
-    persist(updated);
+    const changed = updated.find((t) => t.id === taskId)!;
+    persistOne(updated, changed);
   };
 
   const startEditingDesc = (task: Task) => {
@@ -946,6 +926,7 @@ export default function TaskList({
           </h2>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
+            {!focusMode && (
             <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -981,8 +962,20 @@ export default function TaskList({
                 Year
               </button>
             </div>
-            {/* View mode toggles */}
-            <div className="flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
+            )}
+            {/* View mode — mobile dropdown */}
+            <select
+              value={viewMode}
+              onChange={(e) => setViewMode(e.target.value as "list" | "calendar" | "plan")}
+              className="sm:hidden text-xs font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
+              aria-label="Task view mode"
+            >
+              <option value="list">List</option>
+              <option value="calendar">Calendar</option>
+              <option value="plan">Smart Plan</option>
+            </select>
+            {/* View mode toggles — desktop */}
+            <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2.5 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
@@ -1004,6 +997,14 @@ export default function TaskList({
                 </svg>
               </button>
             </div>
+            {onOpenSettings && (
+              <TaskPanelMenu
+                user={user}
+                onOpenSettings={onOpenSettings}
+                onToggleFullscreen={onToggleFullscreen}
+                isFullscreen={isFullscreen}
+              />
+            )}
             {/* Fullscreen toggle */}
             {onToggleFullscreen && (
               <button
@@ -1051,6 +1052,7 @@ export default function TaskList({
           </button>
         </div>
         {/* Time filters - mobile: own row below title */}
+        {!focusMode && (
         <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -1086,6 +1088,7 @@ export default function TaskList({
             Year
           </button>
         </div>
+        )}
       </div>
       </>
       )}
@@ -1113,6 +1116,7 @@ export default function TaskList({
           isTimerRunning={isTimerRunning}
           selectedDay={calendarSelectedDay}
           onSelectDay={setCalendarSelectedDay}
+          onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate)}
         />
       )}
 
@@ -1657,6 +1661,7 @@ export default function TaskList({
           className="flex gap-2 flex-1"
         >
           <input
+            id="new-task-input"
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
@@ -1703,6 +1708,25 @@ export default function TaskList({
             Add
           </button>
         </form>
+
+        {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            <span className="text-xs text-slate-500 dark:text-slate-400 w-full">Quick start:</span>
+            {TASK_TEMPLATES.slice(0, 3).map((tpl) => (
+              <button
+                key={tpl.label}
+                type="button"
+                onClick={() => {
+                  const newTasks = templateToTasks(tpl, (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId);
+                  persist([...tasks, ...newTasks]);
+                }}
+                className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors touch-target-sm"
+              >
+                {tpl.emoji} {tpl.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Template button */}
         <div className="relative" ref={templateMenuRef}>
@@ -1799,8 +1823,7 @@ export default function TaskList({
           </div>
         )}
 
-        {/* First session nudge for new users */}
-        {tasksReady && pendingTasks.length > 0 && <FirstSessionNudge />}
+        {/* First session nudge handled by AppMessageQueue on /app */}
 
         <div className="space-y-2">
           {pendingTasks.map((task, index) => {
@@ -2049,10 +2072,10 @@ export default function TaskList({
                         onStartTask(task.id);
                       }
                     }}
-                    className={`flex-shrink-0 rounded transition-all hidden sm:flex items-center justify-center ${
+                    className={`flex-shrink-0 rounded transition-all flex items-center justify-center touch-target-sm ${
                       activeTaskId === task.id
                         ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        : "px-2.5 py-1.5 text-xs sm:text-sm font-medium text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 hover:bg-orange-500 hover:text-white hover:border-orange-500 dark:hover:bg-orange-500 dark:hover:text-white dark:hover:border-orange-500"
+                        : "p-2 sm:px-2.5 sm:py-1.5 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 sm:hover:bg-orange-500 sm:hover:text-white sm:hover:border-orange-500 dark:sm:hover:bg-orange-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 sm:bg-transparent sm:text-slate-400 hover-reveal-desktop"
                     }`}
                     title={
                       activeTaskId === task.id
@@ -2079,7 +2102,7 @@ export default function TaskList({
               {!(isTimerRunning && activeTaskId === task.id) && (
                 <button
                   onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                  className="flex-shrink-0 p-2 rounded-md text-slate-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                  className="flex-shrink-0 p-2 rounded-md text-slate-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:flex hover-reveal-desktop transition-all"
                   aria-label={`Delete "${task.title}"`}
                 >
                   <svg
@@ -2558,315 +2581,6 @@ export default function TaskList({
           isOpen={true}
           onClose={() => setShareModalProject(null)}
         />
-      )}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// Task Calendar View
-// ═══════════════════════════════════════════════════════
-
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
-function TaskCalendarView({
-  tasks,
-  projects,
-  calendarDate,
-  setCalendarDate,
-  onSetDueDate,
-  activeTaskId,
-  onStartTask,
-  isTimerRunning,
-  selectedDay,
-  onSelectDay,
-}: {
-  tasks: Task[];
-  projects: Project[];
-  calendarDate: Date;
-  setCalendarDate: (d: Date) => void;
-  onSetDueDate: (id: string, date: string | undefined) => void;
-  activeTaskId: string | null;
-  onStartTask: (taskId: string) => void;
-  isTimerRunning: boolean;
-  selectedDay: string | null;
-  onSelectDay: (day: string | null) => void;
-}) {
-  const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS_ID);
-
-  const year = calendarDate.getFullYear();
-  const month = calendarDate.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const startingDow = new Date(year, month, 1).getDay();
-
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-  // Filter tasks by selected project
-  const filteredTasks = projectFilter === ALL_PROJECTS_ID
-    ? tasks
-    : tasks.filter((t) => t.projectId === projectFilter);
-
-  // Build a map: dateKey → tasks with that due date
-  const tasksByDate: Record<string, Task[]> = {};
-  for (const t of filteredTasks) {
-    if (t.dueDate && !t.archivedAt) {
-      (tasksByDate[t.dueDate] ??= []).push(t);
-    }
-  }
-
-  // Tasks with no due date
-  const unscheduledTasks = filteredTasks.filter((t) => !t.dueDate && !t.completed && !t.archivedAt);
-
-  const visibleProjects = projects.filter((p) => !p.archived);
-
-  const prevMonth = () => setCalendarDate(new Date(year, month - 1, 1));
-  const nextMonth = () => setCalendarDate(new Date(year, month + 1, 1));
-  const goToday = () => {
-    setCalendarDate(new Date());
-    onSelectDay(todayStr);
-  };
-
-  const emptyCells = Array.from({ length: startingDow });
-  const dayCells = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-
-  const selectedTasks = selectedDay ? (tasksByDate[selectedDay] ?? []) : [];
-
-  return (
-    <div className="p-4">
-      {/* Project filter */}
-      {visibleProjects.length > 1 && (
-        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
-          <button
-            onClick={() => setProjectFilter(ALL_PROJECTS_ID)}
-            className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-full border transition-colors ${
-              projectFilter === ALL_PROJECTS_ID
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
-            }`}
-          >
-            All
-          </button>
-          {visibleProjects.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setProjectFilter(p.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                projectFilter === p.id
-                  ? "border-transparent text-white"
-                  : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
-              }`}
-              style={projectFilter === p.id && p.color ? { backgroundColor: p.color, borderColor: p.color } : {}}
-            >
-              {p.color && (
-                <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${projectFilter === p.id ? "hidden" : ""}`}
-                  style={{ backgroundColor: p.color }}
-                />
-              )}
-              {p.name}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Month nav */}
-      <div className="flex items-center justify-between mb-3">
-        <button
-          onClick={prevMonth}
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
-        >
-          <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
-            {MONTH_NAMES[month]} {year}
-          </h3>
-          <button
-            onClick={goToday}
-            className="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-          >
-            Today
-          </button>
-        </div>
-        <button
-          onClick={nextMonth}
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
-        >
-          <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Day headers */}
-      <div className="grid grid-cols-7 gap-1 mb-1">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="text-center text-xs font-medium text-slate-400 dark:text-slate-300 uppercase">
-            {d}
-          </div>
-        ))}
-      </div>
-
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {emptyCells.map((_, i) => (
-          <div key={`e-${i}`} className="min-h-[68px]" />
-        ))}
-        {dayCells.map((day) => {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-          const dayTasks = tasksByDate[dateStr] ?? [];
-          const isToday = dateStr === todayStr;
-          const isSelected = dateStr === selectedDay;
-          const isPast = dateStr < todayStr;
-          const hasOverdue = isPast && dayTasks.some((t) => !t.completed);
-
-          return (
-            <button
-              key={day}
-              onClick={() => onSelectDay(isSelected ? null : dateStr)}
-              className={`min-h-[68px] rounded-lg flex flex-col p-1 text-xs transition-all w-full text-left ${
-                isSelected
-                  ? "bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#111827]"
-                  : isToday
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                    : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
-              }`}
-            >
-              <span className={`text-[11px] font-semibold self-end leading-none mb-1 ${isToday && !isSelected ? "font-bold" : ""}`}>{day}</span>
-              <div className="flex flex-col gap-0.5 w-full">
-                {dayTasks.slice(0, 2).map((t) => {
-                  const chipColor = isSelected
-                    ? "bg-white/20 text-white"
-                    : t.completed
-                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                      : hasOverdue && !t.completed
-                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
-                  return (
-                    <div
-                      key={t.id}
-                      className={`w-full truncate text-[11px] leading-tight px-1 py-0.5 rounded ${chipColor} ${t.completed ? "line-through" : ""}`}
-                    >
-                      {t.title}
-                    </div>
-                  );
-                })}
-                {dayTasks.length > 2 && (
-                  <span className={`text-[10px] leading-none px-1 ${isSelected ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`}>
-                    +{dayTasks.length - 2} more
-                  </span>
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-400 dark:text-slate-300">
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Pending</div>
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> Done</div>
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> Overdue</div>
-      </div>
-
-      {/* Selected day detail */}
-      {selectedDay && (
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#1e3050]">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {formatDueDate(selectedDay)}
-              {selectedDay === todayStr && " — Today"}
-            </h4>
-            <span className="text-xs text-slate-400">{selectedTasks.length} task{selectedTasks.length !== 1 ? "s" : ""}</span>
-          </div>
-          {selectedTasks.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-400">No tasks due on this day.</p>
-          ) : (
-            <div className="space-y-1.5">
-              {selectedTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-colors ${
-                    task.completed
-                      ? "border-slate-100 dark:border-[#1e3050] opacity-60"
-                      : activeTaskId === task.id
-                        ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
-                        : selectedDay < todayStr
-                          ? "border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-900/10"
-                          : "border-slate-200 dark:border-[#1e3050]"
-                  }`}
-                >
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-red-400" : "bg-blue-400"
-                  }`} />
-                  <span className={`text-sm flex-1 truncate ${
-                    task.completed
-                      ? "line-through text-slate-400"
-                      : "text-slate-700 dark:text-slate-200 font-medium"
-                  }`}>
-                    {task.title}
-                  </span>
-                  {!task.completed && (
-                    <button
-                      onClick={() => onStartTask(task.id)}
-                      className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1"
-                    >
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
-                      {isTimerRunning ? "Switch" : "Start"}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => onSetDueDate(task.id, undefined)}
-                    className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-red-400 transition-colors"
-                    title="Remove due date"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Unscheduled tasks */}
-      {unscheduledTasks.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#1e3050]">
-          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
-            No due date ({unscheduledTasks.length})
-          </h4>
-          <div className="space-y-1">
-            {unscheduledTasks.slice(0, 8).map((task) => (
-              <div key={task.id} className="flex items-center gap-2 p-2 rounded-lg">
-                <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
-                <div className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors" title="Set due date">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <input
-                    type="date"
-                    onChange={(e) => { if (e.target.value) onSetDueDate(task.id, e.target.value); }}
-                    onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                  />
-                </div>
-              </div>
-            ))}
-            {unscheduledTasks.length > 8 && (
-              <p className="text-xs text-slate-400 text-center">+{unscheduledTasks.length - 8} more</p>
-            )}
-          </div>
-        </div>
       )}
     </div>
   );

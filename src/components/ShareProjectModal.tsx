@@ -194,7 +194,7 @@ export default function ShareProjectModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 id="share-title" className="text-lg font-bold text-slate-900 dark:text-white">
-            Share "{project.name}"
+            Share &ldquo;{project.name}&rdquo;
           </h2>
           <button
             onClick={onClose}

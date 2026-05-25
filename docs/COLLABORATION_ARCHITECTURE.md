@@ -1,8 +1,8 @@
 # Foci Collaboration Architecture
 
-> **Status:** Design Phase  
+> **Status:** Implemented (May 2026)  
 > **Author:** GitHub Copilot  
-> **Date:** April 13, 2026
+> **Date:** April 13, 2026 (design); shipped incrementally through May 2026
 
 This document outlines the architecture for adding task collaboration to Foci, enabling users to share tasks and projects with collaborators.
 

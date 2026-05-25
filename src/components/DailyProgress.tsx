@@ -10,11 +10,14 @@ import { useTheme } from "@/components/ThemeProvider";
 interface DailyProgressProps {
   dailyGoalData: DailyGoalData;
   dailyGoal: number;
+  /** When true, hides session count (shown in top stats bar instead). */
+  hideSessionCount?: boolean;
 }
 
 export default function DailyProgress({
   dailyGoalData,
   dailyGoal,
+  hideSessionCount,
 }: DailyProgressProps) {
   const { loading: authLoading } = useAuth();
   const [showCalendar, setShowCalendar] = useState(false);
@@ -58,18 +61,27 @@ export default function DailyProgress({
         {/* Compact single-line layout */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <h2
-              id="daily-progress-heading"
-              className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap"
-            >
-              Today:
-            </h2>
-            <div className="text-base sm:text-lg font-bold text-blue-600 dark:text-blue-300" title={`${dailyGoalData.sessionCount} sessions completed / daily goal: ${dailyGoal}`}>
-              {dailyGoalData.sessionCount}<span className="text-slate-400 dark:text-slate-300 text-sm">/</span>{dailyGoal}
-            </div>
-            <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 truncate max-sm:max-w-[120px]">
-              • {dailyGoal - dailyGoalData.sessionCount > 0 ? `${dailyGoal - dailyGoalData.sessionCount} to go` : 'Goal met! 🎉'}
-            </div>
+            {!hideSessionCount && (
+              <>
+                <h2
+                  id="daily-progress-heading"
+                  className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                >
+                  Today:
+                </h2>
+                <div className="text-base sm:text-lg font-bold text-blue-600 dark:text-blue-300" title={`${dailyGoalData.sessionCount} sessions completed / daily goal: ${dailyGoal}`}>
+                  {dailyGoalData.sessionCount}<span className="text-slate-400 dark:text-slate-300 text-sm">/</span>{dailyGoal}
+                </div>
+                <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 truncate max-sm:max-w-[120px]">
+                  • {dailyGoal - dailyGoalData.sessionCount > 0 ? `${dailyGoal - dailyGoalData.sessionCount} to go` : 'Goal met! 🎉'}
+                </div>
+              </>
+            )}
+            {hideSessionCount && (
+              <h2 id="daily-progress-heading" className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">
+                Daily progress
+              </h2>
+            )}
           </div>
           <div
             className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1a2d4a] px-2 py-1 rounded-lg transition-colors"

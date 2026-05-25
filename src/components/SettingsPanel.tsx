@@ -8,6 +8,7 @@ import AccountSharingModal from "@/components/AccountSharingModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
 import { loadProjects } from "@/lib/storage";
+import { getFocusModeAuto, setFocusModeAuto } from "@/lib/focus-mode";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -41,7 +42,12 @@ export default function SettingsPanel({
   const [notifications, setNotifications] = useState(
     settings.notificationsEnabled
   );
+  const [focusModeAuto, setFocusModeAutoState] = useState(false);
   const [browserPerm, setBrowserPerm] = useState<NotificationPermission>("default");
+
+  useEffect(() => {
+    setFocusModeAutoState(getFocusModeAuto());
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -346,6 +352,25 @@ export default function SettingsPanel({
                   id="autoStart"
                   checked={autoStart}
                   onChange={(e) => setAutoStart(e.target.checked)}
+                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
+                />
+              </div>
+
+              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
+                <div className="flex flex-col">
+                  <label htmlFor="focusModeAuto" className="text-base font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                    <span>🎯</span> Focus mode when timer starts
+                  </label>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Hides distractions and simplifies the task panel</span>
+                </div>
+                <input
+                  type="checkbox"
+                  id="focusModeAuto"
+                  checked={focusModeAuto}
+                  onChange={(e) => {
+                    setFocusModeAutoState(e.target.checked);
+                    setFocusModeAuto(e.target.checked);
+                  }}
                   className="h-5 w-5 text-blue-600 border-slate-300 rounded"
                 />
               </div>

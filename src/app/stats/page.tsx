@@ -248,34 +248,36 @@ function DonutChart({
   const radius = 50;
   const stroke = 14;
   const circumference = 2 * Math.PI * radius;
-  let offset = 0;
+
+  const segments = items.map((item, index) => {
+    const pct = item.value / total;
+    const dash = pct * circumference;
+    const offset = items
+      .slice(0, index)
+      .reduce((sum, prev) => sum + (prev.value / total) * circumference, 0);
+    return (
+      <circle
+        key={item.label}
+        cx="70"
+        cy="70"
+        r={radius}
+        fill="none"
+        stroke={item.color}
+        strokeWidth={stroke}
+        strokeDasharray={`${dash} ${circumference - dash}`}
+        strokeDashoffset={-offset}
+        strokeLinecap="round"
+        className="transition-all duration-500"
+        transform="rotate(-90 70 70)"
+      />
+    );
+  });
 
   return (
     <div className="flex items-center gap-6">
       <div className="relative flex-shrink-0">
         <svg width="140" height="140" viewBox="0 0 140 140">
-          {items.map((item) => {
-            const pct = item.value / total;
-            const dash = pct * circumference;
-            const seg = (
-              <circle
-                key={item.label}
-                cx="70"
-                cy="70"
-                r={radius}
-                fill="none"
-                stroke={item.color}
-                strokeWidth={stroke}
-                strokeDasharray={`${dash} ${circumference - dash}`}
-                strokeDashoffset={-offset}
-                strokeLinecap="round"
-                className="transition-all duration-500"
-                transform="rotate(-90 70 70)"
-              />
-            );
-            offset += dash;
-            return seg;
-          })}
+          {segments}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-lg font-bold text-slate-900 dark:text-white">{formatMs(total)}</span>

@@ -26,8 +26,23 @@ jobs:
       - name: Audit dependencies
         run: npm audit --audit-level=high
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Validate RLS policy names in migrations
+        run: npm run check:rls-policies
+
       - name: Build
         run: npm run build
 
       - name: Validate sitemap, SEO/AEO and llms sync
         run: npm run check:content-integrity
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: E2E tests
+        run: npm run test

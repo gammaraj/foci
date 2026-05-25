@@ -51,7 +51,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
-- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor, admin) for team productivity.
+- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor) for team productivity.
 - **Project Collaboration**: Share specific projects with team members using invite links with customizable access levels.
 - **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).

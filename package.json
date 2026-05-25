@@ -7,9 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "test:unit": "vitest run",
+    "check:rls-policies": "node scripts/ci/check-rls-policies.cjs",
     "check:content-integrity": "node scripts/ci/check-content-integrity.cjs",
-    "check:ci": "npm run build && npm run check:content-integrity",
+    "check:ci": "npm run lint && npm run test:unit && npm run check:rls-policies && npm run build && npm run check:content-integrity",
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui"
   },
@@ -33,8 +35,10 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@playwright/test": "^1.58.2",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.3"
+    "eslint-config-next": "^16.2.3",
+    "vitest": "^3.2.4"
   }
 }

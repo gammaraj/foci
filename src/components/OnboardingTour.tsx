@@ -80,6 +80,16 @@ export default function OnboardingTour() {
     return () => { cancelled = true; clearTimeout(timer); };
   }, [user, authLoading]);
 
+  const finish = useCallback(() => {
+    setCurrentStep(-1);
+    localStorage.setItem("foci_onboarding_done", "1");
+    if (user) {
+      const supabase = createClient();
+      supabase.auth.updateUser({ data: { onboarding_done: true } })
+        .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
+    }
+  }, [user]);
+
   const positionTooltip = useCallback(() => {
     if (currentStep < 0 || currentStep >= STEPS.length) return;
 
@@ -123,7 +133,7 @@ export default function OnboardingTour() {
     }
 
     setTooltipStyle(style);
-  }, [currentStep]);
+  }, [currentStep, finish]);
 
   useEffect(() => {
     positionTooltip();
@@ -134,17 +144,6 @@ export default function OnboardingTour() {
       window.removeEventListener("scroll", positionTooltip, true);
     };
   }, [positionTooltip]);
-
-  const finish = () => {
-    setCurrentStep(-1);
-    localStorage.setItem("foci_onboarding_done", "1");
-    // Persist to Supabase user metadata for authenticated users only
-    if (user) {
-      const supabase = createClient();
-      supabase.auth.updateUser({ data: { onboarding_done: true } })
-        .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
-    }
-  };
 
   const next = () => {
     if (currentStep < STEPS.length - 1) {

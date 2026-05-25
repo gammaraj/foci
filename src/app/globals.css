@@ -291,3 +291,55 @@ input:focus-visible {
   border-color: #243350;
   box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6);
 }
+
+/* ===== UX utilities ===== */
+.touch-target-sm {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hover-reveal-desktop {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hover-reveal-desktop {
+    opacity: 0;
+  }
+  .group:hover .hover-reveal-desktop {
+    opacity: 1;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--primary-blue);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+.skip-link + .skip-link:focus {
+  top: 3.75rem;
+}
+
+.timer-break-mode {
+  box-shadow: inset 0 4px 0 0 #22c55e;
+}
+
+.dark .timer-break-mode {
+  box-shadow: inset 0 4px 0 0 #4ade80;
+}
+
+.ready-to-focus-ring {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+}
