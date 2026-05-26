@@ -225,7 +225,7 @@ export default function AppPage() {
     timer.status === "break" ? formatTime(timer.remainingTime) : displayTime;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
+    <div className="app-shell min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
       <a href="#tasks-section" className="skip-link">Skip to tasks</a>
       <a href="#timer-panel" className="skip-link">Skip to timer</a>
       <Navbar
@@ -247,7 +247,7 @@ export default function AppPage() {
             <button
               type="button"
               onClick={() => setFocusMode(false)}
-              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
+              className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
             >
               Exit (F)
             </button>
@@ -257,7 +257,7 @@ export default function AppPage() {
       <DueDateReminders />
       {!focusMode && (
       <div className="px-2 sm:px-4 pt-2">
-        <div className="max-w-[1280px] mx-auto rounded-xl app-surface dark:bg-[#111827]/85 dark:border-[#243350] px-3 sm:px-4 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-600 dark:text-slate-300">
+        <div className="max-w-[1280px] mx-auto rounded-xl app-surface dark:bg-[#111827]/85 dark:border-[#243350] px-3 sm:px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm sm:text-base text-slate-600 dark:text-slate-300">
           <span className="font-semibold text-slate-700 dark:text-slate-200">
             Today <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span> sessions
           </span>
@@ -346,13 +346,13 @@ export default function AppPage() {
             <header
               className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
             >
-              <h1 className="text-base sm:text-lg font-semibold tracking-wide">Focus Timer</h1>
+              <h1 className="text-lg sm:text-xl font-semibold tracking-wide">Focus Timer</h1>
 
               <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setFocusMode((f) => !f)}
-                className={`hidden sm:flex text-xs px-2 py-1 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-400 dark:text-white/60 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+                className={`hidden sm:flex text-sm px-2.5 py-1 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
                 title="Toggle focus mode (F)"
               >
                 Focus
@@ -458,7 +458,7 @@ export default function AppPage() {
                   <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
                     Select a task, then press Play or Space
                   </p>
-                  <p className="text-xs text-blue-600/80 dark:text-blue-300/80 mt-0.5">
+                  <p className="text-sm text-blue-600/90 dark:text-blue-300/90 mt-0.5">
                     Or tap ▶ Start on any task in your list
                   </p>
                 </div>
@@ -472,7 +472,7 @@ export default function AppPage() {
 
             {!soundsHintDismissed && !focusMode && (
               <div className="px-4 pb-2">
-                <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-800 dark:text-indigo-200">
+                <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-sm text-indigo-800 dark:text-indigo-200">
                   <button
                     type="button"
                     className="text-left flex-1 hover:underline"

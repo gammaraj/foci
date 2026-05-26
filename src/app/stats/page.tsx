@@ -66,7 +66,7 @@ function BarChart({
         const pct = (d.value / max) * 100;
         return (
           <div key={d.key} className="group flex flex-col items-center flex-1 min-w-0 h-full justify-end">
-            <span className="text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 mb-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-xs sm:text-xs font-medium text-slate-600 dark:text-slate-300 mb-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
               {d.value > 0 ? `${d.value}${valueSuffix}` : ""}
             </span>
             <div
@@ -77,7 +77,7 @@ function BarChart({
                 minHeight: d.value > 0 ? 4 : 0,
               }}
             />
-            <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1.5 truncate w-full text-center">
+            <span className="text-xs sm:text-xs text-slate-500 dark:text-slate-400 mt-1.5 truncate w-full text-center">
               {labelFn(d.key)}
             </span>
           </div>
@@ -186,7 +186,7 @@ function Heatmap({
         {dayLabels.map((label, row) => (
           <div
             key={`label-${row}`}
-            className="text-[10px] text-slate-400 dark:text-slate-500 pr-2 flex items-center justify-end"
+            className="text-xs text-slate-400 dark:text-slate-500 pr-2 flex items-center justify-end"
             style={{ gridColumn: 1, gridRow: row + 1 }}
           >
             {label}
@@ -281,7 +281,7 @@ function DonutChart({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-lg font-bold text-slate-900 dark:text-white">{formatMs(total)}</span>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">Total</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Total</span>
         </div>
       </div>
       <div className="flex flex-col gap-2 min-w-0">
@@ -496,7 +496,7 @@ export default function StatsPage() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b1121]">
+      <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
         <Navbar />
         <div className="max-w-[1280px] mx-auto px-4 py-12 text-center text-slate-500 dark:text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
@@ -506,7 +506,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b1121]">
+    <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
       <Navbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -593,7 +593,7 @@ export default function StatsPage() {
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
               Activity
             </h2>
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
               <span>Less</span>
               <div className="flex gap-[3px]">
                 {["var(--heatmap-empty)", "var(--heatmap-l1)", "var(--heatmap-l2)", "var(--heatmap-l3)", "var(--heatmap-l4)"].map((c, i) => (
@@ -743,7 +743,7 @@ export default function StatsPage() {
                       className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-blue-500 dark:bg-blue-400" : "bg-slate-200 dark:bg-[#1a2744]"}`}
                       style={{ height: `${Math.max(pct, val > 0 ? 6 : 2)}%` }}
                     />
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">{d.slice(0, 2)}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">{d.slice(0, 2)}</span>
                   </div>
                 );
               })}

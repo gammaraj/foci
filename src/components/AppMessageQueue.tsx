@@ -111,7 +111,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
             <span className="hidden sm:inline"> — sync tasks across devices</span>
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Link href="/login" className="px-3 py-1.5 bg-white text-blue-700 font-semibold rounded-lg text-xs hover:bg-blue-50">
+            <Link href="/login" className="px-3 py-1.5 bg-white text-blue-700 font-semibold rounded-lg text-sm hover:bg-blue-50">
               Sign up
             </Link>
             <button type="button" onClick={() => dismiss("signup")} className="p-1.5 text-white/70 hover:text-white touch-target-sm" aria-label="Dismiss">
@@ -129,9 +129,9 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         <div className="max-w-[1280px] mx-auto p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/25 dark:to-indigo-900/25 border border-blue-200 dark:border-blue-800 flex items-start gap-3">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Ready to start focusing?</p>
-            <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">Add a task, tap Play, and run your first Pomodoro session.</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">Add a task, tap Play, and run your first Pomodoro session.</p>
           </div>
-          <button type="button" onClick={() => dismiss("first-session")} className="text-xs text-blue-600 dark:text-blue-400 font-medium touch-target-sm px-2" aria-label="Dismiss">
+          <button type="button" onClick={() => dismiss("first-session")} className="text-sm text-blue-600 dark:text-blue-400 font-medium touch-target-sm px-2" aria-label="Dismiss">
             Got it
           </button>
         </div>
@@ -147,7 +147,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
           <div className="flex gap-2 flex-shrink-0">
             <button
               type="button"
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white touch-target-sm"
+              className="px-3 py-1.5 text-sm font-medium rounded-lg bg-blue-600 text-white touch-target-sm"
               onClick={async () => {
                 await Notification.requestPermission();
                 dismiss("notification");
@@ -155,7 +155,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
             >
               Enable
             </button>
-            <button type="button" onClick={() => dismiss("notification")} className="px-3 py-1.5 text-xs text-slate-500 touch-target-sm">
+            <button type="button" onClick={() => dismiss("notification")} className="px-3 py-1.5 text-sm text-slate-500 touch-target-sm">
               Later
             </button>
           </div>
@@ -181,7 +181,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
             >
               Install
             </button>
-            <button type="button" onClick={() => dismiss("pwa")} className="px-3 py-1.5 text-xs text-slate-500 touch-target-sm">
+            <button type="button" onClick={() => dismiss("pwa")} className="px-3 py-1.5 text-sm text-slate-500 touch-target-sm">
               Not now
             </button>
           </div>

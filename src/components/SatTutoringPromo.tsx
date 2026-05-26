@@ -52,20 +52,20 @@ export default function SatTutoringPromo({
 
   const card = (
     <>
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">
+      <p className="app-section-label text-violet-600 dark:text-violet-400">
         Prepping for the SAT?
       </p>
-      <p className={`mt-1 font-semibold text-slate-800 dark:text-slate-100 ${variant === "inline" ? "text-base" : "text-sm"}`}>
+      <p className={`mt-1 font-semibold text-slate-800 dark:text-slate-100 ${variant === "inline" ? "text-base" : "text-sm sm:text-base"}`}>
         1-on-1 Digital SAT tutoring
       </p>
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
         Work with a 1590 scorer heading to Johns Hopkins. From $75/hr · free 15-min consult.
       </p>
       <a
         href={SAT_TUTORING_URL}
         target="_blank"
         rel="noopener noreferrer sponsored"
-        className="inline-flex items-center mt-2.5 text-xs font-semibold text-violet-700 dark:text-violet-300 hover:text-violet-900 dark:hover:text-violet-200 transition-colors"
+        className="inline-flex items-center mt-2.5 text-sm font-semibold text-violet-700 dark:text-violet-300 hover:text-violet-900 dark:hover:text-violet-200 transition-colors"
       >
         Learn more at College Decider →
       </a>

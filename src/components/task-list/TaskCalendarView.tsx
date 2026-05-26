@@ -173,7 +173,7 @@ export default function TaskCalendarView({
                     : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
               }`}
             >
-              <span className={`text-[11px] font-semibold self-end leading-none mb-1 ${isToday && !isSelected ? "font-bold" : ""}`}>{day}</span>
+              <span className={`text-xs font-semibold self-end leading-none mb-1 ${isToday && !isSelected ? "font-bold" : ""}`}>{day}</span>
               <div className="flex flex-col gap-0.5 w-full">
                 {dayTasks.slice(0, 2).map((t) => {
                   const chipColor = isSelected
@@ -186,14 +186,14 @@ export default function TaskCalendarView({
                   return (
                     <div
                       key={t.id}
-                      className={`w-full truncate text-[11px] leading-tight px-1 py-0.5 rounded ${chipColor} ${t.completed ? "line-through" : ""}`}
+                      className={`w-full truncate text-xs leading-tight px-1 py-0.5 rounded ${chipColor} ${t.completed ? "line-through" : ""}`}
                     >
                       {t.title}
                     </div>
                   );
                 })}
                 {dayTasks.length > 2 && (
-                  <span className={`text-[10px] leading-none px-1 ${isSelected ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`}>
+                  <span className={`text-xs leading-none px-1 ${isSelected ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`}>
                     +{dayTasks.length - 2} more
                   </span>
                 )}

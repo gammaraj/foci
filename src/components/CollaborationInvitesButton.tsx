@@ -167,7 +167,7 @@ export default function CollaborationInvitesButton() {
 
         {/* Badge for pending invites */}
         {inviteCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-blue-500 rounded-full px-1">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-blue-500 rounded-full px-1">
             {inviteCount > 9 ? "9+" : inviteCount}
           </span>
         )}

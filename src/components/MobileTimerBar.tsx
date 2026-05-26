@@ -48,7 +48,7 @@ export default function MobileTimerBar({
           <span className={`text-xl font-mono font-bold tabular-nums leading-none ${isRunning && !isBreak ? "text-blue-600 dark:text-blue-400" : isBreak ? "text-green-700 dark:text-green-300" : "text-slate-800 dark:text-slate-100"}`}>
             {displayTime}
           </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+          <span className="text-sm text-slate-600 dark:text-slate-400 truncate mt-0.5">
             {isBreak ? "Break time" : activeTaskTitle ? activeTaskTitle : status}
           </span>
         </button>

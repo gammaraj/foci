@@ -86,7 +86,7 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
 
   if (compact) {
     return (
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 px-1 truncate">
+      <p className="app-text-meta text-slate-500 dark:text-slate-400 mb-2 px-1 truncate">
         {greeting} · <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">{formatClock(now)}</span>
         {weather && (
           <>

@@ -893,7 +893,7 @@ export default function TaskList({
                 <span className="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-slate-300 dark:ring-white/20" style={{ backgroundColor: focusProject.color }} />
               )}
               <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/50 leading-none mb-0.5">Project Focus</p>
+                <p className="app-section-label text-slate-400 dark:text-white/50 leading-none mb-0.5">Project Focus</p>
                 <h2 className="text-base sm:text-lg font-bold truncate">{focusProject?.name ?? "Project"}</h2>
               </div>
             </div>
@@ -931,7 +931,7 @@ export default function TaskList({
             </svg>
             Tasks
             {viewMode === "plan" && (
-              <span className="text-xs font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
+              <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
                 · AI plan
               </span>
             )}
@@ -947,7 +947,7 @@ export default function TaskList({
               >
                 Today
                 {overdueTasks.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs app-badge font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
                     {overdueTasks.length}
                   </span>
                 )}
@@ -1056,7 +1056,7 @@ export default function TaskList({
           >
             Today
             {overdueTasks.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs app-badge font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
                 {overdueTasks.length}
               </span>
             )}
@@ -1133,7 +1133,7 @@ export default function TaskList({
             ? "General"
             : (currentProject?.name ?? "General");
         return (
-          <p className="px-3 sm:px-4 pt-2 pb-0 text-xs text-slate-500 dark:text-slate-400">
+          <p className="px-3 sm:px-4 pt-2 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
             Viewing{" "}
             <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
             {" · "}
@@ -1576,7 +1576,7 @@ export default function TaskList({
                           </svg>
                           {sp._ownerName || sp._ownerEmail.split("@")[0]}
                           {sp._myRole === "viewer" && (
-                            <span className="text-amber-500 text-[10px]">(view only)</span>
+                            <span className="text-amber-500 text-xs app-badge">(view only)</span>
                           )}
                         </span>
                       </div>
@@ -1814,7 +1814,7 @@ export default function TaskList({
 
         {!activeTaskId && !isTimerRunning && tasksReady && pendingTasks.length > 0 && viewMode === "list" && (
           <div className="mx-3 sm:mx-4 mb-3 px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-800/60 bg-blue-50/80 dark:bg-blue-900/20">
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+            <p className="text-sm sm:text-base font-medium text-blue-800 dark:text-blue-200">
               Ready to focus? Select a task and tap Start, or press Space when the timer is open.
             </p>
           </div>
@@ -1835,12 +1835,12 @@ export default function TaskList({
             return (
             <div key={task.id}>
             {showOverdueHeader && (
-              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500 text-xs font-semibold uppercase tracking-wide text-red-700 dark:text-red-300">
+              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500 app-section-label text-red-700 dark:text-red-300">
                 Overdue — needs attention
               </div>
             )}
             {showUpcomingHeader && (
-              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 app-section-label text-slate-600 dark:text-slate-300">
                 Due today and upcoming
               </div>
             )}
@@ -1944,13 +1944,13 @@ export default function TaskList({
                   )}
                   {/* Overdue indicator */}
                   {isOverdue && (
-                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] sm:text-xs font-bold uppercase rounded bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-200 align-middle border border-red-200 dark:border-red-700/50">
+                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs sm:text-sm font-bold uppercase rounded bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-200 align-middle border border-red-200 dark:border-red-700/50">
                       OVERDUE
                     </span>
                   )}
                   {/* Priority badge */}
                   {task.priority && (
-                    <span className={`ml-1.5 inline-flex items-center px-1.5 py-0.5 text-[11px] sm:text-xs font-semibold uppercase rounded align-middle ${
+                    <span className={`ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs sm:text-sm font-semibold uppercase rounded align-middle ${
                       task.priority === 1 
                         ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
                         : task.priority === 2
