@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
-import SatTutoringPromo from "@/components/SatTutoringPromo";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
 import NotificationBell from "@/components/NotificationBell";
@@ -337,11 +336,6 @@ export default function AppPage() {
             focusMode={focusMode}
             onOpenSettings={() => setShowSettings(true)}
           />
-          {!focusMode && !tasksFullscreen && (
-            <div className="mt-4 px-1">
-              <SatTutoringPromo variant="inline" />
-            </div>
-          )}
         </div>
 
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
