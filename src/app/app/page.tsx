@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
-import DailyProgress from "@/components/DailyProgress";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
@@ -229,7 +228,17 @@ export default function AppPage() {
     <div className="min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
       <a href="#tasks-section" className="skip-link">Skip to tasks</a>
       <a href="#timer-panel" className="skip-link">Skip to timer</a>
-      <Navbar onOpenSettings={() => setShowSettings(true)} />
+      <Navbar
+        onOpenSettings={() => setShowSettings(true)}
+        toolbarSlot={
+          user ? (
+            <div className="flex items-center gap-0.5">
+              <CollaborationInvitesButton />
+              <NotificationBell />
+            </div>
+          ) : undefined
+        }
+      />
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
         <div className="px-2 sm:px-4 pt-2">
@@ -248,28 +257,16 @@ export default function AppPage() {
       <DueDateReminders />
       {!focusMode && (
       <div className="px-2 sm:px-4 pt-2">
-        <div className="max-w-[1280px] mx-auto">
-          <Link
-            href="/stats"
-            title="Open stats and analytics"
-            className="rounded-xl app-surface dark:bg-[#111827]/85 dark:border-[#243350] px-3 sm:px-4 py-2 flex items-center justify-between gap-3 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
-          >
-            <div className="min-w-0 flex items-center gap-2 sm:gap-3 text-sm text-slate-600 dark:text-slate-300">
-              <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">
-                <span className="text-sm">Today</span>
-                <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span>
-              </span>
-              <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="truncate">
-                {timer.dailyGoalData.streak > 0
-                  ? `Streak: ${timer.dailyGoalData.streak} day${timer.dailyGoalData.streak === 1 ? "" : "s"}`
-                  : "Start your streak today!"}
-              </span>
-            </div>
-            <span className="flex-shrink-0 text-sm font-medium text-blue-600 dark:text-blue-300">
-              View stats →
-            </span>
-          </Link>
+        <div className="max-w-[1280px] mx-auto rounded-xl app-surface dark:bg-[#111827]/85 dark:border-[#243350] px-3 sm:px-4 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-600 dark:text-slate-300">
+          <span className="font-semibold text-slate-700 dark:text-slate-200">
+            Today <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span> sessions
+          </span>
+          <span className="text-slate-300 dark:text-slate-600 hidden sm:inline">·</span>
+          <span className="truncate">
+            {timer.dailyGoalData.streak > 0
+              ? `🔥 ${timer.dailyGoalData.streak}-day streak`
+              : "Start your streak today"}
+          </span>
         </div>
       </div>
       )}
@@ -308,8 +305,6 @@ export default function AppPage() {
                   compact
                 />
                 <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
-                {user && <CollaborationInvitesButton />}
-                {user && <NotificationBell />}
                 <button
                   onClick={() => setTimerCollapsed(false)}
                   className="p-2 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
@@ -327,7 +322,7 @@ export default function AppPage() {
 
         {/* Task list column */}
         <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
-          {!focusMode && <WeatherTime />}
+          {!focusMode && <WeatherTime compact />}
           <TaskList
             key={taskListKey}
             activeTaskId={activeTaskId}
@@ -387,8 +382,6 @@ export default function AppPage() {
               >
                 Tasks
               </button>
-              {user && <CollaborationInvitesButton />}
-              {user && <NotificationBell />}
               </div>
             </header>
 
@@ -461,9 +454,14 @@ export default function AppPage() {
 
               {/* No-task nudge when idle and no task selected */}
               {!activeTaskId && timer.status === "idle" && (
-                <p className="text-center text-sm text-slate-500 dark:text-slate-300 pb-2">
-                  Pick a task on the left to focus your session
-                </p>
+                <div className="mx-1 mb-2 px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/90 dark:bg-blue-900/25 text-center">
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    Select a task, then press Play or Space
+                  </p>
+                  <p className="text-xs text-blue-600/80 dark:text-blue-300/80 mt-0.5">
+                    Or tap ▶ Start on any task in your list
+                  </p>
+                </div>
               )}
               {readyToFocus && (
                 <p className="text-center text-sm font-medium text-blue-600 dark:text-blue-400 pb-2 animate-pulse">
@@ -501,12 +499,6 @@ export default function AppPage() {
                 </div>
               </div>
             )}
-
-            <DailyProgress
-              dailyGoalData={timer.dailyGoalData}
-              dailyGoal={timer.settings.dailyGoal}
-              hideSessionCount
-            />
 
             {!focusMode && <SatTutoringPromo variant="sidebar" />}
 

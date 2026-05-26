@@ -10,6 +10,8 @@ interface TaskPanelMenuProps {
   isFullscreen?: boolean;
   templates?: TaskTemplate[];
   onSelectTemplate?: (template: TaskTemplate) => void;
+  onTogglePlan?: () => void;
+  isPlanView?: boolean;
 }
 
 export default function TaskPanelMenu({
@@ -19,6 +21,8 @@ export default function TaskPanelMenu({
   isFullscreen,
   templates,
   onSelectTemplate,
+  onTogglePlan,
+  isPlanView,
 }: TaskPanelMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -59,6 +63,15 @@ export default function TaskPanelMenu({
           >
             Settings & import
           </button>
+          {onTogglePlan && (
+            <button
+              type="button"
+              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              onClick={() => { onTogglePlan(); setOpen(false); }}
+            >
+              {isPlanView ? "← Back to task list" : "✦ Plan my day with AI"}
+            </button>
+          )}
           {onToggleFullscreen && (
             <button
               type="button"

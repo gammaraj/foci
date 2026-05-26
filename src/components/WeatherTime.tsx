@@ -35,7 +35,12 @@ function getGreeting(hour: number): string {
   return "Good evening";
 }
 
-export default function WeatherTime() {
+interface WeatherTimeProps {
+  /** Single-line layout for /app to save vertical space. */
+  compact?: boolean;
+}
+
+export default function WeatherTime({ compact = false }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -78,6 +83,23 @@ export default function WeatherTime() {
   }, []);
 
   const greeting = getGreeting(now.getHours());
+
+  if (compact) {
+    return (
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 px-1 truncate">
+        {greeting} · <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">{formatClock(now)}</span>
+        {weather && (
+          <>
+            {" · "}
+            <span title={weather.description}>
+              {weather.icon} {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
+              {weather.city ? ` ${weather.city}` : ""}
+            </span>
+          </>
+        )}
+      </p>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl app-surface dark:bg-[#111827] dark:border-[#1e3050] mb-3 sm:mb-4">

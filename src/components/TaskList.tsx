@@ -930,6 +930,11 @@ export default function TaskList({
               />
             </svg>
             Tasks
+            {viewMode === "plan" && (
+              <span className="text-xs font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
+                · AI plan
+              </span>
+            )}
           </h2>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
@@ -1012,6 +1017,11 @@ export default function TaskList({
                 isFullscreen={isFullscreen}
                 templates={TASK_TEMPLATES}
                 onSelectTemplate={applyTemplate}
+                onTogglePlan={() => {
+                  setViewMode(viewMode === "plan" ? "list" : "plan");
+                  loadSettings().then(setPlanSettings);
+                }}
+                isPlanView={viewMode === "plan"}
               />
             )}
             {/* Fullscreen toggle */}
@@ -1036,30 +1046,6 @@ export default function TaskList({
           </div>
         </div>
 
-        {/* AI Execution Plan button */}
-        <div className="mt-4">
-          <button
-            onClick={() => {
-              setViewMode(viewMode === "plan" ? "list" : "plan");
-              loadSettings().then(setPlanSettings);
-            }}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              viewMode === "plan"
-                ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-700"
-                : "bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-indigo-200 border border-slate-300 dark:border-indigo-500/35 hover:bg-slate-200 dark:hover:bg-[#1a2d4a] dark:hover:border-indigo-400/50"
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span className="flex items-center gap-1.5">
-              {viewMode === "plan" ? "✦ Viewing AI day plan" : "✦ Plan my day with AI"}
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
-              </svg>
-            </span>
-          </button>
-        </div>
         {/* Time filters - mobile: own row below title */}
         {!focusMode && (
         <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
@@ -1131,7 +1117,36 @@ export default function TaskList({
 
       {/* Project tabs */}
       {!isFocusMode && viewMode === "list" && (<>
-      <div className="px-3 sm:px-4 pt-3 pb-1 relative" ref={projectMenuRef}>
+      {(() => {
+        const timeLabel = isTodayFilter
+          ? "Due today"
+          : isThisWeekFilter
+            ? "Due this week"
+            : isThisMonthFilter
+              ? "Due this month"
+              : isThisYearFilter
+                ? "Due this year"
+                : "All dates";
+        const projectLabel = isAllProjects
+          ? "All projects"
+          : isTimeFilter
+            ? "General"
+            : (currentProject?.name ?? "General");
+        return (
+          <p className="px-3 sm:px-4 pt-2 pb-0 text-xs text-slate-500 dark:text-slate-400">
+            Viewing{" "}
+            <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
+            {" · "}
+            <span className="font-medium text-slate-700 dark:text-slate-200">{projectLabel}</span>
+            {" · "}
+            <span>{pendingTasks.length} open</span>
+            {overdueTasks.length > 0 && (
+              <span className="text-red-600 dark:text-red-400"> · {overdueTasks.length} overdue</span>
+            )}
+          </p>
+        );
+      })()}
+      <div className="px-3 sm:px-4 pt-2 pb-1 relative" ref={projectMenuRef}>
         {/* Mobile: dropdown select */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -1797,6 +1812,14 @@ export default function TaskList({
 
         {/* First session nudge handled by AppMessageQueue on /app */}
 
+        {!activeTaskId && !isTimerRunning && tasksReady && pendingTasks.length > 0 && viewMode === "list" && (
+          <div className="mx-3 sm:mx-4 mb-3 px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-800/60 bg-blue-50/80 dark:bg-blue-900/20">
+            <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              Ready to focus? Select a task and tap Start, or press Space when the timer is open.
+            </p>
+          </div>
+        )}
+
         <div className="space-y-2">
           {pendingTasks.map((task, index) => {
             const subtasks = task.subtasks || [];
@@ -1812,8 +1835,8 @@ export default function TaskList({
             return (
             <div key={task.id}>
             {showOverdueHeader && (
-              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-red-200 dark:border-red-800/50 bg-red-50/80 dark:bg-red-950/35 text-xs font-semibold uppercase tracking-wide text-red-700 dark:text-red-200">
-                Overdue - needs attention
+              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500 text-xs font-semibold uppercase tracking-wide text-red-700 dark:text-red-300">
+                Overdue — needs attention
               </div>
             )}
             {showUpcomingHeader && (
@@ -1835,7 +1858,7 @@ export default function TaskList({
                 activeTaskId === task.id
                   ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 border-l-[3px] border-l-blue-500 dark:border-l-blue-400"
                   : isOverdue
-                    ? "border-red-300 dark:border-red-800/45 bg-red-50/50 dark:bg-red-950/25 hover:bg-red-100/50 dark:hover:bg-red-950/40 border-l-[3px] border-l-red-500 dark:border-l-rose-500/90 shadow-sm shadow-red-200/50 dark:shadow-none"
+                    ? "border-slate-300 dark:border-[#1e3050] hover:bg-red-50/40 dark:hover:bg-red-950/15 border-l-[3px] border-l-red-500 dark:border-l-rose-500 shadow-sm"
                     : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
               } ${isExpanded ? "rounded-b-none" : ""} ${
                 dragTaskId === task.id ? "opacity-50" : ""

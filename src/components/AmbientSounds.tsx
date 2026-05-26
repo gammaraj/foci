@@ -187,7 +187,7 @@ function startSound(
 }
 
 export default function AmbientSounds() {
-  const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("soundcloud");
+  const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
   const [activeSound, setActiveSound] = useState<SoundType | null>(null);
   const [volume, setVolume] = useState(0.5);
   const [ytStreamIdx, setYtStreamIdx] = useState(0);
@@ -198,15 +198,14 @@ export default function AmbientSounds() {
   const [scError, setScError] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("foci_music_seen") !== "true";
+      return localStorage.getItem("foci_music_expanded") !== "true";
     }
     return true;
   });
 
-  // Remember that the user has seen the music section
   useEffect(() => {
     if (!collapsed) {
-      try { localStorage.setItem("foci_music_seen", "true"); } catch {}
+      try { localStorage.setItem("foci_music_expanded", "true"); } catch {}
     }
   }, [collapsed]);
 
@@ -484,7 +483,7 @@ export default function AmbientSounds() {
           <iframe
             src={`https://open.spotify.com/embed/playlist/${spotifyPlaylist.uri}?utm_source=generator&theme=0`}
             width="100%"
-            height="152"
+            height="120"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
             className="border-0"
@@ -528,7 +527,7 @@ export default function AmbientSounds() {
             key={scIdx}
             ref={scIframeRef}
             width="100%"
-            height="166"
+            height="120"
             scrolling="no"
             frameBorder="no"
             allow="autoplay"
