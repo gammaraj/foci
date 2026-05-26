@@ -58,17 +58,17 @@ export default function CircularTimer({
       {/* Center text overlay */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className="rounded-full flex flex-col items-center justify-center text-center bg-white dark:bg-[#131d30] border-2 border-slate-200 dark:border-slate-600 shadow-lg"
+          className="rounded-full flex flex-col items-center justify-center text-center gap-0 bg-white dark:bg-[#131d30] border-2 border-slate-200 dark:border-slate-600 shadow-lg px-1.5 py-1"
           style={{ width: 'min(100px, 22vw)', height: 'min(100px, 22vw)' }}
         >
-          <div className="text-sm font-semibold mb-0.5 text-slate-700 dark:text-slate-100 leading-tight">
+          <div className="text-[10px] sm:text-[11px] font-medium text-slate-700 dark:text-slate-100 leading-none truncate max-w-[88%]">
             {isBreak ? "🎉 " : ""}
             {label}
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums">
+          <div className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums my-0.5">
             {displayTime}
           </div>
-          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-200 mt-0.5 max-w-[92px] leading-snug line-clamp-2">
+          <div className="text-[9px] sm:text-[10px] text-slate-600 dark:text-slate-200 max-w-[4.75rem] leading-[1.15] line-clamp-2">
             {statusText}
           </div>
         </div>

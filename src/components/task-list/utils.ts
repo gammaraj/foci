@@ -3,7 +3,25 @@ import { getToday, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
-export const MAX_VISIBLE_PROJECT_TABS = 4;
+export const MAX_VISIBLE_PROJECT_TABS = 6;
+
+/** Full name for hover / aria */
+export function projectTabTooltip(project: { name: string; description?: string }): string {
+  if (project.description?.trim()) {
+    return `${project.name} — ${project.description.trim()}`;
+  }
+  return project.name;
+}
+
+/** Visible tab label — expands cryptic abbreviations (CD, BK, …) */
+export function projectTabLabel(project: { name: string; description?: string }): string {
+  const desc = project.description?.trim();
+  if (project.name.length <= 4 && desc) {
+    const short = desc.length > 18 ? `${desc.slice(0, 18)}…` : desc;
+    return `${project.name} · ${short}`;
+  }
+  return project.name;
+}
 
 export function formatDuration(ms: number): string {
   const totalMin = Math.floor(ms / 60000);

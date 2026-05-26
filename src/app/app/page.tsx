@@ -337,11 +337,16 @@ export default function AppPage() {
             focusMode={focusMode}
             onOpenSettings={() => setShowSettings(true)}
           />
+          {!focusMode && !tasksFullscreen && (
+            <div className="mt-4 px-1">
+              <SatTutoringPromo variant="inline" />
+            </div>
+          )}
         </div>
 
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
         <div id="timer-panel" className={`w-full lg:w-[400px] lg:flex-shrink-0 scroll-mt-24 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
-          <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""}`}>
+          <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}>
             {/* Header */}
             <header
               className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
@@ -360,11 +365,14 @@ export default function AppPage() {
               <button
                 type="button"
                 onClick={() => setShowShortcuts(true)}
-                className="hidden sm:flex text-slate-400 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 touch-target-sm"
+                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white transition px-2 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/15 hover:bg-slate-200/60 dark:hover:bg-white/10 touch-target-sm"
                 aria-label="Keyboard shortcuts"
-                title="Shortcuts (?)"
+                title="Shortcuts — link timer to tasks (press ?)"
               >
-                ?
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="hidden sm:inline">Shortcuts</span>
               </button>
               <button
                 onClick={() => setTimerCollapsed(true)}
@@ -452,21 +460,24 @@ export default function AppPage() {
                 </div>
               </div>
 
-              {/* No-task nudge when idle and no task selected */}
-              {!activeTaskId && timer.status === "idle" && (
-                <div className="mx-1 mb-2 px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/90 dark:bg-blue-900/25 text-center">
-                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                    Select a task, then press Play or Space
+              {/* Idle / ready-to-focus — prominent below timer */}
+              {timer.status === "idle" && !timer.isBreakMode && (
+                <div
+                  className={`mx-1 mb-2 px-3 py-3 rounded-xl border text-center ${
+                    readyToFocus
+                      ? "border-blue-400 dark:border-blue-500 bg-blue-100/90 dark:bg-blue-900/40 shadow-sm shadow-blue-500/10"
+                      : "border-blue-200 dark:border-blue-800 bg-blue-50/90 dark:bg-blue-900/25"
+                  }`}
+                >
+                  <p className={`text-sm sm:text-base font-semibold ${readyToFocus ? "text-blue-900 dark:text-blue-100" : "text-blue-800 dark:text-blue-200"}`}>
+                    {readyToFocus ? "Ready to focus" : "Pick a task to begin"}
                   </p>
-                  <p className="text-sm text-blue-600/90 dark:text-blue-300/90 mt-0.5">
-                    Or tap ▶ Start on any task in your list
+                  <p className="text-sm text-blue-700/90 dark:text-blue-300/90 mt-1">
+                    {readyToFocus
+                      ? "Press Play, Space, or ▶ Start on your selected task"
+                      : "Select a task in your list, then press Play or Space"}
                   </p>
                 </div>
-              )}
-              {readyToFocus && (
-                <p className="text-center text-sm font-medium text-blue-600 dark:text-blue-400 pb-2 animate-pulse">
-                  Ready to start — press Play or Space
-                </p>
               )}
             </div>
 
@@ -499,8 +510,6 @@ export default function AppPage() {
                 </div>
               </div>
             )}
-
-            {!focusMode && <SatTutoringPromo variant="sidebar" />}
 
             <div className="h-1" />
           </div>
@@ -606,11 +615,16 @@ function ActiveTaskBanner({
   }
 
   return (
-    <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400">
+    <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 relative">
+      <p className="hidden lg:flex absolute -left-3 top-1/2 -translate-y-1/2 items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white shadow-md" aria-hidden title="Linked from tasks">
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+        </svg>
+      </p>
       <div className="flex items-center gap-2">
         <div className="flex-1 min-w-0">
           <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
-            Focusing on
+            Linked from tasks
           </p>
           <div className="flex items-center gap-1.5">
             <div className={`w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
