@@ -60,7 +60,6 @@ export default function TaskList({
   const [editProjectName, setEditProjectName] = useState("");
   const [editingProjectDescId, setEditingProjectDescId] = useState<string | null>(null);
   const [editProjectDesc, setEditProjectDesc] = useState("");
-  const [showTemplateMenu, setShowTemplateMenu] = useState(false);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
@@ -99,18 +98,14 @@ export default function TaskList({
   const [selectedSharedProject, setSelectedSharedProject] = useState<SharedProject | null>(null);
   
   const projectMenuRef = useRef<HTMLDivElement>(null);
-  const templateMenuRef = useRef<HTMLDivElement>(null);
   const newTaskDueDateInputRef = useRef<HTMLInputElement>(null);
 
-  // Close project/template menus on outside click
+  // Close project menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (projectMenuRef.current && !projectMenuRef.current.contains(e.target as Node)) {
         setShowProjectMenu(false);
         setShowOverflowProjectMenu(false);
-      }
-      if (templateMenuRef.current && !templateMenuRef.current.contains(e.target as Node)) {
-        setShowTemplateMenu(false);
       }
     };
     document.addEventListener("mousedown", handleClick);
@@ -801,6 +796,18 @@ export default function TaskList({
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
   const isThisYearFilter = selectedProjectId === THIS_YEAR_FILTER_ID;
   const isTimeFilter = isTodayFilter || isThisWeekFilter || isThisMonthFilter || isThisYearFilter;
+
+  const applyTemplate = useCallback(
+    (tpl: (typeof TASK_TEMPLATES)[number]) => {
+      const newTasks = templateToTasks(
+        tpl,
+        isAllProjects || isTimeFilter ? DEFAULT_PROJECT_ID : selectedProjectId
+      );
+      persist([...tasks, ...newTasks]);
+    },
+    [tasks, isAllProjects, isTimeFilter, selectedProjectId, persist]
+  );
+
   const today = getToday();
   const endOfWeek = (() => {
     const d = new Date();
@@ -1003,6 +1010,8 @@ export default function TaskList({
                 onOpenSettings={onOpenSettings}
                 onToggleFullscreen={onToggleFullscreen}
                 isFullscreen={isFullscreen}
+                templates={TASK_TEMPLATES}
+                onSelectTemplate={applyTemplate}
               />
             )}
             {/* Fullscreen toggle */}
@@ -1652,13 +1661,13 @@ export default function TaskList({
         )}
 
         {/* Add task input */}
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             addTask();
           }}
-          className="flex gap-2 flex-1"
+          className="flex flex-col gap-2 sm:flex-row min-w-0 w-full"
         >
           <input
             id="new-task-input"
@@ -1667,9 +1676,10 @@ export default function TaskList({
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder={`Add a task to ${isAllProjects || isTimeFilter ? "General" : currentProject?.name ?? "General"}...`}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+            className="w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
-          <div className="relative flex-shrink-0">
+          <div className="flex gap-2 min-w-0 sm:contents">
+          <div className="relative flex-1 min-w-0 sm:flex-shrink-0">
             <input
               ref={newTaskDueDateInputRef}
               id="new-task-due-date"
@@ -1683,7 +1693,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={() => openDatePicker(newTaskDueDateInputRef.current)}
-              className={`flex items-center gap-1.5 h-full px-2.5 py-2 text-sm border rounded-lg transition-colors whitespace-nowrap ${
+              className={`flex items-center gap-1 min-w-0 w-full h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
                 newTaskDueDate
                   ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                   : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070]"
@@ -1694,32 +1704,38 @@ export default function TaskList({
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span className="font-medium">Due Date</span>
               {newTaskDueDate ? (
-                <span className="text-xs font-semibold">({formatDueDate(newTaskDueDate)})</span>
-              ) : null}
+                <>
+                  <span className="truncate font-semibold sm:hidden">{formatDueDate(newTaskDueDate)}</span>
+                  <span className="hidden sm:inline font-medium whitespace-nowrap">Due Date</span>
+                  <span className="hidden sm:inline text-xs font-semibold whitespace-nowrap">({formatDueDate(newTaskDueDate)})</span>
+                </>
+              ) : (
+                <>
+                  <span className="font-medium sm:hidden">Due</span>
+                  <span className="hidden sm:inline font-medium whitespace-nowrap">Due Date</span>
+                </>
+              )}
             </button>
           </div>
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm touch-target-sm"
           >
             Add
           </button>
+          </div>
         </form>
 
         {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && (
-          <div className="flex flex-wrap gap-1.5 pt-1">
+          <div className="flex flex-wrap gap-1.5">
             <span className="text-xs text-slate-500 dark:text-slate-400 w-full">Quick start:</span>
             {TASK_TEMPLATES.slice(0, 3).map((tpl) => (
               <button
                 key={tpl.label}
                 type="button"
-                onClick={() => {
-                  const newTasks = templateToTasks(tpl, (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId);
-                  persist([...tasks, ...newTasks]);
-                }}
+                onClick={() => applyTemplate(tpl)}
                 className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors touch-target-sm"
               >
                 {tpl.emoji} {tpl.label}
@@ -1727,47 +1743,6 @@ export default function TaskList({
             ))}
           </div>
         )}
-
-        {/* Template button */}
-        <div className="relative" ref={templateMenuRef}>
-          <button
-            type="button"
-            onClick={() => setShowTemplateMenu(!showTemplateMenu)}
-            className="flex items-center gap-1.5 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-slate-50 dark:bg-[#131d30] text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-            title="Load task template"
-          >
-            📋 <span className="hidden sm:inline">Templates</span>
-          </button>
-          {showTemplateMenu && (
-            <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-xl z-50">
-              <div className="px-3 py-2 border-b border-slate-100 dark:border-[#243350] rounded-t-lg">
-                <span className="text-sm font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wide">Task Templates</span>
-              </div>
-              <div className="max-h-[400px] overflow-y-auto rounded-b-lg">
-                {TASK_TEMPLATES.map((tpl) => (
-                  <button
-                    key={tpl.label}
-                    type="button"
-                    onClick={() => {
-                      const newTasks = templateToTasks(tpl, (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId);
-                      persist([...tasks, ...newTasks]);
-                      setShowTemplateMenu(false);
-                    }}
-                    className="w-full text-left px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">{tpl.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-slate-700 dark:text-slate-200">{tpl.label}</div>
-                        <div className="text-xs text-slate-400 dark:text-slate-300">{tpl.description} · {tpl.tasks.length} tasks</div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
         </div>
 
         {/* Loading skeleton */}
@@ -1807,10 +1782,7 @@ export default function TaskList({
                 <button
                   key={tpl.label}
                   type="button"
-                  onClick={() => {
-                    const newTasks = templateToTasks(tpl, (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId);
-                    persist([...tasks, ...newTasks]);
-                  }}
+                  onClick={() => applyTemplate(tpl)}
                   className="text-left p-3 rounded-xl border border-slate-100 dark:border-[#1e3050] hover:border-purple-200 dark:hover:border-purple-700 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-all group"
                 >
                   <div className="text-xl mb-1">{tpl.emoji}</div>

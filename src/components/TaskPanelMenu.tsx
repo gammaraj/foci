@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import type { TaskTemplate } from "@/lib/templates";
 
 interface TaskPanelMenuProps {
   user: { id: string } | null;
   onOpenSettings: () => void;
   onToggleFullscreen?: () => void;
   isFullscreen?: boolean;
+  templates?: TaskTemplate[];
+  onSelectTemplate?: (template: TaskTemplate) => void;
 }
 
 export default function TaskPanelMenu({
@@ -14,6 +17,8 @@ export default function TaskPanelMenu({
   onOpenSettings,
   onToggleFullscreen,
   isFullscreen,
+  templates,
+  onSelectTemplate,
 }: TaskPanelMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -25,6 +30,8 @@ export default function TaskPanelMenu({
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  const hasTemplates = templates && templates.length > 0 && onSelectTemplate;
 
   return (
     <div className="relative" ref={ref}>
@@ -40,7 +47,11 @@ export default function TaskPanelMenu({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-48 py-1 rounded-xl app-surface dark:bg-[#131d30] shadow-xl border border-slate-200 dark:border-[#243350] z-50">
+        <div
+          className={`absolute right-0 top-full mt-1 py-1 rounded-xl app-surface dark:bg-[#131d30] shadow-xl border border-slate-200 dark:border-[#243350] z-50 ${
+            hasTemplates ? "w-64" : "w-48"
+          }`}
+        >
           <button
             type="button"
             className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
@@ -65,6 +76,39 @@ export default function TaskPanelMenu({
             >
               Collaboration & sharing
             </button>
+          )}
+          {hasTemplates && (
+            <>
+              <div className="my-1 border-t border-slate-100 dark:border-[#243350]" />
+              <div className="px-3 py-1.5">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Task templates
+                </span>
+              </div>
+              <div className="max-h-[280px] overflow-y-auto">
+                {templates.map((tpl) => (
+                  <button
+                    key={tpl.label}
+                    type="button"
+                    className="w-full text-left px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
+                    onClick={() => {
+                      onSelectTemplate(tpl);
+                      setOpen(false);
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-base flex-shrink-0">{tpl.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">{tpl.label}</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-300 truncate">
+                          {tpl.tasks.length} tasks
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}
