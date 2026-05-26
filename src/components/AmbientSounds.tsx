@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, type MouseEvent } from "react";
 import { trackSoundPlayed, trackSoundStopped } from "@/lib/analytics";
 
 // ── Procedural ambient sound generators using Web Audio API ──
@@ -305,26 +305,200 @@ export default function AmbientSounds() {
   const ytStream = YOUTUBE_STREAMS[ytStreamIdx];
   const spotifyPlaylist = SPOTIFY_PLAYLISTS[spotifyIdx];
   const scPlaylist = SOUNDCLOUD_PLAYLISTS[scIdx];
+  const activeSoundMeta = SOUNDS.find((s) => s.id === activeSound);
+
+  const nowPlayingLabel =
+    mode === "sounds"
+      ? activeSoundMeta
+        ? `${activeSoundMeta.emoji} ${activeSoundMeta.label}`
+        : "Ambient sounds"
+      : mode === "soundcloud"
+        ? scPlaylist.label
+        : mode === "spotify"
+          ? spotifyPlaylist.label
+          : ytStream.label;
+
+  const handleMiniPlayPause = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (mode === "sounds") {
+      if (activeSound) {
+        playSound(activeSound);
+      } else {
+        let last: SoundType = "brownnoise";
+        try {
+          const saved = localStorage.getItem("foci_last_sound") as SoundType;
+          if (SOUNDS.some((s) => s.id === saved)) last = saved;
+        } catch {}
+        playSound(last);
+      }
+      return;
+    }
+    if (mode === "soundcloud") {
+      scCommand("toggle");
+      return;
+    }
+    setCollapsed(false);
+    if (mode === "lofi" && !showYt) setShowYt(true);
+  };
+
+  useEffect(() => {
+    if (activeSound) {
+      try {
+        localStorage.setItem("foci_last_sound", activeSound);
+      } catch {}
+    }
+  }, [activeSound]);
 
   return (
     <div id="ambient-sounds" className="mx-2 sm:mx-3 mb-2 sm:mb-3 space-y-2 scroll-mt-24">
-      {/* Collapse toggle header */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] transition-colors"
+      {/* Mini player bar (always visible) */}
+      <div
+        className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors ${
+          activeSound || (mode === "soundcloud") || showYt
+            ? "bg-blue-50/80 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/50"
+            : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
+        }`}
       >
-        <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">🎵 Music & Sounds</span>
-        <svg
-          className={`w-5 h-5 text-slate-400 dark:text-slate-300 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <button
+          type="button"
+          onClick={handleMiniPlayPause}
+          className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-sm touch-target-sm"
+          aria-label={
+            mode === "sounds"
+              ? activeSound
+                ? `Pause ${activeSoundMeta?.label}`
+                : "Play ambient sound"
+              : mode === "soundcloud"
+                ? "Play or pause SoundCloud"
+                : "Open player"
+          }
+          title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+          {mode === "sounds" && activeSound ? (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="6" y="5" width="4" height="14" rx="1" />
+              <rect x="14" y="5" width="4" height="14" rx="1" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          )}
+        </button>
 
-      <div className={collapsed ? 'hidden' : ''}>
+        {mode === "soundcloud" && collapsed && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); scCommand("prev"); }}
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
+              aria-label="Previous track"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); scCommand("next"); }}
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
+              aria-label="Next track"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
+            </button>
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setCollapsed(false)}
+          className="flex-1 min-w-0 text-left py-0.5"
+          aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
+        >
+          <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            {collapsed ? "Now playing" : "Music & Sounds"}
+          </span>
+          <span className="block text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-100 truncate">
+            {nowPlayingLabel}
+          </span>
+        </button>
+
+        {mode === "sounds" && activeSound && (
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={volume}
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            onClick={(e) => e.stopPropagation()}
+            className="w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0"
+            aria-label="Volume"
+          />
+        )}
+
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
+          className="flex-shrink-0 p-2 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
+          aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
+          aria-expanded={!collapsed}
+        >
+          <svg
+            className={`w-5 h-5 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Quick ambient picks when collapsed */}
+      {collapsed && mode === "sounds" && (
+        <div className="flex items-center gap-1.5 px-0.5">
+          {SOUNDS.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => playSound(s.id)}
+              className={`flex-1 py-1.5 rounded-lg text-sm transition-colors touch-target-sm ${
+                activeSound === s.id
+                  ? "bg-blue-100 dark:bg-blue-900/40 ring-1 ring-blue-400 dark:ring-blue-600"
+                  : "bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] hover:border-blue-300"
+              }`}
+              aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
+              title={s.label}
+            >
+              {s.emoji}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}
+      {mode === "soundcloud" && (
+        <div
+          className={collapsed ? "h-0 overflow-hidden opacity-0 pointer-events-none" : ""}
+          aria-hidden={collapsed}
+        >
+          <iframe
+            key={scIdx}
+            ref={scIframeRef}
+            width="100%"
+            height="120"
+            scrolling="no"
+            frameBorder="no"
+            allow="autoplay"
+            src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(scPlaylist.url)}&color=%23334155&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`}
+            title={scPlaylist.label}
+            className="border-0"
+            tabIndex={collapsed ? -1 : 0}
+          />
+        </div>
+      )}
+
+      <div className={collapsed ? "hidden" : "space-y-2"}>
       {/* Mode toggle */}
       <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#131d30] rounded-lg p-0.5 border border-slate-200 dark:border-[#243350]">
         <button
@@ -520,21 +694,9 @@ export default function AmbientSounds() {
         </div>
       )}
 
-      {/* SoundCloud mode */}
+      {/* SoundCloud mode (embed lives above so it stays mounted when collapsed) */}
       {mode === "soundcloud" && (
         <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
-          <iframe
-            key={scIdx}
-            ref={scIframeRef}
-            width="100%"
-            height="120"
-            scrolling="no"
-            frameBorder="no"
-            allow="autoplay"
-            src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(scPlaylist.url)}&color=%23334155&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`}
-            title={scPlaylist.label}
-            className="border-0"
-          />
           {scError && (
             <div className="flex items-center justify-between px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800/40">
               <span className="text-xs text-amber-700 dark:text-amber-400">Playlist unavailable</span>
