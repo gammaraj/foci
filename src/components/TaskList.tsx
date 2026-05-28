@@ -54,6 +54,8 @@ export default function TaskList({
   // Project state
   const [projects, setProjects] = useState<Project[]>([DEFAULT_PROJECT]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>(TODAY_FILTER_ID);
+  /** When viewing Today/Week/Month/Year, filters tasks within that scope (All projects or one project). */
+  const [projectFilterId, setProjectFilterId] = useState<string>(ALL_PROJECTS_ID);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
@@ -270,6 +272,21 @@ export default function TaskList({
     });
     setShowProjectMenu(false);
     setShowOverflowProjectMenu(false);
+  };
+
+  const selectProjectScope = (projectId: string) => {
+    const timeScope =
+      selectedProjectId === TODAY_FILTER_ID ||
+      selectedProjectId === THIS_WEEK_FILTER_ID ||
+      selectedProjectId === THIS_MONTH_FILTER_ID ||
+      selectedProjectId === THIS_YEAR_FILTER_ID;
+    if (timeScope) {
+      setProjectFilterId(projectId);
+      setShowProjectMenu(false);
+      setShowOverflowProjectMenu(false);
+      return;
+    }
+    selectProject(projectId);
   };
 
   // Select a shared project and load its tasks
@@ -785,19 +802,28 @@ export default function TaskList({
     if (b.order != null) return 1;
     return a.name.localeCompare(b.name);
   });
-  const visibleProjectTabs = (() => {
-    const tabs = sortedProjects.slice(0, MAX_VISIBLE_PROJECT_TABS);
-    if (!sortedProjects.some((p) => p.id === selectedProjectId)) return tabs;
-    if (tabs.some((p) => p.id === selectedProjectId)) return tabs;
-    return [...tabs.slice(0, Math.max(0, MAX_VISIBLE_PROJECT_TABS - 1)), sortedProjects.find((p) => p.id === selectedProjectId)!];
-  })();
-  const visibleProjectTabIds = new Set(visibleProjectTabs.map((p) => p.id));
-  const overflowProjectTabs = sortedProjects.filter((p) => !visibleProjectTabIds.has(p.id));
   const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
   const isThisWeekFilter = selectedProjectId === THIS_WEEK_FILTER_ID;
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
   const isThisYearFilter = selectedProjectId === THIS_YEAR_FILTER_ID;
   const isTimeFilter = isTodayFilter || isThisWeekFilter || isThisMonthFilter || isThisYearFilter;
+  const activeProjectTabId = isTimeFilter
+    ? projectFilterId
+    : isAllProjects
+      ? null
+      : selectedProjectId;
+  const visibleProjectTabs = (() => {
+    const tabs = sortedProjects.slice(0, MAX_VISIBLE_PROJECT_TABS);
+    if (!activeProjectTabId || activeProjectTabId === ALL_PROJECTS_ID) return tabs;
+    if (!sortedProjects.some((p) => p.id === activeProjectTabId)) return tabs;
+    if (tabs.some((p) => p.id === activeProjectTabId)) return tabs;
+    return [
+      ...tabs.slice(0, Math.max(0, MAX_VISIBLE_PROJECT_TABS - 1)),
+      sortedProjects.find((p) => p.id === activeProjectTabId)!,
+    ];
+  })();
+  const visibleProjectTabIds = new Set(visibleProjectTabs.map((p) => p.id));
+  const overflowProjectTabs = sortedProjects.filter((p) => !visibleProjectTabIds.has(p.id));
 
   const applyTemplate = useCallback(
     (tpl: (typeof TASK_TEMPLATES)[number]) => {
@@ -829,7 +855,7 @@ export default function TaskList({
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
   const thisMonthTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfMonth));
   const thisYearTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfYear));
-  const projectTasks = isTodayFilter
+  const timeScopedTasks = isTodayFilter
     ? todayTasks
     : isThisWeekFilter
       ? thisWeekTasks
@@ -840,6 +866,13 @@ export default function TaskList({
           : isAllProjects
             ? tasks.filter((t) => !t.archivedAt)
             : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
+  const projectTasks =
+    isTimeFilter && projectFilterId !== ALL_PROJECTS_ID
+      ? timeScopedTasks.filter((t) => t.projectId === projectFilterId)
+      : timeScopedTasks;
+  const isAllProjectsScopeActive = isTimeFilter
+    ? projectFilterId === ALL_PROJECTS_ID
+    : isAllProjects;
   const pendingTasks = projectTasks
     .filter((t) => !t.completed)
     .sort((a, b) => {
@@ -1131,10 +1164,14 @@ export default function TaskList({
         />
       )}
 
-      {/* Project tabs — hidden during time filters (Today/Week/etc.) to reduce chrome */}
+      {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && viewMode === "list" && (<>
       {(() => {
-        const showFilterMeta = isAllProjects || !isTodayFilter || overdueTasks.length > 0;
+        const showFilterMeta =
+          !isTodayFilter ||
+          !isAllProjectsScopeActive ||
+          overdueTasks.length > 0 ||
+          (isTimeFilter && projectFilterId !== ALL_PROJECTS_ID);
         if (!showFilterMeta) return null;
         const timeLabel = isTodayFilter
           ? "Due today"
@@ -1145,15 +1182,20 @@ export default function TaskList({
               : isThisYearFilter
                 ? "Due this year"
                 : "All dates";
+        const activeProject = projects.find((p) => p.id === projectFilterId);
         return (
           <p className="px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
-            {!isTodayFilter && (
+            <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
+            {isTimeFilter && projectFilterId !== ALL_PROJECTS_ID && activeProject && (
               <>
-                <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
                 {" · "}
+                <span className="font-medium text-slate-700 dark:text-slate-200">
+                  {activeProject.name}
+                </span>
               </>
             )}
-            {isAllProjects ? (
+            {" · "}
+            {isAllProjectsScopeActive && !isTimeFilter ? (
               <>
                 <span className="font-medium text-orange-600 dark:text-orange-400">{todayOpenCount} due today</span>
                 <span className="text-slate-400 dark:text-slate-500"> / {allOpenCount} open</span>
@@ -1167,9 +1209,8 @@ export default function TaskList({
           </p>
         );
       })()}
-      {!isTimeFilter && (
       <div className="px-3 sm:px-4 pt-1.5 pb-1 relative" ref={projectMenuRef}>
-        {isAllProjects && (
+        {isAllProjects && !isTimeFilter && (
           <button
             type="button"
             onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -1186,21 +1227,27 @@ export default function TaskList({
             )}
           </button>
         )}
-        {/* Mobile: dropdown select */}
+        <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5 sm:mb-0 sm:hidden">Project</p>
+        {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
-            value={selectedProjectId}
-            onChange={(e) => selectProject(e.target.value)}
+            value={isTimeFilter ? projectFilterId : selectedProjectId}
+            onChange={(e) => selectProjectScope(e.target.value)}
             className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8"
           >
             <option value={ALL_PROJECTS_ID}>
-              All ({tasks.filter((t) => !t.completed && !t.archivedAt).length})
+              All projects ({isTimeFilter ? timeScopedTasks.filter((t) => !t.completed).length : tasks.filter((t) => !t.completed && !t.archivedAt).length})
             </option>
-            {sortedProjects.map((p) => (
+            {sortedProjects.map((p) => {
+              const count = isTimeFilter
+                ? timeScopedTasks.filter((t) => t.projectId === p.id && !t.completed).length
+                : tasks.filter((t) => t.projectId === p.id && !t.completed).length;
+              return (
               <option key={p.id} value={p.id} title={projectTabTooltip(p)}>
-                {projectTabLabel(p)} ({tasks.filter((t) => t.projectId === p.id && !t.completed).length})
+                {projectTabLabel(p)} ({count})
               </option>
-            ))}
+            );
+            })}
           </select>
 
           {/* Focus on project button */}
@@ -1248,14 +1295,14 @@ export default function TaskList({
           </button>
         </div>
 
-        {/* Desktop: horizontal scrolling tabs */}
+        {/* Desktop: horizontal scrolling project tabs */}
         <div className="hidden sm:block relative">
+          <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5">Project</p>
           <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto scrollbar-hide pr-6">
-            {/* All Projects tab */}
           <button
-            onClick={() => selectProject(ALL_PROJECTS_ID)}
+            onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              isAllProjects
+              isAllProjectsScopeActive
                 ? "bg-blue-600 text-white"
                 : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
             }`}
@@ -1264,21 +1311,30 @@ export default function TaskList({
             <span className="truncate max-w-[100px]">All projects</span>
             <span
               className={`text-xs tabular-nums ${
-                isAllProjects ? "text-blue-200" : "text-slate-400 dark:text-slate-500"
+                isAllProjectsScopeActive ? "text-blue-200" : "text-slate-400 dark:text-slate-500"
               }`}
               title={`${allOpenCount} open · ${todayOpenCount} due today`}
             >
-              {todayOpenCount > 0 ? `${todayOpenCount} today` : allOpenCount}
+              {isTimeFilter
+                ? timeScopedTasks.filter((t) => !t.completed).length
+                : todayOpenCount > 0
+                  ? `${todayOpenCount} today`
+                  : allOpenCount}
             </span>
           </button>
           {visibleProjectTabs.map((p) => {
-            const count = tasks.filter((t) => t.projectId === p.id && !t.completed).length;
+            const count = isTimeFilter
+              ? timeScopedTasks.filter((t) => t.projectId === p.id && !t.completed).length
+              : tasks.filter((t) => t.projectId === p.id && !t.completed).length;
+            const tabActive = isTimeFilter
+              ? projectFilterId === p.id
+              : selectedProjectId === p.id;
             return (
             <button
               key={p.id}
-              onClick={() => selectProject(p.id)}
+              onClick={() => selectProjectScope(p.id)}
               className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                p.id === selectedProjectId
+                tabActive
                   ? "bg-blue-600 text-white"
                   : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
               }`}
@@ -1292,7 +1348,7 @@ export default function TaskList({
               </span>
               {count > 0 && (
                 <span className={`text-xs ${
-                  p.id === selectedProjectId
+                  tabActive
                     ? "text-blue-200"
                     : "text-slate-400 dark:text-slate-500"
                 }`}>
@@ -1365,9 +1421,9 @@ export default function TaskList({
                   return (
                     <button
                       key={p.id}
-                      onClick={() => selectProject(p.id)}
+                      onClick={() => selectProjectScope(p.id)}
                       className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
-                        p.id === selectedProjectId
+                        (isTimeFilter ? projectFilterId : selectedProjectId) === p.id
                           ? "bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200"
                           : "text-slate-700 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
                       }`}
@@ -1458,7 +1514,7 @@ export default function TaskList({
                     <>
                       <span
                         className="flex-1 truncate"
-                        onClick={() => selectProject(p.id)}
+                        onClick={() => selectProjectScope(p.id)}
                       >
                         {p.name}
                       </span>
@@ -1572,7 +1628,7 @@ export default function TaskList({
                       className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] cursor-pointer"
                     >
                       {p.color && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0 opacity-50" style={{ backgroundColor: p.color }} />}
-                      <span className="flex-1 truncate" onClick={() => selectProject(p.id)}>{p.name}</span>
+                      <span className="flex-1 truncate" onClick={() => selectProjectScope(p.id)}>{p.name}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleProjectArchived(p.id); }}
                         className="p-1 text-slate-400 hover:text-green-500 transition-colors"
@@ -1670,7 +1726,6 @@ export default function TaskList({
         )}
 
       </div>
-      )}
 
       <div className="px-3 sm:p-4 pt-3 pb-2 space-y-2">
         {/* Project description */}
@@ -1735,7 +1790,15 @@ export default function TaskList({
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder={`Add a task to ${isAllProjects || isTimeFilter ? "General" : currentProject?.name ?? "General"}...`}
+            placeholder={`Add a task to ${
+              isTimeFilter
+                ? projectFilterId === ALL_PROJECTS_ID
+                  ? "General"
+                  : (projects.find((p) => p.id === projectFilterId)?.name ?? "General")
+                : isAllProjects
+                  ? "General"
+                  : (currentProject?.name ?? "General")
+            }...`}
             maxLength={MAX_TASK_TITLE}
             className="w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
