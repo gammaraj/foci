@@ -338,7 +338,7 @@ export default function AppPage() {
               <button
                 type="button"
                 onClick={() => setFocusMode((f) => !f)}
-                className={`hidden sm:flex text-sm px-2.5 py-1 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+                className={`hidden sm:flex text-sm px-2.5 py-1 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-600 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"}`}
                 title="Toggle focus mode (F)"
               >
                 Focus
@@ -346,7 +346,7 @@ export default function AppPage() {
               <button
                 type="button"
                 onClick={() => setShowShortcuts(true)}
-                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white transition px-2 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/15 hover:bg-slate-200/60 dark:hover:bg-white/10 touch-target-sm"
+                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white transition px-2 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/15 hover:bg-black/[0.04] dark:hover:bg-white/10 touch-target-sm"
                 aria-label="Keyboard shortcuts"
                 title="Shortcuts — link timer to tasks (press ?)"
               >
@@ -357,7 +357,7 @@ export default function AppPage() {
               </button>
               <button
                 onClick={() => setTimerCollapsed(true)}
-                className="text-slate-400 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10"
+                className="text-slate-500 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/10"
                 aria-label="Collapse timer"
                 title="Hide timer panel"
               >
@@ -367,7 +367,7 @@ export default function AppPage() {
               </button>
               <button
                 onClick={() => document.getElementById('tasks-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="lg:hidden text-sm text-slate-500 dark:text-white/85 hover:text-slate-700 dark:hover:text-white transition px-3 py-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10"
+                className="lg:hidden text-sm text-slate-500 dark:text-white/85 hover:text-slate-700 dark:hover:text-white transition px-3 py-2 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/10"
               >
                 Tasks
               </button>
@@ -386,7 +386,7 @@ export default function AppPage() {
             )}
 
             {/* Main content */}
-            <div className="bg-slate-50/80 dark:bg-[#0d1526] px-4 py-2 border-t border-slate-100 dark:border-[#1e3050]/60">
+            <div className="bg-white dark:bg-[#0d1526] px-4 py-2 border-t border-slate-100 dark:border-[#1e3050]/60">
               <div className="flex items-center justify-center gap-3 sm:gap-5 pb-3">
                 <TimerControls
                   isRunning={isRunning}

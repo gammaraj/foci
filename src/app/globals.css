@@ -11,10 +11,12 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode surfaces — page slightly darker than cards for depth */
+  /* Light mode surfaces — Apple-style grouped hierarchy */
   --page-bg: #e8edf2;
-  --surface-border: #d4dce6;
-  --panel-header-bg: #ffffff;
+  --surface-border: #e2e8f0;
+  --surface-bg: #ffffff;
+  --panel-header-bg: #f8fafb;
+  --seg-track-bg: #eef2f6;
 }
 
 /* ===== Base Styles ===== */
@@ -44,20 +46,31 @@ body {
   border-bottom: 1px solid #243350;
 }
 
-/* /app panel headers — solid match to card surface in light mode (no grey wash-through) */
+/* Toolbar strip — slightly off-white; card body stays pure white below */
 .panel-header-calm {
   background: var(--panel-header-bg);
   border-bottom: 1px solid var(--surface-border);
 }
 .dark .panel-header-calm {
   --panel-header-bg: rgba(17, 24, 39, 0.85);
+  --seg-track-bg: rgba(255, 255, 255, 0.1);
   background: var(--panel-header-bg);
   border-bottom: 1px solid #243350;
 }
 
+/* Inset segmented controls on panel headers */
+.app-seg-track {
+  background: var(--seg-track-bg);
+  border-radius: 0.5rem;
+  padding: 0.125rem;
+}
+.dark .app-seg-track {
+  background: var(--seg-track-bg);
+}
+
 /* ===== App card elevation (light mode) ===== */
 .app-surface {
-  background: #ffffff;
+  background: var(--surface-bg);
   border: 1px solid var(--surface-border);
   box-shadow:
     0 1px 2px rgba(15, 23, 42, 0.04),

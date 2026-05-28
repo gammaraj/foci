@@ -1001,7 +1001,7 @@ export default function TaskList({
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             {!focusMode && (
-            <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
+            <div className="app-seg-track hidden sm:flex items-center gap-1">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
@@ -1049,7 +1049,7 @@ export default function TaskList({
               <option value="plan">Smart Plan</option>
             </select>
             {/* View mode toggles — desktop */}
-            <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
+            <div className="app-seg-track hidden sm:flex items-center gap-1">
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2.5 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
@@ -1110,7 +1110,7 @@ export default function TaskList({
 
         {/* Time filters - mobile: own row below title */}
         {!focusMode && (
-        <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
+        <div className="app-seg-track flex sm:hidden items-center gap-1 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
