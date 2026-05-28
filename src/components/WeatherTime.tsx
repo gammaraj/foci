@@ -90,29 +90,27 @@ export default function WeatherTime({ compact = false, sessions }: WeatherTimePr
     return (
       <p className="app-inline-meta app-text-meta text-slate-600 dark:text-slate-400 min-w-0 leading-relaxed">
         {sessions && (
-          <>
-            <span className="font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-              Today{" "}
-              <span className="text-blue-600 dark:text-blue-400 tabular-nums">
-                {sessions.count}/{sessions.goal}
-              </span>{" "}
-              sessions
+          <span className="font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap tabular-nums">
+            <span className="text-blue-600 dark:text-blue-400">
+              {sessions.count}/{sessions.goal}
             </span>
-            <span className="whitespace-nowrap">
-              {sessions.streak > 0
-                ? `${sessions.streak}-day streak`
-                : "Start your streak"}
-            </span>
-          </>
+            <span className="text-slate-600 dark:text-slate-400"> sessions</span>
+          </span>
         )}
-        <span className="whitespace-nowrap">{greeting}</span>
+        {sessions && sessions.streak > 0 && (
+          <span
+            className="whitespace-nowrap font-medium text-orange-600 dark:text-orange-400"
+            title={`${sessions.streak}-day streak`}
+          >
+            🔥 {sessions.streak}d
+          </span>
+        )}
         <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
           {formatClock(now)}
         </span>
         {weather && (
           <span className="whitespace-nowrap" title={weather.description}>
-            {weather.icon}{" "}
-            {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
+            {weather.icon} {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
             {weather.city ? ` ${weather.city}` : ""}
           </span>
         )}

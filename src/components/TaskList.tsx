@@ -1175,31 +1175,26 @@ export default function TaskList({
           (isTimeFilter && projectFilterId !== ALL_PROJECTS_ID);
         if (!showFilterMeta) return null;
         const timeLabel = isTodayFilter
-          ? "Due today"
+          ? null
           : isThisWeekFilter
-            ? "Due this week"
+            ? "This week"
             : isThisMonthFilter
-              ? "Due this month"
+              ? "This month"
               : isThisYearFilter
-                ? "Due this year"
+                ? "This year"
                 : "All dates";
         const activeProject = projects.find((p) => p.id === projectFilterId);
         return (
           <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-600 dark:text-slate-400">
-            <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
+            {timeLabel && (
+              <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
+            )}
             {isTimeFilter && projectFilterId !== ALL_PROJECTS_ID && activeProject && (
               <span className="font-medium text-slate-700 dark:text-slate-200">
                 {activeProject.name}
               </span>
             )}
-            {isAllProjectsScopeActive && !isTimeFilter ? (
-              <span>
-                <span className="font-medium text-orange-600 dark:text-orange-400">{todayOpenCount} due today</span>
-                <span className="text-slate-600 dark:text-slate-500"> / {allOpenCount} open</span>
-              </span>
-            ) : (
-              <span>{pendingTasks.length} open</span>
-            )}
+            <span>{pendingTasks.length} open</span>
             {overdueTasks.length > 0 && (
               <span className="text-red-600 dark:text-red-400">{overdueTasks.length} overdue</span>
             )}
@@ -1224,7 +1219,6 @@ export default function TaskList({
             )}
           </button>
         )}
-        <p className="text-xs font-medium text-slate-600 dark:text-slate-500 mb-1.5 sm:mb-0 sm:hidden">Project</p>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -1294,7 +1288,6 @@ export default function TaskList({
 
         {/* Desktop: horizontal scrolling project tabs */}
         <div className="hidden sm:block relative">
-          <p className="text-xs font-medium text-slate-600 dark:text-slate-500 mb-1.5">Project</p>
           <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-6">
           <button
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
@@ -1952,20 +1945,12 @@ export default function TaskList({
             <div key={task.id}>
             {showOverdueHeader && (
               <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                  <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
-                  <span className="text-sm font-medium text-red-600/90 dark:text-red-300/80 normal-case tracking-normal">
-                    Needs attention
-                  </span>
-                </div>
-                <p className="text-xs text-red-600/80 dark:text-red-300/70 mt-1 normal-case tracking-normal font-normal leading-relaxed">
-                  Sorted by priority, then oldest due date
-                </p>
+                <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
               </div>
             )}
             {showUpcomingHeader && (
               <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 app-section-label text-slate-600 dark:text-slate-300">
-                Due today and upcoming
+                Upcoming
               </div>
             )}
             <div
