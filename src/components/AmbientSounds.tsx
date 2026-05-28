@@ -21,13 +21,37 @@ const SOUNDS: SoundOption[] = [
   { id: "brownnoise", label: "Brown Noise", emoji: "🟤" },
 ];
 
-// YouTube lo-fi livestream IDs (these are well-known 24/7 streams)
-const YOUTUBE_STREAMS = [
-  { id: "jfKfPfyJRdk", label: "lofi hip hop radio", channel: "Lofi Girl" },
-  { id: "4xDzrJKXOOY", label: "synthwave radio", channel: "Lofi Girl" },
-];
+// Lofi Girl rotates live broadcasts (new video IDs each season). Channel embeds
+// always resolve to the current live stream — static IDs like jfKfPfyJRdk break.
+const LOFI_GIRL_CHANNEL_ID = "UCSJ4gkVC6NrvII8umztf0Ow";
+const LOFI_SYNTHWAVE_CHANNEL_ID = "UCc5afI6TobiZjRke2sYBDPA";
 
-// Spotify playlists curated to match SomaFM station vibes (all verified working)
+const YOUTUBE_STREAMS = [
+  {
+    channelId: LOFI_GIRL_CHANNEL_ID,
+    label: "Lofi Girl live",
+    channel: "Lofi Girl",
+    watchUrl: "https://www.youtube.com/@LofiGirl/live",
+  },
+  {
+    channelId: LOFI_SYNTHWAVE_CHANNEL_ID,
+    label: "Synthwave radio",
+    channel: "Lofi Girl Synthwave",
+    watchUrl: "https://www.youtube.com/channel/UCc5afI6TobiZjRke2sYBDPA/live",
+  },
+] as const;
+
+function youtubeLiveEmbedSrc(channelId: string): string {
+  const params = new URLSearchParams({
+    autoplay: "1",
+    mute: "0",
+    rel: "0",
+    modestbranding: "1",
+  });
+  return `https://www.youtube.com/embed/live_stream?channel=${channelId}&${params}`;
+}
+
+// Spotify editorial playlists (embed URLs verified May 2026)
 const SPOTIFY_PLAYLISTS = [
   // Meditation playlists (default)
   { uri: "37i9dQZF1DWZqd5JICZI0u", label: "Peaceful Meditation", desc: "Calming meditation music" },
@@ -43,10 +67,7 @@ const SPOTIFY_PLAYLISTS = [
   { uri: "37i9dQZF1DWYoYGBbGKurt", label: "Lofi Chill", desc: "Chill beats to study to" },
 ];
 
-// SoundCloud playlists — all verified working (Lofi Girl verified account)
-// IMPORTANT: Only use playlists from verified/official accounts to avoid deleted URLs.
-// Lofi Girl (soundcloud.com/lofi_girl) is a safe, stable source.
-// Verify URLs at https://soundcloud.com/lofi_girl/sets before adding new ones.
+// SoundCloud playlists — HTTP + widget checked May 2026. Prefer Lofi Girl official sets.
 const SOUNDCLOUD_PLAYLISTS = [
   { url: "https://soundcloud.com/prabhdyal-singh-rai/sets/indian-classical-instrumental", label: "Indian Classical", desc: "Santoor, Flute & Sitar \u2022 44 tracks" },
   { url: "https://soundcloud.com/abhijeet-mokal-abhi/sets/instrumental-different", label: "Indian Ragas", desc: "Ravi Shankar, Zakir Hussain \u2022 43 tracks" },
@@ -572,9 +593,10 @@ export default function AmbientSounds() {
           {showYt ? (
             <div className="aspect-video">
               <iframe
-                src={`https://www.youtube.com/embed/${ytStream.id}?autoplay=1&mute=0`}
+                key={ytStream.channelId}
+                src={youtubeLiveEmbedSrc(ytStream.channelId)}
                 title={ytStream.label}
-                allow="autoplay; encrypted-media"
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
                 allowFullScreen
                 className="w-full h-full"
               />
@@ -596,7 +618,7 @@ export default function AmbientSounds() {
             </div>
           )}
           {/* Stream selector */}
-          <div className="flex items-center justify-between px-3 py-2 border-t border-slate-200 dark:border-[#243350]">
+          <div className="flex items-center justify-between px-3 py-2 border-t border-slate-200 dark:border-[#243350] gap-2">
             <button
               onClick={() => {
                 setYtStreamIdx((i) => (i - 1 + YOUTUBE_STREAMS.length) % YOUTUBE_STREAMS.length);
@@ -626,6 +648,14 @@ export default function AmbientSounds() {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
             </button>
           </div>
+          <a
+            href={ytStream.watchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-3 pb-2 text-xs text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            Open on YouTube if the player shows an error
+          </a>
         </div>
       )}
 
