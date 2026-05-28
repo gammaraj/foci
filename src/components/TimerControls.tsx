@@ -10,6 +10,8 @@ interface TimerControlsProps {
   compact?: boolean;
   showStartPause?: boolean;
   showReset?: boolean;
+  /** Solid blue Start when a task is selected (primary focus CTA). */
+  emphasizeStart?: boolean;
 }
 
 export default function TimerControls({
@@ -20,6 +22,7 @@ export default function TimerControls({
   compact,
   showStartPause = true,
   showReset = true,
+  emphasizeStart = false,
 }: TimerControlsProps) {
   if (compact) {
     return (
@@ -27,7 +30,13 @@ export default function TimerControls({
         {showStartPause && (
           <button
             onClick={onStartPause}
-            className={`p-1.5 rounded-lg transition-all active:scale-90 ${isRunning ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"}`}
+            className={`p-1.5 rounded-lg transition-all active:scale-90 ${
+              isRunning
+                ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                : emphasizeStart
+                  ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+            }`}
             aria-label={isRunning ? "Pause timer" : "Start timer"}
           >
             {isRunning ? (
@@ -61,7 +70,9 @@ export default function TimerControls({
     <div className="flex flex-col items-center gap-1 flex-shrink-0">
       <button
         onClick={onStartPause}
-        className={`pause-button w-12 h-12 ${isRunning ? "running" : ""}`}
+        className={`pause-button w-12 h-12 ${
+          isRunning ? "running" : emphasizeStart ? "primary-ready" : "idle-muted"
+        }`}
         aria-label={isRunning ? "Pause timer" : "Start timer"}
         title={isRunning ? "Pause" : "Start focus session"}
       >

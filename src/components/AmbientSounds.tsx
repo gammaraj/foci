@@ -376,14 +376,18 @@ export default function AmbientSounds() {
       <div
         className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors ${
           activeSound || (mode === "soundcloud") || showYt
-            ? "bg-blue-50/80 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/50"
+            ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
             : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
       >
         <button
           type="button"
           onClick={handleMiniPlayPause}
-          className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-sm touch-target-sm"
+          className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center touch-target-sm border transition-colors ${
+            activeSound || (mode === "soundcloud" && !collapsed) || showYt
+              ? "border-blue-400/60 dark:border-blue-500/50 bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+              : "border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
+          }`}
           aria-label={
             mode === "sounds"
               ? activeSound
@@ -539,7 +543,7 @@ export default function AmbientSounds() {
           const active = mode === tab.id;
           const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-0.5 sm:px-1 py-1.5 text-[10px] sm:text-[11px] font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
             active
-              ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm"
+              ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
               : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
           }`;
           return (

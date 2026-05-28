@@ -289,6 +289,7 @@ export default function AppPage() {
                   onStartPause={handleStartPause}
                   onReset={handleReset}
                   compact
+                  emphasizeStart={!!activeTaskId && !isRunning}
                 />
                 <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
                 <button
@@ -392,6 +393,7 @@ export default function AppPage() {
                   onStartPause={handleStartPause}
                   onReset={handleReset}
                   showReset={false}
+                  emphasizeStart={!!activeTaskId && !isRunning}
                 />
                 <CircularTimer
                   remainingTime={timer.remainingTime}
@@ -414,6 +416,7 @@ export default function AppPage() {
                   onStartPause={handleStartPause}
                   onReset={handleReset}
                   showStartPause={false}
+                  emphasizeStart={!!activeTaskId && !isRunning}
                 />
               </div>
 
@@ -482,6 +485,7 @@ export default function AppPage() {
         isBreak={timer.isBreakMode}
         status={timer.statusText}
         activeTaskTitle={activeTaskTitle}
+        emphasizeStart={!!activeTaskId && !isRunning}
         onStartPause={handleStartPause}
         onReset={handleReset}
         onExpandTimer={() => setTimerCollapsed(false)}

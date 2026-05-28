@@ -30,6 +30,18 @@ import {
 } from "@/components/task-list/utils";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 
+/** Neutral active state for time/view filters (not a primary CTA). */
+const FILTER_TAB_ACTIVE =
+  "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070] font-semibold";
+const FILTER_TAB_INACTIVE =
+  "text-slate-600 dark:text-white/80 hover:text-slate-800 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10";
+
+/** Soft outline for project scope (distinct from Add / Start buttons). */
+const PROJECT_TAB_ACTIVE =
+  "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/50 dark:ring-blue-500/45 font-semibold";
+const PROJECT_TAB_INACTIVE =
+  "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]";
+
 export default function TaskList({
   activeTaskId,
   onSelectTask,
@@ -992,7 +1004,7 @@ export default function TaskList({
             <div className="hidden sm:flex items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Show tasks due today"}
               >
                 Today
@@ -1004,21 +1016,21 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Show tasks due this week"
               >
                 Week
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Show tasks due this month"
               >
                 Month
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Show tasks due this year"
               >
                 Year
@@ -1101,7 +1113,7 @@ export default function TaskList({
         <div className="flex sm:hidden items-center gap-1 bg-slate-200/60 dark:bg-white/10 rounded-lg p-0.5 mt-3">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? "bg-orange-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
             title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Show tasks due today"}
           >
             Today
@@ -1113,21 +1125,21 @@ export default function TaskList({
           </button>
           <button
             onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? "bg-violet-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
             title="Show tasks due this week"
           >
             Week
           </button>
           <button
             onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? "bg-sky-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
             title="Show tasks due this month"
           >
             Month
           </button>
           <button
             onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? "bg-emerald-500 text-white" : "text-slate-500 dark:text-white/80 hover:text-slate-700 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10"}`}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
             title="Show tasks due this year"
           >
             Year
@@ -1206,7 +1218,7 @@ export default function TaskList({
           <button
             type="button"
             onClick={() => selectProject(TODAY_FILTER_ID)}
-            className="mb-2 w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-orange-200 dark:border-orange-800/60 bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 hover:bg-orange-100 dark:hover:bg-orange-900/35 transition-colors"
+            className="mb-2 w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors shadow-sm"
           >
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1292,9 +1304,7 @@ export default function TaskList({
           <button
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              isAllProjectsScopeActive
-                ? "bg-blue-600 text-white"
-                : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
+              isAllProjectsScopeActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
             }`}
             title={`All projects — ${allOpenCount} open, ${todayOpenCount} due today`}
           >
@@ -1307,7 +1317,7 @@ export default function TaskList({
             </span>
             <span
               className={`text-xs tabular-nums shrink-0 ${
-                isAllProjectsScopeActive ? "text-blue-200" : "text-slate-400 dark:text-slate-500"
+                isAllProjectsScopeActive ? "text-blue-600 dark:text-blue-300" : "text-slate-500 dark:text-slate-500"
               }`}
               title={`${allOpenCount} open · ${todayOpenCount} due today`}
             >
@@ -1330,9 +1340,7 @@ export default function TaskList({
               key={p.id}
               onClick={() => selectProjectScope(p.id)}
               className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                tabActive
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
+                tabActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
               }`}
               title={projectTabTooltip(p)}
             >
@@ -1346,7 +1354,7 @@ export default function TaskList({
                 <>
                   <span
                     className={`shrink-0 select-none ${
-                      tabActive ? "text-blue-200/80" : "text-slate-400/80 dark:text-slate-500/80"
+                      tabActive ? "text-blue-500/80 dark:text-blue-400/80" : "text-slate-400/80 dark:text-slate-500/80"
                     }`}
                     aria-hidden
                   >
@@ -1354,9 +1362,7 @@ export default function TaskList({
                   </span>
                   <span
                     className={`text-xs tabular-nums shrink-0 ${
-                      tabActive
-                        ? "text-blue-200"
-                        : "text-slate-400 dark:text-slate-500"
+                      tabActive ? "text-blue-600 dark:text-blue-300" : "text-slate-500 dark:text-slate-500"
                     }`}
                   >
                     {count}

@@ -35,14 +35,14 @@ export default function HomeAppMockup() {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white">Tasks</span>
                 <div className="flex gap-1">
-                  <span className="text-xs font-medium px-2 py-1 rounded-md bg-orange-500 text-white">Today</span>
+                  <span className="text-xs font-medium px-2 py-1 rounded-md bg-white text-slate-800 ring-1 ring-slate-300 shadow-sm">Today</span>
                   <span className="text-xs font-medium px-2 py-1 rounded-md text-slate-500">Week</span>
                 </div>
               </div>
             </div>
 
             <div className="px-3 py-2 flex gap-1.5 overflow-hidden">
-              <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-blue-600 text-white shrink-0">All projects</span>
+              <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white text-slate-800 ring-1 ring-blue-400/50 shadow-sm shrink-0">All projects</span>
               <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 shrink-0">General 3</span>
               <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 shrink-0">Work 2</span>
             </div>

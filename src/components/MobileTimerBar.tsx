@@ -9,6 +9,7 @@ interface MobileTimerBarProps {
   isBreak: boolean;
   status: string;
   activeTaskTitle?: string;
+  emphasizeStart?: boolean;
   onStartPause: () => void;
   onReset: () => void;
   onExpandTimer: () => void;
@@ -21,6 +22,7 @@ export default function MobileTimerBar({
   isBreak,
   status,
   activeTaskTitle,
+  emphasizeStart = false,
   onStartPause,
   onReset,
   onExpandTimer,
@@ -57,6 +59,7 @@ export default function MobileTimerBar({
           onStartPause={onStartPause}
           onReset={onReset}
           compact
+          emphasizeStart={emphasizeStart}
         />
         <button
           type="button"
