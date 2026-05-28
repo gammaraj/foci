@@ -1185,7 +1185,7 @@ export default function TaskList({
                 : "All dates";
         const activeProject = projects.find((p) => p.id === projectFilterId);
         return (
-          <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
+          <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-600 dark:text-slate-400">
             <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
             {isTimeFilter && projectFilterId !== ALL_PROJECTS_ID && activeProject && (
               <span className="font-medium text-slate-700 dark:text-slate-200">
@@ -1195,7 +1195,7 @@ export default function TaskList({
             {isAllProjectsScopeActive && !isTimeFilter ? (
               <span>
                 <span className="font-medium text-orange-600 dark:text-orange-400">{todayOpenCount} due today</span>
-                <span className="text-slate-400 dark:text-slate-500"> / {allOpenCount} open</span>
+                <span className="text-slate-600 dark:text-slate-500"> / {allOpenCount} open</span>
               </span>
             ) : (
               <span>{pendingTasks.length} open</span>
@@ -1224,7 +1224,7 @@ export default function TaskList({
             )}
           </button>
         )}
-        <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5 sm:mb-0 sm:hidden">Project</p>
+        <p className="text-xs font-medium text-slate-600 dark:text-slate-500 mb-1.5 sm:mb-0 sm:hidden">Project</p>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -1294,7 +1294,7 @@ export default function TaskList({
 
         {/* Desktop: horizontal scrolling project tabs */}
         <div className="hidden sm:block relative">
-          <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5">Project</p>
+          <p className="text-xs font-medium text-slate-600 dark:text-slate-500 mb-1.5">Project</p>
           <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-6">
           <button
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
@@ -2081,7 +2081,7 @@ export default function TaskList({
                     </span>
                   )}
                   {(isAllProjects || isTimeFilter) && (
-                    <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300">
+                    <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300">
                       {getProjectName(task.projectId)}
                     </span>
                   )}

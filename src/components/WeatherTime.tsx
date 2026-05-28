@@ -88,7 +88,7 @@ export default function WeatherTime({ compact = false, sessions }: WeatherTimePr
 
   if (compact) {
     return (
-      <p className="app-inline-meta app-text-meta text-slate-500 dark:text-slate-400 min-w-0 leading-relaxed">
+      <p className="app-inline-meta app-text-meta text-slate-600 dark:text-slate-400 min-w-0 leading-relaxed">
         {sessions && (
           <>
             <span className="font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">

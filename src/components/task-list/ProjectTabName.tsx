@@ -11,7 +11,7 @@ export function ProjectTabName({
       <span className="inline-flex items-center gap-2 min-w-0 max-w-full">
         <span className="shrink-0 font-medium">{project.name}</span>
         <span
-          className="text-slate-400/90 dark:text-slate-500/90 shrink-0 select-none px-0.5"
+          className="text-slate-500 dark:text-slate-500/90 shrink-0 select-none px-0.5"
           aria-hidden
         >
           ·
