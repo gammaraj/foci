@@ -14,6 +14,7 @@
   /* Light mode surfaces — page slightly darker than cards for depth */
   --page-bg: #e8edf2;
   --surface-border: #d4dce6;
+  --panel-header-bg: #ffffff;
 }
 
 /* ===== Base Styles ===== */
@@ -43,13 +44,14 @@ body {
   border-bottom: 1px solid #243350;
 }
 
-/* Calmer /app panel headers — less gradient chrome */
+/* /app panel headers — solid match to card surface in light mode (no grey wash-through) */
 .panel-header-calm {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--panel-header-bg);
   border-bottom: 1px solid var(--surface-border);
 }
 .dark .panel-header-calm {
-  background: rgba(17, 24, 39, 0.5);
+  --panel-header-bg: rgba(17, 24, 39, 0.85);
+  background: var(--panel-header-bg);
   border-bottom: 1px solid #243350;
 }
 
