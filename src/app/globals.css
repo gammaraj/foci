@@ -116,12 +116,22 @@ body {
   }
 }
 
+/* Inline status lines (weather, filter summary, etc.) — gap replaces cramped · glue */
+.app-inline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.625rem;
+  row-gap: 0.25rem;
+}
+
 .app-section-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
-  line-height: 1.25;
+  line-height: 1.35;
+  word-spacing: 0.04em;
 }
 @media (min-width: 640px) {
   .app-section-label {

@@ -758,7 +758,7 @@ export default function AmbientSounds() {
       )}
 
       {/* SomaFM external links */}
-      <div className="flex items-center gap-1 flex-nowrap min-w-0 overflow-x-auto pb-0.5">
+      <div className="flex items-center gap-2 flex-nowrap min-w-0 overflow-x-auto pb-0.5">
         <span className="text-sm font-medium text-slate-500 dark:text-slate-300 shrink-0">SomaFM:</span>
         {SOMAFM_STATIONS.map((s) => (
           <a
@@ -766,7 +766,7 @@ export default function AmbientSounds() {
             href={`https://somafm.com/player/#/now-playing/${s.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 px-2.5 py-1 text-sm font-medium whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-sm font-medium whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
             title={s.desc}
           >
             <svg className="w-2.5 h-2.5 opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>

@@ -28,6 +28,7 @@ import {
   projectTabTooltip,
   projectTabLabel,
 } from "@/components/task-list/utils";
+import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 
 export default function TaskList({
   activeTaskId,
@@ -1184,27 +1185,23 @@ export default function TaskList({
                 : "All dates";
         const activeProject = projects.find((p) => p.id === projectFilterId);
         return (
-          <p className="px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
+          <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
             <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
             {isTimeFilter && projectFilterId !== ALL_PROJECTS_ID && activeProject && (
-              <>
-                {" · "}
-                <span className="font-medium text-slate-700 dark:text-slate-200">
-                  {activeProject.name}
-                </span>
-              </>
+              <span className="font-medium text-slate-700 dark:text-slate-200">
+                {activeProject.name}
+              </span>
             )}
-            {" · "}
             {isAllProjectsScopeActive && !isTimeFilter ? (
-              <>
+              <span>
                 <span className="font-medium text-orange-600 dark:text-orange-400">{todayOpenCount} due today</span>
                 <span className="text-slate-400 dark:text-slate-500"> / {allOpenCount} open</span>
-              </>
+              </span>
             ) : (
               <span>{pendingTasks.length} open</span>
             )}
             {overdueTasks.length > 0 && (
-              <span className="text-red-600 dark:text-red-400"> · {overdueTasks.length} overdue</span>
+              <span className="text-red-600 dark:text-red-400">{overdueTasks.length} overdue</span>
             )}
           </p>
         );
@@ -1298,10 +1295,10 @@ export default function TaskList({
         {/* Desktop: horizontal scrolling project tabs */}
         <div className="hidden sm:block relative">
           <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5">Project</p>
-          <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto scrollbar-hide pr-6">
+          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-6">
           <button
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
-            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+            className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
               isAllProjectsScopeActive
                 ? "bg-blue-600 text-white"
                 : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
@@ -1310,7 +1307,13 @@ export default function TaskList({
           >
             <span className="truncate max-w-[100px]">All projects</span>
             <span
-              className={`text-xs tabular-nums ${
+              className="text-slate-400/80 dark:text-slate-500/80 shrink-0 select-none"
+              aria-hidden
+            >
+              ·
+            </span>
+            <span
+              className={`text-xs tabular-nums shrink-0 ${
                 isAllProjectsScopeActive ? "text-blue-200" : "text-slate-400 dark:text-slate-500"
               }`}
               title={`${allOpenCount} open · ${todayOpenCount} due today`}
@@ -1333,7 +1336,7 @@ export default function TaskList({
             <button
               key={p.id}
               onClick={() => selectProjectScope(p.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                 tabActive
                   ? "bg-blue-600 text-white"
                   : "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]"
@@ -1343,17 +1346,29 @@ export default function TaskList({
               {p.color && (
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
               )}
-              <span className="truncate max-w-[8rem] sm:max-w-[11rem]" title={projectTabTooltip(p)}>
-                {projectTabLabel(p)}
+              <span className="min-w-0 max-w-[8rem] sm:max-w-[11rem]" title={projectTabTooltip(p)}>
+                <ProjectTabName project={p} />
               </span>
               {count > 0 && (
-                <span className={`text-xs ${
-                  tabActive
-                    ? "text-blue-200"
-                    : "text-slate-400 dark:text-slate-500"
-                }`}>
-                  {count}
-                </span>
+                <>
+                  <span
+                    className={`shrink-0 select-none ${
+                      tabActive ? "text-blue-200/80" : "text-slate-400/80 dark:text-slate-500/80"
+                    }`}
+                    aria-hidden
+                  >
+                    ·
+                  </span>
+                  <span
+                    className={`text-xs tabular-nums shrink-0 ${
+                      tabActive
+                        ? "text-blue-200"
+                        : "text-slate-400 dark:text-slate-500"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </>
               )}
             </button>
             );
@@ -1937,10 +1952,13 @@ export default function TaskList({
             <div key={task.id}>
             {showOverdueHeader && (
               <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
-                <div className="app-section-label text-red-700 dark:text-red-300">
-                  Overdue — needs attention
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
+                  <span className="text-sm font-medium text-red-600/90 dark:text-red-300/80 normal-case tracking-normal">
+                    Needs attention
+                  </span>
                 </div>
-                <p className="text-xs text-red-600/80 dark:text-red-300/70 mt-0.5 normal-case tracking-normal font-normal">
+                <p className="text-xs text-red-600/80 dark:text-red-300/70 mt-1 normal-case tracking-normal font-normal leading-relaxed">
                   Sorted by priority, then oldest due date
                 </p>
               </div>
@@ -2020,7 +2038,7 @@ export default function TaskList({
               {/* Task content */}
               <div className="flex-1 min-w-0">
                 <div
-                  className="text-base font-medium text-slate-800 dark:text-slate-50 break-words leading-snug"
+                  className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base font-medium text-slate-800 dark:text-slate-50 break-words leading-normal"
                 >
                   {isExpanded && editingId === task.id ? (
                     <input
@@ -2052,7 +2070,7 @@ export default function TaskList({
                   )}
                   {/* Priority badge */}
                   {task.priority && (
-                    <span className={`ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs sm:text-sm font-semibold uppercase rounded align-middle ${
+                    <span className={`inline-flex items-center px-2 py-0.5 text-xs sm:text-sm font-semibold uppercase rounded ${
                       task.priority === 1 
                         ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
                         : task.priority === 2
@@ -2063,16 +2081,16 @@ export default function TaskList({
                     </span>
                   )}
                   {(isAllProjects || isTimeFilter) && (
-                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle">
+                    <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300">
                       {getProjectName(task.projectId)}
                     </span>
                   )}
                 </div>
-                {!isExpanded && <div className="flex items-center gap-2 mt-1">
+                {!isExpanded && <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
                   {/* Due date — always visible when set */}
                   {task.dueDate && (
                     <div
-                      className={`relative inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
+                      className={`relative inline-flex items-center gap-1.5 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
                         !task.completed && isDueDateOverdue(task.dueDate)
                           ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
                           : !task.completed && task.dueDate === getToday()

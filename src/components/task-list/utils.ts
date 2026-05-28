@@ -18,7 +18,7 @@ export function projectTabLabel(project: { name: string; description?: string })
   const desc = project.description?.trim();
   if (project.name.length <= 4 && desc) {
     const short = desc.length > 18 ? `${desc.slice(0, 18)}…` : desc;
-    return `${project.name} · ${short}`;
+    return `${project.name} — ${short}`;
   }
   return project.name;
 }
