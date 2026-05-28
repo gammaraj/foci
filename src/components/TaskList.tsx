@@ -901,7 +901,7 @@ export default function TaskList({
       {/* Focus mode header */}
       {isFocusMode ? (
         <div
-          className="section-header-gradient px-3 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
+          className="panel-header-calm px-3 sm:px-5 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
         >
           <div className="flex items-center justify-between min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -928,10 +928,10 @@ export default function TaskList({
       <>
       {/* Header */}
       <div
-        className="section-header-gradient px-3 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm px-3 sm:px-5 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
       >
         <div className="flex items-center justify-between min-w-0">
-          <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 flex-shrink-0">
+          <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2 flex-shrink-0">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -1131,9 +1131,11 @@ export default function TaskList({
         />
       )}
 
-      {/* Project tabs */}
+      {/* Project tabs — hidden during time filters (Today/Week/etc.) to reduce chrome */}
       {!isFocusMode && viewMode === "list" && (<>
       {(() => {
+        const showFilterMeta = isAllProjects || !isTodayFilter || overdueTasks.length > 0;
+        if (!showFilterMeta) return null;
         const timeLabel = isTodayFilter
           ? "Due today"
           : isThisWeekFilter
@@ -1143,23 +1145,18 @@ export default function TaskList({
               : isThisYearFilter
                 ? "Due this year"
                 : "All dates";
-        const projectLabel = isAllProjects
-          ? "All projects"
-          : isTimeFilter
-            ? "General"
-            : (currentProject?.name ?? "General");
         return (
-          <p className="px-3 sm:px-4 pt-2 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
-            Viewing{" "}
-            <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
-            {" · "}
-            <span className="font-medium text-slate-700 dark:text-slate-200">{projectLabel}</span>
-            {" · "}
+          <p className="px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-500 dark:text-slate-400">
+            {!isTodayFilter && (
+              <>
+                <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
+                {" · "}
+              </>
+            )}
             {isAllProjects ? (
               <>
                 <span className="font-medium text-orange-600 dark:text-orange-400">{todayOpenCount} due today</span>
-                {" · "}
-                <span>{allOpenCount} open total</span>
+                <span className="text-slate-400 dark:text-slate-500"> / {allOpenCount} open</span>
               </>
             ) : (
               <span>{pendingTasks.length} open</span>
@@ -1170,7 +1167,8 @@ export default function TaskList({
           </p>
         );
       })()}
-      <div className="px-3 sm:px-4 pt-2 pb-1 relative" ref={projectMenuRef}>
+      {!isTimeFilter && (
+      <div className="px-3 sm:px-4 pt-1.5 pb-1 relative" ref={projectMenuRef}>
         {isAllProjects && (
           <button
             type="button"
@@ -1672,8 +1670,9 @@ export default function TaskList({
         )}
 
       </div>
+      )}
 
-      <div className="px-3 sm:p-4 pt-4 pb-3 space-y-3">
+      <div className="px-3 sm:p-4 pt-3 pb-2 space-y-2">
         {/* Project description */}
         {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">
@@ -1858,14 +1857,6 @@ export default function TaskList({
         )}
 
         {/* First session nudge handled by AppMessageQueue on /app */}
-
-        {!activeTaskId && !isTimerRunning && tasksReady && pendingTasks.length > 0 && viewMode === "list" && (
-          <div className="mx-3 sm:mx-4 mb-3 px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-800/60 bg-blue-50/80 dark:bg-blue-900/20">
-            <p className="text-sm sm:text-base font-medium text-blue-800 dark:text-blue-200">
-              Ready to focus? Select a task and tap Start, or press Space when the timer is open.
-            </p>
-          </div>
-        )}
 
         <div className="space-y-2">
           {pendingTasks.map((task, index) => {

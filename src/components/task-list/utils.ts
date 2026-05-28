@@ -3,7 +3,7 @@ import { getToday, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
-export const MAX_VISIBLE_PROJECT_TABS = 6;
+export const MAX_VISIBLE_PROJECT_TABS = 4;
 
 /** Full name for hover / aria */
 export function projectTabTooltip(project: { name: string; description?: string }): string {

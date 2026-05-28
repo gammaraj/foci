@@ -350,7 +350,7 @@ export default function AmbientSounds() {
   }, [activeSound]);
 
   return (
-    <div id="ambient-sounds" className="mx-2 sm:mx-3 mb-2 sm:mb-3 space-y-2 scroll-mt-24">
+    <div id="ambient-sounds" className="mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24">
       {/* Mini player bar (always visible) */}
       <div
         className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors ${
@@ -453,28 +453,6 @@ export default function AmbientSounds() {
           </svg>
         </button>
       </div>
-
-      {/* Quick ambient picks when collapsed */}
-      {collapsed && mode === "sounds" && (
-        <div className="flex items-center gap-1.5 px-0.5">
-          {SOUNDS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => playSound(s.id)}
-              className={`flex-1 py-1.5 rounded-lg text-sm transition-colors touch-target-sm ${
-                activeSound === s.id
-                  ? "bg-blue-100 dark:bg-blue-900/40 ring-1 ring-blue-400 dark:ring-blue-600"
-                  : "bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] hover:border-blue-300"
-              }`}
-              aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
-              title={s.label}
-            >
-              {s.emoji}
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}
       {mode === "soundcloud" && (

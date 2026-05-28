@@ -54,7 +54,6 @@ export default function AppPage() {
   const [timerAnnouncement, setTimerAnnouncement] = useState("");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [soundsHintDismissed, setSoundsHintDismissed] = useState(false);
   const [activeTaskTitle, setActiveTaskTitle] = useState("");
   const prevTimerStatusRef = useRef(timer.status);
 
@@ -75,10 +74,6 @@ export default function AppPage() {
   }, [timerCollapsed]);
 
   useEffect(() => {
-    setSoundsHintDismissed(localStorage.getItem("foci_sounds_hint_dismissed") === "1");
-  }, []);
-
-  useEffect(() => {
     if (!activeTaskId) {
       setActiveTaskTitle("");
       return;
@@ -88,11 +83,6 @@ export default function AppPage() {
       setActiveTaskTitle(t?.title ?? "");
     });
   }, [activeTaskId]);
-
-  const dismissSoundsHint = useCallback(() => {
-    localStorage.setItem("foci_sounds_hint_dismissed", "1");
-    setSoundsHintDismissed(true);
-  }, []);
 
   const isRunning = timer.status === "running";
   const displayTime =
@@ -242,7 +232,7 @@ export default function AppPage() {
       {focusMode && (
         <div className="px-2 sm:px-4 pt-2">
           <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
-            <span className="text-blue-800 dark:text-blue-200 font-medium">🎯 Focus mode — fewer distractions</span>
+            <span className="text-blue-800 dark:text-blue-200 font-medium">Focus mode — fewer distractions</span>
             <button
               type="button"
               onClick={() => setFocusMode(false)}
@@ -255,19 +245,16 @@ export default function AppPage() {
       )}
       <DueDateReminders />
       {!focusMode && (
-      <div className="px-2 sm:px-4 pt-2">
-        <div className="max-w-[1280px] mx-auto rounded-xl app-surface dark:bg-[#111827]/85 dark:border-[#243350] px-3 sm:px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm sm:text-base text-slate-600 dark:text-slate-300">
-          <span className="font-semibold text-slate-700 dark:text-slate-200">
-            Today <span className="text-blue-600 dark:text-blue-300">{timer.dailyGoalData.sessionCount}/{timer.settings.dailyGoal}</span> sessions
-          </span>
-          <span className="text-slate-300 dark:text-slate-600 hidden sm:inline">·</span>
-          <span className="truncate">
-            {timer.dailyGoalData.streak > 0
-              ? `🔥 ${timer.dailyGoalData.streak}-day streak`
-              : "Start your streak today"}
-          </span>
+        <div className="px-2 sm:px-4 pt-2 max-w-[1280px] mx-auto w-full">
+          <WeatherTime
+            compact
+            sessions={{
+              count: timer.dailyGoalData.sessionCount,
+              goal: timer.settings.dailyGoal,
+              streak: timer.dailyGoalData.streak,
+            }}
+          />
         </div>
-      </div>
       )}
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-20 lg:pb-3 sm:p-4 sm:pt-3">
       <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
@@ -321,7 +308,6 @@ export default function AppPage() {
 
         {/* Task list column */}
         <div id="tasks-section" className="w-full lg:flex-1 min-w-0">
-          {!focusMode && <WeatherTime compact />}
           <TaskList
             key={taskListKey}
             activeTaskId={activeTaskId}
@@ -343,7 +329,7 @@ export default function AppPage() {
           <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}>
             {/* Header */}
             <header
-              className="section-header-gradient flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-slate-700 dark:text-white rounded-t-2xl"
+              className="panel-header-calm flex items-center justify-between px-4 sm:px-5 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
             >
               <h1 className="text-lg sm:text-xl font-semibold tracking-wide">Focus Timer</h1>
 
@@ -454,54 +440,20 @@ export default function AppPage() {
                 </div>
               </div>
 
-              {/* Idle / ready-to-focus — prominent below timer */}
-              {timer.status === "idle" && !timer.isBreakMode && (
-                <div
-                  className={`mx-1 mb-2 px-3 py-3 rounded-xl border text-center ${
-                    readyToFocus
-                      ? "border-blue-400 dark:border-blue-500 bg-blue-100/90 dark:bg-blue-900/40 shadow-sm shadow-blue-500/10"
-                      : "border-blue-200 dark:border-blue-800 bg-blue-50/90 dark:bg-blue-900/25"
-                  }`}
-                >
-                  <p className={`text-sm sm:text-base font-semibold ${readyToFocus ? "text-blue-900 dark:text-blue-100" : "text-blue-800 dark:text-blue-200"}`}>
-                    {readyToFocus ? "Ready to focus" : "Pick a task to begin"}
-                  </p>
-                  <p className="text-sm text-blue-700/90 dark:text-blue-300/90 mt-1">
-                    {readyToFocus
-                      ? "Press Play, Space, or ▶ Start on your selected task"
-                      : "Select a task in your list, then press Play or Space"}
-                  </p>
-                </div>
+              {readyToFocus && timer.status === "idle" && !timer.isBreakMode && (
+                <p className="mx-1 mb-2 text-center text-sm text-blue-700/90 dark:text-blue-300/90">
+                  Press Play or Space to start
+                </p>
               )}
             </div>
 
-            {!soundsHintDismissed && !focusMode && (
-              <div className="px-4 pb-2">
-                <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-sm text-indigo-800 dark:text-indigo-200">
-                  <button
-                    type="button"
-                    className="text-left flex-1 hover:underline"
-                    onClick={() => document.getElementById("ambient-sounds")?.scrollIntoView({ behavior: "smooth" })}
-                  >
-                    🎵 Try ambient sounds for deeper focus
-                  </button>
-                  <button type="button" onClick={dismissSoundsHint} className="text-indigo-500 hover:text-indigo-700 p-1" aria-label="Dismiss">
-                    ×
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Music & Sounds - moved up for better visibility */}
             <AmbientSounds />
 
-            {timer.lastQuote && (
-              <div className="px-4 pb-3 animate-slide-up">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-[#131d30] dark:to-[#1a2540] rounded-xl p-5 border border-blue-200/80 dark:border-[#243350] text-center shadow-sm">
-                  <p className="text-base sm:text-lg italic text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-                    &ldquo;{timer.lastQuote}&rdquo;
-                  </p>
-                </div>
+            {timer.lastQuote && (timer.status === "break" || timer.status === "idle") && (
+              <div className="px-4 pb-2 animate-slide-up">
+                <p className="text-sm italic text-slate-500 dark:text-slate-400 text-center leading-relaxed px-2">
+                  &ldquo;{timer.lastQuote}&rdquo;
+                </p>
               </div>
             )}
 

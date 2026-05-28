@@ -43,6 +43,16 @@ body {
   border-bottom: 1px solid #243350;
 }
 
+/* Calmer /app panel headers — less gradient chrome */
+.panel-header-calm {
+  background: rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid var(--surface-border);
+}
+.dark .panel-header-calm {
+  background: rgba(17, 24, 39, 0.5);
+  border-bottom: 1px solid #243350;
+}
+
 /* ===== App card elevation (light mode) ===== */
 .app-surface {
   background: #ffffff;

@@ -38,9 +38,11 @@ function getGreeting(hour: number): string {
 interface WeatherTimeProps {
   /** Single-line layout for /app to save vertical space. */
   compact?: boolean;
+  /** Optional session summary merged into the compact line (avoids a second stats bar). */
+  sessions?: { count: number; goal: number; streak: number };
 }
 
-export default function WeatherTime({ compact = false }: WeatherTimeProps) {
+export default function WeatherTime({ compact = false, sessions }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -86,7 +88,25 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
 
   if (compact) {
     return (
-      <p className="app-text-meta text-slate-500 dark:text-slate-400 mb-2 px-1 truncate">
+      <p className="app-text-meta text-slate-500 dark:text-slate-400 truncate leading-relaxed">
+        {sessions && (
+          <>
+            <span className="font-medium text-slate-600 dark:text-slate-300">
+              Today{" "}
+              <span className="text-blue-600 dark:text-blue-400 tabular-nums">
+                {sessions.count}/{sessions.goal}
+              </span>{" "}
+              sessions
+            </span>
+            <span className="text-slate-300 dark:text-slate-600 mx-1.5">·</span>
+            <span>
+              {sessions.streak > 0
+                ? `${sessions.streak}-day streak`
+                : "Start your streak"}
+            </span>
+            <span className="text-slate-300 dark:text-slate-600 mx-1.5">·</span>
+          </>
+        )}
         {greeting} · <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">{formatClock(now)}</span>
         {weather && (
           <>
