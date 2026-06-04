@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { absolutePageTitle } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
-  title: "Page Not Found",
+  title: absolutePageTitle("Page Not Found"),
   description: "The page you're looking for doesn't exist. Head back to Foci to start focusing.",
 };
 

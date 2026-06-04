@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { absolutePageTitle } from "@/lib/site-metadata";
 
-const title = "Focus Timer App – Foci | Pomodoro, Tasks & Ambient Sounds";
+const title = "Focus Timer App | Pomodoro, Tasks & Ambient Sounds";
 const description =
   "Start your focus session: calm Pomodoro timer with task tracking, Smart Plan, daily goals, streaks, and built-in ambient sounds. Free worldwide in your browser — no signup required.";
 
 export const metadata: Metadata = {
-  title,
+  title: absolutePageTitle(title),
   description,
   keywords: [
     "focus timer",

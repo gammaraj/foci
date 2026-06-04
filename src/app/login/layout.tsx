@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { absolutePageTitle } from "@/lib/site-metadata";
 
-const title = "Log In – Foci | Focus Timer & Pomodoro App";
+const title = "Log In | Focus Timer & Pomodoro App";
 const description =
   "Sign in or create a free Foci account to sync your Pomodoro timer settings, tasks, and streak data across devices.";
 
 export const metadata: Metadata = {
-  title,
+  title: absolutePageTitle(title),
   description,
   alternates: { canonical: "/login" },
   robots: { index: false, follow: true },

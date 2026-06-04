@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { getPostsBySlugs } from "@/lib/blog";
@@ -7,6 +8,13 @@ import SatTutoringPromo from "@/components/SatTutoringPromo";
 import HomeAppMockup from "@/components/HomeAppMockup";
 
 const siteUrl = "https://usefoci.com";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: "Foci App – Free Pomodoro Timer, Tasks, Smart Plan & Focus Music",
+  },
+  alternates: { canonical: "/" },
+};
 
 /** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
 function safeJsonLd(obj: unknown): string {

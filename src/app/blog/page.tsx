@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts, getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
+import { absolutePageTitle } from "@/lib/site-metadata";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import Navbar from "@/components/Navbar";
 
-const title = "Blog – Foci | Flowtime, Pomodoro, Study Music & Focus Guides";
+const title = "Blog | Flowtime, Pomodoro, Study Music & Focus Guides";
 const description =
   "Free guides on the Flowtime technique, Pomodoro vs 52/17, best free Pomodoro apps, and what music helps you focus. Practical tips with tools included.";
 
 export const metadata: Metadata = {
-  title,
+  title: absolutePageTitle(title),
   description,
   keywords: [
     "flowtime technique",

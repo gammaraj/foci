@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
 import { headers } from "next/headers";
+import PageViewAnalytics from "@/components/PageViewAnalytics";
 import { AuthProvider } from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
@@ -254,12 +256,20 @@ export default async function RootLayout({
             />
             <Script id="google-analytics" strategy="afterInteractive" nonce={nonce}>
               {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${SAFE_GA_ID}');
+                (function(){
+                  var h=location.hostname;
+                  if(h==="localhost"||h==="127.0.0.1"||h.endsWith(".vercel.app"))return;
+                  window.dataLayer=window.dataLayer||[];
+                  function gtag(){dataLayer.push(arguments);}
+                  window.gtag=gtag;
+                  gtag('js',new Date());
+                  gtag('config','${SAFE_GA_ID}',{send_page_view:true,anonymize_ip:true});
+                })();
               `}
             </Script>
+            <Suspense fallback={null}>
+              <PageViewAnalytics />
+            </Suspense>
           </>
         )}
         <ThemeProvider>

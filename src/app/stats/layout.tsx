@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { absolutePageTitle } from "@/lib/site-metadata";
 
-const title = "Productivity Stats – Foci";
+const title = "Productivity Stats";
 const description =
   "Track your focus sessions with detailed productivity analytics: session heatmaps, per-project time charts, streak history, and daily/weekly/monthly breakdowns.";
 
 export const metadata: Metadata = {
-  title,
+  title: absolutePageTitle(title),
   description,
   keywords: [
     "productivity stats",

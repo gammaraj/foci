@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import { BLOG_POST_FAQS } from "@/lib/blog-seo";
+import { absolutePageTitle } from "@/lib/site-metadata";
 import { SAT_TUTORING_BLOG_SLUGS } from "@/lib/partner-promos";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { meta } = post;
   const ogImage = `https://usefoci.com/blog/${meta.slug}/opengraph-image`;
   return {
-    title: meta.title,
+    title: absolutePageTitle(meta.title),
     description: meta.description,
     keywords: meta.tags,
     authors: [{ name: "Foci", url: "https://usefoci.com" }],

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Foci – Your Focus System: Timer, Tasks, Goals & Ambient Music";
+export const alt = "Foci App – Free Pomodoro Timer, Tasks, Smart Plan & Focus Music";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
