@@ -15,7 +15,7 @@ const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 const siteUrl = "https://usefoci.com";
 const title = "Foci App – Free Pomodoro Timer, Tasks, Smart Plan & Focus Music";
 const description =
-  "Foci is the free focus app: Pomodoro timer, task tracking, Smart Plan scheduling, daily goals, streak stats, and built-in study music. No signup required — start at usefoci.com/app.";
+  "Foci is the free focus app: calm Pomodoro timer, task tracking, Smart Plan scheduling, daily goals, streak stats, and built-in study music. Available worldwide in your browser — no signup at usefoci.com/app.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -158,6 +158,11 @@ export const metadata: Metadata = {
     "be focused alternative",
     "toggl track alternative",
     "focus timer comparison",
+    "calm focus app",
+    "deep work workspace",
+    "lofi girl alternative",
+    "study focus workspace",
+    "pomodoro app worldwide",
   ],
   authors: [{ name: "Foci" }],
   creator: "Foci",
@@ -211,6 +216,11 @@ export const metadata: Metadata = {
   },
   other: {
     "google": "notranslate",
+    "content-language": "en",
+    "geo.placename": "Worldwide",
+    "geo.region": "GLOBAL",
+    "audience": "all",
+    "distribution": "global",
   },
 };
 

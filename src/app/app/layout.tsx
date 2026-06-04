@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 const title = "Focus Timer App – Foci | Pomodoro, Tasks & Ambient Sounds";
 const description =
-  "Start your focus session now: Pomodoro timer with task tracking, Smart Plan scheduling, daily goals, streaks, and built-in ambient sounds like brown noise and rain. Free, no signup required.";
+  "Start your focus session: calm Pomodoro timer with task tracking, Smart Plan, daily goals, streaks, and built-in ambient sounds. Free worldwide in your browser — no signup required.";
 
 export const metadata: Metadata = {
   title,

@@ -4,11 +4,15 @@ import { getAllPosts } from "@/lib/blog";
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = "https://usefoci.com";
   const now = new Date();
+  const productRefresh = new Date("2026-05-19");
 
   const allPosts = getAllPosts();
   const mostRecentPostDate = allPosts.length > 0
     ? new Date(Math.max(...allPosts.map((p) => new Date(p.date).getTime())))
     : now;
+  const siteContentDate = new Date(
+    Math.max(mostRecentPostDate.getTime(), productRefresh.getTime(), now.getTime()),
+  );
 
   // Bump priority for comparison/review posts and migration guides that target high-intent queries
   const comparisonSlugs = new Set([
@@ -41,14 +45,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: siteUrl,
-      lastModified: now,
+      lastModified: siteContentDate,
       changeFrequency: "weekly",
       priority: 1.0,
       images: [`${siteUrl}/opengraph-image`],
     },
     {
       url: `${siteUrl}/app`,
-      lastModified: now,
+      lastModified: siteContentDate,
       changeFrequency: "weekly",
       priority: 0.95,
       images: [`${siteUrl}/opengraph-image`],
@@ -62,7 +66,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteUrl}/stats`,
-      lastModified: now,
+      lastModified: siteContentDate,
       changeFrequency: "weekly",
       priority: 0.7,
       images: [`${siteUrl}/opengraph-image`],
@@ -75,13 +79,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteUrl}/llms.txt`,
-      lastModified: mostRecentPostDate,
+      lastModified: siteContentDate,
       changeFrequency: "monthly",
       priority: 0.4,
     },
     {
       url: `${siteUrl}/llms-full.txt`,
-      lastModified: mostRecentPostDate,
+      lastModified: siteContentDate,
       changeFrequency: "monthly",
       priority: 0.4,
     },
