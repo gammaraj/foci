@@ -28,14 +28,14 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
 
   return (
     <div
-      className="px-3 sm:px-4 py-2.5 border-b border-slate-100 dark:border-[#1e3050]/50 text-center"
+      className="px-3 sm:px-5 py-2 text-center"
       role="complementary"
       aria-label="Quote of the day"
     >
-      <p className="text-sm italic text-slate-500 dark:text-slate-400 leading-snug line-clamp-2 sm:line-clamp-1 max-w-2xl mx-auto">
+      <p className="text-xs font-light italic text-slate-400/90 dark:text-slate-500/75 leading-relaxed line-clamp-2 max-w-xl mx-auto">
         &ldquo;{text}&rdquo;
         {author ? (
-          <span className="not-italic text-slate-400 dark:text-slate-500"> — {author}</span>
+          <span className="font-normal not-italic text-slate-400/70 dark:text-slate-500/60"> — {author}</span>
         ) : null}
       </p>
     </div>

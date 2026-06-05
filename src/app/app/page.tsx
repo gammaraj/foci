@@ -326,16 +326,16 @@ export default function AppPage() {
           <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative opacity-[0.97] ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}>
             {/* Header */}
             <header
-              className="panel-header-calm flex items-center justify-between px-4 sm:px-5 py-2.5 sm:py-3 text-slate-600 dark:text-slate-200 rounded-t-2xl"
+              className="panel-header-calm flex items-center justify-between gap-2 px-4 sm:px-5 py-2.5 sm:py-3 text-slate-600 dark:text-slate-200 rounded-t-2xl"
             >
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h2 className="text-base sm:text-lg font-semibold tracking-wide text-slate-700 dark:text-white">Focus Timer</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal mt-0.5 hidden sm:block truncate">
-                  {activeTaskId ? "Linked to your selected task" : "Select a task to begin"}
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal mt-0.5 hidden sm:block">
+                  {activeTaskId ? "Task linked" : "Pick a task below"}
                 </p>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setFocusMode((f) => !f)}

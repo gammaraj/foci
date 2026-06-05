@@ -1194,7 +1194,6 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && viewMode === "list" && (<>
-      {(pendingTasks.length > 0 || completedTasks.length > 0) && <TaskPanelQuote />}
       {(() => {
         const showFilterMeta =
           !isTodayFilter ||
@@ -1757,6 +1756,8 @@ export default function TaskList({
 
       </div>
 
+      {(pendingTasks.length > 0 || completedTasks.length > 0) && <TaskPanelQuote />}
+
       <div className="px-3 sm:p-4 pt-3 pb-2 space-y-2">
         {/* Project description */}
         {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
@@ -1967,9 +1968,8 @@ export default function TaskList({
             return (
             <div key={task.id}>
             {showOverdueHeader && (
-              <div className="mb-2 mt-1 pl-3 py-1.5 border-l-[3px] border-l-red-500 dark:border-l-rose-500 flex flex-wrap items-center justify-between gap-2">
+              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
                 <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">Move to today, mark done, or focus</span>
               </div>
             )}
             {showUpcomingHeader && (
@@ -2164,34 +2164,6 @@ export default function TaskList({
                     </>
                   )}
                 </div>}
-                {isOverdue && !task.completed && !isExpanded && (
-                  <div
-                    className="flex flex-wrap items-center gap-1.5 mt-2"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => snoozeToToday(task.id)}
-                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
-                    >
-                      Move to today
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => toggleComplete(task.id)}
-                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
-                    >
-                      Done
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onStartTask(task.id)}
-                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                    >
-                      Focus
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Expand chevron indicator */}
@@ -2223,41 +2195,36 @@ export default function TaskList({
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                   <span className="hidden sm:inline">In progress</span>
                 </span>
-              ) : (
+              ) : activeTaskId === task.id ? (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (activeTaskId === task.id) {
-                        onSelectTask(null);
-                      } else {
-                        onStartTask(task.id);
-                      }
+                      onSelectTask(null);
                     }}
-                    className={`flex-shrink-0 rounded transition-all flex items-center justify-center touch-target-sm ${
-                      activeTaskId === task.id
-                        ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        : "px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                    }`}
+                    className="flex-shrink-0 hidden sm:flex px-2.5 py-1.5 text-xs sm:text-sm font-medium rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 touch-target-sm"
+                    title="Deselect task"
+                  >
+                    Deselect
+                  </button>
+              ) : !isOverdue ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStartTask(task.id);
+                    }}
+                    className="flex-shrink-0 flex items-center justify-center px-2.5 py-1.5 text-xs sm:text-sm font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 touch-target-sm"
                     title={
-                      activeTaskId === task.id
-                        ? "Deselect task"
-                        : isTimerRunning
-                          ? "Switch focus to this task"
-                          : "Focus on this task and start the timer"
+                      isTimerRunning
+                        ? "Switch focus to this task"
+                        : "Focus on this task and start the timer"
                     }
                   >
-                    {activeTaskId === task.id ? (
-                      "Deselect"
-                    ) : (
-                      <>
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                          <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                        </svg>
-                        <span className="ml-1">{isTimerRunning ? "Switch" : "Focus"}</span>
-                      </>
-                    )}
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                      <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                    <span className="ml-1">{isTimerRunning ? "Switch" : "Focus"}</span>
                   </button>
-              )}
+              ) : null}
 
               {/* Delete — visible on hover (desktop), hidden on mobile to save space */}
               {!(isTimerRunning && activeTaskId === task.id) && (
@@ -2282,6 +2249,35 @@ export default function TaskList({
                 </button>
               )}
             </div>
+
+            {isOverdue && !task.completed && (
+              <div
+                className="flex flex-wrap items-center gap-1.5 mt-1.5 mb-0.5 px-1 sm:px-2"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => snoozeToToday(task.id)}
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                >
+                  Move to today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleComplete(task.id)}
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                >
+                  Done
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onStartTask(task.id)}
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                >
+                  Focus
+                </button>
+              </div>
+            )}
 
             {/* Task detail panel */}
             {isExpanded && (
