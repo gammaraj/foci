@@ -217,18 +217,7 @@ export default function AmbientSounds() {
   const [scIdx, setScIdx] = useState(0);
   const [scShuffle, setScShuffle] = useState(false);
   const [scError, setScError] = useState(false);
-  const [collapsed, setCollapsed] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("foci_music_expanded") !== "true";
-    }
-    return true;
-  });
-
-  useEffect(() => {
-    if (!collapsed) {
-      try { localStorage.setItem("foci_music_expanded", "true"); } catch {}
-    }
-  }, [collapsed]);
+  const [collapsed, setCollapsed] = useState(true);
 
   // Auto-skip to next playlist if SoundCloud widget reports an error
   useEffect(() => {

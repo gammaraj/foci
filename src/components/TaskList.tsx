@@ -29,6 +29,7 @@ import {
   projectTabLabel,
 } from "@/components/task-list/utils";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
+import TaskPanelQuote from "@/components/TaskPanelQuote";
 
 /** Neutral active state for time/view filters (not a primary CTA). */
 const FILTER_TAB_ACTIVE =
@@ -568,6 +569,11 @@ export default function TaskList({
     persistOne(updated, changed);
   };
 
+  const snoozeToToday = (id: string) => {
+    setDueDate(id, getToday());
+    showToast("Moved to today");
+  };
+
   const startEditing = (task: Task) => {
     setEditingId(task.id);
     setEditTitle(task.title);
@@ -976,29 +982,38 @@ export default function TaskList({
       <div
         className="panel-header-calm px-3 sm:px-5 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
       >
-        <div className="flex items-center justify-between min-w-0">
-          <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2 flex-shrink-0">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            Tasks
-            {viewMode === "plan" && (
-              <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
-                · AI plan
+        <div className="flex items-center justify-between min-w-0 gap-2">
+          <div className="min-w-0 flex-shrink">
+            <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+              <svg
+                className="w-5 h-5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              <span>
+                Tasks
+                {viewMode === "plan" && (
+                  <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
+                    {" "}· AI plan
+                  </span>
+                )}
               </span>
+            </h2>
+            {!focusMode && viewMode === "list" && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
+                Pick a task, then hit Focus to start your session
+              </p>
             )}
-          </h2>
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink min-w-0">
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             {!focusMode && (
             <div className="app-seg-track hidden sm:flex items-center gap-1">
@@ -1179,6 +1194,7 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && viewMode === "list" && (<>
+      {(pendingTasks.length > 0 || completedTasks.length > 0) && <TaskPanelQuote />}
       {(() => {
         const showFilterMeta =
           !isTodayFilter ||
@@ -1300,7 +1316,7 @@ export default function TaskList({
 
         {/* Desktop: horizontal scrolling project tabs */}
         <div className="hidden sm:block relative">
-          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-6">
+          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-8">
           <button
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
@@ -1347,7 +1363,7 @@ export default function TaskList({
               {p.color && (
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
               )}
-              <span className="min-w-0 max-w-[8rem] sm:max-w-[11rem]" title={projectTabTooltip(p)}>
+              <span className="min-w-0 max-w-[10rem] sm:max-w-[14rem]" title={projectTabTooltip(p)}>
                 <ProjectTabName project={p} />
               </span>
               {count > 0 && (
@@ -1901,6 +1917,7 @@ export default function TaskList({
         {/* Empty state with template gallery */}
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
+            <TaskPanelQuote variant="hero" />
             <div className="text-center mb-6 px-4">
               <div className="text-5xl mb-3">📝</div>
               <p className="text-slate-700 dark:text-slate-200 text-lg font-semibold mb-2">
@@ -1950,8 +1967,9 @@ export default function TaskList({
             return (
             <div key={task.id}>
             {showOverdueHeader && (
-              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
+              <div className="mb-2 mt-1 pl-3 py-1.5 border-l-[3px] border-l-red-500 dark:border-l-rose-500 flex flex-wrap items-center justify-between gap-2">
                 <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">Move to today, mark done, or focus</span>
               </div>
             )}
             {showUpcomingHeader && (
@@ -2146,6 +2164,34 @@ export default function TaskList({
                     </>
                   )}
                 </div>}
+                {isOverdue && !task.completed && !isExpanded && (
+                  <div
+                    className="flex flex-wrap items-center gap-1.5 mt-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => snoozeToToday(task.id)}
+                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                    >
+                      Move to today
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleComplete(task.id)}
+                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                    >
+                      Done
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onStartTask(task.id)}
+                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                    >
+                      Focus
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Expand chevron indicator */}
@@ -2190,24 +2236,24 @@ export default function TaskList({
                     className={`flex-shrink-0 rounded transition-all flex items-center justify-center touch-target-sm ${
                       activeTaskId === task.id
                         ? "px-2.5 py-1.5 text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        : "p-2 sm:px-2.5 sm:py-1.5 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 sm:hover:bg-orange-500 sm:hover:text-white sm:hover:border-orange-500 dark:sm:hover:bg-orange-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 sm:bg-transparent sm:text-slate-400 hover-reveal-desktop"
+                        : "px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40"
                     }`}
                     title={
                       activeTaskId === task.id
                         ? "Deselect task"
                         : isTimerRunning
-                          ? "Switch to this task"
-                          : "Start working on this task"
+                          ? "Switch focus to this task"
+                          : "Focus on this task and start the timer"
                     }
                   >
                     {activeTaskId === task.id ? (
                       "Deselect"
                     ) : (
                       <>
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                           <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
                         </svg>
-                        <span className="ml-1">{isTimerRunning ? "Switch" : "Start"}</span>
+                        <span className="ml-1">{isTimerRunning ? "Switch" : "Focus"}</span>
                       </>
                     )}
                   </button>
@@ -2518,7 +2564,7 @@ export default function TaskList({
                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
                           </svg>
-                          {isTimerRunning ? "Switch" : "Start"}
+                          {isTimerRunning ? "Switch" : "Focus"}
                         </>
                       )}
                     </button>
