@@ -2,7 +2,7 @@
 title: Foci – Complete Focus System Documentation
 description: Comprehensive LLM-optimized documentation for Foci, including full feature descriptions, FAQ, blog posts, and technical architecture.
 url: https://usefoci.com
-version: 2026-05-19
+version: 2026-06-05
 content_type: full
 related: /llms.txt (summary version)
 contact: https://usefoci.com

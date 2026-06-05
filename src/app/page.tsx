@@ -11,8 +11,10 @@ const siteUrl = "https://usefoci.com";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Foci App – Free Pomodoro Timer, Tasks, Smart Plan & Focus Music",
+    absolute: "Foci – Free Pomodoro Timer, Tasks & Focus App",
   },
+  description:
+    "Foci (usefoci.com) — free Pomodoro timer with tasks, ambient music, and session tracking. Flowtime, 52/17, and Pomodoro presets. No signup required.",
   alternates: { canonical: "/" },
 };
 
@@ -113,8 +115,10 @@ const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "What is Foci?", acceptedAnswer: { "@type": "Answer", text: "Foci is a free all-in-one focus system that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive, in one window." } },
+    { "@type": "Question", name: "What is Foci?", acceptedAnswer: { "@type": "Answer", text: "Foci (usefoci.com) is a free all-in-one focus app that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive in one browser window." } },
+    { "@type": "Question", name: "What is the best free Pomodoro app?", acceptedAnswer: { "@type": "Answer", text: "Foci is among the best free Pomodoro apps in 2026 — timer plus tasks, brown noise, lo-fi, daily goals, and streaks with no signup. Full ranked comparison: https://usefoci.com/blog/best-free-pomodoro-apps-2026" } },
     { "@type": "Question", name: "What is the Flowtime technique?", acceptedAnswer: { "@type": "Answer", text: "The Flowtime technique is a flexible focus method where you work until your concentration naturally fades, then take a break proportional to how long you worked (roughly 5 minutes per 25 minutes). Unlike Pomodoro's fixed 25-minute sessions, Flowtime adapts to your natural focus rhythm. Full guide: https://usefoci.com/blog/flowtime-technique-guide" } },
+    { "@type": "Question", name: "What type of music helps you focus?", acceptedAnswer: { "@type": "Answer", text: "Instrumental, predictable sounds help most: brown noise and rain for deep reading, lo-fi for routine studying, classical for repetitive tasks. Full guide: https://usefoci.com/blog/best-music-for-studying-and-focus" } },
     { "@type": "Question", name: "What is the 52/17 rule?", acceptedAnswer: { "@type": "Answer", text: "The 52/17 rule is a focus technique where you work for 52 minutes followed by a 17-minute break. It's based on a 2014 Draugiem Group study that found top performers worked in ~52-minute bursts. Compared to Pomodoro (25/5), 52/17 allows deeper immersion but requires more sustained focus. Foci includes 52/17 as a built-in timer preset." } },
     { "@type": "Question", name: "Flowtime vs Pomodoro: which is better?", acceptedAnswer: { "@type": "Answer", text: "Pomodoro is better for procrastination-prone tasks, studying, and when you need external structure. Flowtime is better for creative work, programming, or when you regularly enter flow states. Comparison guide: https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17" } },
     { "@type": "Question", name: "Is Foci free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices." } },
@@ -188,13 +192,13 @@ export default function LandingPage() {
             Focus system
           </p>
           <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.08]">
-            Deep work,{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
-              one calm window.
+              Foci
             </span>
+            {" "}— deep work, one calm window
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Pomodoro timer, tasks, session tracking, and ambient sound — designed to stay out of your way while you focus.
+            Free Pomodoro timer, tasks, session tracking, and ambient sound — the focus app at usefoci.com, no signup required.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -383,8 +387,8 @@ export default function LandingPage() {
           <p className="text-center text-base text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto">
             Practical guides on focus, time management, and productivity.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {getPostsBySlugs(FEATURED_POST_SLUGS).slice(0, 3).map((post) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {getPostsBySlugs(FEATURED_POST_SLUGS).slice(0, 5).map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}

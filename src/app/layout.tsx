@@ -15,9 +15,9 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 
 const siteUrl = "https://usefoci.com";
-const title = "Foci App – Free Pomodoro Timer, Tasks, Smart Plan & Focus Music";
+const title = "Foci – Free Pomodoro Timer, Tasks & Focus App";
 const description =
-  "Foci is the free focus app: calm Pomodoro timer, task tracking, Smart Plan scheduling, daily goals, streak stats, and built-in study music. Available worldwide in your browser — no signup at usefoci.com/app.";
+  "Foci is the free focus app at usefoci.com — Pomodoro timer, task tracking, Smart Plan, daily goals, streak stats, and built-in study music. No signup required.";
 
 export const viewport: Viewport = {
   width: "device-width",

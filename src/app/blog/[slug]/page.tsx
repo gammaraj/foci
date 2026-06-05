@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
-import { BLOG_POST_FAQS } from "@/lib/blog-seo";
+import { BLOG_POST_FAQS, GSC_RELATED_LINKS } from "@/lib/blog-seo";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { SAT_TUTORING_BLOG_SLUGS } from "@/lib/partner-promos";
 import GuideLinkHub from "@/components/GuideLinkHub";
@@ -224,7 +224,12 @@ export default async function BlogPostPage({ params }: Props) {
 
           {/* Related posts */}
           {(() => {
-            const related = getRelatedPosts(slug, 3);
+            const gscSlugs = GSC_RELATED_LINKS[slug];
+            const related = gscSlugs
+              ? gscSlugs
+                  .map((s) => getPostBySlug(s)?.meta)
+                  .filter((p): p is NonNullable<typeof p> => p != null)
+              : getRelatedPosts(slug, 3);
             if (related.length === 0) return null;
             return (
               <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
