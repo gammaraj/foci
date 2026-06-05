@@ -23,8 +23,6 @@ const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr:
 const AmbientSounds = dynamic(() => import("@/components/AmbientSounds"));
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
-const WeatherTime = dynamic(() => import("@/components/WeatherTime"));
-
 function formatTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -229,7 +227,15 @@ export default function AppPage() {
           ) : undefined
         }
       />
-      {!focusMode && <DailyQuoteBanner />}
+      {!focusMode && (
+        <DailyQuoteBanner
+          sessions={{
+            count: timer.dailyGoalData.sessionCount,
+            goal: timer.settings.dailyGoal,
+            streak: timer.dailyGoalData.streak,
+          }}
+        />
+      )}
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
         <div className="px-2 sm:px-4 pt-2">
@@ -246,18 +252,6 @@ export default function AppPage() {
         </div>
       )}
       <DueDateReminders />
-      {!focusMode && (
-        <div className="px-2 sm:px-4 pt-2 max-w-[1280px] mx-auto w-full">
-          <WeatherTime
-            compact
-            sessions={{
-              count: timer.dailyGoalData.sessionCount,
-              goal: timer.settings.dailyGoal,
-              streak: timer.dailyGoalData.streak,
-            }}
-          />
-        </div>
-      )}
       <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-20 lg:pb-3 sm:p-4 sm:pt-3">
       <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
 
