@@ -7,6 +7,7 @@ import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
+import DailyQuoteBanner from "@/components/DailyQuoteBanner";
 import NotificationBell from "@/components/NotificationBell";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import AppMessageQueue from "@/components/AppMessageQueue";
@@ -228,6 +229,7 @@ export default function AppPage() {
           ) : undefined
         }
       />
+      {!focusMode && <DailyQuoteBanner />}
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
         <div className="px-2 sm:px-4 pt-2">
