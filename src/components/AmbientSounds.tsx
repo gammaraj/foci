@@ -167,33 +167,60 @@ function createBrownNoise(ctx: AudioContext, dest: AudioNode) {
 }
 
 function createCafeSound(ctx: AudioContext, dest: AudioNode) {
-  // Café = brown noise + occasional "chatter" bursts (filtered noise)
+  // Café: muffled room chatter + dish clinks — avoid slow swells/low rumble that read as ocean waves.
   const bufferSize = ctx.sampleRate * 4;
   const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
   for (let ch = 0; ch < 2; ch++) {
     const data = buffer.getChannelData(ch);
-    let brown = 0;
+    let pink = 0;
+    let murmur = 0.55;
+    let clinkHold = 0;
+    let clinkAmp = 0;
     for (let i = 0; i < bufferSize; i++) {
       const white = Math.random() * 2 - 1;
-      brown = (brown + 0.02 * white) / 1.02;
-      // Random amplitude swells for "murmur" effect
-      const t = i / ctx.sampleRate;
-      const murmur = 0.6 + 0.4 * Math.sin(t * 0.3 + Math.random() * 0.1);
-      data[i] = brown * 2.5 * murmur;
+      pink = (pink + 0.02 * white) / 1.02;
+
+      // Random-walk envelope: conversational lulls and bursts, not periodic waves.
+      if (Math.random() < 0.0018) murmur += (Math.random() - 0.48) * 0.22;
+      murmur = Math.max(0.25, Math.min(0.95, murmur));
+
+      // Occasional cup/dish clink.
+      if (clinkHold > 0) {
+        clinkHold--;
+        clinkAmp *= 0.92;
+      } else if (Math.random() < 0.00012) {
+        clinkHold = Math.floor(ctx.sampleRate * (0.02 + Math.random() * 0.04));
+        clinkAmp = 0.25 + Math.random() * 0.2;
+      }
+      const clink = white * clinkAmp;
+
+      // Light hiss for espresso/AC room tone (kept subtle).
+      const hiss = white * 0.06;
+
+      data[i] = pink * 1.8 * murmur + clink + hiss;
     }
   }
   const source = ctx.createBufferSource();
   source.buffer = buffer;
   source.loop = true;
 
-  // Bandpass to simulate muffled voices
-  const filter = ctx.createBiquadFilter();
-  filter.type = "bandpass";
-  filter.frequency.value = 500;
-  filter.Q.value = 0.3;
+  const highpass = ctx.createBiquadFilter();
+  highpass.type = "highpass";
+  highpass.frequency.value = 320;
 
-  source.connect(filter);
-  filter.connect(dest);
+  const bandpass = ctx.createBiquadFilter();
+  bandpass.type = "bandpass";
+  bandpass.frequency.value = 1400;
+  bandpass.Q.value = 0.45;
+
+  const lowpass = ctx.createBiquadFilter();
+  lowpass.type = "lowpass";
+  lowpass.frequency.value = 3800;
+
+  source.connect(highpass);
+  highpass.connect(bandpass);
+  bandpass.connect(lowpass);
+  lowpass.connect(dest);
   source.start();
   return source;
 }
@@ -504,24 +531,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           />
         )}
 
-        <button
-          type="button"
-          onClick={() => setCollapsed((c) => !c)}
-          className={`flex-shrink-0 touch-target-sm ${inline && embedded ? `hidden sm:flex ${FOCUS_STRIP_ICON_BTN}` : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"}`}
-          aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
-          aria-expanded={!collapsed}
-        >
-          <svg
-            className={`${inline && embedded ? "w-3.5 h-3.5" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
         {inline && embedded && (
           <button
             type="button"
@@ -544,6 +553,26 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="sm" />
           </button>
         )}
+
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
+          className={`flex-shrink-0 touch-target-sm ml-auto sm:ml-0 ${
+            inline && embedded ? FOCUS_STRIP_ICON_BTN : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
+          }`}
+          aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
+          aria-expanded={!collapsed}
+        >
+          <svg
+            className={`${inline && embedded ? "w-3.5 h-3.5" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
       </div>
 
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}

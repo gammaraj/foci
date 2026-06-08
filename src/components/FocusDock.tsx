@@ -178,15 +178,6 @@ export function FocusDockToolbar({
             {activeTaskTitle}
           </span>
         )}
-        <svg
-          className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
       </button>
       <TimerControls
         isRunning={isRunning}
@@ -217,6 +208,24 @@ export function FocusDockToolbar({
           )}
         </button>
       )}
+      <button
+        type="button"
+        onClick={onToggleExpanded}
+        className="flex-shrink-0 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors touch-target-sm"
+        aria-expanded={expanded}
+        aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
+        title={expanded ? "Collapse timer" : "Expand timer"}
+      >
+        <svg
+          className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
     </div>
   );
 }
