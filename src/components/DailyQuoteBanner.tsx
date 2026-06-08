@@ -29,15 +29,16 @@ export default function DailyQuoteBanner({ sessions, timerToolbar, musicToolbar,
             <WeatherTime compact sessions={sessions} />
           </div>
           {hasFocusStrip && (
-            <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-1.5 py-1 shrink-0 max-w-full [&:has([aria-expanded=true])]:basis-full [&:has([aria-expanded=true])]:w-full">
-              {timerToolbar}
-              {timerToolbar && musicToolbar && (
-                <div
-                  className="w-px h-6 bg-slate-200/90 dark:bg-slate-700/70 self-center shrink-0"
-                  aria-hidden
-                />
-              )}
-              {musicToolbar}
+            <div className="flex-[1.35] min-w-[16rem] sm:min-w-[22rem] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-2 py-1 max-w-full [&:has([aria-expanded=true])]:basis-full [&:has([aria-expanded=true])]:w-full [&:has([aria-expanded=true])]:flex-none">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center min-h-[2.25rem] gap-x-2 w-full">
+                <div aria-hidden />
+                {timerToolbar && <div className="justify-self-center">{timerToolbar}</div>}
+                {musicToolbar ? (
+                  <div className="justify-self-end min-w-0">{musicToolbar}</div>
+                ) : (
+                  <div aria-hidden />
+                )}
+              </div>
             </div>
           )}
         </div>
