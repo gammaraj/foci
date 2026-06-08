@@ -589,9 +589,8 @@ export default function TaskBucketView({
   expandedTaskId = null,
   onToggleTaskDetail,
 }: TaskBucketViewProps) {
-  const columnsWithTasks = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) > 0);
-  const emptyColumns = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) === 0);
-  const orderedColumns = [...columnsWithTasks, ...emptyColumns];
+  // Keep column order stable (favorites → manual order → name) regardless of active time filter.
+  const orderedColumns = projects;
   const [showScrollHint, setShowScrollHint] = useState(false);
 
   useEffect(() => {
