@@ -1420,10 +1420,10 @@ export default function TaskList({
           <button
             type="button"
             onClick={openProjectManage}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg border border-violet-300/80 dark:border-violet-600/50 bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-100 shadow-sm hover:bg-violet-200/90 dark:hover:bg-violet-950/60 hover:border-violet-400 dark:hover:border-violet-500 active:scale-[0.98] transition-all"
             data-tour="manage-projects"
           >
-            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <svg className="w-4 h-4 text-violet-600 dark:text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
             </svg>
             Manage projects
@@ -1431,7 +1431,7 @@ export default function TaskList({
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-lg border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-950/25 text-blue-700 dark:text-blue-300 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-950/40 hover:border-blue-300 dark:hover:border-blue-600 active:scale-[0.98] transition-all shrink-0"
           >
             + New project
           </button>
@@ -1441,8 +1441,11 @@ export default function TaskList({
       {/* Bucket view — all projects as columns */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="w-[288px] flex-shrink-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="flex-[0_0_calc((100%-2.25rem)/4)] min-w-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse"
+            >
               <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
               <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />
               <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />

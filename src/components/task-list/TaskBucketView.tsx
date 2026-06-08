@@ -6,7 +6,9 @@ import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 
-const BUCKET_COLUMN_WIDTH = "w-[min(100%,288px)] sm:w-[288px]";
+/** Fit 4 full columns in the scroll viewport; extra projects scroll horizontally. */
+const BUCKET_COLUMN_CLASS =
+  "flex-[0_0_calc((100%-0.75rem)/1.12)] sm:flex-[0_0_calc((100%-2.25rem)/4)] min-w-0";
 
 interface TaskBucketViewProps {
   projects: Project[];
@@ -191,6 +193,7 @@ function BucketColumn({
   project,
   tasks,
   datedLaneLabel,
+  columnIndex,
   activeTaskId,
   isTimerRunning,
   onToggleComplete,
@@ -201,6 +204,7 @@ function BucketColumn({
   project: Project;
   tasks: Task[];
   datedLaneLabel: string;
+  columnIndex: number;
   activeTaskId: string | null;
   isTimerRunning: boolean;
   onToggleComplete: (taskId: string) => void;
@@ -211,13 +215,22 @@ function BucketColumn({
   const [draft, setDraft] = useState("");
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = swimlanes.length > 1;
+  const isAlt = columnIndex % 2 === 1;
 
   return (
     <div
-      className={`${BUCKET_COLUMN_WIDTH} flex-shrink-0 flex flex-col rounded-xl border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/50 max-h-[min(70vh,640px)]`}
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border max-h-[min(70vh,640px)] ${
+        isAlt
+          ? "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0d1526]/85 shadow-sm"
+          : "border-slate-200 dark:border-[#243350] bg-white/90 dark:bg-[#131d30]/55"
+      }`}
     >
       <div
-        className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 dark:border-[#243350] shrink-0"
+        className={`flex items-center gap-2 px-3 py-2 border-b shrink-0 ${
+          isAlt
+            ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/70 dark:bg-[#111827]/55"
+            : "border-slate-100 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/40"
+        }`}
         title={project.description?.trim() || project.name}
       >
         {project.favorite && (
@@ -321,13 +334,14 @@ export default function TaskBucketView({
 
   return (
     <div className="px-3 sm:px-4 pb-4 pt-1">
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide items-stretch snap-x snap-mandatory sm:snap-none">
-        {orderedColumns.map((project) => (
+      <div className="w-full flex gap-3 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain">
+        {orderedColumns.map((project, columnIndex) => (
           <BucketColumn
             key={project.id}
             project={project}
             tasks={tasksByProject.get(project.id) ?? []}
             datedLaneLabel={datedLaneLabel}
+            columnIndex={columnIndex}
             activeTaskId={activeTaskId}
             isTimerRunning={isTimerRunning}
             onToggleComplete={onToggleComplete}
