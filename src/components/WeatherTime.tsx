@@ -111,7 +111,9 @@ export default function WeatherTime({ compact = false, sessions }: WeatherTimePr
         {weather && (
           <span className="whitespace-nowrap" title={weather.description}>
             {weather.icon} {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
-            {weather.city ? ` ${weather.city}` : ""}
+            {weather.city && (
+              <span className="hidden md:inline">{` ${weather.city}`}</span>
+            )}
           </span>
         )}
       </p>

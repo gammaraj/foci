@@ -24,10 +24,12 @@ export default function DailyQuoteBanner({ sessions, timerToolbar, musicToolbar,
       aria-label="Session, weather, and focus timer"
     >
       <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
-        <WeatherTime compact sessions={sessions} />
-        {hasFocusStrip && (
-          <div className="pt-1.5 border-t border-slate-200/60 dark:border-slate-700/50">
-            <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-1.5 py-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 sm:gap-x-3 min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <WeatherTime compact sessions={sessions} />
+          </div>
+          {hasFocusStrip && (
+            <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-1.5 py-1 shrink-0 max-w-full [&:has([aria-expanded=true])]:basis-full [&:has([aria-expanded=true])]:w-full">
               {timerToolbar}
               {timerToolbar && musicToolbar && (
                 <div
@@ -37,8 +39,8 @@ export default function DailyQuoteBanner({ sessions, timerToolbar, musicToolbar,
               )}
               {musicToolbar}
             </div>
-          </div>
-        )}
+          )}
+        </div>
         {timerPanel}
       </div>
     </div>
