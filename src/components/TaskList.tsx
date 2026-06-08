@@ -915,7 +915,7 @@ export default function TaskList({
     onDeleteSubtask: (subId: string) => deleteSubtask(task.id, subId),
   });
 
-  const toggleBucketTaskDetail = (taskId: string) => {
+  const toggleTaskDetail = (taskId: string) => {
     setExpandedTaskId((current) => {
       const next = current === taskId ? null : taskId;
       if (next !== current) setNewSubtaskTitle("");
@@ -923,7 +923,7 @@ export default function TaskList({
     });
   };
 
-  const closeBucketTaskDetail = () => {
+  const closeTaskDetail = () => {
     setExpandedTaskId(null);
     setNewSubtaskTitle("");
   };
@@ -1100,6 +1100,29 @@ export default function TaskList({
 
   const isFocusMode = !!focusProjectId;
   const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
+
+  const taskDetailDrawer =
+    !isFocusMode && !projectManageOpen && expandedTaskId && ["list", "bucket", "calendar"].includes(viewMode)
+      ? (() => {
+          const detailTask = tasks.find((t) => t.id === expandedTaskId && !t.archivedAt);
+          if (!detailTask) return null;
+          return (
+            <TaskDetailDrawer task={detailTask} onClose={closeTaskDetail}>
+              <TaskDetailPanel
+                task={detailTask}
+                variant="drawer"
+                {...taskDetailPanelProps(detailTask)}
+                onDeleteTask={() => {
+                  deleteTask(detailTask.id);
+                  closeTaskDetail();
+                }}
+                onStartTask={() => onStartTask(detailTask.id)}
+                onDeselectTask={() => onSelectTask(null)}
+              />
+            </TaskDetailDrawer>
+          );
+        })()
+      : null;
 
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
@@ -1439,6 +1462,8 @@ export default function TaskList({
           selectedDay={calendarSelectedDay}
           onSelectDay={setCalendarSelectedDay}
           onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate)}
+          expandedTaskId={expandedTaskId}
+          onToggleTaskDetail={toggleTaskDetail}
         />
       )}
 
@@ -1526,31 +1551,11 @@ export default function TaskList({
           onCancelEdit={() => setEditingId(null)}
           onSetDueDate={setDueDate}
           expandedTaskId={expandedTaskId}
-          onToggleTaskDetail={toggleBucketTaskDetail}
+          onToggleTaskDetail={toggleTaskDetail}
         />
       )}
 
-      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && expandedTaskId && (() => {
-        const detailTask = tasks.find(
-          (t) => t.id === expandedTaskId && !t.completed && !t.archivedAt
-        );
-        if (!detailTask) return null;
-        return (
-          <TaskDetailDrawer task={detailTask} onClose={closeBucketTaskDetail}>
-            <TaskDetailPanel
-              task={detailTask}
-              variant="drawer"
-              {...taskDetailPanelProps(detailTask)}
-              onDeleteTask={() => {
-                deleteTask(detailTask.id);
-                closeBucketTaskDetail();
-              }}
-              onStartTask={() => onStartTask(detailTask.id)}
-              onDeselectTask={() => onSelectTask(null)}
-            />
-          </TaskDetailDrawer>
-        );
-      })()}
+      {taskDetailDrawer}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
@@ -2117,17 +2122,16 @@ export default function TaskList({
               onDragOver={(e) => handleDragOver(e, task.id)}
               onDrop={() => handleDrop(task.id)}
               onDragEnd={handleDragEnd}
-              onClick={() => {
-                setExpandedTaskId(isExpanded ? null : task.id);
-                setNewSubtaskTitle("");
-              }}
+              onClick={() => toggleTaskDetail(task.id)}
               className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors cursor-pointer ${
                 activeTaskId === task.id
                   ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-blue-400/30 dark:ring-blue-500/25"
+                  : isExpanded
+                    ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
                   : isOverdue
                     ? "border-slate-300 dark:border-[#1e3050] hover:bg-red-50/40 dark:hover:bg-red-950/15 border-l-[3px] border-l-red-500 dark:border-l-rose-500 shadow-sm"
                     : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
-              } ${isExpanded ? "rounded-b-none" : ""} ${
+              } ${
                 dragTaskId === task.id ? "opacity-50" : ""
               } ${
                 dragOverTaskId === task.id && dragTaskId !== task.id
@@ -2181,7 +2185,7 @@ export default function TaskList({
                 <div
                   className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base font-medium text-slate-800 dark:text-slate-50 break-words leading-normal"
                 >
-                  {isExpanded && editingId === task.id ? (
+                  {editingId === task.id ? (
                     <input
                       type="text"
                       value={editTitle}
@@ -2195,16 +2199,17 @@ export default function TaskList({
                       className="w-full px-1 py-0.5 text-base font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
                       autoFocus
                     />
-                  ) : isExpanded ? (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); startEditing(task); }}
-                      className="text-left px-1 py-0.5 rounded-lg border border-transparent hover:border-slate-200 dark:hover:border-[#243350] hover:bg-white dark:hover:bg-[#131d30] transition-colors"
-                      title="Click to edit title"
+                  ) : (
+                    <span
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        startEditing(task);
+                      }}
+                      className="cursor-text"
+                      title="Double-click to edit title"
                     >
                       {task.title}
-                    </button>
-                  ) : (
-                    <>{task.title}</>
+                    </span>
                   )}
                   {activeTaskId === task.id && isTimerRunning && (
                     <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
@@ -2227,7 +2232,7 @@ export default function TaskList({
                     </span>
                   )}
                 </div>
-                {!isExpanded && <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
                   {/* Due date — always visible when set */}
                   {task.dueDate && (
                     <div
@@ -2295,17 +2300,17 @@ export default function TaskList({
                       </span>
                     </>
                   )}
-                </div>}
+                </div>
               </div>
 
-              {/* Expand chevron indicator */}
+              {/* Details chevron indicator */}
               <div
                 className={`flex-shrink-0 min-w-[28px] sm:min-w-[36px] min-h-[28px] sm:min-h-[36px] rounded-md flex items-center justify-center ${
                   isExpanded
-                    ? "text-blue-500 dark:text-blue-400"
+                    ? "text-violet-500 dark:text-violet-400"
                     : "text-slate-300 dark:text-slate-500"
                 }`}
-                title={isExpanded ? "Collapse" : "Expand"}
+                title={isExpanded ? "Close details" : "Task details"}
               >
                 <svg className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -2408,308 +2413,6 @@ export default function TaskList({
                 >
                   Focus
                 </button>
-              </div>
-            )}
-
-            {/* Task detail panel */}
-            {isExpanded && (
-              <div onClick={(e) => e.stopPropagation()} className={`border border-t-0 rounded-b-xl py-3 space-y-2 ${
-                activeTaskId === task.id
-                  ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
-                  : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
-              }`}>
-                {/* Description */}
-                <div className="px-4 pb-2">
-                  {editingDescId === task.id ? (
-                    <textarea
-                      value={editDesc}
-                      onChange={(e) => setEditDesc(e.target.value)}
-                      onBlur={() => saveDesc(task.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") setEditingDescId(null);
-                        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveDesc(task.id);
-                      }}
-                      placeholder="Add a description..."
-                      maxLength={2000}
-                      rows={3}
-                      className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none resize-y"
-                      autoFocus
-                    />
-                  ) : (
-                    <button
-                      onClick={() => startEditingDesc(task)}
-                      className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
-                    >
-                      {task.description ? (
-                        <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.description}</span>
-                      ) : (
-                        <span className="text-slate-400 dark:text-slate-400">Add a description...</span>
-                      )}
-                    </button>
-                  )}
-                </div>
-                {/* Task metadata — due date, recurrence, project */}
-                <div className="px-4 pb-2 flex flex-wrap items-center gap-2">
-                  {/* Due date */}
-                  <div
-                    className={`relative inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
-                      task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
-                        ? "border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20"
-                        : task.dueDate && task.dueDate === getToday()
-                          ? "border-orange-200 dark:border-orange-800 text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
-                          : task.dueDate
-                            ? "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 bg-white dark:bg-[#131d30]"
-                            : "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500"
-                    }`}
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {task.dueDate ? (
-                      <>
-                        {formatDueDate(task.dueDate)}
-                        {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                      </>
-                    ) : (
-                      "Set due date"
-                    )}
-                    <input
-                      type="date"
-                      value={task.dueDate ?? ""}
-                      onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
-                      onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
-                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                    />
-                  </div>
-                  {/* Priority */}
-                  <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
-                    <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                    </svg>
-                    <select
-                      value={task.priority ?? ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setTasks(prev => {
-                          const updated = prev.map(t =>
-                            t.id === task.id
-                              ? { ...t, priority: value ? parseInt(value) as TaskPriority : undefined }
-                              : t
-                          );
-                          persist(updated);
-                          return updated;
-                        });
-                      }}
-                      className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
-                    >
-                      <option value="">No priority</option>
-                      <option value="1">🔴 High</option>
-                      <option value="2">🟡 Medium</option>
-                      <option value="3">🔵 Low</option>
-                    </select>
-                  </div>
-                  {/* Recurrence */}
-                  <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
-                    <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <select
-                      value={task.recurrence ?? ""}
-                      onChange={(e) => setTaskRecurrence(task.id, (e.target.value || undefined) as RecurrenceType | undefined)}
-                      className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
-                    >
-                      <option value="">No repeat</option>
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="yearly">Yearly</option>
-                    </select>
-                  </div>
-                  {/* Move to project */}
-                  {activeProjects.length > 1 && (
-                    <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
-                      <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                      </svg>
-                      <select
-                        value={task.projectId}
-                        onChange={(e) => moveTaskToProject(task.id, e.target.value)}
-                        className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
-                      >
-                        {activeProjects.map((p) => (
-                          <option key={p.id} value={p.id}>{p.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
-
-                {/* Subtasks section */}
-                {(hasSubtasks || true) && (
-                  <div className="border-t border-slate-100 dark:border-[#1e3050] pt-2 mt-1">
-                    {hasSubtasks && (
-                      <div className="px-4 pb-1">
-                        <span className="text-xs font-medium text-slate-400 dark:text-slate-400 uppercase tracking-wide">Subtasks ({completedSubtasks}/{subtasks.length})</span>
-                      </div>
-                    )}
-                {/* Existing subtasks */}
-                {subtasks.map((sub) => (
-                  <div key={sub.id} className="group/sub flex items-center gap-2.5 py-1 pl-6 pr-4 ml-4 border-l-2 border-slate-200 dark:border-[#243350]">
-                    <button
-                      onClick={() => toggleSubtask(task.id, sub.id)}
-                      className={`flex-shrink-0 w-5 h-5 rounded border-[1.5px] transition-colors flex items-center justify-center ${
-                        sub.completed
-                          ? "border-green-400 bg-green-500"
-                          : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
-                      }`}
-                    >
-                      {sub.completed && (
-                        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                    {editingSubtaskId === sub.id ? (
-                      <input
-                        type="text"
-                        value={editSubtaskTitle}
-                        onChange={(e) => setEditSubtaskTitle(e.target.value)}
-                        onBlur={() => saveSubtaskEdit(task.id, sub.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") saveSubtaskEdit(task.id, sub.id);
-                          if (e.key === "Escape") setEditingSubtaskId(null);
-                        }}
-                        className="flex-1 px-1 py-0.5 text-sm border border-blue-300 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                        autoFocus
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                    <span className={`flex-1 text-sm cursor-pointer ${
-                      sub.completed
-                        ? "text-slate-400 dark:text-slate-400 line-through"
-                        : "text-slate-700 dark:text-slate-200"
-                    }`}
-                      onDoubleClick={() => startEditingSubtask(sub)}
-                      onClick={() => startEditingSubtask(sub)}
-                    >
-                      {sub.title}
-                    </span>
-                    )}
-                    <div
-                      className={`relative flex-shrink-0 p-1 transition-colors ${
-                        sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
-                          ? "text-red-500 dark:text-red-400"
-                          : sub.dueDate
-                            ? "text-slate-500 dark:text-slate-400"
-                            : "text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100"
-                      }`}
-                      title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}
-                    >
-                      {sub.dueDate ? (
-                        <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
-                      ) : (
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      )}
-                      <input
-                        type="date"
-                        value={sub.dueDate ?? ""}
-                        onChange={(e) => setSubtaskDueDate(task.id, sub.id, e.target.value || undefined)}
-                        onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
-                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                      />
-                    </div>
-                    <button
-                      onClick={() => deleteSubtask(task.id, sub.id)}
-                      className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 transition-all"
-                      aria-label={`Delete subtask "${sub.title}"`}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-
-                {/* Add subtask input */}
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    addSubtask(task.id);
-                  }}
-                  className="flex items-center gap-2 pl-6 pr-4 ml-4 border-l-2 border-slate-200 dark:border-[#243350] pt-1"
-                >
-                  <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    value={newSubtaskTitle}
-                    onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                    placeholder="Add a subtask..."
-                    className="flex-1 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-400 outline-none"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!newSubtaskTitle.trim()}
-                    className="px-2 py-1 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Add
-                  </button>
-                </form>
-                  </div>
-                )}
-
-                {/* Mobile-only action buttons (start & delete) */}
-                <div className="sm:hidden flex items-center gap-2 px-4 pt-2 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2">
-                  {activeTaskId === task.id && isTimerRunning ? (
-                    <span className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 text-white flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                      In progress
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        if (activeTaskId === task.id) {
-                          onSelectTask(null);
-                        } else {
-                          onStartTask(task.id);
-                        }
-                      }}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
-                        activeTaskId === task.id
-                          ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
-                      }`}
-                    >
-                      {activeTaskId === task.id ? (
-                        "Deselect"
-                      ) : (
-                        <>
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                          </svg>
-                          {isTimerRunning ? "Switch" : "Focus"}
-                        </>
-                      )}
-                    </button>
-                  )}
-                  {!(isTimerRunning && activeTaskId === task.id) && (
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      className="px-3 py-1.5 text-xs font-medium rounded-md text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"
-                      aria-label={`Delete "${task.title}"`}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      Delete
-                    </button>
-                  )}
-                </div>
               </div>
             )}
             </div>

@@ -5,6 +5,7 @@ import type { Project, Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
+import { MiniPlayPauseIcon, miniPlayButtonClass, miniResetButtonClass } from "@/components/FocusStripControls";
 
 /** Fit 4 full columns in the scroll viewport; extra projects scroll horizontally. */
 const BUCKET_COLUMN_CLASS =
@@ -228,7 +229,7 @@ function BucketTaskCard({
               </p>
             )}
             <div
-              className={`flex items-center gap-0.5 shrink-0 transition-opacity ${
+              className={`flex items-center gap-1 shrink-0 transition-opacity ${
                 showFocusAction || isEditing || isDetailOpen
                   ? "opacity-100"
                   : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
@@ -238,16 +239,16 @@ function BucketTaskCard({
                 <button
                   type="button"
                   onClick={() => onToggleTaskDetail!(task.id)}
-                  className={`p-0.5 rounded transition-colors ${
+                  className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors touch-target-sm ${
                     isDetailOpen
                       ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
-                      : "text-slate-400 dark:text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                      : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
                   }`}
-                  title="Task details — move project, priority, subtasks…"
+                  title="Details — move project, priority, subtasks…"
                   aria-label={`Open details for "${task.title}"`}
                   aria-pressed={!!isDetailOpen}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                   </svg>
                 </button>
@@ -256,39 +257,44 @@ function BucketTaskCard({
                 <button
                   type="button"
                   onClick={() => onStartEdit?.(task)}
-                  className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                  title="Rename task"
+                  className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors touch-target-sm"
+                  title="Rename"
                   aria-label={`Rename "${task.title}"`}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                 </button>
               )}
               {isActive && isTimerRunning ? (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-600 text-white whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  Active
+                <span
+                  className={`${miniPlayButtonClass(true, true)} cursor-default`}
+                  title="Timer running on this task"
+                  aria-label="Active — timer running"
+                >
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                 </span>
               ) : isActive ? (
                 <button
                   type="button"
                   onClick={() => onSelectTask(null)}
-                  className="px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                  className={miniResetButtonClass(true)}
+                  title="Clear selection"
+                  aria-label="Clear focus selection"
                 >
-                  Clear
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={() => onStartTask(task.id)}
-                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded-md text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 whitespace-nowrap"
+                  className={miniPlayButtonClass(false, true, true)}
                   title={`Focus on "${task.title}" — starts timer`}
+                  aria-label={`Focus on "${task.title}"`}
                 >
-                  <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                    <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                  </svg>
-                  Focus
+                  <MiniPlayPauseIcon playing={false} size="sm" />
                 </button>
               )}
             </div>

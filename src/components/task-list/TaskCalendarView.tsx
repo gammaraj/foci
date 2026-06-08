@@ -22,6 +22,8 @@ export interface TaskCalendarViewProps {
   selectedDay: string | null;
   onSelectDay: (day: string | null) => void;
   onQuickAdd?: (title: string, dueDate: string) => void;
+  expandedTaskId?: string | null;
+  onToggleTaskDetail?: (taskId: string) => void;
 }
 
 export default function TaskCalendarView({
@@ -36,6 +38,8 @@ export default function TaskCalendarView({
   selectedDay,
   onSelectDay,
   onQuickAdd,
+  expandedTaskId = null,
+  onToggleTaskDetail,
 }: TaskCalendarViewProps) {
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS_ID);
   const [quickAddTitle, setQuickAddTitle] = useState("");
@@ -252,14 +256,31 @@ export default function TaskCalendarView({
               {selectedTasks.map((task) => (
                 <div
                   key={task.id}
+                  role={onToggleTaskDetail ? "button" : undefined}
+                  tabIndex={onToggleTaskDetail ? 0 : undefined}
+                  onClick={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
+                  onKeyDown={
+                    onToggleTaskDetail
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onToggleTaskDetail(task.id);
+                          }
+                        }
+                      : undefined
+                  }
                   className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-colors ${
-                    task.completed
-                      ? "border-slate-100 dark:border-[#1e3050] opacity-60"
-                      : activeTaskId === task.id
-                        ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
-                        : selectedDay < todayStr
-                          ? "border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-900/10"
-                          : "border-slate-200 dark:border-[#1e3050]"
+                    onToggleTaskDetail ? "cursor-pointer" : ""
+                  } ${
+                    expandedTaskId === task.id
+                      ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
+                      : task.completed
+                        ? "border-slate-100 dark:border-[#1e3050] opacity-60"
+                        : activeTaskId === task.id
+                          ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                          : selectedDay < todayStr
+                            ? "border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-900/10"
+                            : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                   }`}
                 >
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
@@ -274,7 +295,10 @@ export default function TaskCalendarView({
                   </span>
                   {!task.completed && (
                     <button
-                      onClick={() => onStartTask(task.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onStartTask(task.id);
+                      }}
                       className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1"
                     >
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -284,7 +308,10 @@ export default function TaskCalendarView({
                     </button>
                   )}
                   <button
-                    onClick={() => onSetDueDate(task.id, undefined)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSetDueDate(task.id, undefined);
+                    }}
                     className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-red-400 transition-colors"
                     title="Remove due date"
                   >
@@ -306,9 +333,35 @@ export default function TaskCalendarView({
           </h4>
           <div className="space-y-1">
             {unscheduledTasks.slice(0, 8).map((task) => (
-              <div key={task.id} className="flex items-center gap-2 p-2 rounded-lg">
+              <div
+                key={task.id}
+                role={onToggleTaskDetail ? "button" : undefined}
+                tabIndex={onToggleTaskDetail ? 0 : undefined}
+                onClick={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
+                onKeyDown={
+                  onToggleTaskDetail
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onToggleTaskDetail(task.id);
+                        }
+                      }
+                    : undefined
+                }
+                className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
+                  onToggleTaskDetail ? "cursor-pointer" : "border-transparent"
+                } ${
+                  expandedTaskId === task.id
+                    ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15"
+                    : "border-transparent hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
+                }`}
+              >
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
-                <div className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors" title="Set due date">
+                <div
+                  className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                  title="Set due date"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
