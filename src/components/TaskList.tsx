@@ -1023,6 +1023,15 @@ export default function TaskList({
         : isThisYearFilter
           ? "Due this year or earlier"
           : null;
+  const bucketDatedLaneLabel = isTodayFilter
+    ? "Due today"
+    : isThisWeekFilter
+      ? "Due this week"
+      : isThisMonthFilter
+        ? "Due this month"
+        : isThisYearFilter
+          ? "Due this year"
+          : "Scheduled";
   const bucketOpenTasks = timeScopedTasks.filter((t) => !t.completed && !t.archivedAt);
   const bucketDatedCount = bucketOpenTasks.filter((t) => t.dueDate).length;
   const bucketUndatedCount = bucketOpenTasks.filter((t) => !t.dueDate).length;
@@ -1433,7 +1442,7 @@ export default function TaskList({
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="w-[268px] flex-shrink-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse">
+            <div key={i} className="w-[288px] flex-shrink-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse">
               <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
               <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />
               <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />
@@ -1447,6 +1456,7 @@ export default function TaskList({
           tasksByProject={bucketTasksByProject}
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
+          datedLaneLabel={bucketDatedLaneLabel}
           onToggleComplete={toggleComplete}
           onStartTask={onStartTask}
           onSelectTask={onSelectTask}

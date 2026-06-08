@@ -219,6 +219,7 @@ export default function AppPage() {
           user ? (
             <div className="flex items-center gap-0.5">
               <CollaborationInvitesButton />
+              <WhatsNewBanner focusMode={focusMode} />
               <NotificationBell />
             </div>
           ) : undefined
@@ -278,7 +279,6 @@ export default function AppPage() {
           />
         </div>
       )}
-      <WhatsNewBanner focusMode={focusMode} />
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
         <>
