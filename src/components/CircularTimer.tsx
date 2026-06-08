@@ -9,6 +9,7 @@ interface CircularTimerProps {
   statusText: string;
   displayTime: string;
   isBreak: boolean;
+  size?: "sm" | "md";
 }
 
 export default function CircularTimer({
@@ -18,13 +19,21 @@ export default function CircularTimer({
   statusText,
   displayTime,
   isBreak,
+  size = "md",
 }: CircularTimerProps) {
   const circumference = 2 * Math.PI * 45;
   const progress = totalDuration > 0 ? (totalDuration - remainingTime) / totalDuration : 0;
   const offset = circumference - progress * circumference;
+  const compact = size === "sm";
 
   return (
-    <div className="relative mx-auto my-0" style={{ width: 'min(140px, 32vw)', height: 'min(140px, 32vw)' }}>
+    <div
+      className="relative mx-auto my-0"
+      style={{
+        width: compact ? "min(96px, 24vw)" : "min(140px, 32vw)",
+        height: compact ? "min(96px, 24vw)" : "min(140px, 32vw)",
+      }}
+    >
       {/* SVG ring */}
       <svg
         className="absolute inset-0 w-full h-full"
@@ -59,13 +68,24 @@ export default function CircularTimer({
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="rounded-full flex flex-col items-center justify-center text-center gap-0 bg-white dark:bg-[#131d30] border-2 border-slate-200 dark:border-slate-600 shadow-lg px-1.5 py-1"
-          style={{ width: 'min(100px, 22vw)', height: 'min(100px, 22vw)' }}
+          style={{
+            width: compact ? "min(72px, 18vw)" : "min(100px, 22vw)",
+            height: compact ? "min(72px, 18vw)" : "min(100px, 22vw)",
+          }}
         >
-          <div className="text-[10px] sm:text-[11px] font-medium text-slate-700 dark:text-slate-100 leading-none truncate max-w-[88%]">
+          <div
+            className={`${
+              compact ? "text-[9px]" : "text-[10px] sm:text-[11px]"
+            } font-medium text-slate-700 dark:text-slate-100 leading-none truncate max-w-[88%]`}
+          >
             {isBreak ? "🎉 " : ""}
             {label}
           </div>
-          <div className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums my-0.5">
+          <div
+            className={`${
+              compact ? "text-base" : "text-lg sm:text-xl"
+            } font-bold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums my-0.5`}
+          >
             {displayTime}
           </div>
           <div className="text-[9px] sm:text-[10px] text-slate-600 dark:text-slate-200 max-w-[4.75rem] leading-[1.15] line-clamp-2">

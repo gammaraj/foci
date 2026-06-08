@@ -32,6 +32,8 @@ export interface FocusDockProps {
   onSelectWorkPreset: (minutes: number) => void;
   lastQuote?: string | null;
   emphasizeStart: boolean;
+  /** Compact inline expand inside the focus strip column (no full card chrome). */
+  compactStrip?: boolean;
 }
 
 export function FocusDockToolbar({
@@ -254,9 +256,117 @@ export default function FocusDockPanel({
   onSelectWorkPreset,
   lastQuote,
   emphasizeStart,
+  compactStrip = false,
 }: FocusDockProps) {
+  if (!expanded) {
+    return (
+      <div className="sr-only" aria-hidden>
+        <span>Focus timer collapsed</span>
+      </div>
+    );
+  }
+
+  if (compactStrip) {
+    return (
+      <div
+        className={`pt-1.5 border-t border-slate-100/90 dark:border-[#243350]/80 ${
+          isBreak ? "timer-break-mode" : ""
+        } ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}
+      >
+        {activeTaskId && activeTaskTitle && (
+          <p className="text-[10px] text-blue-600 dark:text-blue-400 truncate mb-1">{activeTaskTitle}</p>
+        )}
+        <div className="flex items-center justify-center gap-2 pb-1.5">
+          <TimerControls
+            isRunning={isRunning}
+            onStartPause={onStartPause}
+            onReset={onReset}
+            compact
+            showReset={false}
+            emphasizeStart={emphasizeStart}
+          />
+          <CircularTimer
+            size="sm"
+            remainingTime={remainingTime}
+            totalDuration={isBreak ? breakDuration : workDuration}
+            label={label}
+            statusText={statusText}
+            displayTime={displayTime}
+            isBreak={isBreak}
+          />
+          <TimerControls
+            isRunning={isRunning}
+            onStartPause={onStartPause}
+            onReset={onReset}
+            compact
+            showStartPause={false}
+            emphasizeStart={emphasizeStart}
+          />
+        </div>
+        <div className="flex items-center justify-center gap-1 p-0.5 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
+          {WORK_DURATION_PRESETS.map((minutes) => {
+            const active = workDurationMs === minutes * 60 * 1000;
+            return (
+              <button
+                key={minutes}
+                type="button"
+                onClick={() => onSelectWorkPreset(minutes)}
+                disabled={timerStatus === "running" || timerStatus === "break"}
+                className={`flex-1 px-1.5 py-0.5 rounded-md text-[10px] sm:text-xs font-semibold transition-colors ${
+                  active
+                    ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                } disabled:opacity-40 disabled:cursor-not-allowed`}
+              >
+                {minutes}m
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex items-center justify-center gap-1 pt-1">
+          <button
+            type="button"
+            onClick={onToggleFocusMode}
+            className={`p-1.5 rounded-md transition-colors ${
+              focusMode
+                ? "bg-blue-600 text-white"
+                : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+            }`}
+            aria-label="Toggle focus mode (F)"
+            title="Focus mode (F)"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={onShowShortcuts}
+            className="p-1.5 rounded-md text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+            aria-label="Keyboard shortcuts"
+            title="Shortcuts (?)"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
+        {readyToFocus && timerStatus === "idle" && !isBreak && (
+          <p className="text-center text-[10px] text-blue-700/90 dark:text-blue-300/90 pt-1">
+            Press Play or Space to start
+          </p>
+        )}
+        {lastQuote && (timerStatus === "break" || timerStatus === "idle") && (
+          <p className="text-[10px] italic text-slate-500 dark:text-slate-400 text-center leading-snug pt-1 line-clamp-2">
+            &ldquo;{lastQuote}&rdquo;
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className={expanded ? "pb-2" : "sr-only"} aria-hidden={!expanded}>
+    <div className="pb-2">
       <div
         className={`app-surface rounded-xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden mt-2 ${
           isBreak ? "timer-break-mode" : ""

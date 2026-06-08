@@ -252,6 +252,7 @@ export default function AppPage() {
             musicToolbar={<AmbientSounds inline embedded />}
             timerPanel={
               <FocusDockPanel
+                compactStrip
                 expanded={!timerCollapsed}
                 onToggleExpanded={() => setTimerCollapsed(true)}
                 displayTime={timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}

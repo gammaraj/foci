@@ -256,6 +256,7 @@ const FOCUS_STRIP_ICON_BTN =
 const FOCUS_STRIP_VALUE = "text-sm sm:text-base font-semibold leading-none text-slate-800 dark:text-slate-100";
 
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
+  const stripEmbedded = inline && embedded;
   const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
   const [activeSound, setActiveSound] = useState<SoundType | null>(null);
   const [volume, setVolume] = useState(0.5);
@@ -428,8 +429,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     <div
       id="ambient-sounds"
       className={
-        inline && embedded
-          ? `${collapsed ? "shrink-0 w-full" : "w-full basis-full"} flex flex-wrap items-center justify-between sm:justify-end gap-1.5 scroll-mt-24 min-w-0`
+        stripEmbedded
+          ? "w-full min-w-0 flex flex-col scroll-mt-24"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -437,21 +438,21 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       <div
-        className={`flex items-center gap-1.5 transition-colors ${
-          inline && embedded
-            ? "w-full min-w-0 shrink-0 px-0.5 sm:px-1.5 py-0.5"
+        className={`flex items-center gap-1 transition-colors ${
+          stripEmbedded
+            ? "w-full min-w-0 shrink-0 px-0.5 py-0.5"
             : inline
               ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
               : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
         } ${
-          inline && embedded
+          stripEmbedded
             ? ""
             : activeSound || (mode === "soundcloud") || showYt
               ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
               : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
       >
-        {!(inline && embedded) && (
+        {!stripEmbedded && (
         <button
           type="button"
           onClick={handleMiniPlayPause}
@@ -497,10 +498,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className={`min-w-0 flex-1 text-left ${inline && embedded ? "max-w-none sm:max-w-[11rem]" : "max-w-[8rem] sm:max-w-[10rem]"}`}
+          className={`min-w-0 flex-1 text-left ${stripEmbedded ? "max-w-none" : "max-w-[8rem] sm:max-w-[10rem]"}`}
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
-          {inline && embedded ? (
+          {stripEmbedded ? (
             <span className="flex items-center gap-1.5 min-w-0">
               <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Music</span>
               <span className={`${FOCUS_STRIP_VALUE} truncate`}>{nowPlayingLabel}</span>
@@ -517,7 +518,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           )}
         </button>
 
-        {mode === "sounds" && activeSound && (
+        {mode === "sounds" && activeSound && collapsed && (
           <input
             type="range"
             min={0}
@@ -526,12 +527,12 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
             onClick={(e) => e.stopPropagation()}
-            className={`${inline && embedded ? "hidden sm:block" : ""} w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0`}
+            className={`${stripEmbedded ? "hidden sm:block w-12" : ""} w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0`}
             aria-label="Volume"
           />
         )}
 
-        {inline && embedded && (
+        {stripEmbedded && (
           <button
             type="button"
             onClick={handleMiniPlayPause}
@@ -557,14 +558,14 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className={`flex-shrink-0 touch-target-sm ml-auto sm:ml-0 ${
-            inline && embedded ? FOCUS_STRIP_ICON_BTN : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
+          className={`flex-shrink-0 touch-target-sm ${
+            stripEmbedded ? FOCUS_STRIP_ICON_BTN : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
           }`}
           aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
           aria-expanded={!collapsed}
         >
           <svg
-            className={`${inline && embedded ? "w-3.5 h-3.5" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
+            className={`${stripEmbedded ? "w-3.5 h-3.5" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -585,7 +586,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             key={scIdx}
             ref={scIframeRef}
             width="100%"
-            height="120"
+            height={stripEmbedded ? 80 : 120}
             scrolling="no"
             frameBorder="no"
             allow="autoplay"
@@ -597,7 +598,17 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         </div>
       )}
 
-      <div className={collapsed ? "hidden" : inline && embedded ? "w-full basis-full space-y-1.5 pt-1" : inline ? "space-y-1.5" : "space-y-2"}>
+      <div
+        className={
+          collapsed
+            ? "hidden"
+            : stripEmbedded
+              ? "w-full space-y-1 pt-1 border-t border-slate-100/90 dark:border-[#243350]/80"
+              : inline
+                ? "space-y-1.5"
+                : "space-y-2"
+        }
+      >
       {/* Mode toggle — single-line icon + label (SoundCloud must not wrap) */}
       <div className="flex items-stretch gap-0.5 sm:gap-1 bg-slate-100 dark:bg-[#131d30] rounded-lg p-0.5 border border-slate-200 dark:border-[#243350]">
         {(
@@ -637,7 +648,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           ] as const
         ).map((tab) => {
           const active = mode === tab.id;
-          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-0.5 sm:px-1 py-1.5 text-[10px] sm:text-[11px] font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
+          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-0.5 px-0.5 sm:px-1 ${
+            stripEmbedded ? "py-1" : "py-1.5"
+          } text-[10px] sm:text-[11px] font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
             active
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
               : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
@@ -666,14 +679,22 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
 
       {/* Ambient Sounds mode */}
       {mode === "sounds" && (
-        <div className={`bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] ${inline ? "px-2 py-2" : "px-3 py-3"}`}>
-          <div className={`grid gap-1.5 ${inline ? "grid-cols-4 mb-1" : "grid-cols-3 sm:grid-cols-4 mb-2"}`}>
+        <div
+          className={`bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350] ${
+            stripEmbedded ? "px-1.5 py-1.5" : inline ? "px-2 py-2" : "px-3 py-3"
+          }`}
+        >
+          <div
+            className={`grid ${stripEmbedded ? "gap-1 mb-0.5" : inline ? "gap-1.5 grid-cols-4 mb-1" : "gap-1.5 grid-cols-3 sm:grid-cols-4 mb-2"} ${
+              stripEmbedded || inline ? "grid-cols-4" : ""
+            }`}
+          >
             {SOUNDS.map((s) => (
               <button
                 key={s.id}
                 onClick={() => playSound(s.id)}
-                className={`flex flex-col items-center gap-0.5 rounded-lg text-xs font-medium transition-all ${
-                  inline ? "py-1 px-0.5" : "py-2 px-1"
+                className={`flex flex-col items-center gap-0.5 rounded-lg font-medium transition-all ${
+                  stripEmbedded ? "py-0.5 px-0.5 text-[10px]" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
                 } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
@@ -681,8 +702,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 }`}
                 aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
               >
-                <span className="text-lg">{s.emoji}</span>
-                <span className="truncate w-full text-center">{s.label}</span>
+                <span className={stripEmbedded ? "text-base leading-none" : "text-lg"}>{s.emoji}</span>
+                <span className="truncate w-full text-center leading-tight">{s.label}</span>
               </button>
             ))}
           </div>
@@ -714,7 +735,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {mode === "lofi" && (
         <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
           {showYt ? (
-            <div className="aspect-video">
+            <div className={stripEmbedded ? "h-24" : "aspect-video"}>
               <iframe
                 key={ytStream.channelId}
                 src={youtubeLiveEmbedSrc(ytStream.channelId)}
@@ -725,8 +746,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               />
             </div>
           ) : (
-            <div className="p-4 text-center">
-              <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">
+            <div className={`text-center ${stripEmbedded ? "p-2" : "p-4"}`}>
+              <p className={`text-slate-600 dark:text-slate-300 mb-2 ${stripEmbedded ? "text-xs mb-1.5" : "text-sm mb-3"}`}>
                 Stream lo-fi music from YouTube
               </p>
               <button
@@ -788,14 +809,18 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           <iframe
             src={`https://open.spotify.com/embed/playlist/${spotifyPlaylist.uri}?utm_source=generator&theme=0`}
             width="100%"
-            height="120"
+            height={stripEmbedded ? 80 : 120}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
             className="border-0"
             title={spotifyPlaylist.label}
           />
           {/* Playlist selector */}
-          <div className="flex items-center justify-between px-3 py-2 border-t border-slate-200 dark:border-[#243350]">
+          <div
+            className={`flex items-center justify-between border-t border-slate-200 dark:border-[#243350] ${
+              stripEmbedded ? "px-2 py-1" : "px-3 py-2"
+            }`}
+          >
             <button
               onClick={() => setSpotifyIdx((i) => (i - 1 + SPOTIFY_PLAYLISTS.length) % SPOTIFY_PLAYLISTS.length)}
               className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors p-1"
@@ -911,15 +936,21 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       )}
 
       {/* SomaFM external links */}
-      <div className="flex items-center gap-2 flex-nowrap min-w-0 overflow-x-auto pb-0.5">
-        <span className="text-sm font-medium text-slate-500 dark:text-slate-300 shrink-0">SomaFM:</span>
+      <div className="flex items-center gap-1.5 flex-nowrap min-w-0 overflow-x-auto pb-0.5">
+        <span
+          className={`${stripEmbedded ? "text-[10px]" : "text-sm"} font-medium text-slate-500 dark:text-slate-300 shrink-0`}
+        >
+          SomaFM:
+        </span>
         {SOMAFM_STATIONS.map((s) => (
           <a
             key={s.slug}
             href={`https://somafm.com/player/#/now-playing/${s.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-sm font-medium whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors"
+            className={`inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors ${
+              stripEmbedded ? "px-1.5 py-0.5 text-[10px] font-medium" : "px-2.5 py-1 text-sm font-medium gap-1.5"
+            }`}
             title={s.desc}
           >
             <svg className="w-2.5 h-2.5 opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
