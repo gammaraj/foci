@@ -86,19 +86,37 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
 
   if (compact) {
     return (
-      <p className="app-inline-meta app-text-meta text-slate-600 dark:text-slate-400 min-w-0 leading-relaxed">
-        <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-          {formatClock(now)}
+      <div className="flex items-center gap-1.5 min-h-[2.75rem] min-w-0 px-3 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm">
+        <span className="flex items-center gap-1.5 min-w-0 shrink-0">
+          <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Time</span>
+          <span className="text-base sm:text-lg font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
+            {formatClock(now)}
+          </span>
         </span>
         {weather && (
-          <span className="whitespace-nowrap" title={weather.description}>
-            {weather.icon} {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
-            {weather.city && (
-              <span className="hidden md:inline">{` ${weather.city}`}</span>
-            )}
-          </span>
+          <>
+            <span className="text-slate-300 dark:text-slate-600 shrink-0 hidden sm:inline" aria-hidden>
+              ·
+            </span>
+            <span
+              className="flex items-center gap-1.5 min-w-0"
+              title={weather.description}
+            >
+              <span className="text-base sm:text-lg leading-none shrink-0" aria-hidden>
+                {weather.icon}
+              </span>
+              <span className="text-base sm:text-lg font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
+                {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
+              </span>
+              {weather.city && (
+                <span className="text-base sm:text-lg font-semibold leading-none text-slate-800 dark:text-slate-100 truncate hidden md:inline">
+                  {weather.city}
+                </span>
+              )}
+            </span>
+          </>
         )}
-      </p>
+      </div>
     );
   }
 
