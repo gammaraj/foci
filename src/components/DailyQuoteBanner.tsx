@@ -31,17 +31,19 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
             <div className="w-full min-w-0 sm:flex-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden">
               <div
                 className={`grid min-w-0 ${
-                  timerToolbar && musicToolbar ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"
+                  timerToolbar && musicToolbar
+                    ? "grid-cols-1 sm:grid-cols-2 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
+                    : "grid-cols-1"
                 }`}
               >
                 {timerToolbar && (
-                  <div className="min-w-0 flex flex-col px-2 py-1 border-b sm:border-b-0 sm:border-r border-slate-100/90 dark:border-[#243350]/80">
-                    <div className="flex items-center min-h-[2rem] w-full">{timerToolbar}</div>
+                  <div className="min-w-0 flex flex-col px-3 py-1.5 border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80">
+                    <div className="flex items-center min-h-[2.75rem] w-full">{timerToolbar}</div>
                     {timerPanel}
                   </div>
                 )}
                 {musicToolbar && (
-                  <div className="min-w-0 flex flex-col px-2 py-1">{musicToolbar}</div>
+                  <div className="min-w-0 flex flex-col px-3 py-1.5">{musicToolbar}</div>
                 )}
               </div>
             </div>

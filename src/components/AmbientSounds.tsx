@@ -253,7 +253,7 @@ interface AmbientSoundsProps {
 
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
-const FOCUS_STRIP_VALUE = "text-sm sm:text-base font-semibold leading-none text-slate-800 dark:text-slate-100";
+const FOCUS_STRIP_VALUE = "text-base sm:text-lg font-semibold leading-none text-slate-800 dark:text-slate-100";
 
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const stripEmbedded = inline && embedded;
@@ -438,9 +438,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       <div
-        className={`flex items-center gap-1 transition-colors ${
+        className={`flex items-center gap-1.5 transition-colors ${
           stripEmbedded
-            ? "w-full min-w-0 shrink-0 px-0.5 py-0.5"
+            ? "w-full min-w-0 shrink-0 min-h-[2.75rem] px-0 py-0.5"
             : inline
               ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
               : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
@@ -551,7 +551,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             }
             title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
           >
-            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="sm" />
+            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
           </button>
         )}
 
@@ -565,7 +565,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           aria-expanded={!collapsed}
         >
           <svg
-            className={`${stripEmbedded ? "w-3.5 h-3.5" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
+            className={`${stripEmbedded ? "w-4 h-4" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -603,7 +603,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           collapsed
             ? "hidden"
             : stripEmbedded
-              ? "w-full space-y-1 pt-1 border-t border-slate-100/90 dark:border-[#243350]/80"
+              ? "w-full space-y-1.5 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80"
               : inline
                 ? "space-y-1.5"
                 : "space-y-2"
@@ -648,9 +648,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           ] as const
         ).map((tab) => {
           const active = mode === tab.id;
-          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-0.5 px-0.5 sm:px-1 ${
-            stripEmbedded ? "py-1" : "py-1.5"
-          } text-[10px] sm:text-[11px] font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
+          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1 sm:px-1.5 ${
+            stripEmbedded ? "py-1.5" : "py-1.5"
+          } text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
             active
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
               : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
@@ -681,11 +681,11 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {mode === "sounds" && (
         <div
           className={`bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350] ${
-            stripEmbedded ? "px-1.5 py-1.5" : inline ? "px-2 py-2" : "px-3 py-3"
+            stripEmbedded ? "px-2 py-2" : inline ? "px-2 py-2" : "px-3 py-3"
           }`}
         >
           <div
-            className={`grid ${stripEmbedded ? "gap-1 mb-0.5" : inline ? "gap-1.5 grid-cols-4 mb-1" : "gap-1.5 grid-cols-3 sm:grid-cols-4 mb-2"} ${
+            className={`grid ${stripEmbedded ? "gap-1.5 mb-1" : inline ? "gap-1.5 grid-cols-4 mb-1" : "gap-1.5 grid-cols-3 sm:grid-cols-4 mb-2"} ${
               stripEmbedded || inline ? "grid-cols-4" : ""
             }`}
           >
@@ -694,7 +694,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 key={s.id}
                 onClick={() => playSound(s.id)}
                 className={`flex flex-col items-center gap-0.5 rounded-lg font-medium transition-all ${
-                  stripEmbedded ? "py-0.5 px-0.5 text-[10px]" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
+                  stripEmbedded ? "py-1 px-0.5 text-xs sm:text-sm" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
                 } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
@@ -702,7 +702,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 }`}
                 aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
               >
-                <span className={stripEmbedded ? "text-base leading-none" : "text-lg"}>{s.emoji}</span>
+                <span className={stripEmbedded ? "text-lg leading-none" : "text-lg"}>{s.emoji}</span>
                 <span className="truncate w-full text-center leading-tight">{s.label}</span>
               </button>
             ))}
@@ -938,7 +938,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {/* SomaFM external links */}
       <div className="flex items-center gap-1.5 flex-nowrap min-w-0 overflow-x-auto pb-0.5">
         <span
-          className={`${stripEmbedded ? "text-[10px]" : "text-sm"} font-medium text-slate-500 dark:text-slate-300 shrink-0`}
+          className={`${stripEmbedded ? "text-xs sm:text-sm" : "text-sm"} font-medium text-slate-500 dark:text-slate-300 shrink-0`}
         >
           SomaFM:
         </span>
@@ -949,7 +949,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             target="_blank"
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors ${
-              stripEmbedded ? "px-1.5 py-0.5 text-[10px] font-medium" : "px-2.5 py-1 text-sm font-medium gap-1.5"
+              stripEmbedded ? "px-2 py-1 text-xs sm:text-sm font-medium" : "px-2.5 py-1 text-sm font-medium gap-1.5"
             }`}
             title={s.desc}
           >

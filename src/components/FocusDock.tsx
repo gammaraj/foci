@@ -84,9 +84,11 @@ export function FocusDockToolbar({
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0 w-full sm:w-auto transition-colors ${
+      className={`flex items-center gap-1.5 min-w-0 w-full transition-colors ${
+        embedded ? "flex-nowrap" : "flex-wrap gap-y-1 sm:w-auto"
+      } ${
         embedded
-          ? `px-0.5 sm:px-1.5 py-0.5 rounded-lg ${
+          ? `px-0 py-0.5 ${
               isBreak
                 ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
                 : isRunning
@@ -106,45 +108,72 @@ export function FocusDockToolbar({
         <>
           <Link
             href="/stats"
-            className="flex flex-col items-center gap-0.5 shrink-0 group min-w-0 px-0.5"
+            className={
+              embedded
+                ? "shrink-0 group min-w-0"
+                : "flex flex-col items-center gap-0.5 shrink-0 group min-w-0 px-0.5"
+            }
             title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
             aria-label={`${sessions.count} of ${sessions.goal} focus sessions today`}
           >
-            <span className="flex items-center gap-1 tabular-nums text-xs sm:text-sm font-semibold leading-none whitespace-nowrap">
-              <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
-                {sessions.count}/{sessions.goal}
-              </span>
-              {sessions.streak > 0 && (
-                <span
-                  className="hidden sm:inline text-orange-600 dark:text-orange-400 text-xs font-medium"
-                  title={`${sessions.streak}-day streak`}
-                >
-                  🔥 {sessions.streak}d
+            {embedded ? (
+              <span className="flex items-baseline gap-1 tabular-nums leading-none whitespace-nowrap">
+                <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
+                  {sessions.count}/{sessions.goal}
                 </span>
-              )}
-            </span>
-            <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
-              Sessions
-            </span>
-            <span
-              className="hidden sm:block w-full min-w-[2.25rem] h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
-              aria-hidden
-            >
-              <span
-                className="block h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
-                style={{ width: `${sessionProgress}%` }}
-              />
-            </span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                  Sessions
+                </span>
+                {sessions.streak > 0 && (
+                  <span
+                    className="text-xs font-medium text-orange-600 dark:text-orange-400"
+                    title={`${sessions.streak}-day streak`}
+                  >
+                    🔥{sessions.streak}d
+                  </span>
+                )}
+              </span>
+            ) : (
+              <>
+                <span className="flex items-center gap-1 tabular-nums text-xs sm:text-sm font-semibold leading-none whitespace-nowrap">
+                  <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
+                    {sessions.count}/{sessions.goal}
+                  </span>
+                  {sessions.streak > 0 && (
+                    <span
+                      className="hidden sm:inline text-orange-600 dark:text-orange-400 text-xs font-medium"
+                      title={`${sessions.streak}-day streak`}
+                    >
+                      🔥 {sessions.streak}d
+                    </span>
+                  )}
+                </span>
+                <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
+                  Sessions
+                </span>
+                <span
+                  className="hidden sm:block w-full min-w-[2.25rem] h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+                  aria-hidden
+                >
+                  <span
+                    className="block h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
+                    style={{ width: `${sessionProgress}%` }}
+                  />
+                </span>
+              </>
+            )}
           </Link>
-          <span className="hidden sm:inline text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
-            ·
-          </span>
+          {!embedded && (
+            <span className="hidden sm:inline text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
+              ·
+            </span>
+          )}
         </>
       )}
       <button
         type="button"
         onClick={onToggleExpanded}
-        className="flex items-center gap-1 min-w-0 flex-1 sm:flex-initial text-left"
+        className={`flex items-center gap-1.5 min-w-0 text-left ${embedded ? "flex-1" : "flex-1 sm:flex-initial"}`}
         aria-expanded={expanded}
         aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
         title={
@@ -165,7 +194,7 @@ export function FocusDockToolbar({
           {isBreak ? "Break" : "Timer"}
         </span>
         <span
-          className={`text-sm sm:text-base font-mono font-semibold tabular-nums leading-none ${
+          className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none ${
             isBreak
               ? "text-green-700 dark:text-green-300"
               : isRunning
@@ -196,7 +225,7 @@ export function FocusDockToolbar({
             dismissShortcutHint();
             onShowShortcuts();
           }}
-          className={`relative w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 transition-colors ${
+          className={`relative w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center shrink-0 transition-colors ${
             showShortcutHint
               ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
               : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
@@ -213,13 +242,17 @@ export function FocusDockToolbar({
       <button
         type="button"
         onClick={onToggleExpanded}
-        className="flex-shrink-0 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors touch-target-sm"
+        className={`flex-shrink-0 touch-target-sm ${
+          embedded
+            ? "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            : "p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+        }`}
         aria-expanded={expanded}
         aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
         title={expanded ? "Collapse timer" : "Expand timer"}
       >
         <svg
-          className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`}
+          className={`${embedded ? "w-4 h-4" : "w-3.5 h-3.5"} transition-transform ${expanded ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -269,41 +302,29 @@ export default function FocusDockPanel({
   if (compactStrip) {
     return (
       <div
-        className={`pt-1.5 border-t border-slate-100/90 dark:border-[#243350]/80 ${
+        className={`pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 ${
           isBreak ? "timer-break-mode" : ""
-        } ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}
+        } ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >
         {activeTaskId && activeTaskTitle && (
-          <p className="text-[10px] text-blue-600 dark:text-blue-400 truncate mb-1">{activeTaskTitle}</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400 truncate mb-1.5">{activeTaskTitle}</p>
         )}
-        <div className="flex items-center justify-center gap-2 pb-1.5">
-          <TimerControls
-            isRunning={isRunning}
-            onStartPause={onStartPause}
-            onReset={onReset}
-            compact
-            showReset={false}
-            emphasizeStart={emphasizeStart}
-          />
-          <CircularTimer
-            size="sm"
-            remainingTime={remainingTime}
-            totalDuration={isBreak ? breakDuration : workDuration}
-            label={label}
-            statusText={statusText}
-            displayTime={displayTime}
-            isBreak={isBreak}
-          />
-          <TimerControls
-            isRunning={isRunning}
-            onStartPause={onStartPause}
-            onReset={onReset}
-            compact
-            showStartPause={false}
-            emphasizeStart={emphasizeStart}
-          />
+        <div className="text-center space-y-0.5 pb-2">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
+          <p
+            className={`text-2xl sm:text-3xl font-mono font-bold tabular-nums leading-none ${
+              isBreak
+                ? "text-green-700 dark:text-green-300"
+                : isRunning
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-slate-900 dark:text-white"
+            }`}
+          >
+            {displayTime}
+          </p>
+          <p className="text-sm text-slate-600 dark:text-slate-300">{statusText}</p>
         </div>
-        <div className="flex items-center justify-center gap-1 p-0.5 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
           {WORK_DURATION_PRESETS.map((minutes) => {
             const active = workDurationMs === minutes * 60 * 1000;
             return (
@@ -312,7 +333,7 @@ export default function FocusDockPanel({
                 type="button"
                 onClick={() => onSelectWorkPreset(minutes)}
                 disabled={timerStatus === "running" || timerStatus === "break"}
-                className={`flex-1 px-1.5 py-0.5 rounded-md text-[10px] sm:text-xs font-semibold transition-colors ${
+                className={`flex-1 px-2 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
                   active
                     ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
@@ -323,41 +344,8 @@ export default function FocusDockPanel({
             );
           })}
         </div>
-        <div className="flex items-center justify-center gap-1 pt-1">
-          <button
-            type="button"
-            onClick={onToggleFocusMode}
-            className={`p-1.5 rounded-md transition-colors ${
-              focusMode
-                ? "bg-blue-600 text-white"
-                : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-            }`}
-            aria-label="Toggle focus mode (F)"
-            title="Focus mode (F)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={onShowShortcuts}
-            className="p-1.5 rounded-md text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-            aria-label="Keyboard shortcuts"
-            title="Shortcuts (?)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
-        </div>
-        {readyToFocus && timerStatus === "idle" && !isBreak && (
-          <p className="text-center text-[10px] text-blue-700/90 dark:text-blue-300/90 pt-1">
-            Press Play or Space to start
-          </p>
-        )}
         {lastQuote && (timerStatus === "break" || timerStatus === "idle") && (
-          <p className="text-[10px] italic text-slate-500 dark:text-slate-400 text-center leading-snug pt-1 line-clamp-2">
+          <p className="text-xs italic text-slate-500 dark:text-slate-400 text-center leading-snug pt-2 line-clamp-2">
             &ldquo;{lastQuote}&rdquo;
           </p>
         )}
