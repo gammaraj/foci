@@ -23,15 +23,17 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
       aria-label="Weather and focus timer"
     >
       <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 sm:gap-x-3 min-w-0">
-          <div className="min-w-0 flex-1 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch gap-y-1.5 gap-x-3 min-w-0">
+          <div className="shrink-0 min-w-0">
             <WeatherTime compact />
           </div>
           {hasFocusStrip && (
-            <div className="flex-[1.35] min-w-[16rem] sm:min-w-[22rem] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-2 py-1 max-w-full [&:has([aria-expanded=true])]:basis-full [&:has([aria-expanded=true])]:w-full [&:has([aria-expanded=true])]:flex-none">
-              <div className="flex flex-wrap items-center w-full min-h-[2.25rem] gap-x-3 gap-y-1.5 sm:gap-4">
+            <div className="w-full min-w-0 sm:flex-[1.35] md:min-w-[22rem] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-2 py-1.5 sm:py-1 overflow-hidden [&:has([aria-expanded=true])]:basis-full [&:has([aria-expanded=true])]:w-full [&:has([aria-expanded=true])]:flex-none">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center w-full gap-y-1.5 gap-x-3 sm:gap-4">
                 {timerToolbar && (
-                  <div className="order-1 flex-1 flex justify-center min-w-[10rem]">{timerToolbar}</div>
+                  <div className="order-1 w-full min-w-0 sm:flex-1 flex items-center justify-between sm:justify-center gap-1">
+                    {timerToolbar}
+                  </div>
                 )}
                 {timerToolbar && musicToolbar && (
                   <div
@@ -40,7 +42,7 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
                   />
                 )}
                 {musicToolbar && (
-                  <div className="order-3 w-full sm:w-auto sm:shrink-0 flex justify-center sm:justify-end">
+                  <div className="order-3 w-full min-w-0 sm:w-auto sm:shrink-0 flex items-center justify-between sm:justify-end border-t border-slate-100/90 dark:border-[#243350]/80 pt-1.5 sm:border-0 sm:pt-0">
                     {musicToolbar}
                   </div>
                 )}

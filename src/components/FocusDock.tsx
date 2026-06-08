@@ -82,9 +82,9 @@ export function FocusDockToolbar({
 
   return (
     <div
-      className={`flex items-center gap-1.5 transition-colors shrink-0 ${
+      className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0 w-full sm:w-auto transition-colors ${
         embedded
-          ? `px-1 sm:px-1.5 py-0.5 rounded-lg ${
+          ? `px-0.5 sm:px-1.5 py-0.5 rounded-lg ${
               isBreak
                 ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
                 : isRunning
@@ -104,10 +104,11 @@ export function FocusDockToolbar({
         <>
           <Link
             href="/stats"
-            className="flex flex-col items-center gap-0.5 shrink-0 group min-w-[2.25rem]"
+            className="flex flex-col items-center gap-0.5 shrink-0 group min-w-0 px-0.5"
             title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
+            aria-label={`${sessions.count} of ${sessions.goal} focus sessions today`}
           >
-            <span className="flex items-center gap-1 tabular-nums text-sm font-semibold leading-none">
+            <span className="flex items-center gap-1 tabular-nums text-xs sm:text-sm font-semibold leading-none whitespace-nowrap">
               <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
                 {sessions.count}/{sessions.goal}
               </span>
@@ -120,11 +121,11 @@ export function FocusDockToolbar({
                 </span>
               )}
             </span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
+            <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
               Sessions
             </span>
             <span
-              className="w-full h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+              className="hidden sm:block w-full min-w-[2.25rem] h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
               aria-hidden
             >
               <span
@@ -133,7 +134,7 @@ export function FocusDockToolbar({
               />
             </span>
           </Link>
-          <span className="text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
+          <span className="hidden sm:inline text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
             ·
           </span>
         </>
@@ -141,7 +142,7 @@ export function FocusDockToolbar({
       <button
         type="button"
         onClick={onToggleExpanded}
-        className="flex items-center gap-1.5 min-w-0 text-left"
+        className="flex items-center gap-1 min-w-0 flex-1 sm:flex-initial text-left"
         aria-expanded={expanded}
         aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
         title={

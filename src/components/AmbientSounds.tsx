@@ -402,7 +402,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         inline && embedded
-          ? `${collapsed ? "shrink-0" : "w-full basis-full"} flex flex-wrap items-center justify-end gap-1.5 scroll-mt-24`
+          ? `${collapsed ? "shrink-0 w-full" : "w-full basis-full"} flex flex-wrap items-center justify-between sm:justify-end gap-1.5 scroll-mt-24 min-w-0`
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -412,7 +412,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       <div
         className={`flex items-center gap-1.5 transition-colors ${
           inline && embedded
-            ? "shrink-0 px-1 sm:px-1.5 py-0.5"
+            ? "w-full min-w-0 shrink-0 px-0.5 sm:px-1.5 py-0.5"
             : inline
               ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
               : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
@@ -470,7 +470,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className={`min-w-0 text-left ${inline && embedded ? "max-w-[9rem] sm:max-w-[11rem]" : "max-w-[8rem] sm:max-w-[10rem]"}`}
+          className={`min-w-0 flex-1 text-left ${inline && embedded ? "max-w-none sm:max-w-[11rem]" : "max-w-[8rem] sm:max-w-[10rem]"}`}
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
           {inline && embedded ? (
