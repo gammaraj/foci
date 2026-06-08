@@ -8,6 +8,7 @@ import {
   Project,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
+  ALL_PROJECTS_ID,
   TODAY_FILTER_ID,
 } from "../types";
 import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
@@ -399,7 +400,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .maybeSingle()
     );
 
-    return data?.selected_project_id ?? TODAY_FILTER_ID;
+    return data?.selected_project_id ?? ALL_PROJECTS_ID;
   }
 
   async saveSelectedProjectId(id: string): Promise<void> {

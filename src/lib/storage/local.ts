@@ -6,6 +6,7 @@ import {
   Project,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
+  ALL_PROJECTS_ID,
   TODAY_FILTER_ID,
 } from "../types";
 import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
@@ -274,7 +275,7 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async loadSelectedProjectId(): Promise<string> {
     if (!isBrowser()) return DEFAULT_PROJECT.id;
-    return localStorage.getItem(SELECTED_PROJECT_KEY) || TODAY_FILTER_ID;
+    return localStorage.getItem(SELECTED_PROJECT_KEY) || ALL_PROJECTS_ID;
   }
 
   async saveSelectedProjectId(id: string): Promise<void> {

@@ -18,6 +18,7 @@ import {
   Project,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
+  ALL_PROJECTS_ID,
   TODAY_FILTER_ID,
 } from "../types";
 import { formatDateLocal } from "../dates";
@@ -217,7 +218,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       cacheSet(CACHE_KEYS.selectedProject, result);
       return result;
     } catch {
-      return cacheGet<string>(CACHE_KEYS.selectedProject) ?? TODAY_FILTER_ID;
+      return cacheGet<string>(CACHE_KEYS.selectedProject) ?? ALL_PROJECTS_ID;
     }
   }
 

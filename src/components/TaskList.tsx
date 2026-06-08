@@ -71,7 +71,7 @@ export default function TaskList({
 
   // Project state
   const [projects, setProjects] = useState<Project[]>([DEFAULT_PROJECT]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>(TODAY_FILTER_ID);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(ALL_PROJECTS_ID);
   /** When viewing Today/Week/Month/Year, filters tasks within that scope (All projects or one project). */
   const [projectFilterId, setProjectFilterId] = useState<string>(ALL_PROJECTS_ID);
   const [projectManageOpen, setProjectManageOpen] = useState(false);
@@ -1080,7 +1080,16 @@ export default function TaskList({
         : isThisYearFilter
           ? "Due this year"
           : "Scheduled";
-  const bucketOpenTasks = timeScopedTasks.filter((t) => !t.completed && !t.archivedAt);
+  const bucketScopedTasks = (() => {
+    if (isTimeFilter) {
+      const dated = timeScopedDatedTasks;
+      return projectFilterId !== ALL_PROJECTS_ID
+        ? dated.filter((t) => t.projectId === projectFilterId)
+        : dated;
+    }
+    return tasks.filter((t) => !t.archivedAt);
+  })();
+  const bucketOpenTasks = bucketScopedTasks.filter((t) => !t.completed && !t.archivedAt);
   const bucketDatedCount = bucketOpenTasks.filter((t) => t.dueDate).length;
   const bucketUndatedCount = bucketOpenTasks.filter((t) => !t.dueDate).length;
   const bucketTasksByProject = new Map<string, Task[]>();
@@ -1211,6 +1220,14 @@ export default function TaskList({
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             {!focusMode && !projectManageOpen && (
             <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="time-filters">
+              <button
+                onClick={() => selectProject(ALL_PROJECTS_ID)}
+                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                title="All open tasks — every project"
+                aria-label="All tasks"
+              >
+                All
+              </button>
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
@@ -1348,6 +1365,14 @@ export default function TaskList({
         {/* Time filters - mobile: own row below title */}
         {!focusMode && (
         <div className="app-seg-track flex sm:hidden items-center gap-1 mt-3" data-tour="time-filters">
+          <button
+            onClick={() => selectProject(ALL_PROJECTS_ID)}
+            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+            title="All open tasks"
+            aria-label="All tasks"
+          >
+            All
+          </button>
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
