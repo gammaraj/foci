@@ -43,21 +43,39 @@ export type Database = {
       }
       projects: {
         Row: {
+          archived: boolean
+          color: string | null
           created_at: number
+          description: string | null
+          due_date: string | null
           id: string
+          is_favorite: boolean
           name: string
+          sort_order: number | null
           user_id: string
         }
         Insert: {
+          archived?: boolean
+          color?: string | null
           created_at?: number
+          description?: string | null
+          due_date?: string | null
           id: string
+          is_favorite?: boolean
           name: string
+          sort_order?: number | null
           user_id: string
         }
         Update: {
+          archived?: boolean
+          color?: string | null
           created_at?: number
+          description?: string | null
+          due_date?: string | null
           id?: string
+          is_favorite?: boolean
           name?: string
+          sort_order?: number | null
           user_id?: string
         }
         Relationships: []
