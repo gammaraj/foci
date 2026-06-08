@@ -210,9 +210,11 @@ function startSound(
 interface AmbientSoundsProps {
   /** Fits in the status-bar focus strip instead of below the timer panel. */
   inline?: boolean;
+  /** Sits inside the combined focus card (no separate border/background). */
+  embedded?: boolean;
 }
 
-export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
+export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
   const [activeSound, setActiveSound] = useState<SoundType | null>(null);
   const [volume, setVolume] = useState(0.5);
@@ -368,23 +370,33 @@ export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
     <div
       id="ambient-sounds"
       className={
-        inline
-          ? "flex-1 min-w-[12rem] sm:min-w-[16rem] space-y-1.5 scroll-mt-24"
-          : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
+        inline && embedded
+          ? `${collapsed ? "flex-1 min-w-0" : "w-full basis-full"} flex flex-wrap items-center gap-1.5 scroll-mt-24`
+          : inline
+            ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
+            : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
       }
     >
       {/* Mini player bar (always visible) */}
       <div
-        className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl border shadow-sm transition-colors h-full ${
-          activeSound || (mode === "soundcloud") || showYt
-            ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
-            : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
+        className={`flex items-center gap-1.5 transition-colors ${
+          inline && embedded
+            ? "flex-1 min-w-0 px-1 sm:px-1.5 py-0.5"
+            : inline
+              ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
+              : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
+        } ${
+          inline && embedded
+            ? ""
+            : activeSound || (mode === "soundcloud") || showYt
+              ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
+              : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
       >
         <button
           type="button"
           onClick={handleMiniPlayPause}
-          className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center touch-target-sm border transition-colors ${
+          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center touch-target-sm border transition-colors ${
             activeSound || (mode === "soundcloud" && !collapsed) || showYt
               ? "border-blue-400/60 dark:border-blue-500/50 bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
               : "border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
@@ -436,15 +448,24 @@ export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className="flex-1 min-w-0 text-left py-0.5"
+          className={`min-w-0 text-left ${inline && embedded ? "flex-1" : "max-w-[8rem] sm:max-w-[10rem]"}`}
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
-          <span className="app-section-label text-slate-500 dark:text-slate-400">
-            {collapsed ? "Now playing" : "Music"}
-          </span>
-          <span className="block text-sm font-medium text-slate-800 dark:text-slate-100 truncate">
-            {nowPlayingLabel}
-          </span>
+          {inline && embedded ? (
+            <span className="flex items-center gap-1.5 min-w-0 text-sm">
+              <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Music</span>
+              <span className="font-medium text-slate-800 dark:text-slate-100 truncate">{nowPlayingLabel}</span>
+            </span>
+          ) : (
+            <>
+              <span className="app-section-label text-slate-500 dark:text-slate-400">
+                {collapsed ? "Music" : "Now playing"}
+              </span>
+              <span className="block text-sm font-medium text-slate-800 dark:text-slate-100 truncate leading-tight">
+                {nowPlayingLabel}
+              </span>
+            </>
+          )}
         </button>
 
         {mode === "sounds" && activeSound && (
@@ -464,12 +485,12 @@ export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className="flex-shrink-0 p-2 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
+          className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
           aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
           aria-expanded={!collapsed}
         >
           <svg
-            className={`w-5 h-5 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
+            className={`w-4 h-4 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -502,7 +523,7 @@ export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
         </div>
       )}
 
-      <div className={collapsed ? "hidden" : "space-y-2"}>
+      <div className={collapsed ? "hidden" : inline && embedded ? "w-full basis-full space-y-1.5 pt-1" : inline ? "space-y-1.5" : "space-y-2"}>
       {/* Mode toggle — single-line icon + label (SoundCloud must not wrap) */}
       <div className="flex items-stretch gap-0.5 sm:gap-1 bg-slate-100 dark:bg-[#131d30] rounded-lg p-0.5 border border-slate-200 dark:border-[#243350]">
         {(
@@ -571,13 +592,15 @@ export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
 
       {/* Ambient Sounds mode */}
       {mode === "sounds" && (
-        <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl px-3 py-3 border border-slate-200 dark:border-[#243350]">
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2">
+        <div className={`bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] ${inline ? "px-2 py-2" : "px-3 py-3"}`}>
+          <div className={`grid gap-1.5 ${inline ? "grid-cols-4 mb-1" : "grid-cols-3 sm:grid-cols-4 mb-2"}`}>
             {SOUNDS.map((s) => (
               <button
                 key={s.id}
                 onClick={() => playSound(s.id)}
-                className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-medium transition-all ${
+                className={`flex flex-col items-center gap-0.5 rounded-lg text-xs font-medium transition-all ${
+                  inline ? "py-1 px-0.5" : "py-2 px-1"
+                } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
                     : "bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"

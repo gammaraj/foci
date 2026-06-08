@@ -234,6 +234,7 @@ export default function AppPage() {
             }}
             timerToolbar={
               <FocusDockToolbar
+                embedded
                 expanded={!timerCollapsed}
                 onToggleExpanded={() => setTimerCollapsed((c) => !c)}
                 displayTime={mobileDisplayTime}
@@ -245,7 +246,7 @@ export default function AppPage() {
                 emphasizeStart={readyToFocus}
               />
             }
-            musicToolbar={<AmbientSounds inline />}
+            musicToolbar={<AmbientSounds inline embedded />}
             timerPanel={
               <FocusDockPanel
                 expanded={!timerCollapsed}

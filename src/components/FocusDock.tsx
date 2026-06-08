@@ -43,6 +43,7 @@ export function FocusDockToolbar({
   onStartPause,
   onReset,
   emphasizeStart,
+  embedded = false,
 }: Pick<
   FocusDockProps,
   | "expanded"
@@ -54,48 +55,46 @@ export function FocusDockToolbar({
   | "onStartPause"
   | "onReset"
   | "emphasizeStart"
->) {
+> & { embedded?: boolean }) {
   return (
     <div
-      className={`flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-2 rounded-xl border shadow-sm transition-colors min-w-[11rem] sm:min-w-[13rem] flex-shrink-0 ${
-        isBreak
-          ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
-          : isRunning
-            ? "border-blue-300/60 dark:border-blue-600/50 bg-blue-50/80 dark:bg-blue-900/25"
-            : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
+      className={`flex items-center gap-1.5 transition-colors shrink-0 ${
+        embedded ? "px-1 sm:px-1.5 py-0.5" : `px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm ${
+          isBreak
+            ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
+            : isRunning
+              ? "border-blue-300/60 dark:border-blue-600/50 bg-blue-50/80 dark:bg-blue-900/25"
+              : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
+        }`
       }`}
     >
       <button
         type="button"
         onClick={onToggleExpanded}
-        className="flex items-center gap-2 min-w-0 flex-1 text-left"
+        className="flex items-center gap-1.5 min-w-0 text-left"
         aria-expanded={expanded}
         aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
         title={expanded ? "Collapse timer" : "Expand timer"}
       >
-        <span className="min-w-0 flex-1">
-          <span className="app-section-label text-slate-500 dark:text-slate-400 block">Focus timer</span>
-          <span className="flex items-center gap-1.5 min-w-0">
-            <span
-              className={`text-lg sm:text-xl font-mono font-bold tabular-nums leading-none ${
-                isBreak
-                  ? "text-green-700 dark:text-green-300"
-                  : isRunning
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-slate-800 dark:text-slate-100"
-              }`}
-            >
-              {displayTime}
-            </span>
-            {activeTaskTitle && (
-              <span className="hidden lg:inline text-xs text-slate-500 dark:text-slate-400 truncate">
-                {activeTaskTitle}
-              </span>
-            )}
-          </span>
+        <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Timer</span>
+        <span
+          className={`text-base sm:text-lg font-mono font-bold tabular-nums leading-none ${
+            isBreak
+              ? "text-green-700 dark:text-green-300"
+              : isRunning
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-slate-800 dark:text-slate-100"
+          }`}
+        >
+          {displayTime}
         </span>
+        {activeTaskTitle && (
+          <span className="hidden lg:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[7rem]">
+            {activeTaskTitle}
+          </span>
+        )}
         <svg
-          className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
+          className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

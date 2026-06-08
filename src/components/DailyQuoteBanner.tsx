@@ -26,9 +26,17 @@ export default function DailyQuoteBanner({ sessions, timerToolbar, musicToolbar,
       <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
         <WeatherTime compact sessions={sessions} />
         {hasFocusStrip && (
-          <div className="flex flex-wrap items-stretch gap-2 pt-1.5 border-t border-slate-200/60 dark:border-slate-700/50">
-            {timerToolbar}
-            {musicToolbar}
+          <div className="pt-1.5 border-t border-slate-200/60 dark:border-slate-700/50">
+            <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm px-1.5 py-1">
+              {timerToolbar}
+              {timerToolbar && musicToolbar && (
+                <div
+                  className="w-px h-6 bg-slate-200/90 dark:bg-slate-700/70 self-center shrink-0"
+                  aria-hidden
+                />
+              )}
+              {musicToolbar}
+            </div>
           </div>
         )}
         {timerPanel}
