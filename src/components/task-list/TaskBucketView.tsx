@@ -21,6 +21,7 @@ interface TaskBucketViewProps {
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
   onQuickAdd: (title: string, projectId: string) => void;
+  onToggleProjectFavorite?: (projectId: string) => void;
 }
 
 function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Task[] {
@@ -65,7 +66,7 @@ function buildSwimlanes(
   const lanes: BucketSwimlane[] = [];
   if (overdue.length > 0) lanes.push({ id: "overdue", label: "Overdue", tasks: overdue });
   if (dated.length > 0) lanes.push({ id: "dated", label: datedLaneLabel, tasks: dated });
-  if (undated.length > 0) lanes.push({ id: "undated", label: "No date", tasks: undated });
+  if (undated.length > 0) lanes.push({ id: "undated", label: "No Date", tasks: undated });
   return lanes;
 }
 
@@ -138,7 +139,7 @@ function BucketTaskCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-1 min-w-0">
             <p
-              className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate"
+              className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
               title={task.title}
             >
               {task.title}
@@ -200,6 +201,7 @@ function BucketColumn({
   onStartTask,
   onSelectTask,
   onQuickAdd,
+  onToggleProjectFavorite,
 }: {
   project: Project;
   tasks: Task[];
@@ -211,11 +213,12 @@ function BucketColumn({
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
   onQuickAdd: (title: string, projectId: string) => void;
+  onToggleProjectFavorite?: (projectId: string) => void;
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
-  const showLaneHeaders = swimlanes.length > 1;
+  const showLaneHeaders = tasks.length > 0;
   const isAlt = columnIndex % 2 === 1;
 
   return (
@@ -227,22 +230,51 @@ function BucketColumn({
       }`}
     >
       <div
-        className={`flex items-center gap-2 px-3 py-2 border-b shrink-0 ${
+        className={`group/col flex items-center gap-2 px-3 py-2 border-b shrink-0 ${
           isAlt
             ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/70 dark:bg-[#111827]/55"
             : "border-slate-100 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/40"
         }`}
         title={project.description?.trim() || project.name}
       >
-        {project.favorite && (
-          <svg className="w-3 h-3 text-amber-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-label="Pinned project">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        )}
+        {onToggleProjectFavorite ? (
+          <button
+            type="button"
+            onClick={() => onToggleProjectFavorite(project.id)}
+            className={`flex-shrink-0 p-0.5 rounded transition-colors ${
+              project.favorite
+                ? "text-amber-400 hover:text-amber-500"
+                : "text-slate-300 dark:text-slate-600 opacity-0 group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
+            }`}
+            title={
+              project.favorite
+                ? "Pinned — click to unpin (pinned columns appear first)"
+                : "Pin project — show this column first"
+            }
+            aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name}`}
+            aria-pressed={!!project.favorite}
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={project.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={project.favorite ? 0 : 1.5}>
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </button>
+        ) : project.favorite ? (
+          <span title="Pinned — appears first in bucket view" className="flex-shrink-0">
+            <svg
+              className="w-3.5 h-3.5 text-amber-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-label="Pinned project"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </span>
+        ) : null}
         {project.color && (
           <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
             style={{ backgroundColor: project.color }}
+            title={`${project.name} color`}
             aria-hidden
           />
         )}
@@ -351,6 +383,7 @@ export default function TaskBucketView({
   onStartTask,
   onSelectTask,
   onQuickAdd,
+  onToggleProjectFavorite,
 }: TaskBucketViewProps) {
   const columnsWithTasks = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) > 0);
   const emptyColumns = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) === 0);
@@ -388,6 +421,7 @@ export default function TaskBucketView({
             onStartTask={onStartTask}
             onSelectTask={onSelectTask}
             onQuickAdd={onQuickAdd}
+            onToggleProjectFavorite={onToggleProjectFavorite}
           />
         ))}
         </div>

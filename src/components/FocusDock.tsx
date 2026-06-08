@@ -104,24 +104,27 @@ export function FocusDockToolbar({
         <>
           <Link
             href="/stats"
-            className="flex flex-col gap-0.5 shrink-0 group"
+            className="flex flex-col items-center gap-0.5 shrink-0 group min-w-[2.25rem]"
             title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
           >
-            <span className="flex items-center gap-1 tabular-nums text-sm font-medium leading-none">
+            <span className="flex items-center gap-1 tabular-nums text-sm font-semibold leading-none">
               <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
                 {sessions.count}/{sessions.goal}
               </span>
               {sessions.streak > 0 && (
                 <span
-                  className="hidden sm:inline text-orange-600 dark:text-orange-400"
+                  className="hidden sm:inline text-orange-600 dark:text-orange-400 text-xs font-medium"
                   title={`${sessions.streak}-day streak`}
                 >
                   🔥 {sessions.streak}d
                 </span>
               )}
             </span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
+              Sessions
+            </span>
             <span
-              className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+              className="w-full h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
               aria-hidden
             >
               <span

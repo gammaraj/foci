@@ -1416,18 +1416,23 @@ export default function TaskList({
 
       {/* Bucket toolbar — projects only (counts live in header subtitle) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="px-3 sm:px-4 py-1.5 flex items-center justify-between gap-2 border-b border-slate-100/80 dark:border-[#243350]/60">
-          <button
-            type="button"
-            onClick={openProjectManage}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg border border-violet-300/80 dark:border-violet-600/50 bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-100 shadow-sm hover:bg-violet-200/90 dark:hover:bg-violet-950/60 hover:border-violet-400 dark:hover:border-violet-500 active:scale-[0.98] transition-all"
-            data-tour="manage-projects"
-          >
-            <svg className="w-4 h-4 text-violet-600 dark:text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
-            </svg>
-            Manage projects
-          </button>
+        <div className="px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-slate-100/80 dark:border-[#243350]/60">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+            <button
+              type="button"
+              onClick={openProjectManage}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg border border-violet-300/80 dark:border-violet-600/50 bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-100 shadow-sm hover:bg-violet-200/90 dark:hover:bg-violet-950/60 hover:border-violet-400 dark:hover:border-violet-500 active:scale-[0.98] transition-all"
+              data-tour="manage-projects"
+            >
+              <svg className="w-4 h-4 text-violet-600 dark:text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+              </svg>
+              Manage projects
+            </button>
+            <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400">
+              ★ Pin columns to reorder · scroll for more
+            </span>
+          </div>
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
@@ -1464,6 +1469,7 @@ export default function TaskList({
           onStartTask={onStartTask}
           onSelectTask={onSelectTask}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
+          onToggleProjectFavorite={toggleProjectFavorite}
         />
       )}
 
