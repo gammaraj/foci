@@ -22,6 +22,13 @@ interface TaskBucketViewProps {
   onSelectTask: (taskId: string | null) => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  editingTaskId?: string | null;
+  editTitle?: string;
+  onStartEdit?: (task: Task) => void;
+  onEditTitleChange?: (value: string) => void;
+  onSaveEdit?: (taskId: string) => void;
+  onCancelEdit?: () => void;
+  onSetDueDate?: (taskId: string, date: string | undefined) => void;
 }
 
 function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Task[] {
@@ -70,26 +77,51 @@ function buildSwimlanes(
   return lanes;
 }
 
-function DueBadge({ dueDate }: { dueDate: string }) {
+function DueBadge({
+  dueDate,
+  taskId,
+  onSetDueDate,
+}: {
+  dueDate: string;
+  taskId?: string;
+  onSetDueDate?: (taskId: string, date: string | undefined) => void;
+}) {
   const today = getToday();
   const overdue = isDueDateOverdue(dueDate);
   const isToday = dueDate === today;
   const label = isToday ? "Today" : formatDueDate(dueDate);
+  const interactive = !!(taskId && onSetDueDate);
 
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+      className={`relative inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
         overdue
           ? "bg-red-50 dark:bg-red-900/25 text-red-600 dark:text-red-300"
           : isToday
             ? "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300"
             : "bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400"
-      }`}
+      } ${interactive ? "cursor-pointer hover:ring-1 hover:ring-blue-400/40" : ""}`}
+      title={interactive ? "Change due date" : undefined}
     >
       <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
       {label}
+      {interactive && (
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => onSetDueDate!(taskId!, e.target.value || undefined)}
+          onClick={(e) => e.stopPropagation()}
+          onFocus={(e) => {
+            try {
+              (e.target as HTMLInputElement).showPicker();
+            } catch {}
+          }}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          aria-label="Change due date"
+        />
+      )}
     </span>
   );
 }
@@ -98,18 +130,33 @@ function BucketTaskCard({
   task,
   isActive,
   isTimerRunning,
+  isEditing,
+  editTitle,
   onToggleComplete,
   onStartTask,
   onSelectTask,
+  onStartEdit,
+  onEditTitleChange,
+  onSaveEdit,
+  onCancelEdit,
+  onSetDueDate,
 }: {
   task: Task;
   isActive: boolean;
   isTimerRunning: boolean;
+  isEditing: boolean;
+  editTitle: string;
   onToggleComplete: (taskId: string) => void;
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
+  onStartEdit?: (task: Task) => void;
+  onEditTitleChange?: (value: string) => void;
+  onSaveEdit?: (taskId: string) => void;
+  onCancelEdit?: () => void;
+  onSetDueDate?: (taskId: string, date: string | undefined) => void;
 }) {
   const showFocusAction = isActive || isTimerRunning;
+  const canEdit = !!onStartEdit;
 
   return (
     <div
@@ -138,19 +185,59 @@ function BucketTaskCard({
         </button>
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-1 min-w-0">
-            <p
-              className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
-              title={task.title}
-            >
-              {task.title}
-            </p>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(e) => onEditTitleChange?.(e.target.value)}
+                onBlur={() => onSaveEdit?.(task.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") onSaveEdit?.(task.id);
+                  if (e.key === "Escape") onCancelEdit?.();
+                }}
+                onClick={(e) => e.stopPropagation()}
+                maxLength={MAX_TASK_TITLE}
+                className="flex-1 min-w-0 text-sm font-medium px-1 py-0.5 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                autoFocus
+                aria-label="Edit task title"
+              />
+            ) : canEdit ? (
+              <button
+                type="button"
+                onClick={() => onStartEdit?.(task)}
+                className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2 hover:text-blue-700 dark:hover:text-blue-300 rounded px-0.5 -mx-0.5 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/60 transition-colors"
+                title="Click to edit"
+              >
+                {task.title}
+              </button>
+            ) : (
+              <p
+                className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
+                title={task.title}
+              >
+                {task.title}
+              </p>
+            )}
             <div
-              className={`shrink-0 transition-opacity ${
-                showFocusAction
+              className={`flex items-center gap-0.5 shrink-0 transition-opacity ${
+                showFocusAction || isEditing
                   ? "opacity-100"
                   : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
               }`}
             >
+              {canEdit && !isEditing && (
+                <button
+                  type="button"
+                  onClick={() => onStartEdit?.(task)}
+                  className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                  title="Edit task"
+                  aria-label={`Edit "${task.title}"`}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              )}
               {isActive && isTimerRunning ? (
                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-600 text-white whitespace-nowrap">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -179,11 +266,33 @@ function BucketTaskCard({
               )}
             </div>
           </div>
-          {task.dueDate && (
-            <div className="mt-1">
-              <DueBadge dueDate={task.dueDate} />
-            </div>
-          )}
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            {task.dueDate ? (
+              <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} />
+            ) : onSetDueDate ? (
+              <label className="relative inline-flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Add date
+                <input
+                  type="date"
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) onSetDueDate(task.id, e.target.value);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  onFocus={(e) => {
+                    try {
+                      (e.target as HTMLInputElement).showPicker();
+                    } catch {}
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  aria-label="Add due date"
+                />
+              </label>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
@@ -202,6 +311,13 @@ function BucketColumn({
   onSelectTask,
   onQuickAdd,
   onToggleProjectFavorite,
+  editingTaskId,
+  editTitle = "",
+  onStartEdit,
+  onEditTitleChange,
+  onSaveEdit,
+  onCancelEdit,
+  onSetDueDate,
 }: {
   project: Project;
   tasks: Task[];
@@ -214,6 +330,13 @@ function BucketColumn({
   onSelectTask: (taskId: string | null) => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  editingTaskId?: string | null;
+  editTitle?: string;
+  onStartEdit?: (task: Task) => void;
+  onEditTitleChange?: (value: string) => void;
+  onSaveEdit?: (taskId: string) => void;
+  onCancelEdit?: () => void;
+  onSetDueDate?: (taskId: string, date: string | undefined) => void;
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
@@ -328,9 +451,16 @@ function BucketColumn({
                       task={task}
                       isActive={activeTaskId === task.id}
                       isTimerRunning={isTimerRunning}
+                      isEditing={editingTaskId === task.id}
+                      editTitle={editTitle}
                       onToggleComplete={onToggleComplete}
                       onStartTask={onStartTask}
                       onSelectTask={onSelectTask}
+                      onStartEdit={onStartEdit}
+                      onEditTitleChange={onEditTitleChange}
+                      onSaveEdit={onSaveEdit}
+                      onCancelEdit={onCancelEdit}
+                      onSetDueDate={onSetDueDate}
                     />
                   ))}
                 </div>
@@ -384,6 +514,13 @@ export default function TaskBucketView({
   onSelectTask,
   onQuickAdd,
   onToggleProjectFavorite,
+  editingTaskId = null,
+  editTitle = "",
+  onStartEdit,
+  onEditTitleChange,
+  onSaveEdit,
+  onCancelEdit,
+  onSetDueDate,
 }: TaskBucketViewProps) {
   const columnsWithTasks = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) > 0);
   const emptyColumns = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) === 0);
@@ -422,6 +559,13 @@ export default function TaskBucketView({
             onSelectTask={onSelectTask}
             onQuickAdd={onQuickAdd}
             onToggleProjectFavorite={onToggleProjectFavorite}
+            editingTaskId={editingTaskId}
+            editTitle={editTitle}
+            onStartEdit={onStartEdit}
+            onEditTitleChange={onEditTitleChange}
+            onSaveEdit={onSaveEdit}
+            onCancelEdit={onCancelEdit}
+            onSetDueDate={onSetDueDate}
           />
         ))}
         </div>

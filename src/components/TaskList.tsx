@@ -1470,6 +1470,13 @@ export default function TaskList({
           onSelectTask={onSelectTask}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleProjectFavorite={toggleProjectFavorite}
+          editingTaskId={editingId}
+          editTitle={editTitle}
+          onStartEdit={startEditing}
+          onEditTitleChange={setEditTitle}
+          onSaveEdit={saveEdit}
+          onCancelEdit={() => setEditingId(null)}
+          onSetDueDate={setDueDate}
         />
       )}
 
