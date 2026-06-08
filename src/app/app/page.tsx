@@ -327,54 +327,65 @@ export default function AppPage() {
         {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
         <div id="timer-panel" className={`w-full lg:w-[min(340px,32%)] lg:flex-shrink-0 scroll-mt-24 order-2 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
           <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative opacity-[0.97] ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}>
-            {/* Header */}
-            <header
-              className="panel-header-calm flex items-center justify-between gap-2 px-4 sm:px-5 py-2.5 sm:py-3 text-slate-600 dark:text-slate-200 rounded-t-2xl"
-            >
-              <div className="min-w-0">
-                <h2 className="text-base sm:text-lg font-semibold tracking-wide text-slate-700 dark:text-white whitespace-nowrap">Focus Timer</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal mt-0.5 hidden sm:block whitespace-nowrap truncate">
-                  {activeTaskId ? "Task linked" : "Pick a task below"}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => setFocusMode((f) => !f)}
-                className={`hidden sm:flex text-sm px-2.5 py-1 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-600 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"}`}
-                title="Toggle focus mode (F)"
-              >
-                Focus
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowShortcuts(true)}
-                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white transition px-2 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/15 hover:bg-black/[0.04] dark:hover:bg-white/10 touch-target-sm"
-                aria-label="Keyboard shortcuts"
-                title="Shortcuts — link timer to tasks (press ?)"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="hidden sm:inline">Shortcuts</span>
-              </button>
-              <button
-                onClick={() => setTimerCollapsed(true)}
-                className="text-slate-500 dark:text-white/60 hover:text-slate-700 dark:hover:text-white transition p-2 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/10"
-                aria-label="Collapse timer"
-                title="Hide timer panel"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7m-8-14l7 7-7 7" />
-                </svg>
-              </button>
-              <button
-                onClick={() => document.getElementById('tasks-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="lg:hidden text-sm text-slate-500 dark:text-white/85 hover:text-slate-700 dark:hover:text-white transition px-3 py-2 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/10"
-              >
-                Tasks
-              </button>
+            {/* Header — title truncates; actions are icon-only to fit narrow panel */}
+            <header className="panel-header-calm px-3 sm:px-4 py-2.5 text-slate-600 dark:text-slate-200 rounded-t-2xl">
+              <div className="flex items-start justify-between gap-2 min-w-0">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-semibold text-slate-700 dark:text-white truncate leading-tight">
+                    Focus Timer
+                  </h2>
+                  {!activeTaskId && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                      Pick a task below
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-0.5 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setFocusMode((f) => !f)}
+                    className={`p-2 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-white"}`}
+                    aria-label="Toggle focus mode (F)"
+                    title="Focus mode — fewer distractions (F)"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowShortcuts(true)}
+                    className="p-2 rounded-lg text-slate-500 dark:text-white/70 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors"
+                    aria-label="Keyboard shortcuts"
+                    title="Shortcuts (?)"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTimerCollapsed(true)}
+                    className="p-2 rounded-lg text-slate-500 dark:text-white/60 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors"
+                    aria-label="Collapse timer"
+                    title="Hide timer panel"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7m-8-14l7 7-7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" })}
+                    className="lg:hidden p-2 rounded-lg text-slate-500 dark:text-white/85 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors"
+                    aria-label="Jump to tasks"
+                    title="Tasks"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </header>
 

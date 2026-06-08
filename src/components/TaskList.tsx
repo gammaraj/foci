@@ -17,7 +17,7 @@ const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
-import ProjectManageModal from "@/components/task-list/ProjectManageModal";
+import ProjectManageView from "@/components/task-list/ProjectManageView";
 import {
   MAX_TASK_TITLE,
   MAX_PROJECT_NAME,
@@ -73,7 +73,7 @@ export default function TaskList({
   const [selectedProjectId, setSelectedProjectId] = useState<string>(TODAY_FILTER_ID);
   /** When viewing Today/Week/Month/Year, filters tasks within that scope (All projects or one project). */
   const [projectFilterId, setProjectFilterId] = useState<string>(ALL_PROJECTS_ID);
-  const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [projectManageOpen, setProjectManageOpen] = useState(false);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [showAddProject, setShowAddProject] = useState(false);
@@ -82,13 +82,13 @@ export default function TaskList({
   const [editingProjectDescId, setEditingProjectDescId] = useState<string | null>(null);
   const [editProjectDesc, setEditProjectDesc] = useState("");
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  const [noDueDateExpanded, setNoDueDateExpanded] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
   const [editSubtaskTitle, setEditSubtaskTitle] = useState("");
   const [editingDescId, setEditingDescId] = useState<string | null>(null);
   const [editDesc, setEditDesc] = useState("");
   const [showArchived, setShowArchived] = useState(false);
-  const [showArchivedProjects, setShowArchivedProjects] = useState(false);
   const [dragTaskId, setDragTaskId] = useState<string | null>(null);
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<TaskViewMode>(() => {
@@ -102,6 +102,20 @@ export default function TaskList({
   });
 
   const viewBeforePlanRef = useRef<TaskViewMode>("bucket");
+  const viewBeforeManageRef = useRef<TaskViewMode>("bucket");
+
+  const openProjectManage = useCallback(() => {
+    viewBeforeManageRef.current =
+      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket"
+        ? viewMode
+        : "bucket";
+    setProjectManageOpen(true);
+  }, [viewMode]);
+
+  const closeProjectManage = useCallback(() => {
+    setProjectManageOpen(false);
+    setEditingProjectId(null);
+  }, []);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
@@ -141,17 +155,17 @@ export default function TaskList({
   const projectMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const open = () => setShowProjectMenu(true);
+    const open = () => openProjectManage();
     window.addEventListener("foci-open-project-menu", open);
     return () => window.removeEventListener("foci-open-project-menu", open);
-  }, []);
+  }, [openProjectManage]);
   const newTaskDueDateInputRef = useRef<HTMLInputElement>(null);
 
   // Close project menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (projectMenuRef.current && !projectMenuRef.current.contains(e.target as Node)) {
-        setShowProjectMenu(false);
+        setProjectManageOpen(false);
         setShowOverflowProjectMenu(false);
       }
     };
@@ -313,7 +327,7 @@ export default function TaskList({
     saveSelectedProjectId(id).catch((err) => {
       console.error("[Foci] Failed to save selected project:", err);
     });
-    setShowProjectMenu(false);
+    setProjectManageOpen(false);
     setShowOverflowProjectMenu(false);
   };
 
@@ -325,7 +339,7 @@ export default function TaskList({
       selectedProjectId === THIS_YEAR_FILTER_ID;
     if (timeScope) {
       setProjectFilterId(projectId);
-      setShowProjectMenu(false);
+      setProjectManageOpen(false);
       setShowOverflowProjectMenu(false);
       return;
     }
@@ -336,7 +350,7 @@ export default function TaskList({
   const selectSharedProject = async (shared: SharedProject) => {
     setSelectedSharedProject(shared);
     setSelectedProjectId(`shared:${shared._ownerId}:${shared.id}`);
-    setShowProjectMenu(false);
+    setProjectManageOpen(false);
     
     // Load tasks for this shared project if not already loaded
     const key = `${shared._ownerId}:${shared.id}`;
@@ -1080,15 +1094,20 @@ export default function TaskList({
                 />
               </svg>
               <span>
-                Tasks
-                {viewMode === "plan" && (
+                {projectManageOpen ? "Projects" : "Tasks"}
+                {!projectManageOpen && viewMode === "plan" && (
                   <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
                     {" "}· AI plan
                   </span>
                 )}
               </span>
             </h2>
-            {!focusMode && (viewMode === "list" || viewMode === "bucket") && (
+            {!focusMode && projectManageOpen && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
+                Star favorites · expand a project to see tasks
+              </p>
+            )}
+            {!focusMode && !projectManageOpen && (viewMode === "list" || viewMode === "bucket") && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
                 {viewMode === "bucket"
                   ? `All projects side by side${isTimeFilter && timeScopeDescription ? ` · ${timeScopeDescription.toLowerCase()}` : ""}`
@@ -1100,7 +1119,7 @@ export default function TaskList({
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
-            {!focusMode && (
+            {!focusMode && !projectManageOpen && (
             <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="time-filters">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -1142,6 +1161,7 @@ export default function TaskList({
             </div>
             )}
             {/* View mode — mobile dropdown */}
+            {!projectManageOpen && (
             <select
               value={viewMode}
               onChange={(e) => selectViewMode(e.target.value as TaskViewMode)}
@@ -1154,7 +1174,9 @@ export default function TaskList({
               <option value="calendar">Calendar</option>
               <option value="plan">Smart Plan</option>
             </select>
+            )}
             {/* View mode toggles — desktop */}
+            {!projectManageOpen && (
             <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="view-modes">
               <button
                 onClick={() => selectViewMode("bucket")}
@@ -1187,6 +1209,7 @@ export default function TaskList({
                 </svg>
               </button>
             </div>
+            )}
             {onOpenSettings && (
               <TaskPanelMenu
                 user={user}
@@ -1278,8 +1301,55 @@ export default function TaskList({
       </>
       )}
 
+      {!isFocusMode && projectManageOpen && (
+        <ProjectManageView
+          sortedProjects={sortedProjects}
+          archivedProjects={archivedProjects}
+          sharedProjects={sharedProjects}
+          tasks={tasks}
+          user={user}
+          editingProjectId={editingProjectId}
+          editProjectName={editProjectName}
+          setEditProjectName={setEditProjectName}
+          newProjectName={newProjectName}
+          setNewProjectName={setNewProjectName}
+          activeTaskId={activeTaskId}
+          isTimerRunning={isTimerRunning}
+          onClose={closeProjectManage}
+          onToggleFavorite={toggleProjectFavorite}
+          onOpenProject={(id) => {
+            closeProjectManage();
+            selectViewMode(viewBeforeManageRef.current);
+            selectProjectScope(id);
+          }}
+          onUpdateColor={updateProjectColor}
+          onUpdateDueDate={updateProjectDueDate}
+          onStartRename={startEditingProject}
+          onSaveRename={saveProjectEdit}
+          onCancelRename={() => setEditingProjectId(null)}
+          onShare={setShareModalProject}
+          onArchive={toggleProjectArchived}
+          onDelete={deleteProject}
+          onUnarchive={toggleProjectArchived}
+          onFocusProject={(id) => {
+            onFocusProject?.(id);
+            closeProjectManage();
+          }}
+          onSelectSharedProject={(sp) => {
+            closeProjectManage();
+            selectViewMode(viewBeforeManageRef.current);
+            selectSharedProject(sp);
+          }}
+          onLeaveShared={handleLeaveSharedProject}
+          onAddProject={addProject}
+          onToggleComplete={toggleComplete}
+          onStartTask={onStartTask}
+          onSelectTask={onSelectTask}
+        />
+      )}
+
       {/* Smart Plan view */}
-      {!isFocusMode && viewMode === "plan" && (
+      {!isFocusMode && !projectManageOpen && viewMode === "plan" && (
         <SmartPlan
           tasks={tasks}
           projects={projects}
@@ -1289,7 +1359,7 @@ export default function TaskList({
       )}
 
       {/* Calendar view */}
-      {!isFocusMode && viewMode === "calendar" && (
+      {!isFocusMode && !projectManageOpen && viewMode === "calendar" && (
         <TaskCalendarView
           tasks={tasks}
           projects={projects}
@@ -1306,7 +1376,7 @@ export default function TaskList({
       )}
 
       {/* Time scope meta — list and bucket views */}
-      {!isFocusMode && (viewMode === "list" || viewMode === "bucket") && isTimeFilter && (() => {
+      {!isFocusMode && !projectManageOpen && (viewMode === "list" || viewMode === "bucket") && isTimeFilter && (() => {
         const activeProject = projects.find((p) => p.id === projectFilterId);
         const datedCount = viewMode === "bucket"
           ? bucketOpenTasks.filter((t) => t.dueDate).length
@@ -1336,11 +1406,11 @@ export default function TaskList({
       })()}
 
       {/* Project manage entry — bucket view (list view uses tabs row ⋮ button) */}
-      {!isFocusMode && viewMode === "bucket" && (
+      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
         <div className="px-3 sm:px-4 pt-1 pb-1 flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => setShowProjectMenu(true)}
+            onClick={openProjectManage}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
             data-tour="manage-projects"
           >
@@ -1359,7 +1429,7 @@ export default function TaskList({
           )}
           <button
             type="button"
-            onClick={() => { setShowAddProject(true); setShowProjectMenu(true); setNewProjectName(""); }}
+            onClick={() => { setNewProjectName(""); openProjectManage(); }}
             className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
             + New project
@@ -1368,7 +1438,7 @@ export default function TaskList({
       )}
 
       {/* Bucket view — all projects as columns */}
-      {!isFocusMode && viewMode === "bucket" && !tasksReady && (
+      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div key={i} className="w-[268px] flex-shrink-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse">
@@ -1379,7 +1449,7 @@ export default function TaskList({
           ))}
         </div>
       )}
-      {!isFocusMode && viewMode === "bucket" && tasksReady && (
+      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && tasksReady && (
         <TaskBucketView
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
@@ -1393,7 +1463,7 @@ export default function TaskList({
       )}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
-      {!isFocusMode && viewMode === "list" && (<>
+      {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
       <div className="px-3 sm:px-4 pt-1.5 pb-1 relative" ref={projectMenuRef}>
         {isAllProjects && !isTimeFilter && (
           <button
@@ -1465,9 +1535,9 @@ export default function TaskList({
 
           {/* More / manage button */}
           <button
-            onClick={() => setShowProjectMenu(!showProjectMenu)}
+            onClick={openProjectManage}
             className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
-              showProjectMenu
+              projectManageOpen
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
@@ -1563,7 +1633,7 @@ export default function TaskList({
             <button
               onClick={() => {
                 setShowOverflowProjectMenu((prev) => !prev);
-                setShowProjectMenu(false);
+                setProjectManageOpen(false);
               }}
               className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                 showOverflowProjectMenu
@@ -1597,9 +1667,9 @@ export default function TaskList({
 
           {/* More / manage button */}
           <button
-            onClick={() => setShowProjectMenu(!showProjectMenu)}
+            onClick={openProjectManage}
             className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
-              showProjectMenu
+              projectManageOpen
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
@@ -1886,13 +1956,58 @@ export default function TaskList({
             const showUpcomingHeader = !isOverdue && prevIsOverdue;
             const showNoDueDateHeader =
               isTimeFilter && !task.dueDate && (index === 0 || !!prevTask?.dueDate);
+            const isUndatedInTimeFilter = isTimeFilter && !task.dueDate;
+
+            if (isUndatedInTimeFilter && !noDueDateExpanded) {
+              if (!showNoDueDateHeader) return null;
+              return (
+                <button
+                  key="no-due-date-section"
+                  type="button"
+                  onClick={() => setNoDueDateExpanded(true)}
+                  className="mb-2 mt-3 pl-3 py-1.5 border-l-[3px] border-l-slate-300 dark:border-l-slate-600 w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors"
+                  aria-expanded={false}
+                >
+                  <svg
+                    className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">
+                    ({scopedUndatedOpenCount})
+                  </span>
+                </button>
+              );
+            }
 
             return (
             <div key={task.id}>
             {showNoDueDateHeader && (
-              <div className="mb-2 mt-3 pl-3 py-1 border-l-[3px] border-l-slate-300 dark:border-l-slate-600">
+              <button
+                type="button"
+                onClick={() => setNoDueDateExpanded((open) => !open)}
+                className="mb-2 mt-3 pl-3 py-1.5 border-l-[3px] border-l-slate-300 dark:border-l-slate-600 w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors"
+                aria-expanded={noDueDateExpanded}
+              >
+                <svg
+                  className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${noDueDateExpanded ? "rotate-90" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
                 <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
-              </div>
+                <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">
+                  ({scopedUndatedOpenCount})
+                </span>
+              </button>
             )}
             {showOverdueHeader && (
               <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
@@ -2657,43 +2772,6 @@ export default function TaskList({
           onCancel={() => setPendingConfirm(null)}
         />
       )}
-
-      <ProjectManageModal
-        isOpen={showProjectMenu && !isFocusMode}
-        onClose={() => setShowProjectMenu(false)}
-        sortedProjects={sortedProjects}
-        archivedProjects={archivedProjects}
-        sharedProjects={sharedProjects}
-        tasks={tasks}
-        selectedProjectId={selectedProjectId}
-        selectedSharedProject={selectedSharedProject}
-        user={user}
-        editingProjectId={editingProjectId}
-        editProjectName={editProjectName}
-        setEditProjectName={setEditProjectName}
-        showArchivedProjects={showArchivedProjects}
-        setShowArchivedProjects={setShowArchivedProjects}
-        newProjectName={newProjectName}
-        setNewProjectName={setNewProjectName}
-        onSelectProject={(id) => {
-          selectProjectScope(id);
-          setShowProjectMenu(false);
-        }}
-        onSelectSharedProject={selectSharedProject}
-        onUpdateColor={updateProjectColor}
-        onToggleFavorite={toggleProjectFavorite}
-        onFocusProject={onFocusProject}
-        onUpdateDueDate={updateProjectDueDate}
-        onStartRename={startEditingProject}
-        onSaveRename={saveProjectEdit}
-        onCancelRename={() => setEditingProjectId(null)}
-        onShare={setShareModalProject}
-        onArchive={toggleProjectArchived}
-        onDelete={deleteProject}
-        onUnarchive={toggleProjectArchived}
-        onLeaveShared={handleLeaveSharedProject}
-        onAddProject={addProject}
-      />
 
       {/* Share Project Modal */}
       {shareModalProject && (
