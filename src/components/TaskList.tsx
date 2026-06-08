@@ -1024,6 +1024,8 @@ export default function TaskList({
           ? "Due this year or earlier"
           : null;
   const bucketOpenTasks = timeScopedTasks.filter((t) => !t.completed && !t.archivedAt);
+  const bucketDatedCount = bucketOpenTasks.filter((t) => t.dueDate).length;
+  const bucketUndatedCount = bucketOpenTasks.filter((t) => !t.dueDate).length;
   const bucketTasksByProject = new Map<string, Task[]>();
   for (const project of sortedProjects) {
     bucketTasksByProject.set(
@@ -1110,7 +1112,15 @@ export default function TaskList({
             {!focusMode && !projectManageOpen && (viewMode === "list" || viewMode === "bucket") && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
                 {viewMode === "bucket"
-                  ? `All projects side by side${isTimeFilter && timeScopeDescription ? ` · ${timeScopeDescription.toLowerCase()}` : ""}`
+                  ? isTimeFilter
+                    ? [
+                        timeScopeDescription,
+                        `${bucketDatedCount} due`,
+                        bucketUndatedCount > 0 ? `${bucketUndatedCount} no date` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")
+                    : "All projects side by side"
                   : isTimeFilter
                     ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
                     : "Pick a task, then hit Focus to start your session"}
@@ -1375,28 +1385,18 @@ export default function TaskList({
         />
       )}
 
-      {/* Time scope meta — list and bucket views */}
-      {!isFocusMode && !projectManageOpen && (viewMode === "list" || viewMode === "bucket") && isTimeFilter && (() => {
+      {/* Time scope meta — list view only (bucket uses header subtitle) */}
+      {!isFocusMode && !projectManageOpen && viewMode === "list" && isTimeFilter && (() => {
         const activeProject = projects.find((p) => p.id === projectFilterId);
-        const datedCount = viewMode === "bucket"
-          ? bucketOpenTasks.filter((t) => t.dueDate).length
-          : scopedDatedOpenCount;
-        const undatedCount = viewMode === "bucket"
-          ? bucketOpenTasks.filter((t) => !t.dueDate).length
-          : scopedUndatedOpenCount;
         return (
           <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-600 dark:text-slate-400">
             <span className="font-medium text-slate-700 dark:text-slate-200">{timeScopeDescription}</span>
-            {viewMode === "bucket" ? (
-              <span className="font-medium text-slate-700 dark:text-slate-200">All projects</span>
-            ) : (
-              projectFilterId !== ALL_PROJECTS_ID && activeProject && (
-                <span className="font-medium text-slate-700 dark:text-slate-200">{activeProject.name}</span>
-              )
+            {projectFilterId !== ALL_PROJECTS_ID && activeProject && (
+              <span className="font-medium text-slate-700 dark:text-slate-200">{activeProject.name}</span>
             )}
-            <span>{datedCount} due</span>
-            {undatedCount > 0 && (
-              <span>{undatedCount} no date</span>
+            <span>{scopedDatedOpenCount} due</span>
+            {scopedUndatedOpenCount > 0 && (
+              <span>{scopedUndatedOpenCount} no date</span>
             )}
             {overdueTasks.length > 0 && (
               <span className="text-red-600 dark:text-red-400">{overdueTasks.length} overdue</span>
@@ -1405,9 +1405,9 @@ export default function TaskList({
         );
       })()}
 
-      {/* Project manage entry — bucket view (list view uses tabs row ⋮ button) */}
+      {/* Bucket toolbar — projects only (counts live in header subtitle) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="px-3 sm:px-4 pt-1 pb-1 flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 py-1.5 flex items-center justify-between gap-2 border-b border-slate-100/80 dark:border-[#243350]/60">
           <button
             type="button"
             onClick={openProjectManage}
@@ -1419,18 +1419,10 @@ export default function TaskList({
             </svg>
             Manage projects
           </button>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
-          </span>
-          {sortedProjects.some((p) => p.favorite) && (
-            <span className="text-xs text-amber-500 dark:text-amber-400">
-              ★ {sortedProjects.filter((p) => p.favorite).length} pinned
-            </span>
-          )}
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline shrink-0"
           >
             + New project
           </button>
