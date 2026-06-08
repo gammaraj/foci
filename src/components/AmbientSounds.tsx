@@ -216,9 +216,32 @@ interface AmbientSoundsProps {
 
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
-const FOCUS_STRIP_ICON_ACTIVE =
-  "p-1.5 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors";
 const FOCUS_STRIP_VALUE = "text-sm sm:text-base font-semibold leading-none text-slate-800 dark:text-slate-100";
+
+function MiniPlayPauseIcon({ playing, size = "md" }: { playing: boolean; size?: "sm" | "md" }) {
+  const className = size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4";
+  if (playing) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <rect x="6" y="5" width="4.5" height="14" rx="1" />
+        <rect x="13.5" y="5" width="4.5" height="14" rx="1" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={`${className} ml-px`} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5.8v12.4c0 .5.55.8 1 .5l10.2-6.4a.6.6 0 000-1l-10.2-6.3c-.45-.3-1 0-1 .4z" />
+    </svg>
+  );
+}
+
+function miniPlayButtonClass(playing: boolean, dock = false) {
+  const size = dock ? "w-7 h-7" : "w-8 h-8";
+  if (playing) {
+    return `${size} rounded-full flex items-center justify-center touch-target-sm border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors`;
+  }
+  return `${size} rounded-full flex items-center justify-center touch-target-sm border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25 hover:border-blue-400/60 transition-colors`;
+}
 
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
@@ -403,11 +426,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={handleMiniPlayPause}
-          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center touch-target-sm border transition-colors ${
-            activeSound || (mode === "soundcloud" && !collapsed) || showYt
-              ? "border-blue-400/60 dark:border-blue-500/50 bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
-              : "border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
-          }`}
+          className={`flex-shrink-0 ${miniPlayButtonClass(
+            !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt
+          )}`}
           aria-label={
             mode === "sounds"
               ? activeSound
@@ -419,16 +440,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           }
           title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
         >
-          {mode === "sounds" && activeSound ? (
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="6" y="5" width="4" height="14" rx="1" />
-              <rect x="14" y="5" width="4" height="14" rx="1" />
-            </svg>
-          ) : (
-            <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          )}
+          <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
         </button>
         )}
 
@@ -512,11 +524,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           <button
             type="button"
             onClick={handleMiniPlayPause}
-            className={`flex-shrink-0 touch-target-sm ${
-              activeSound || (mode === "soundcloud" && !collapsed) || showYt
-                ? FOCUS_STRIP_ICON_ACTIVE
-                : FOCUS_STRIP_ICON_BTN
-            }`}
+            className={`flex-shrink-0 ${miniPlayButtonClass(
+              !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
+              true
+            )}`}
             aria-label={
               mode === "sounds"
                 ? activeSound
@@ -528,16 +539,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             }
             title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
           >
-            {mode === "sounds" && activeSound ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010.049 9.9v4.2a1 1 0 001.506.864l3.197-2.132a1 1 0 000-1.664z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            )}
+            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="sm" />
           </button>
         )}
       </div>
