@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import type { TaskTemplate } from "@/lib/templates";
+import { showWhatsNewBanner, startFeatureTour } from "@/lib/whats-new";
 
 interface TaskPanelMenuProps {
   user: { id: string } | null;
@@ -45,6 +46,7 @@ export default function TaskPanelMenu({
         className="touch-target-sm p-2 rounded-lg text-slate-500 dark:text-white/70 hover:bg-slate-200/60 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         aria-label="Task panel menu"
         aria-expanded={open}
+        data-tour="task-panel-menu"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -62,6 +64,17 @@ export default function TaskPanelMenu({
             onClick={() => { onOpenSettings(); setOpen(false); }}
           >
             Settings & import
+          </button>
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            onClick={() => {
+              showWhatsNewBanner();
+              startFeatureTour();
+              setOpen(false);
+            }}
+          >
+            What&apos;s new & tour
           </button>
           {onTogglePlan && (
             <button

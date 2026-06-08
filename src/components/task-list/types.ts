@@ -1,3 +1,5 @@
+export type TaskViewMode = "bucket" | "list" | "calendar" | "plan";
+
 export interface TaskListProps {
   activeTaskId: string | null;
   onSelectTask: (taskId: string | null) => void;

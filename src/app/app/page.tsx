@@ -22,6 +22,8 @@ import Link from "next/link";
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 const AmbientSounds = dynamic(() => import("@/components/AmbientSounds"));
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
+const WhatsNewBanner = dynamic(() => import("@/components/WhatsNewBanner"));
+const FeatureTour = dynamic(() => import("@/components/FeatureTour"));
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
 function formatTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -236,6 +238,7 @@ export default function AppPage() {
           }}
         />
       )}
+      <WhatsNewBanner focusMode={focusMode} />
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
         <div className="px-2 sm:px-4 pt-2">
@@ -503,6 +506,7 @@ export default function AppPage() {
       />
 
       <OnboardingTour />
+      <FeatureTour />
     </div>
   );
 }

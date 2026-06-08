@@ -15,7 +15,8 @@ import TaskPanelMenu from "@/components/TaskPanelMenu";
 
 const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
-import type { TaskListProps } from "@/components/task-list/types";
+import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
+import TaskBucketView from "@/components/task-list/TaskBucketView";
 import {
   MAX_TASK_TITLE,
   MAX_PROJECT_NAME,
@@ -89,11 +90,13 @@ export default function TaskList({
   const [showArchivedProjects, setShowArchivedProjects] = useState(false);
   const [dragTaskId, setDragTaskId] = useState<string | null>(null);
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "calendar" | "plan">(() => {
-    if (typeof window === "undefined") return "list";
+  const [viewMode, setViewMode] = useState<TaskViewMode>(() => {
+    if (typeof window === "undefined") return "bucket";
     const saved = localStorage.getItem("foci_task_view_mode");
-    if (saved === "list" || saved === "calendar" || saved === "plan") return saved;
-    return "list";
+    if (saved === "bucket" || saved === "list" || saved === "calendar" || saved === "plan") {
+      return saved;
+    }
+    return "bucket";
   });
 
   useEffect(() => {
@@ -468,7 +471,7 @@ export default function TaskList({
     });
   };
 
-  const addTaskWithTitle = (titleRaw: string, dueDateOverride?: string) => {
+  const addTaskWithTitle = (titleRaw: string, dueDateOverride?: string, projectIdOverride?: string) => {
     const title = titleRaw.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
 
@@ -484,13 +487,15 @@ export default function TaskList({
         (addingInTimeScope ? getToday() : undefined) ||
         (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined));
 
-    const projectId = addingInTimeScope
-      ? projectFilterId !== ALL_PROJECTS_ID
-        ? projectFilterId
-        : DEFAULT_PROJECT_ID
-      : selectedProjectId === ALL_PROJECTS_ID
-        ? DEFAULT_PROJECT_ID
-        : selectedProjectId;
+    const projectId =
+      projectIdOverride ??
+      (addingInTimeScope
+        ? projectFilterId !== ALL_PROJECTS_ID
+          ? projectFilterId
+          : DEFAULT_PROJECT_ID
+        : selectedProjectId === ALL_PROJECTS_ID
+          ? DEFAULT_PROJECT_ID
+          : selectedProjectId);
 
     // For tasks without a due date, place them at the top by assigning an order
     // value below all existing manually-ordered tasks
@@ -990,6 +995,14 @@ export default function TaskList({
         : isThisYearFilter
           ? "Due this year or earlier"
           : null;
+  const bucketOpenTasks = timeScopedTasks.filter((t) => !t.completed && !t.archivedAt);
+  const bucketTasksByProject = new Map<string, Task[]>();
+  for (const project of sortedProjects) {
+    bucketTasksByProject.set(
+      project.id,
+      bucketOpenTasks.filter((t) => t.projectId === project.id)
+    );
+  }
   const completedTasks = projectTasks.filter((t) => t.completed);
   const archivedTasks = isAllProjects
     ? tasks.filter((t) => t.archivedAt)
@@ -1061,18 +1074,20 @@ export default function TaskList({
                 )}
               </span>
             </h2>
-            {!focusMode && viewMode === "list" && (
+            {!focusMode && (viewMode === "list" || viewMode === "bucket") && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
-                {isTimeFilter
-                  ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
-                  : "Pick a task, then hit Focus to start your session"}
+                {viewMode === "bucket"
+                  ? `All projects side by side${isTimeFilter && timeScopeDescription ? ` · ${timeScopeDescription.toLowerCase()}` : ""}`
+                  : isTimeFilter
+                    ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
+                    : "Pick a task, then hit Focus to start your session"}
               </p>
             )}
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             {!focusMode && (
-            <div className="app-seg-track hidden sm:flex items-center gap-1">
+            <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="time-filters">
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
@@ -1115,16 +1130,28 @@ export default function TaskList({
             {/* View mode — mobile dropdown */}
             <select
               value={viewMode}
-              onChange={(e) => setViewMode(e.target.value as "list" | "calendar" | "plan")}
+              onChange={(e) => setViewMode(e.target.value as TaskViewMode)}
               className="sm:hidden text-xs font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
               aria-label="Task view mode"
+              data-tour="view-modes"
             >
+              <option value="bucket">Buckets</option>
               <option value="list">List</option>
               <option value="calendar">Calendar</option>
               <option value="plan">Smart Plan</option>
             </select>
             {/* View mode toggles — desktop */}
-            <div className="app-seg-track hidden sm:flex items-center gap-1">
+            <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="view-modes">
+              <button
+                onClick={() => setViewMode("bucket")}
+                className={`p-2.5 rounded-md transition-colors ${viewMode === "bucket" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                title="Bucket view — all projects"
+                aria-label="Bucket view"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
+                </svg>
+              </button>
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2.5 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
@@ -1155,7 +1182,7 @@ export default function TaskList({
                 templates={TASK_TEMPLATES}
                 onSelectTemplate={applyTemplate}
                 onTogglePlan={() => {
-                  setViewMode(viewMode === "plan" ? "list" : "plan");
+                  setViewMode(viewMode === "plan" ? "bucket" : "plan");
                   loadSettings().then(setPlanSettings);
                 }}
                 isPlanView={viewMode === "plan"}
@@ -1185,7 +1212,7 @@ export default function TaskList({
 
         {/* Time filters - mobile: own row below title */}
         {!focusMode && (
-        <div className="app-seg-track flex sm:hidden items-center gap-1 mt-3">
+        <div className="app-seg-track flex sm:hidden items-center gap-1 mt-3" data-tour="time-filters">
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
@@ -1256,19 +1283,28 @@ export default function TaskList({
         />
       )}
 
-      {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
-      {!isFocusMode && viewMode === "list" && (<>
-      {isTimeFilter && (() => {
+      {/* Time scope meta — list and bucket views */}
+      {!isFocusMode && (viewMode === "list" || viewMode === "bucket") && isTimeFilter && (() => {
         const activeProject = projects.find((p) => p.id === projectFilterId);
+        const datedCount = viewMode === "bucket"
+          ? bucketOpenTasks.filter((t) => t.dueDate).length
+          : scopedDatedOpenCount;
+        const undatedCount = viewMode === "bucket"
+          ? bucketOpenTasks.filter((t) => !t.dueDate).length
+          : scopedUndatedOpenCount;
         return (
           <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-600 dark:text-slate-400">
             <span className="font-medium text-slate-700 dark:text-slate-200">{timeScopeDescription}</span>
-            {projectFilterId !== ALL_PROJECTS_ID && activeProject && (
-              <span className="font-medium text-slate-700 dark:text-slate-200">{activeProject.name}</span>
+            {viewMode === "bucket" ? (
+              <span className="font-medium text-slate-700 dark:text-slate-200">All projects</span>
+            ) : (
+              projectFilterId !== ALL_PROJECTS_ID && activeProject && (
+                <span className="font-medium text-slate-700 dark:text-slate-200">{activeProject.name}</span>
+              )
             )}
-            <span>{scopedDatedOpenCount} due</span>
-            {scopedUndatedOpenCount > 0 && (
-              <span>{scopedUndatedOpenCount} no date</span>
+            <span>{datedCount} due</span>
+            {undatedCount > 0 && (
+              <span>{undatedCount} no date</span>
             )}
             {overdueTasks.length > 0 && (
               <span className="text-red-600 dark:text-red-400">{overdueTasks.length} overdue</span>
@@ -1276,6 +1312,34 @@ export default function TaskList({
           </p>
         );
       })()}
+
+      {/* Bucket view — all projects as columns */}
+      {!isFocusMode && viewMode === "bucket" && !tasksReady && (
+        <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-[268px] flex-shrink-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse">
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />
+              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />
+            </div>
+          ))}
+        </div>
+      )}
+      {!isFocusMode && viewMode === "bucket" && tasksReady && (
+        <TaskBucketView
+          projects={sortedProjects}
+          tasksByProject={bucketTasksByProject}
+          activeTaskId={activeTaskId}
+          isTimerRunning={isTimerRunning}
+          onToggleComplete={toggleComplete}
+          onStartTask={onStartTask}
+          onSelectTask={onSelectTask}
+          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
+        />
+      )}
+
+      {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
+      {!isFocusMode && viewMode === "list" && (<>
       <div className="px-3 sm:px-4 pt-1.5 pb-1 relative" ref={projectMenuRef}>
         {isAllProjects && !isTimeFilter && (
           <button
