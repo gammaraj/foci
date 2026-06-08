@@ -1,6 +1,12 @@
 "use client";
 
 import React from "react";
+import {
+  MiniPlayPauseIcon,
+  MiniResetIcon,
+  miniPlayButtonClass,
+  miniResetButtonClass,
+} from "@/components/FocusStripControls";
 
 interface TimerControlsProps {
   isRunning: boolean;
@@ -28,8 +34,33 @@ export default function TimerControls({
   emphasizeStart = false,
 }: TimerControlsProps) {
   if (compact) {
-    const iconSize = dock ? "w-4 h-4" : "w-5 h-5";
-    const btnPad = dock ? "p-1.5" : "p-2";
+    if (dock) {
+      return (
+        <div className="flex items-center gap-1" role="group" aria-label="Timer control buttons">
+          {showStartPause && (
+            <button
+              onClick={onStartPause}
+              className={`flex-shrink-0 ${miniPlayButtonClass(isRunning, true)}`}
+              aria-label={isRunning ? "Pause timer" : "Start timer"}
+            >
+              <MiniPlayPauseIcon playing={isRunning} size="sm" />
+            </button>
+          )}
+          {showReset && (
+            <button
+              onClick={onReset}
+              className={`flex-shrink-0 ${miniResetButtonClass(true)}`}
+              aria-label="Reset timer"
+            >
+              <MiniResetIcon size="sm" />
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    const iconSize = "w-5 h-5";
+    const btnPad = "p-2";
     return (
       <div className="flex items-center gap-0.5" role="group" aria-label="Timer control buttons">
         {showStartPause && (
@@ -38,11 +69,9 @@ export default function TimerControls({
             className={`${btnPad} rounded-lg transition-all active:scale-90 ${
               isRunning
                 ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
-                : emphasizeStart && !dock
+                : emphasizeStart
                   ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
-                  : emphasizeStart && dock
-                    ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             }`}
             aria-label={isRunning ? "Pause timer" : "Start timer"}
           >
