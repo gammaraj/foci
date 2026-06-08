@@ -93,15 +93,22 @@ export default function TaskList({
   const [viewMode, setViewMode] = useState<TaskViewMode>(() => {
     if (typeof window === "undefined") return "bucket";
     const saved = localStorage.getItem("foci_task_view_mode");
-    if (saved === "bucket" || saved === "list" || saved === "calendar" || saved === "plan") {
-      return saved;
-    }
+    const explicit = localStorage.getItem("foci_task_view_explicit") === "1";
+    const valid =
+      saved === "bucket" || saved === "list" || saved === "calendar" || saved === "plan";
+    if (explicit && valid) return saved;
     return "bucket";
   });
 
-  useEffect(() => {
-    localStorage.setItem("foci_task_view_mode", viewMode);
-  }, [viewMode]);
+  const viewBeforePlanRef = useRef<TaskViewMode>("bucket");
+
+  const selectViewMode = useCallback((mode: TaskViewMode) => {
+    setViewMode(mode);
+    if (mode !== "plan") {
+      localStorage.setItem("foci_task_view_mode", mode);
+      localStorage.setItem("foci_task_view_explicit", "1");
+    }
+  }, []);
 
   // Default due date when adding from Today / Week / Month / Year views
   useEffect(() => {
@@ -1130,7 +1137,7 @@ export default function TaskList({
             {/* View mode — mobile dropdown */}
             <select
               value={viewMode}
-              onChange={(e) => setViewMode(e.target.value as TaskViewMode)}
+              onChange={(e) => selectViewMode(e.target.value as TaskViewMode)}
               className="sm:hidden text-xs font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
               aria-label="Task view mode"
               data-tour="view-modes"
@@ -1143,7 +1150,7 @@ export default function TaskList({
             {/* View mode toggles — desktop */}
             <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="view-modes">
               <button
-                onClick={() => setViewMode("bucket")}
+                onClick={() => selectViewMode("bucket")}
                 className={`p-2.5 rounded-md transition-colors ${viewMode === "bucket" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="Bucket view — all projects"
                 aria-label="Bucket view"
@@ -1153,7 +1160,7 @@ export default function TaskList({
                 </svg>
               </button>
               <button
-                onClick={() => setViewMode("list")}
+                onClick={() => selectViewMode("list")}
                 className={`p-2.5 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="List view"
                 aria-label="List view"
@@ -1163,7 +1170,7 @@ export default function TaskList({
                 </svg>
               </button>
               <button
-                onClick={() => setViewMode("calendar")}
+                onClick={() => selectViewMode("calendar")}
                 className={`p-2.5 rounded-md transition-colors ${viewMode === "calendar" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
                 title="Calendar view"
                 aria-label="Calendar view"
@@ -1182,7 +1189,15 @@ export default function TaskList({
                 templates={TASK_TEMPLATES}
                 onSelectTemplate={applyTemplate}
                 onTogglePlan={() => {
-                  setViewMode(viewMode === "plan" ? "bucket" : "plan");
+                  if (viewMode === "plan") {
+                    selectViewMode(viewBeforePlanRef.current);
+                  } else {
+                    viewBeforePlanRef.current =
+                      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket"
+                        ? viewMode
+                        : "bucket";
+                    setViewMode("plan");
+                  }
                   loadSettings().then(setPlanSettings);
                 }}
                 isPlanView={viewMode === "plan"}
