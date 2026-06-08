@@ -235,24 +235,6 @@ function BucketTaskCard({
                   : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
               }`}
             >
-              {canOpenDetail && !isEditing && (
-                <button
-                  type="button"
-                  onClick={() => onToggleTaskDetail!(task.id)}
-                  className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors touch-target-sm ${
-                    isDetailOpen
-                      ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
-                      : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                  }`}
-                  title="Details — move project, priority, subtasks…"
-                  aria-label={`Open details for "${task.title}"`}
-                  aria-pressed={!!isDetailOpen}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
-                </button>
-              )}
               {canEdit && !isEditing && (
                 <button
                   type="button"
@@ -263,6 +245,30 @@ function BucketTaskCard({
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              )}
+              {canOpenDetail && !isEditing && (
+                <button
+                  type="button"
+                  onClick={() => onToggleTaskDetail!(task.id)}
+                  className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors touch-target-sm ${
+                    isDetailOpen
+                      ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
+                      : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                  }`}
+                  title={isDetailOpen ? "Close details" : "Task details"}
+                  aria-label={isDetailOpen ? `Close details for "${task.title}"` : `Open details for "${task.title}"`}
+                  aria-pressed={!!isDetailOpen}
+                >
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${isDetailOpen ? "rotate-90" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               )}
