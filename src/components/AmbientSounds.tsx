@@ -2,6 +2,15 @@
 
 import { useState, useRef, useCallback, useEffect, type MouseEvent } from "react";
 import { MiniPlayPauseIcon, miniPlayButtonClass } from "@/components/FocusStripControls";
+import {
+  getAmbientMode,
+  getAmbientSound,
+  getAmbientVolume,
+  setAmbientMode,
+  setAmbientSound,
+  setAmbientVolume,
+  type AmbientMode,
+} from "@/lib/ambient-prefs";
 import { trackSoundPlayed, trackSoundStopped } from "@/lib/analytics";
 
 // ── Procedural ambient sound generators using Web Audio API ──
@@ -230,6 +239,28 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const [scShuffle, setScShuffle] = useState(false);
   const [scError, setScError] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+
+  useEffect(() => {
+    setMode(getAmbientMode());
+    setVolume(getAmbientVolume());
+    setPrefsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    setAmbientMode(mode as AmbientMode);
+  }, [mode, prefsLoaded]);
+
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    setAmbientVolume(volume);
+  }, [volume, prefsLoaded]);
+
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    setAmbientSound(activeSound);
+  }, [activeSound, prefsLoaded]);
 
   // Auto-skip to next playlist if SoundCloud widget reports an error
   useEffect(() => {
@@ -328,12 +359,17 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const spotifyPlaylist = SPOTIFY_PLAYLISTS[spotifyIdx];
   const scPlaylist = SOUNDCLOUD_PLAYLISTS[scIdx];
   const activeSoundMeta = SOUNDS.find((s) => s.id === activeSound);
+  const lastSoundMeta = prefsLoaded
+    ? SOUNDS.find((s) => s.id === getAmbientSound()) ?? null
+    : null;
 
   const nowPlayingLabel =
     mode === "sounds"
       ? activeSoundMeta
         ? `${activeSoundMeta.emoji} ${activeSoundMeta.label}`
-        : "Ambient sounds"
+        : lastSoundMeta
+          ? `${lastSoundMeta.emoji} ${lastSoundMeta.label}`
+          : "Ambient sounds"
       : mode === "soundcloud"
         ? scPlaylist.label
         : mode === "spotify"
@@ -346,11 +382,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       if (activeSound) {
         playSound(activeSound);
       } else {
-        let last: SoundType = "brownnoise";
-        try {
-          const saved = localStorage.getItem("foci_last_sound") as SoundType;
-          if (SOUNDS.some((s) => s.id === saved)) last = saved;
-        } catch {}
+        const saved = getAmbientSound();
+        const last: SoundType =
+          saved && SOUNDS.some((s) => s.id === saved) ? saved : "brownnoise";
         playSound(last);
       }
       return;
@@ -362,14 +396,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     setCollapsed(false);
     if (mode === "lofi" && !showYt) setShowYt(true);
   };
-
-  useEffect(() => {
-    if (activeSound) {
-      try {
-        localStorage.setItem("foci_last_sound", activeSound);
-      } catch {}
-    }
-  }, [activeSound]);
 
   return (
     <div
@@ -473,7 +499,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
             onClick={(e) => e.stopPropagation()}
-            className="w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0"
+            className={`${inline && embedded ? "hidden sm:block" : ""} w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0`}
             aria-label="Volume"
           />
         )}
@@ -481,7 +507,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className={`flex-shrink-0 touch-target-sm ${inline && embedded ? FOCUS_STRIP_ICON_BTN : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"}`}
+          className={`flex-shrink-0 touch-target-sm ${inline && embedded ? `hidden sm:flex ${FOCUS_STRIP_ICON_BTN}` : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"}`}
           aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
           aria-expanded={!collapsed}
         >

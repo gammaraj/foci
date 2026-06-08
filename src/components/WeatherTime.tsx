@@ -38,11 +38,9 @@ function getGreeting(hour: number): string {
 interface WeatherTimeProps {
   /** Single-line layout for /app to save vertical space. */
   compact?: boolean;
-  /** Optional session summary merged into the compact line (avoids a second stats bar). */
-  sessions?: { count: number; goal: number; streak: number };
 }
 
-export default function WeatherTime({ compact = false, sessions }: WeatherTimeProps) {
+export default function WeatherTime({ compact = false }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -89,22 +87,6 @@ export default function WeatherTime({ compact = false, sessions }: WeatherTimePr
   if (compact) {
     return (
       <p className="app-inline-meta app-text-meta text-slate-600 dark:text-slate-400 min-w-0 leading-relaxed">
-        {sessions && (
-          <span className="font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap tabular-nums">
-            <span className="text-blue-600 dark:text-blue-400">
-              {sessions.count}/{sessions.goal}
-            </span>
-            <span className="text-slate-600 dark:text-slate-400"> sessions</span>
-          </span>
-        )}
-        {sessions && sessions.streak > 0 && (
-          <span
-            className="whitespace-nowrap font-medium text-orange-600 dark:text-orange-400"
-            title={`${sessions.streak}-day streak`}
-          >
-            🔥 {sessions.streak}d
-          </span>
-        )}
         <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
           {formatClock(now)}
         </span>

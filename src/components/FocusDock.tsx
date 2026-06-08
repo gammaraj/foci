@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
 
@@ -44,6 +45,8 @@ export function FocusDockToolbar({
   onReset,
   emphasizeStart,
   embedded = false,
+  sessions,
+  onShowShortcuts,
 }: Pick<
   FocusDockProps,
   | "expanded"
@@ -55,11 +58,40 @@ export function FocusDockToolbar({
   | "onStartPause"
   | "onReset"
   | "emphasizeStart"
-> & { embedded?: boolean }) {
+> & {
+  embedded?: boolean;
+  sessions?: { count: number; goal: number; streak: number };
+  onShowShortcuts?: () => void;
+}) {
+  const [showShortcutHint, setShowShortcutHint] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setShowShortcutHint(localStorage.getItem("foci-shortcuts-hint-seen") !== "1");
+  }, []);
+
+  const dismissShortcutHint = () => {
+    localStorage.setItem("foci-shortcuts-hint-seen", "1");
+    setShowShortcutHint(false);
+  };
+
+  const sessionProgress =
+    sessions && sessions.goal > 0
+      ? Math.min(100, Math.round((sessions.count / sessions.goal) * 100))
+      : 0;
+
   return (
     <div
       className={`flex items-center gap-1.5 transition-colors shrink-0 ${
-        embedded ? "px-1 sm:px-1.5 py-0.5" : `px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm ${
+        embedded
+          ? `px-1 sm:px-1.5 py-0.5 rounded-lg ${
+              isBreak
+                ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
+                : isRunning
+                  ? "border border-blue-300/50 dark:border-blue-600/40 bg-blue-50/60 dark:bg-blue-900/15"
+                  : ""
+            }`
+          : `px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm ${
           isBreak
             ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
             : isRunning
@@ -68,15 +100,64 @@ export function FocusDockToolbar({
         }`
       }`}
     >
+      {sessions && (
+        <>
+          <Link
+            href="/stats"
+            className="flex flex-col gap-0.5 shrink-0 group"
+            title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
+          >
+            <span className="flex items-center gap-1 tabular-nums text-sm font-medium leading-none">
+              <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
+                {sessions.count}/{sessions.goal}
+              </span>
+              {sessions.streak > 0 && (
+                <span
+                  className="hidden sm:inline text-orange-600 dark:text-orange-400"
+                  title={`${sessions.streak}-day streak`}
+                >
+                  🔥 {sessions.streak}d
+                </span>
+              )}
+            </span>
+            <span
+              className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+              aria-hidden
+            >
+              <span
+                className="block h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
+                style={{ width: `${sessionProgress}%` }}
+              />
+            </span>
+          </Link>
+          <span className="text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
+            ·
+          </span>
+        </>
+      )}
       <button
         type="button"
         onClick={onToggleExpanded}
         className="flex items-center gap-1.5 min-w-0 text-left"
         aria-expanded={expanded}
         aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
-        title={expanded ? "Collapse timer" : "Expand timer"}
+        title={
+          expanded
+            ? "Collapse timer"
+            : showShortcutHint
+              ? "Expand timer — press ? for shortcuts"
+              : "Expand timer"
+        }
       >
-        <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Timer</span>
+        <span
+          className={`app-section-label shrink-0 ${
+            isBreak
+              ? "text-green-600 dark:text-green-400"
+              : "text-slate-500 dark:text-slate-400"
+          }`}
+        >
+          {isBreak ? "Break" : "Timer"}
+        </span>
         <span
           className={`text-sm sm:text-base font-mono font-semibold tabular-nums leading-none ${
             isBreak
@@ -89,7 +170,7 @@ export function FocusDockToolbar({
           {displayTime}
         </span>
         {activeTaskTitle && (
-          <span className="hidden lg:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[7rem]">
+          <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[5rem] lg:max-w-[7rem]">
             {activeTaskTitle}
           </span>
         )}
@@ -111,6 +192,27 @@ export function FocusDockToolbar({
         dock={embedded}
         emphasizeStart={emphasizeStart}
       />
+      {embedded && onShowShortcuts && (
+        <button
+          type="button"
+          onClick={() => {
+            dismissShortcutHint();
+            onShowShortcuts();
+          }}
+          className={`relative w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 transition-colors ${
+            showShortcutHint
+              ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
+              : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
+          }`}
+          aria-label="Keyboard shortcuts"
+          title={showShortcutHint ? "Keyboard shortcuts (press ?)" : "Keyboard shortcuts (?)"}
+        >
+          ?
+          {showShortcutHint && (
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-hidden />
+          )}
+        </button>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
@@ -168,7 +168,7 @@ function BucketTaskCard({
                   type="button"
                   onClick={() => onStartTask(task.id)}
                   className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded-md text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 whitespace-nowrap"
-                  title={`Focus on "${task.title}"`}
+                  title={`Focus on "${task.title}" — starts timer`}
                 >
                   <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                     <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
@@ -213,6 +213,7 @@ function BucketColumn({
   onQuickAdd: (title: string, projectId: string) => void;
 }) {
   const [draft, setDraft] = useState("");
+  const addInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = swimlanes.length > 1;
   const isAlt = columnIndex % 2 === 1;
@@ -253,13 +254,35 @@ function BucketColumn({
 
       <div className="flex-1 overflow-y-auto p-2 min-h-[120px]">
         {tasks.length === 0 ? (
-          <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6 px-2">No tasks here</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6 px-2">
+            No tasks ·{" "}
+            <button
+              type="button"
+              onClick={() => addInputRef.current?.focus()}
+              className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              + Add
+            </button>
+          </p>
         ) : (
           <div className="space-y-3">
             {swimlanes.map((lane) => (
-              <div key={lane.id}>
+              <div
+                key={lane.id}
+                className={
+                  lane.id === "overdue"
+                    ? "rounded-lg bg-red-50/60 dark:bg-red-950/20 border border-red-100/80 dark:border-red-900/30 p-1"
+                    : ""
+                }
+              >
                 {showLaneHeaders && (
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 px-0.5 mb-1.5">
+                  <p
+                    className={`text-[10px] font-semibold uppercase tracking-wide px-0.5 mb-1.5 ${
+                      lane.id === "overdue"
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-slate-400 dark:text-slate-500"
+                    }`}
+                  >
                     {lane.label}
                     <span className="ml-1 tabular-nums font-normal normal-case tracking-normal">
                       ({lane.tasks.length})
@@ -297,6 +320,7 @@ function BucketColumn({
       >
         <div className="flex gap-1.5">
           <input
+            ref={addInputRef}
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -331,10 +355,26 @@ export default function TaskBucketView({
   const columnsWithTasks = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) > 0);
   const emptyColumns = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) === 0);
   const orderedColumns = [...columnsWithTasks, ...emptyColumns];
+  const [showScrollHint, setShowScrollHint] = useState(false);
+
+  useEffect(() => {
+    if (orderedColumns.length <= 4) return;
+    if (typeof window !== "undefined" && localStorage.getItem("foci-bucket-scroll-hint") === "1") return;
+    setShowScrollHint(true);
+  }, [orderedColumns.length]);
+
+  const dismissScrollHint = () => {
+    localStorage.setItem("foci-bucket-scroll-hint", "1");
+    setShowScrollHint(false);
+  };
 
   return (
     <div className="px-3 sm:px-4 pb-4 pt-1">
-      <div className="w-full flex gap-3 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain">
+      <div className="relative">
+        <div
+          className="w-full flex gap-3 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
+          onScroll={showScrollHint ? dismissScrollHint : undefined}
+        >
         {orderedColumns.map((project, columnIndex) => (
           <BucketColumn
             key={project.id}
@@ -350,6 +390,18 @@ export default function TaskBucketView({
             onQuickAdd={onQuickAdd}
           />
         ))}
+        </div>
+        {showScrollHint && (
+          <>
+            <div
+              className="absolute right-0 top-0 bottom-2 w-20 pointer-events-none bg-gradient-to-l from-white/95 via-white/70 to-transparent dark:from-[#0f172a]/95 dark:via-[#0f172a]/70 dark:to-transparent"
+              aria-hidden
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 pointer-events-none whitespace-nowrap">
+              More →
+            </span>
+          </>
+        )}
       </div>
     </div>
   );

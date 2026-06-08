@@ -17,12 +17,16 @@ export function MiniPlayPauseIcon({ playing, size = "md" }: { playing: boolean; 
   );
 }
 
-export function miniPlayButtonClass(playing: boolean, dock = false) {
+export function miniPlayButtonClass(playing: boolean, dock = false, emphasizeStart = false) {
   const size = dock ? "w-7 h-7" : "w-8 h-8";
+  const base = `${size} rounded-full flex items-center justify-center touch-target-sm transition-colors`;
   if (playing) {
-    return `${size} rounded-full flex items-center justify-center touch-target-sm border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors`;
+    return `${base} border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700`;
   }
-  return `${size} rounded-full flex items-center justify-center touch-target-sm border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25 hover:border-blue-400/60 transition-colors`;
+  if (emphasizeStart) {
+    return `${base} border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700 ring-2 ring-blue-400/35`;
+  }
+  return `${base} border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25 hover:border-blue-400/60`;
 }
 
 export function MiniResetIcon({ size = "md" }: { size?: "sm" | "md" }) {

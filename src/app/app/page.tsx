@@ -15,7 +15,7 @@ import KeyboardShortcutsModal from "@/components/KeyboardShortcutsModal";
 import SessionCelebration from "@/components/SessionCelebration";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
-import { getFocusModeAuto } from "@/lib/focus-mode";
+import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
 const WhatsNewBanner = dynamic(() => import("@/components/WhatsNewBanner"));
@@ -148,7 +148,7 @@ export default function AppPage() {
     setActiveTaskId(taskId);
     if (timer.status !== "running" && timer.status !== "break") {
       if (getFocusModeAuto()) setFocusMode(true);
-      timer.start();
+      if (getStartTimerOnFocus()) timer.start();
     }
   }, [timer]);
 
@@ -158,6 +158,7 @@ export default function AppPage() {
       const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
       if (e.key === "?" && !typing) {
         e.preventDefault();
+        localStorage.setItem("foci-shortcuts-hint-seen", "1");
         setShowShortcuts(true);
         return;
       }
@@ -228,11 +229,6 @@ export default function AppPage() {
       {!focusMode && (
         <div id="focus-dock">
           <DailyQuoteBanner
-            sessions={{
-              count: timer.dailyGoalData.sessionCount,
-              goal: timer.settings.dailyGoal,
-              streak: timer.dailyGoalData.streak,
-            }}
             timerToolbar={
               <FocusDockToolbar
                 embedded
@@ -245,6 +241,12 @@ export default function AppPage() {
                 onStartPause={handleStartPause}
                 onReset={handleReset}
                 emphasizeStart={readyToFocus}
+                sessions={{
+                  count: timer.dailyGoalData.sessionCount,
+                  goal: timer.settings.dailyGoal,
+                  streak: timer.dailyGoalData.streak,
+                }}
+                onShowShortcuts={() => setShowShortcuts(true)}
               />
             }
             musicToolbar={<AmbientSounds inline embedded />}
