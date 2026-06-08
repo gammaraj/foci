@@ -393,6 +393,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
       >
+        {!(inline && embedded) && (
         <button
           type="button"
           onClick={handleMiniPlayPause}
@@ -423,6 +424,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             </svg>
           )}
         </button>
+        )}
 
         {mode === "soundcloud" && collapsed && (
           <>
@@ -448,7 +450,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className={`min-w-0 text-left ${inline && embedded ? "flex-1" : "max-w-[8rem] sm:max-w-[10rem]"}`}
+          className={`min-w-0 text-left ${inline && embedded ? "max-w-[9rem] sm:max-w-[11rem]" : "max-w-[8rem] sm:max-w-[10rem]"}`}
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
           {inline && embedded ? (
@@ -499,6 +501,39 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
+
+        {inline && embedded && (
+          <button
+            type="button"
+            onClick={handleMiniPlayPause}
+            className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center touch-target-sm border transition-colors ${
+              activeSound || (mode === "soundcloud" && !collapsed) || showYt
+                ? "border-blue-400/60 dark:border-blue-500/50 bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+                : "border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
+            }`}
+            aria-label={
+              mode === "sounds"
+                ? activeSound
+                  ? `Pause ${activeSoundMeta?.label}`
+                  : "Play ambient sound"
+                : mode === "soundcloud"
+                  ? "Play or pause SoundCloud"
+                  : "Open player"
+            }
+            title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
+          >
+            {mode === "sounds" && activeSound ? (
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="6" y="5" width="4" height="14" rx="1" />
+                <rect x="14" y="5" width="4" height="14" rx="1" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
 
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}
