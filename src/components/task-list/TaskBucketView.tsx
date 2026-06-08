@@ -4,8 +4,28 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
-import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 import { MiniPlayPauseIcon, miniPlayButtonClass, miniResetButtonClass } from "@/components/FocusStripControls";
+
+function BucketColumnTitle({ project }: { project: Project }) {
+  const subtitle = project.description?.trim();
+  const showSubtitle = !!subtitle && subtitle !== project.name;
+
+  return (
+    <div className="min-w-0 flex-1">
+      <h3 className="truncate text-sm font-bold text-slate-900 dark:text-white leading-tight">
+        {project.name}
+      </h3>
+      {showSubtitle && (
+        <p
+          className="truncate text-[11px] font-normal text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
+          title={subtitle}
+        >
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
 
 /** Fit 4 full columns in the scroll viewport; extra projects scroll horizontally. */
 const BUCKET_COLUMN_CLASS =
@@ -444,10 +464,8 @@ function BucketColumn({
             aria-hidden
           />
         )}
-        <div className="min-w-0 flex-1 text-sm leading-snug">
-          <ProjectTabName project={project} variant="column" />
-        </div>
-        <span className="text-[11px] tabular-nums font-medium text-slate-400 dark:text-slate-500 shrink-0 mt-0.5">
+        <BucketColumnTitle project={project} />
+        <span className="text-xs tabular-nums font-semibold text-slate-500 dark:text-slate-400 shrink-0 self-start mt-0.5">
           {tasks.length}
         </span>
       </div>
