@@ -98,6 +98,17 @@ export default function TaskList({
   useEffect(() => {
     localStorage.setItem("foci_task_view_mode", viewMode);
   }, [viewMode]);
+
+  // Default due date when adding from Today / Week / Month / Year views
+  useEffect(() => {
+    const inTimeScope =
+      selectedProjectId === TODAY_FILTER_ID ||
+      selectedProjectId === THIS_WEEK_FILTER_ID ||
+      selectedProjectId === THIS_MONTH_FILTER_ID ||
+      selectedProjectId === THIS_YEAR_FILTER_ID;
+    setNewTaskDueDate(inTimeScope ? getToday() : "");
+  }, [selectedProjectId]);
+
   const [planSettings, setPlanSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [calendarSelectedDay, setCalendarSelectedDay] = useState<string | null>(null);
@@ -454,7 +465,25 @@ export default function TaskList({
     const title = titleRaw.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
 
-    const dueDate = dueDateOverride ?? (newTaskDueDate || (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined));
+    const addingInTimeScope =
+      selectedProjectId === TODAY_FILTER_ID ||
+      selectedProjectId === THIS_WEEK_FILTER_ID ||
+      selectedProjectId === THIS_MONTH_FILTER_ID ||
+      selectedProjectId === THIS_YEAR_FILTER_ID;
+
+    const dueDate =
+      dueDateOverride ??
+      (newTaskDueDate ||
+        (addingInTimeScope ? getToday() : undefined) ||
+        (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined));
+
+    const projectId = addingInTimeScope
+      ? projectFilterId !== ALL_PROJECTS_ID
+        ? projectFilterId
+        : DEFAULT_PROJECT_ID
+      : selectedProjectId === ALL_PROJECTS_ID
+        ? DEFAULT_PROJECT_ID
+        : selectedProjectId;
 
     // For tasks without a due date, place them at the top by assigning an order
     // value below all existing manually-ordered tasks
@@ -475,7 +504,7 @@ export default function TaskList({
       sessions: 0,
       timeSpent: 0,
       createdAt: Date.now(),
-      projectId: (isAllProjects || isTimeFilter) ? DEFAULT_PROJECT_ID : selectedProjectId,
+      projectId,
       subtasks: [],
       ...(dueDate ? { dueDate } : {}),
       ...(newOrder != null ? { order: newOrder } : {}),
@@ -846,13 +875,17 @@ export default function TaskList({
 
   const applyTemplate = useCallback(
     (tpl: (typeof TASK_TEMPLATES)[number]) => {
-      const newTasks = templateToTasks(
-        tpl,
-        isAllProjects || isTimeFilter ? DEFAULT_PROJECT_ID : selectedProjectId
-      );
+      const templateProjectId = isTimeFilter
+        ? projectFilterId !== ALL_PROJECTS_ID
+          ? projectFilterId
+          : DEFAULT_PROJECT_ID
+        : isAllProjects
+          ? DEFAULT_PROJECT_ID
+          : selectedProjectId;
+      const newTasks = templateToTasks(tpl, templateProjectId);
       persist([...tasks, ...newTasks]);
     },
-    [tasks, isAllProjects, isTimeFilter, selectedProjectId, persist]
+    [tasks, isAllProjects, isTimeFilter, projectFilterId, selectedProjectId, persist]
   );
 
   const today = getToday();
