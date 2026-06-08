@@ -7,6 +7,7 @@ import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
 import DailyQuoteBanner from "@/components/DailyQuoteBanner";
 import FocusDockPanel, { FocusDockToolbar } from "@/components/FocusDock";
+import AmbientSounds from "@/components/AmbientSounds";
 import NotificationBell from "@/components/NotificationBell";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import AppMessageQueue from "@/components/AppMessageQueue";
@@ -244,6 +245,7 @@ export default function AppPage() {
                 emphasizeStart={readyToFocus}
               />
             }
+            musicToolbar={<AmbientSounds inline />}
             timerPanel={
               <FocusDockPanel
                 expanded={!timerCollapsed}
@@ -293,32 +295,7 @@ export default function AppPage() {
           </div>
           {/* Keep ambient audio mounted while focus mode hides the dock UI */}
           <div className="sr-only" aria-hidden>
-            <FocusDockPanel
-              expanded={false}
-              onToggleExpanded={() => {}}
-              displayTime={mobileDisplayTime}
-              isRunning={isRunning}
-              isBreak={timer.isBreakMode}
-              readyToFocus={readyToFocus}
-              activeTaskId={activeTaskId}
-              activeTaskTitle={activeTaskTitle}
-              onClearTask={() => setActiveTaskId(null)}
-              onStartPause={handleStartPause}
-              onReset={handleReset}
-              onToggleFocusMode={() => setFocusMode(false)}
-              onShowShortcuts={() => setShowShortcuts(true)}
-              focusMode={focusMode}
-              remainingTime={timer.remainingTime}
-              workDuration={timer.settings.workDuration}
-              breakDuration={timer.settings.breakDuration}
-              label={timer.label}
-              statusText={timer.statusText}
-              timerStatus={timer.status}
-              workDurationMs={timer.settings.workDuration}
-              onSelectWorkPreset={handleSelectWorkPreset}
-              lastQuote={timer.lastQuote}
-              emphasizeStart={readyToFocus}
-            />
+            <AmbientSounds />
           </div>
         </>
       )}

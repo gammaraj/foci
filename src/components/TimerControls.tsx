@@ -30,7 +30,7 @@ export default function TimerControls({
         {showStartPause && (
           <button
             onClick={onStartPause}
-            className={`p-1.5 rounded-lg transition-all active:scale-90 ${
+            className={`p-2 rounded-lg transition-all active:scale-90 ${
               isRunning
                 ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                 : emphasizeStart
@@ -54,10 +54,10 @@ export default function TimerControls({
         {showReset && (
           <button
             onClick={onReset}
-            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
             aria-label="Reset timer"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </button>

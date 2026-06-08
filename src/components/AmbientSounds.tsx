@@ -207,7 +207,12 @@ function startSound(
   }
 }
 
-export default function AmbientSounds() {
+interface AmbientSoundsProps {
+  /** Fits in the status-bar focus strip instead of below the timer panel. */
+  inline?: boolean;
+}
+
+export default function AmbientSounds({ inline = false }: AmbientSoundsProps) {
   const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
   const [activeSound, setActiveSound] = useState<SoundType | null>(null);
   const [volume, setVolume] = useState(0.5);
@@ -360,10 +365,17 @@ export default function AmbientSounds() {
   }, [activeSound]);
 
   return (
-    <div id="ambient-sounds" className="mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24">
+    <div
+      id="ambient-sounds"
+      className={
+        inline
+          ? "flex-1 min-w-[12rem] sm:min-w-[16rem] space-y-1.5 scroll-mt-24"
+          : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
+      }
+    >
       {/* Mini player bar (always visible) */}
       <div
-        className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors ${
+        className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl border shadow-sm transition-colors h-full ${
           activeSound || (mode === "soundcloud") || showYt
             ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
             : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
