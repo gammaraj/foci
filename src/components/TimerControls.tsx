@@ -8,6 +8,8 @@ interface TimerControlsProps {
   onReset: () => void;
   spread?: boolean;
   compact?: boolean;
+  /** Matches embedded focus-strip icon buttons (timer + music). */
+  dock?: boolean;
   showStartPause?: boolean;
   showReset?: boolean;
   /** Solid blue Start when a task is selected (primary focus CTA). */
@@ -20,31 +22,36 @@ export default function TimerControls({
   onReset,
   spread,
   compact,
+  dock,
   showStartPause = true,
   showReset = true,
   emphasizeStart = false,
 }: TimerControlsProps) {
   if (compact) {
+    const iconSize = dock ? "w-4 h-4" : "w-5 h-5";
+    const btnPad = dock ? "p-1.5" : "p-2";
     return (
-      <div className="flex items-center gap-1" role="group" aria-label="Timer control buttons">
+      <div className="flex items-center gap-0.5" role="group" aria-label="Timer control buttons">
         {showStartPause && (
           <button
             onClick={onStartPause}
-            className={`p-2 rounded-lg transition-all active:scale-90 ${
+            className={`${btnPad} rounded-lg transition-all active:scale-90 ${
               isRunning
                 ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
-                : emphasizeStart
+                : emphasizeStart && !dock
                   ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                  : emphasizeStart && dock
+                    ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             }`}
             aria-label={isRunning ? "Pause timer" : "Start timer"}
           >
             {isRunning ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010.049 9.9v4.2a1 1 0 001.506.864l3.197-2.132a1 1 0 000-1.664z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -54,10 +61,10 @@ export default function TimerControls({
         {showReset && (
           <button
             onClick={onReset}
-            className="p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className={`${btnPad} rounded-lg text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors`}
             aria-label="Reset timer"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </button>

@@ -78,7 +78,7 @@ export function FocusDockToolbar({
       >
         <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Timer</span>
         <span
-          className={`text-base sm:text-lg font-mono font-bold tabular-nums leading-none ${
+          className={`text-sm sm:text-base font-mono font-semibold tabular-nums leading-none ${
             isBreak
               ? "text-green-700 dark:text-green-300"
               : isRunning
@@ -108,6 +108,7 @@ export function FocusDockToolbar({
         onStartPause={onStartPause}
         onReset={onReset}
         compact
+        dock={embedded}
         emphasizeStart={emphasizeStart}
       />
     </div>
