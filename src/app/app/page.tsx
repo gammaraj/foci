@@ -331,9 +331,9 @@ export default function AppPage() {
             <header
               className="panel-header-calm flex items-center justify-between gap-2 px-4 sm:px-5 py-2.5 sm:py-3 text-slate-600 dark:text-slate-200 rounded-t-2xl"
             >
-              <div className="min-w-0 flex-1">
-                <h2 className="text-base sm:text-lg font-semibold tracking-wide text-slate-700 dark:text-white">Focus Timer</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal mt-0.5 hidden sm:block">
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold tracking-wide text-slate-700 dark:text-white whitespace-nowrap">Focus Timer</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal mt-0.5 hidden sm:block whitespace-nowrap truncate">
                   {activeTaskId ? "Task linked" : "Pick a task below"}
                 </p>
               </div>

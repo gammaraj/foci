@@ -17,6 +17,7 @@ const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
+import ProjectManageModal from "@/components/task-list/ProjectManageModal";
 import {
   MAX_TASK_TITLE,
   MAX_PROJECT_NAME,
@@ -138,6 +139,12 @@ export default function TaskList({
   const [selectedSharedProject, setSelectedSharedProject] = useState<SharedProject | null>(null);
   
   const projectMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const open = () => setShowProjectMenu(true);
+    window.addEventListener("foci-open-project-menu", open);
+    return () => window.removeEventListener("foci-open-project-menu", open);
+  }, []);
   const newTaskDueDateInputRef = useRef<HTMLInputElement>(null);
 
   // Close project menus on outside click
@@ -1328,6 +1335,38 @@ export default function TaskList({
         );
       })()}
 
+      {/* Project manage entry — bucket view (list view uses tabs row ⋮ button) */}
+      {!isFocusMode && viewMode === "bucket" && (
+        <div className="px-3 sm:px-4 pt-1 pb-1 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowProjectMenu(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 hover:border-violet-400 dark:hover:border-violet-500 transition-colors"
+            data-tour="manage-projects"
+          >
+            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+            </svg>
+            Manage projects
+          </button>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
+          </span>
+          {sortedProjects.some((p) => p.favorite) && (
+            <span className="text-xs text-amber-500 dark:text-amber-400">
+              ★ {sortedProjects.filter((p) => p.favorite).length} pinned
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => { setShowAddProject(true); setShowProjectMenu(true); setNewProjectName(""); }}
+            className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            + New project
+          </button>
+        </div>
+      )}
+
       {/* Bucket view — all projects as columns */}
       {!isFocusMode && viewMode === "bucket" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
@@ -1633,270 +1672,6 @@ export default function TaskList({
               Add
             </button>
           </form>
-        )}
-
-        {/* Dropdown for managing projects + overflow */}
-        {showProjectMenu && (
-          <div className="absolute left-4 right-4 top-full mt-1 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-lg z-50 overflow-hidden animate-slide-up">
-            <div className="max-h-64 overflow-y-auto">
-              {sortedProjects.map((p) => (
-                  <div
-                  key={p.id}
-                  className={`group/proj flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${
-                    p.id === selectedProjectId
-                      ? "bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200"
-                      : "text-slate-700 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-                  }`}
-                >
-                  {/* Color dot */}
-                  <input
-                    type="color"
-                    value={p.color || PROJECT_COLORS[0]}
-                    onChange={(e) => { e.stopPropagation(); updateProjectColor(p.id, e.target.value); }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-4 h-4 rounded-full border-0 cursor-pointer p-0 appearance-none bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
-                    title="Change color"
-                  />
-                  {editingProjectId === p.id ? (
-                    <input
-                      type="text"
-                      value={editProjectName}
-                      onChange={(e) => setEditProjectName(e.target.value)}
-                      onBlur={saveProjectEdit}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") saveProjectEdit();
-                        if (e.key === "Escape") setEditingProjectId(null);
-                      }}
-                      className="flex-1 px-1 py-0.5 text-sm border border-blue-300 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  ) : (
-                    <>
-                      <span
-                        className="flex-1 truncate"
-                        onClick={() => selectProjectScope(p.id)}
-                      >
-                        {p.name}
-                      </span>
-                      {p.dueDate && (
-                        <span className={`text-xs ${isDueDateOverdue(p.dueDate) ? "text-red-500" : "text-slate-400 dark:text-slate-300"}`}>
-                          {formatDueDate(p.dueDate)}
-                        </span>
-                      )}
-                      <span className="text-xs text-slate-400 dark:text-slate-400">
-                        {tasks.filter((t) => t.projectId === p.id && !t.completed).length}
-                      </span>
-                      {p.id !== DEFAULT_PROJECT_ID && (
-                        <div className="flex items-center gap-1 opacity-100 transition-opacity">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleProjectFavorite(p.id);
-                            }}
-                            className={`p-1 transition-colors ${p.favorite ? "text-amber-400 hover:text-amber-500" : "text-slate-400 hover:text-amber-400"}`}
-                            title={p.favorite ? "Remove from favorites" : "Favorite — show first in tabs"}
-                            aria-label={p.favorite ? `Unfavorite ${p.name}` : `Favorite ${p.name}`}
-                          >
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={p.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={p.favorite ? 0 : 1.5}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          </button>
-                          {onFocusProject && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onFocusProject(p.id);
-                                setShowProjectMenu(false);
-                              }}
-                              className="p-1 text-slate-400 hover:text-orange-500 transition-colors"
-                              title="Focus on this project"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                            </button>
-                          )}
-                          <input
-                            type="date"
-                            value={p.dueDate ?? ""}
-                            onChange={(e) => { e.stopPropagation(); updateProjectDueDate(p.id, e.target.value || undefined); }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-5 h-5 opacity-0 hover:opacity-100 focus:opacity-100 cursor-pointer text-xs bg-transparent [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                            title={p.dueDate ? `Due: ${p.dueDate}` : "Set due date"}
-                          />
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startEditingProject(p);
-                            }}
-                            className="p-1 text-slate-400 hover:text-blue-500 transition-colors"
-                            title="Rename"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                          </button>
-                          {user && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShareModalProject(p);
-                                setShowProjectMenu(false);
-                              }}
-                              className="p-1 text-slate-400 hover:text-blue-500 transition-colors"
-                              title="Share project"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                              </svg>
-                            </button>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleProjectArchived(p.id);
-                            }}
-                            className="p-1 text-slate-400 hover:text-amber-500 transition-colors"
-                            title="Archive project"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteProject(p.id);
-                            }}
-                            className="p-1 text-slate-400 hover:text-red-500 transition-colors"
-                            title="Delete project"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-
-              {/* Archived projects toggle */}
-              {archivedProjects.length > 0 && (
-                <>
-                  <button
-                    onClick={() => setShowArchivedProjects(!showArchivedProjects)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-400 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
-                  >
-                    <svg className={`w-3 h-3 transition-transform ${showArchivedProjects ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    Archived ({archivedProjects.length})
-                  </button>
-                  {showArchivedProjects && archivedProjects.map((p) => (
-                    <div
-                      key={p.id}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] cursor-pointer"
-                    >
-                      {p.color && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0 opacity-50" style={{ backgroundColor: p.color }} />}
-                      <span className="flex-1 truncate" onClick={() => selectProjectScope(p.id)}>{p.name}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleProjectArchived(p.id); }}
-                        className="p-1 text-slate-400 hover:text-green-500 transition-colors"
-                        title="Unarchive"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); deleteProject(p.id); }}
-                        className="p-1 text-slate-400 hover:text-red-500 transition-colors"
-                        title="Delete"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </>
-              )}
-
-              {/* Shared with me section */}
-              {user && sharedProjects.length > 0 && (
-                <>
-                  <div className="px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide border-t border-slate-100 dark:border-[#243350] mt-2">
-                    Shared with me
-                  </div>
-                  {sharedProjects.map((sp) => (
-                    <div
-                      key={`${sp._ownerId}:${sp.id}`}
-                      className={`group/proj flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${
-                        selectedSharedProject?.id === sp.id && selectedSharedProject?._ownerId === sp._ownerId
-                          ? "bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200"
-                          : "text-slate-700 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-                      }`}
-                      onClick={() => selectSharedProject(sp)}
-                    >
-                      {sp.color && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: sp.color }} />}
-                      <div className="flex-1 min-w-0">
-                        <span className="truncate block">{sp.name}</span>
-                        <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          {sp._ownerName || sp._ownerEmail.split("@")[0]}
-                          {sp._myRole === "viewer" && (
-                            <span className="text-amber-500 text-xs app-badge">(view only)</span>
-                          )}
-                        </span>
-                      </div>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleLeaveSharedProject(sp); }}
-                        className="p-1 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover/proj:opacity-100"
-                        title="Leave project"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-
-            {/* Add new project */}
-            <div className="border-t border-slate-100 dark:border-[#243350] p-2">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  addProject();
-                }}
-                className="flex gap-1.5"
-              >
-                <input
-                  type="text"
-                  value={newProjectName}
-                  onChange={(e) => setNewProjectName(e.target.value)}
-                  placeholder="New project..."
-                  maxLength={MAX_PROJECT_NAME}
-                  className="flex-1 px-2 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
-                />
-                <button
-                  type="submit"
-                  disabled={!newProjectName.trim()}
-                  className="px-2.5 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  Add
-                </button>
-              </form>
-            </div>
-          </div>
         )}
 
       </div>
@@ -2882,6 +2657,43 @@ export default function TaskList({
           onCancel={() => setPendingConfirm(null)}
         />
       )}
+
+      <ProjectManageModal
+        isOpen={showProjectMenu && !isFocusMode}
+        onClose={() => setShowProjectMenu(false)}
+        sortedProjects={sortedProjects}
+        archivedProjects={archivedProjects}
+        sharedProjects={sharedProjects}
+        tasks={tasks}
+        selectedProjectId={selectedProjectId}
+        selectedSharedProject={selectedSharedProject}
+        user={user}
+        editingProjectId={editingProjectId}
+        editProjectName={editProjectName}
+        setEditProjectName={setEditProjectName}
+        showArchivedProjects={showArchivedProjects}
+        setShowArchivedProjects={setShowArchivedProjects}
+        newProjectName={newProjectName}
+        setNewProjectName={setNewProjectName}
+        onSelectProject={(id) => {
+          selectProjectScope(id);
+          setShowProjectMenu(false);
+        }}
+        onSelectSharedProject={selectSharedProject}
+        onUpdateColor={updateProjectColor}
+        onToggleFavorite={toggleProjectFavorite}
+        onFocusProject={onFocusProject}
+        onUpdateDueDate={updateProjectDueDate}
+        onStartRename={startEditingProject}
+        onSaveRename={saveProjectEdit}
+        onCancelRename={() => setEditingProjectId(null)}
+        onShare={setShareModalProject}
+        onArchive={toggleProjectArchived}
+        onDelete={deleteProject}
+        onUnarchive={toggleProjectArchived}
+        onLeaveShared={handleLeaveSharedProject}
+        onAddProject={addProject}
+      />
 
       {/* Share Project Modal */}
       {shareModalProject && (

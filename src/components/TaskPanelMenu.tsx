@@ -69,6 +69,16 @@ export default function TaskPanelMenu({
             type="button"
             className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
             onClick={() => {
+              window.dispatchEvent(new Event("foci-open-project-menu"));
+              setOpen(false);
+            }}
+          >
+            Manage projects
+          </button>
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            onClick={() => {
               showWhatsNewBanner();
               startFeatureTour();
               setOpen(false);
