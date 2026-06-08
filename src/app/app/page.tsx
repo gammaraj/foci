@@ -3,24 +3,19 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
-import CircularTimer from "@/components/CircularTimer";
-import TimerControls from "@/components/TimerControls";
 import TaskList from "@/components/TaskList";
 import Navbar from "@/components/Navbar";
 import DailyQuoteBanner from "@/components/DailyQuoteBanner";
+import FocusDockPanel, { FocusDockToolbar } from "@/components/FocusDock";
 import NotificationBell from "@/components/NotificationBell";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import AppMessageQueue from "@/components/AppMessageQueue";
-import MobileTimerBar from "@/components/MobileTimerBar";
 import KeyboardShortcutsModal from "@/components/KeyboardShortcutsModal";
 import SessionCelebration from "@/components/SessionCelebration";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto } from "@/lib/focus-mode";
-import Link from "next/link";
-
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
-const AmbientSounds = dynamic(() => import("@/components/AmbientSounds"));
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
 const WhatsNewBanner = dynamic(() => import("@/components/WhatsNewBanner"));
 const FeatureTour = dynamic(() => import("@/components/FeatureTour"));
@@ -32,8 +27,6 @@ function formatTime(ms: number): string {
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
-const WORK_DURATION_PRESETS = [15, 25, 30, 45] as const;
-
 export default function AppPage() {
   const { user, loading } = useAuth();
   const timer = useTimer({ authLoading: loading, user });
@@ -41,13 +34,14 @@ export default function AppPage() {
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const activeTaskIdRef = useRef<string | null>(null);
   const [taskListKey, setTaskListKey] = useState(0);
+  /** false = expanded timer dock below status bar; true = compact in status row only */
   const [timerCollapsed, setTimerCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("foci-timer-collapsed");
       if (saved !== null) return saved === "true";
-      return window.innerWidth < 1024;
+      return true;
     }
-    return false;
+    return true;
   });
   const [focusProjectId, setFocusProjectId] = useState<string | null>(null);
   const [tasksFullscreen, setTasksFullscreen] = useState(false);
@@ -217,7 +211,7 @@ export default function AppPage() {
   return (
     <div className="app-shell min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
       <a href="#tasks-section" className="skip-link">Skip to tasks</a>
-      <a href="#timer-panel" className="skip-link">Skip to timer</a>
+      <a href="#focus-dock" className="skip-link">Skip to timer</a>
       <Navbar
         onOpenSettings={() => setShowSettings(true)}
         toolbarSlot={
@@ -230,84 +224,110 @@ export default function AppPage() {
         }
       />
       {!focusMode && (
-        <DailyQuoteBanner
-          sessions={{
-            count: timer.dailyGoalData.sessionCount,
-            goal: timer.settings.dailyGoal,
-            streak: timer.dailyGoalData.streak,
-          }}
-        />
+        <div id="focus-dock">
+          <DailyQuoteBanner
+            sessions={{
+              count: timer.dailyGoalData.sessionCount,
+              goal: timer.settings.dailyGoal,
+              streak: timer.dailyGoalData.streak,
+            }}
+            timerToolbar={
+              <FocusDockToolbar
+                expanded={!timerCollapsed}
+                onToggleExpanded={() => setTimerCollapsed((c) => !c)}
+                displayTime={mobileDisplayTime}
+                isRunning={isRunning}
+                isBreak={timer.isBreakMode}
+                activeTaskTitle={activeTaskTitle}
+                onStartPause={handleStartPause}
+                onReset={handleReset}
+                emphasizeStart={readyToFocus}
+              />
+            }
+            timerPanel={
+              <FocusDockPanel
+                expanded={!timerCollapsed}
+                onToggleExpanded={() => setTimerCollapsed(true)}
+                displayTime={timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}
+                isRunning={isRunning}
+                isBreak={timer.isBreakMode}
+                readyToFocus={readyToFocus}
+                activeTaskId={activeTaskId}
+                activeTaskTitle={activeTaskTitle}
+                onClearTask={() => setActiveTaskId(null)}
+                onStartPause={handleStartPause}
+                onReset={handleReset}
+                onToggleFocusMode={() => setFocusMode((f) => !f)}
+                onShowShortcuts={() => setShowShortcuts(true)}
+                focusMode={focusMode}
+                remainingTime={timer.remainingTime}
+                workDuration={timer.settings.workDuration}
+                breakDuration={timer.settings.breakDuration}
+                label={timer.label}
+                statusText={timer.statusText}
+                timerStatus={timer.status}
+                workDurationMs={timer.settings.workDuration}
+                onSelectWorkPreset={handleSelectWorkPreset}
+                lastQuote={timer.lastQuote}
+                emphasizeStart={readyToFocus}
+              />
+            }
+          />
+        </div>
       )}
       <WhatsNewBanner focusMode={focusMode} />
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
-        <div className="px-2 sm:px-4 pt-2">
-          <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
-            <span className="text-blue-800 dark:text-blue-200 font-medium">Focus mode — fewer distractions</span>
-            <button
-              type="button"
-              onClick={() => setFocusMode(false)}
-              className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
-            >
-              Exit (F)
-            </button>
-          </div>
-        </div>
-      )}
-      <DueDateReminders />
-      <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-20 lg:pb-3 sm:p-4 sm:pt-3">
-      <div className={`w-full ${tasksFullscreen ? '' : 'max-w-[1280px]'} flex flex-col ${timerCollapsed || tasksFullscreen ? "" : "lg:flex-row"} gap-4 sm:gap-5`}>
-
-        {/* Collapsed timer bar */}
-        {timerCollapsed && !tasksFullscreen && (
-          <div className="w-full">
-            <div
-              className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl app-surface dark:bg-[#111827] dark:border-[#1e3050]"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={`text-lg font-mono font-bold tabular-nums ${timer.isBreakMode ? "text-green-600 dark:text-green-400" : isRunning ? "text-blue-600 dark:text-blue-400" : "text-slate-700 dark:text-slate-200"}`}>
-                  {timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}
-                </div>
-                {timer.label && (
-                  <span className="text-sm font-medium text-slate-500 dark:text-slate-300 hidden sm:inline">
-                    {timer.label}
-                  </span>
-                )}
-                {activeTaskId && (
-                  <ActiveTaskBanner
-                    taskId={activeTaskId}
-                    onClear={() => setActiveTaskId(null)}
-                    isRunning={isRunning}
-                    compact
-                  />
-                )}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <TimerControls
-                  isRunning={isRunning}
-                  onStartPause={handleStartPause}
-                  onReset={handleReset}
-                  compact
-                  emphasizeStart={!!activeTaskId && !isRunning}
-                />
-                <span className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
-                <button
-                  onClick={() => setTimerCollapsed(false)}
-                  className="p-2 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-                  aria-label="Expand timer"
-                  title="Show timer panel"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                </button>
-              </div>
+        <>
+          <div className="px-2 sm:px-4 pt-2">
+            <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
+              <span className="text-blue-800 dark:text-blue-200 font-medium">Focus mode — fewer distractions</span>
+              <button
+                type="button"
+                onClick={() => setFocusMode(false)}
+                className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
+              >
+                Exit (F)
+              </button>
             </div>
           </div>
-        )}
+          {/* Keep ambient audio mounted while focus mode hides the dock UI */}
+          <div className="sr-only" aria-hidden>
+            <FocusDockPanel
+              expanded={false}
+              onToggleExpanded={() => {}}
+              displayTime={mobileDisplayTime}
+              isRunning={isRunning}
+              isBreak={timer.isBreakMode}
+              readyToFocus={readyToFocus}
+              activeTaskId={activeTaskId}
+              activeTaskTitle={activeTaskTitle}
+              onClearTask={() => setActiveTaskId(null)}
+              onStartPause={handleStartPause}
+              onReset={handleReset}
+              onToggleFocusMode={() => setFocusMode(false)}
+              onShowShortcuts={() => setShowShortcuts(true)}
+              focusMode={focusMode}
+              remainingTime={timer.remainingTime}
+              workDuration={timer.settings.workDuration}
+              breakDuration={timer.settings.breakDuration}
+              label={timer.label}
+              statusText={timer.statusText}
+              timerStatus={timer.status}
+              workDurationMs={timer.settings.workDuration}
+              onSelectWorkPreset={handleSelectWorkPreset}
+              lastQuote={timer.lastQuote}
+              emphasizeStart={readyToFocus}
+            />
+          </div>
+        </>
+      )}
+      <DueDateReminders />
+      <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
+      <div className={`w-full ${tasksFullscreen ? "" : "max-w-[1280px]"}`}>
 
-        {/* Task list column */}
-        <div id="tasks-section" className="w-full lg:flex-[1.35] lg:min-w-0 order-1">
+        {/* Tasks — full width */}
+        <div id="tasks-section" className="w-full">
           <TaskList
             key={taskListKey}
             activeTaskId={activeTaskId}
@@ -322,161 +342,6 @@ export default function AppPage() {
             focusMode={focusMode}
             onOpenSettings={() => setShowSettings(true)}
           />
-        </div>
-
-        {/* Timer column — hidden (not unmounted) when collapsed/fullscreen to keep music playing */}
-        <div id="timer-panel" className={`w-full lg:w-[min(340px,32%)] lg:flex-shrink-0 scroll-mt-24 order-2 ${timerCollapsed || tasksFullscreen ? "hidden" : ""}`}>
-          <div className={`app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible relative opacity-[0.97] ${timer.isBreakMode ? "timer-break-mode" : ""} ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}>
-            {/* Header — title truncates; actions are icon-only to fit narrow panel */}
-            <header className="panel-header-calm px-3 sm:px-4 py-2.5 text-slate-600 dark:text-slate-200 rounded-t-2xl">
-              <div className="flex items-start justify-between gap-2 min-w-0">
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-base font-semibold text-slate-700 dark:text-white truncate leading-tight">
-                    Focus Timer
-                  </h2>
-                  {!activeTaskId && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                      Pick a task below
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setFocusMode((f) => !f)}
-                    className={`p-2 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-white"}`}
-                    aria-label="Toggle focus mode (F)"
-                    title="Focus mode — fewer distractions (F)"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowShortcuts(true)}
-                    className="p-2 rounded-lg text-slate-500 dark:text-white/70 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors"
-                    aria-label="Keyboard shortcuts"
-                    title="Shortcuts (?)"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTimerCollapsed(true)}
-                    className="p-2 rounded-lg text-slate-500 dark:text-white/60 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors"
-                    aria-label="Collapse timer"
-                    title="Hide timer panel"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7m-8-14l7 7-7 7" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" })}
-                    className="lg:hidden p-2 rounded-lg text-slate-500 dark:text-white/85 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors"
-                    aria-label="Jump to tasks"
-                    title="Tasks"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </header>
-
-            {/* Active task indicator */}
-            {activeTaskId && (
-              <div className="px-4 pt-3 pb-0">
-                <ActiveTaskBanner
-                  taskId={activeTaskId}
-                  onClear={() => setActiveTaskId(null)}
-                  isRunning={isRunning}
-                />
-              </div>
-            )}
-
-            {/* Main content */}
-            <div className="bg-white dark:bg-[#0d1526] px-4 py-2 border-t border-slate-100 dark:border-[#1e3050]/60">
-              <div className="flex items-center justify-center gap-3 sm:gap-5 pb-3">
-                <TimerControls
-                  isRunning={isRunning}
-                  onStartPause={handleStartPause}
-                  onReset={handleReset}
-                  showReset={false}
-                  emphasizeStart={!!activeTaskId && !isRunning}
-                />
-                <CircularTimer
-                  remainingTime={timer.remainingTime}
-                  totalDuration={
-                    timer.isBreakMode
-                      ? timer.settings.breakDuration
-                      : timer.settings.workDuration
-                  }
-                  label={timer.label}
-                  statusText={timer.statusText}
-                  displayTime={
-                    timer.status === "break"
-                      ? formatTime(timer.remainingTime)
-                      : displayTime
-                  }
-                  isBreak={timer.isBreakMode}
-                />
-                <TimerControls
-                  isRunning={isRunning}
-                  onStartPause={handleStartPause}
-                  onReset={handleReset}
-                  showStartPause={false}
-                  emphasizeStart={!!activeTaskId && !isRunning}
-                />
-              </div>
-
-              <div className="pb-2">
-                <div className="flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-[#131d30] rounded-lg p-1 border border-slate-200 dark:border-[#243350]">
-                  {WORK_DURATION_PRESETS.map((minutes) => {
-                    const active = timer.settings.workDuration === minutes * 60 * 1000;
-                    return (
-                      <button
-                        key={minutes}
-                        onClick={() => handleSelectWorkPreset(minutes)}
-                        disabled={timer.status === "running" || timer.status === "break"}
-                        className={`px-2.5 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
-                          active
-                            ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
-                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/70 dark:hover:bg-[#1a2d4a]"
-                        } disabled:opacity-40 disabled:cursor-not-allowed`}
-                        title={`Set work session to ${minutes} minutes`}
-                      >
-                        {minutes}m
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {readyToFocus && timer.status === "idle" && !timer.isBreakMode && (
-                <p className="mx-1 mb-2 text-center text-sm text-blue-700/90 dark:text-blue-300/90">
-                  Press Play or Space to start
-                </p>
-              )}
-            </div>
-
-            <AmbientSounds />
-
-            {timer.lastQuote && (timer.status === "break" || timer.status === "idle") && (
-              <div className="px-4 pb-2 animate-slide-up">
-                <p className="text-sm italic text-slate-500 dark:text-slate-400 text-center leading-relaxed px-2">
-                  &ldquo;{timer.lastQuote}&rdquo;
-                </p>
-              </div>
-            )}
-
-            <div className="h-1" />
-          </div>
         </div>
 
         <div className="sr-only" aria-live="polite" aria-atomic="true">
@@ -494,19 +359,6 @@ export default function AppPage() {
         />
       )}
 
-      <MobileTimerBar
-        displayTime={mobileDisplayTime}
-        isRunning={isRunning}
-        isBreak={timer.isBreakMode}
-        status={timer.statusText}
-        activeTaskTitle={activeTaskTitle}
-        emphasizeStart={!!activeTaskId && !isRunning}
-        onStartPause={handleStartPause}
-        onReset={handleReset}
-        onExpandTimer={() => setTimerCollapsed(false)}
-        onScrollToTasks={() => document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" })}
-      />
-
       <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
       <SessionCelebration
@@ -522,95 +374,3 @@ export default function AppPage() {
   );
 }
 
-/** Small banner showing which task the timer is focused on */
-function ActiveTaskBanner({
-  taskId,
-  onClear,
-  isRunning,
-  compact,
-}: {
-  taskId: string;
-  onClear: () => void;
-  isRunning: boolean;
-  compact?: boolean;
-}) {
-  const [title, setTitle] = useState("");
-
-  useEffect(() => {
-    let cancelled = false;
-    const refresh = () => {
-      loadTasks().then((tasks) => {
-        if (cancelled) return;
-        const t = tasks.find((task) => task.id === taskId);
-        setTitle(t?.title ?? "");
-      });
-    };
-    refresh();
-    // Only refresh on task-updated if the title might have changed (rename/delete)
-    const handleUpdate = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      // Skip session-complete events — they don’t change the title
-      if (detail?.taskId && detail?.elapsed) return;
-      refresh();
-    };
-    window.addEventListener("tempo-tasks-updated", handleUpdate);
-    return () => {
-      cancelled = true;
-      window.removeEventListener("tempo-tasks-updated", handleUpdate);
-    };
-  }, [taskId]);
-
-  if (!title) return null;
-
-  if (compact) {
-    return (
-      <div className="flex items-center gap-1.5 min-w-0">
-        <div className={`w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
-        <span className="text-sm font-medium text-slate-600 dark:text-slate-300 truncate max-w-[200px]">
-          {title}
-        </span>
-        {!isRunning && (
-          <button onClick={onClear} className="text-slate-400 hover:text-slate-600 flex-shrink-0" aria-label="Clear active task">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2.5 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 relative">
-      <p className="hidden lg:flex absolute -left-3 top-1/2 -translate-y-1/2 items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white shadow-md" aria-hidden title="Linked from tasks">
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-        </svg>
-      </p>
-      <div className="flex items-center gap-2">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-none mb-1">
-            Linked from tasks
-          </p>
-          <div className="flex items-center gap-1.5">
-            <div className={`w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 flex-shrink-0 ${isRunning ? 'animate-pulse' : ''}`} />
-            <span className="text-base font-semibold text-blue-700 dark:text-blue-100 truncate">
-              {title}
-            </span>
-          </div>
-        </div>
-        {!isRunning && (
-          <button
-            onClick={onClear}
-            className="text-blue-400 hover:text-blue-600 transition-colors flex-shrink-0"
-            aria-label="Clear active task"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
