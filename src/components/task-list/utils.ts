@@ -1,9 +1,21 @@
-import type { RecurrenceType } from "@/lib/types";
+import type { Project, RecurrenceType } from "@/lib/types";
 import { getToday, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
 export const MAX_VISIBLE_PROJECT_TABS = 3;
+
+/** Favorites first, then manual order, then name. */
+export function sortProjectsForDisplay(projects: Project[]): Project[] {
+  return [...projects].sort((a, b) => {
+    if (a.favorite && !b.favorite) return -1;
+    if (!a.favorite && b.favorite) return 1;
+    if (a.order != null && b.order != null) return a.order - b.order;
+    if (a.order != null) return -1;
+    if (b.order != null) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
 
 /** Full name for hover / aria */
 export function projectTabTooltip(project: { name: string; description?: string }): string {

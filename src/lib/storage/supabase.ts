@@ -343,6 +343,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           ...(row.due_date ? { dueDate: row.due_date } : {}),
           ...(row.archived ? { archived: true } : {}),
           ...(row.sort_order != null ? { order: row.sort_order } : {}),
+          ...(row.is_favorite ? { favorite: true } : {}),
           createdAt: row.created_at,
         }))
       : [];
@@ -366,6 +367,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       due_date: p.dueDate ?? null,
       archived: p.archived ?? false,
       sort_order: p.order ?? null,
+      is_favorite: p.favorite ?? false,
       created_at: p.createdAt,
     }));
 

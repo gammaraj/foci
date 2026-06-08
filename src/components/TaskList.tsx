@@ -27,6 +27,7 @@ import {
   getNextDueDate,
   projectTabTooltip,
   projectTabLabel,
+  sortProjectsForDisplay,
 } from "@/components/task-list/utils";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 import TaskPanelQuote from "@/components/TaskPanelQuote";
@@ -425,6 +426,12 @@ export default function TaskList({
 
   const updateProjectDueDate = (id: string, dueDate: string | undefined) => {
     persistProjects(projects.map((p) => (p.id === id ? { ...p, dueDate } : p)));
+  };
+
+  const toggleProjectFavorite = (id: string) => {
+    persistProjects(
+      projects.map((p) => (p.id === id ? { ...p, favorite: !p.favorite } : p))
+    );
   };
 
   const toggleProjectArchived = (id: string) => {
@@ -844,12 +851,7 @@ export default function TaskList({
   const isAllProjects = selectedProjectId === ALL_PROJECTS_ID;
   const activeProjects = projects.filter((p) => !p.archived);
   const archivedProjects = projects.filter((p) => p.archived);
-  const sortedProjects = [...activeProjects].sort((a, b) => {
-    if (a.order != null && b.order != null) return a.order - b.order;
-    if (a.order != null) return -1;
-    if (b.order != null) return 1;
-    return a.name.localeCompare(b.name);
-  });
+  const sortedProjects = sortProjectsForDisplay(activeProjects);
   const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
   const isThisWeekFilter = selectedProjectId === THIS_WEEK_FILTER_ID;
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
@@ -907,7 +909,8 @@ export default function TaskList({
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
   const thisMonthTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfMonth));
   const thisYearTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfYear));
-  const timeScopedTasks = isTodayFilter
+  const undatedOpenTasks = tasks.filter((t) => !t.archivedAt && !t.completed && !t.dueDate);
+  const timeScopedDatedTasks = isTodayFilter
     ? todayTasks
     : isThisWeekFilter
       ? thisWeekTasks
@@ -915,9 +918,12 @@ export default function TaskList({
         ? thisMonthTasks
         : isThisYearFilter
           ? thisYearTasks
-          : isAllProjects
-            ? tasks.filter((t) => !t.archivedAt)
-            : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
+          : [];
+  const timeScopedTasks = isTimeFilter
+    ? [...timeScopedDatedTasks, ...undatedOpenTasks]
+    : isAllProjects
+      ? tasks.filter((t) => !t.archivedAt)
+      : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
   const projectTasks =
     isTimeFilter && projectFilterId !== ALL_PROJECTS_ID
       ? timeScopedTasks.filter((t) => t.projectId === projectFilterId)
@@ -969,6 +975,21 @@ export default function TaskList({
       // Otherwise newest first by created date
       return (b.createdAt || 0) - (a.createdAt || 0);
     });
+  const scopedDatedOpenCount = isTimeFilter
+    ? projectTasks.filter((t) => !t.completed && t.dueDate).length
+    : 0;
+  const scopedUndatedOpenCount = isTimeFilter
+    ? projectTasks.filter((t) => !t.completed && !t.dueDate).length
+    : 0;
+  const timeScopeDescription = isTodayFilter
+    ? "Due today or earlier"
+    : isThisWeekFilter
+      ? "Due this week or earlier"
+      : isThisMonthFilter
+        ? "Due this month or earlier"
+        : isThisYearFilter
+          ? "Due this year or earlier"
+          : null;
   const completedTasks = projectTasks.filter((t) => t.completed);
   const archivedTasks = isAllProjects
     ? tasks.filter((t) => t.archivedAt)
@@ -1042,7 +1063,9 @@ export default function TaskList({
             </h2>
             {!focusMode && viewMode === "list" && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
-                Pick a task, then hit Focus to start your session
+                {isTimeFilter
+                  ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
+                  : "Pick a task, then hit Focus to start your session"}
               </p>
             )}
           </div>
@@ -1053,7 +1076,8 @@ export default function TaskList({
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Show tasks due today"}
+                title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Tasks with a due date of today or earlier"}
+                aria-label="Due today or earlier"
               >
                 Today
                 {overdueTasks.length > 0 && (
@@ -1065,21 +1089,24 @@ export default function TaskList({
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Show tasks due this week"
+                title="Tasks with a due date this week or earlier"
+                aria-label="Due this week or earlier"
               >
                 Week
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Show tasks due this month"
+                title="Tasks with a due date this month or earlier"
+                aria-label="Due this month or earlier"
               >
                 Month
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
                 className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Show tasks due this year"
+                title="Tasks with a due date this year or earlier"
+                aria-label="Due this year or earlier"
               >
                 Year
               </button>
@@ -1162,7 +1189,8 @@ export default function TaskList({
           <button
             onClick={() => selectProject(TODAY_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Show tasks due today"}
+            title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Tasks with a due date of today or earlier"}
+            aria-label="Due today or earlier"
           >
             Today
             {overdueTasks.length > 0 && (
@@ -1174,21 +1202,24 @@ export default function TaskList({
           <button
             onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="Show tasks due this week"
+            title="Tasks with a due date this week or earlier"
+            aria-label="Due this week or earlier"
           >
             Week
           </button>
           <button
             onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="Show tasks due this month"
+            title="Tasks with a due date this month or earlier"
+            aria-label="Due this month or earlier"
           >
             Month
           </button>
           <button
             onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
             className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="Show tasks due this year"
+            title="Tasks with a due date this year or earlier"
+            aria-label="Due this year or earlier"
           >
             Year
           </button>
@@ -1227,34 +1258,18 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && viewMode === "list" && (<>
-      {(() => {
-        const showFilterMeta =
-          !isTodayFilter ||
-          !isAllProjectsScopeActive ||
-          overdueTasks.length > 0 ||
-          (isTimeFilter && projectFilterId !== ALL_PROJECTS_ID);
-        if (!showFilterMeta) return null;
-        const timeLabel = isTodayFilter
-          ? null
-          : isThisWeekFilter
-            ? "This week"
-            : isThisMonthFilter
-              ? "This month"
-              : isThisYearFilter
-                ? "This year"
-                : "All dates";
+      {isTimeFilter && (() => {
         const activeProject = projects.find((p) => p.id === projectFilterId);
         return (
           <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-600 dark:text-slate-400">
-            {timeLabel && (
-              <span className="font-medium text-slate-700 dark:text-slate-200">{timeLabel}</span>
+            <span className="font-medium text-slate-700 dark:text-slate-200">{timeScopeDescription}</span>
+            {projectFilterId !== ALL_PROJECTS_ID && activeProject && (
+              <span className="font-medium text-slate-700 dark:text-slate-200">{activeProject.name}</span>
             )}
-            {isTimeFilter && projectFilterId !== ALL_PROJECTS_ID && activeProject && (
-              <span className="font-medium text-slate-700 dark:text-slate-200">
-                {activeProject.name}
-              </span>
+            <span>{scopedDatedOpenCount} due</span>
+            {scopedUndatedOpenCount > 0 && (
+              <span>{scopedUndatedOpenCount} no date</span>
             )}
-            <span>{pendingTasks.length} open</span>
             {overdueTasks.length > 0 && (
               <span className="text-red-600 dark:text-red-400">{overdueTasks.length} overdue</span>
             )}
@@ -1392,6 +1407,11 @@ export default function TaskList({
               }`}
               title={projectTabTooltip(p)}
             >
+              {p.favorite && (
+                <svg className="w-3 h-3 text-amber-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              )}
               {p.color && (
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
               )}
@@ -1590,6 +1610,19 @@ export default function TaskList({
                       </span>
                       {p.id !== DEFAULT_PROJECT_ID && (
                         <div className="flex items-center gap-1 opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleProjectFavorite(p.id);
+                            }}
+                            className={`p-1 transition-colors ${p.favorite ? "text-amber-400 hover:text-amber-500" : "text-slate-400 hover:text-amber-400"}`}
+                            title={p.favorite ? "Remove from favorites" : "Favorite — show first in tabs"}
+                            aria-label={p.favorite ? `Unfavorite ${p.name}` : `Favorite ${p.name}`}
+                          >
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={p.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={p.favorite ? 0 : 1.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          </button>
                           {onFocusProject && (
                             <button
                               onClick={(e) => {
@@ -1961,7 +1994,7 @@ export default function TaskList({
               </p>
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto">
                 {isTimeFilter 
-                  ? "Set due dates on tasks to see them here" 
+                  ? "Add a task above to get started" 
                   : "Add your first task above to get started, or choose a template below"}
               </p>
             </div>
@@ -1997,9 +2030,16 @@ export default function TaskList({
             const prevIsOverdue = !!(prevTask?.dueDate && isDueDateOverdue(prevTask.dueDate));
             const showOverdueHeader = isOverdue && !prevIsOverdue;
             const showUpcomingHeader = !isOverdue && prevIsOverdue;
+            const showNoDueDateHeader =
+              isTimeFilter && !task.dueDate && (index === 0 || !!prevTask?.dueDate);
 
             return (
             <div key={task.id}>
+            {showNoDueDateHeader && (
+              <div className="mb-2 mt-3 pl-3 py-1 border-l-[3px] border-l-slate-300 dark:border-l-slate-600">
+                <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
+              </div>
+            )}
             {showOverdueHeader && (
               <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
                 <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>

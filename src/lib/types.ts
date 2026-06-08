@@ -48,6 +48,7 @@ export interface Project {
   dueDate?: string;     // ISO date string (YYYY-MM-DD)
   archived?: boolean;   // hide without deleting
   order?: number;       // manual sort order in sidebar
+  favorite?: boolean;   // pin to front of project tabs
   createdAt: number;
 }
 
