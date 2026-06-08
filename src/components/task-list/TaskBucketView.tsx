@@ -29,6 +29,8 @@ interface TaskBucketViewProps {
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
+  expandedTaskId?: string | null;
+  onToggleTaskDetail?: (taskId: string) => void;
 }
 
 function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Task[] {
@@ -140,6 +142,8 @@ function BucketTaskCard({
   onSaveEdit,
   onCancelEdit,
   onSetDueDate,
+  isDetailOpen,
+  onToggleTaskDetail,
 }: {
   task: Task;
   isActive: boolean;
@@ -154,16 +158,21 @@ function BucketTaskCard({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
+  isDetailOpen?: boolean;
+  onToggleTaskDetail?: (taskId: string) => void;
 }) {
   const showFocusAction = isActive || isTimerRunning;
   const canEdit = !!onStartEdit;
+  const canOpenDetail = !!onToggleTaskDetail;
 
   return (
     <div
       className={`group rounded-lg border px-2 py-1.5 transition-colors ${
-        isActive
-          ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 ring-1 ring-blue-400/25"
-          : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#111827] hover:border-slate-300 dark:hover:border-[#2d4266]"
+        isDetailOpen
+          ? "border-violet-400 dark:border-violet-500 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
+          : isActive
+            ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 ring-1 ring-blue-400/25"
+            : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#111827] hover:border-slate-300 dark:hover:border-[#2d4266]"
       }`}
     >
       <div className="flex items-start gap-1.5">
@@ -220,18 +229,36 @@ function BucketTaskCard({
             )}
             <div
               className={`flex items-center gap-0.5 shrink-0 transition-opacity ${
-                showFocusAction || isEditing
+                showFocusAction || isEditing || isDetailOpen
                   ? "opacity-100"
                   : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
               }`}
             >
+              {canOpenDetail && !isEditing && (
+                <button
+                  type="button"
+                  onClick={() => onToggleTaskDetail!(task.id)}
+                  className={`p-0.5 rounded transition-colors ${
+                    isDetailOpen
+                      ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
+                      : "text-slate-400 dark:text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                  }`}
+                  title="Task details — move project, priority, subtasks…"
+                  aria-label={`Open details for "${task.title}"`}
+                  aria-pressed={!!isDetailOpen}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                </button>
+              )}
               {canEdit && !isEditing && (
                 <button
                   type="button"
                   onClick={() => onStartEdit?.(task)}
                   className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                  title="Edit task"
-                  aria-label={`Edit "${task.title}"`}
+                  title="Rename task"
+                  aria-label={`Rename "${task.title}"`}
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -318,6 +345,8 @@ function BucketColumn({
   onSaveEdit,
   onCancelEdit,
   onSetDueDate,
+  expandedTaskId,
+  onToggleTaskDetail,
 }: {
   project: Project;
   tasks: Task[];
@@ -337,6 +366,8 @@ function BucketColumn({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
+  expandedTaskId?: string | null;
+  onToggleTaskDetail?: (taskId: string) => void;
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
@@ -461,6 +492,8 @@ function BucketColumn({
                       onSaveEdit={onSaveEdit}
                       onCancelEdit={onCancelEdit}
                       onSetDueDate={onSetDueDate}
+                      isDetailOpen={expandedTaskId === task.id}
+                      onToggleTaskDetail={onToggleTaskDetail}
                     />
                   ))}
                 </div>
@@ -521,6 +554,8 @@ export default function TaskBucketView({
   onSaveEdit,
   onCancelEdit,
   onSetDueDate,
+  expandedTaskId = null,
+  onToggleTaskDetail,
 }: TaskBucketViewProps) {
   const columnsWithTasks = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) > 0);
   const emptyColumns = projects.filter((p) => (tasksByProject.get(p.id)?.length ?? 0) === 0);
@@ -566,6 +601,8 @@ export default function TaskBucketView({
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
             onSetDueDate={onSetDueDate}
+            expandedTaskId={expandedTaskId}
+            onToggleTaskDetail={onToggleTaskDetail}
           />
         ))}
         </div>

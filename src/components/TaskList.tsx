@@ -17,6 +17,7 @@ const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
+import { TaskDetailDrawer, TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import {
   MAX_TASK_TITLE,
@@ -880,6 +881,53 @@ export default function TaskList({
     persistOne(updated, changed);
   };
 
+  const setTaskPriority = (taskId: string, priority: TaskPriority | undefined) => {
+    const updated = tasks.map((t) => (t.id === taskId ? { ...t, priority } : t));
+    persist(updated);
+  };
+
+  const taskDetailPanelProps = (task: Task) => ({
+    isLinked: activeTaskId === task.id,
+    activeTaskId,
+    isTimerRunning,
+    activeProjects: projects.filter((p) => !p.archived),
+    editingDesc: editingDescId === task.id,
+    editDesc,
+    onEditDescChange: setEditDesc,
+    onStartEditDesc: () => startEditingDesc(task),
+    onSaveDesc: () => saveDesc(task.id),
+    onCancelEditDesc: () => setEditingDescId(null),
+    onSetDueDate: (date: string | undefined) => setDueDate(task.id, date),
+    onSetPriority: (priority: TaskPriority | undefined) => setTaskPriority(task.id, priority),
+    onSetRecurrence: (recurrence: RecurrenceType | undefined) => setTaskRecurrence(task.id, recurrence),
+    onMoveToProject: (projectId: string) => moveTaskToProject(task.id, projectId),
+    newSubtaskTitle,
+    onNewSubtaskTitleChange: setNewSubtaskTitle,
+    onAddSubtask: () => addSubtask(task.id),
+    editingSubtaskId,
+    editSubtaskTitle,
+    onStartEditSubtask: startEditingSubtask,
+    onEditSubtaskTitleChange: setEditSubtaskTitle,
+    onSaveSubtaskEdit: (subId: string) => saveSubtaskEdit(task.id, subId),
+    onCancelEditSubtask: () => setEditingSubtaskId(null),
+    onToggleSubtask: (subId: string) => toggleSubtask(task.id, subId),
+    onSetSubtaskDueDate: (subId: string, date: string | undefined) => setSubtaskDueDate(task.id, subId, date),
+    onDeleteSubtask: (subId: string) => deleteSubtask(task.id, subId),
+  });
+
+  const toggleBucketTaskDetail = (taskId: string) => {
+    setExpandedTaskId((current) => {
+      const next = current === taskId ? null : taskId;
+      if (next !== current) setNewSubtaskTitle("");
+      return next;
+    });
+  };
+
+  const closeBucketTaskDetail = () => {
+    setExpandedTaskId(null);
+    setNewSubtaskTitle("");
+  };
+
   // Filter tasks for the selected project
   const isAllProjects = selectedProjectId === ALL_PROJECTS_ID;
   const activeProjects = projects.filter((p) => !p.archived);
@@ -1477,8 +1525,32 @@ export default function TaskList({
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
           onSetDueDate={setDueDate}
+          expandedTaskId={expandedTaskId}
+          onToggleTaskDetail={toggleBucketTaskDetail}
         />
       )}
+
+      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && expandedTaskId && (() => {
+        const detailTask = tasks.find(
+          (t) => t.id === expandedTaskId && !t.completed && !t.archivedAt
+        );
+        if (!detailTask) return null;
+        return (
+          <TaskDetailDrawer task={detailTask} onClose={closeBucketTaskDetail}>
+            <TaskDetailPanel
+              task={detailTask}
+              variant="drawer"
+              {...taskDetailPanelProps(detailTask)}
+              onDeleteTask={() => {
+                deleteTask(detailTask.id);
+                closeBucketTaskDetail();
+              }}
+              onStartTask={() => onStartTask(detailTask.id)}
+              onDeselectTask={() => onSelectTask(null)}
+            />
+          </TaskDetailDrawer>
+        );
+      })()}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
