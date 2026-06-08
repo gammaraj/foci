@@ -37,8 +37,8 @@ export default function AppPage() {
   /** false = expanded timer dock below status bar; true = compact in status row only */
   const [timerCollapsed, setTimerCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("foci-timer-collapsed");
-      if (saved !== null) return saved === "true";
+      const saved = localStorage.getItem("foci-timer-dock-expanded");
+      if (saved === "1") return false;
       return true;
     }
     return true;
@@ -65,7 +65,7 @@ export default function AppPage() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("foci-timer-collapsed", String(timerCollapsed));
+    localStorage.setItem("foci-timer-dock-expanded", timerCollapsed ? "0" : "1");
   }, [timerCollapsed]);
 
   useEffect(() => {
