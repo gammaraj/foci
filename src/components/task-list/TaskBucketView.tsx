@@ -396,10 +396,10 @@ function BucketColumn({
       }`}
     >
       <div
-        className={`group/col flex items-center gap-2 px-3 py-2 border-b shrink-0 ${
+        className={`group/col flex items-start gap-2 px-3 py-2.5 border-b shrink-0 ${
           isAlt
-            ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/70 dark:bg-[#111827]/55"
-            : "border-slate-100 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/40"
+            ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/90 dark:bg-[#111827]/70"
+            : "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0f172a]/75"
         }`}
         title={project.description?.trim() || project.name}
       >
@@ -407,7 +407,7 @@ function BucketColumn({
           <button
             type="button"
             onClick={() => onToggleProjectFavorite(project.id)}
-            className={`flex-shrink-0 p-0.5 rounded transition-colors ${
+            className={`flex-shrink-0 p-0.5 rounded transition-colors mt-0.5 ${
               project.favorite
                 ? "text-amber-400 hover:text-amber-500"
                 : "text-slate-300 dark:text-slate-600 opacity-0 group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
@@ -425,7 +425,7 @@ function BucketColumn({
             </svg>
           </button>
         ) : project.favorite ? (
-          <span title="Pinned — appears first in bucket view" className="flex-shrink-0">
+          <span title="Pinned — appears first in bucket view" className="flex-shrink-0 mt-0.5">
             <svg
               className="w-3.5 h-3.5 text-amber-400"
               viewBox="0 0 20 20"
@@ -438,16 +438,18 @@ function BucketColumn({
         ) : null}
         {project.color && (
           <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10 mt-1"
             style={{ backgroundColor: project.color }}
             title={`${project.name} color`}
             aria-hidden
           />
         )}
-        <div className="min-w-0 flex-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          <ProjectTabName project={project} />
+        <div className="min-w-0 flex-1 text-sm leading-snug">
+          <ProjectTabName project={project} variant="column" />
         </div>
-        <span className="text-xs tabular-nums text-slate-400 dark:text-slate-500 shrink-0">{tasks.length}</span>
+        <span className="text-[11px] tabular-nums font-medium text-slate-400 dark:text-slate-500 shrink-0 mt-0.5">
+          {tasks.length}
+        </span>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 min-h-[120px]">
@@ -475,10 +477,10 @@ function BucketColumn({
               >
                 {showLaneHeaders && (
                   <p
-                    className={`text-[10px] font-semibold uppercase tracking-wide px-0.5 mb-1.5 ${
+                    className={`text-[10px] font-medium uppercase tracking-wide px-0.5 mb-1.5 ${
                       lane.id === "overdue"
-                        ? "text-red-600 dark:text-red-400"
-                        : "text-slate-400 dark:text-slate-500"
+                        ? "text-red-600/90 dark:text-red-400/90"
+                        : "text-slate-400/80 dark:text-slate-500/80"
                     }`}
                   >
                     {lane.label}

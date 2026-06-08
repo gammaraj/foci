@@ -1,10 +1,33 @@
 /** Project tab label — full description first when name is a short acronym (CD, BK, …). */
 export function ProjectTabName({
   project,
+  variant = "tab",
 }: {
   project: { name: string; description?: string };
+  /** tab: acronym tabs show description + code badge. column: name first with muted subtitle. */
+  variant?: "tab" | "column";
 }) {
   const desc = project.description?.trim();
+
+  if (variant === "column") {
+    if (desc && desc !== project.name) {
+      return (
+        <span className="block min-w-0 max-w-full">
+          <span className="block truncate font-bold text-slate-900 dark:text-white leading-tight">
+            {project.name}
+          </span>
+          <span
+            className="block truncate text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
+            title={desc}
+          >
+            {desc}
+          </span>
+        </span>
+      );
+    }
+    return <span className="truncate font-bold text-slate-900 dark:text-white">{project.name}</span>;
+  }
+
   if (project.name.length <= 4 && desc) {
     const label = desc.length > 28 ? `${desc.slice(0, 28)}…` : desc;
     return (
