@@ -58,6 +58,17 @@ function cacheGet<T>(key: string): T | null {
   }
 }
 
+const REMOTE_LOAD_TIMEOUT_MS = 15_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error("Storage request timed out")), ms);
+    }),
+  ]);
+}
+
 /** Clear all cache keys (call on logout). */
 export function clearOfflineCache(): void {
   if (!isBrowser()) return;
@@ -143,7 +154,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async loadTasks(): Promise<Task[]> {
     try {
-      const result = await this.remote.loadTasks();
+      const result = await withTimeout(this.remote.loadTasks(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.tasks, result);
       return result;
     } catch {
@@ -190,7 +201,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async loadProjects(): Promise<Project[]> {
     try {
-      const result = await this.remote.loadProjects();
+      const result = await withTimeout(this.remote.loadProjects(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.projects, result);
       return result;
     } catch {

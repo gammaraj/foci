@@ -22,11 +22,33 @@ function migrateDate(dateStr: string): string {
   return getToday();
 }
 
+function isTransientSyncError(message: string): boolean {
+  const m = message.toLowerCase();
+  return (
+    m.includes("connection timeout") ||
+    m.includes("upstream connect error") ||
+    m.includes("disconnect/reset") ||
+    m.includes("failed to fetch") ||
+    m.includes("networkerror") ||
+    m.includes("load failed") ||
+    m.includes("timed out") ||
+    m.includes("timeout")
+  );
+}
+
 /** Throw if a Supabase response has an error. */
-function check<T>(result: { data: T; error: { message: string } | null }): T {
+function check<T>(
+  result: { data: T; error: { message: string } | null },
+  options?: { silent?: boolean },
+): T {
   if (result.error) {
-    showToastGlobal(`Sync error: ${result.error.message}`, "error");
-    throw new Error(result.error.message);
+    const message = result.error.message;
+    if (!options?.silent && !isTransientSyncError(message)) {
+      showToastGlobal(`Sync error: ${message}`, "error");
+    } else {
+      console.warn("[Foci] Supabase sync issue:", message);
+    }
+    throw new Error(message);
   }
   return result.data;
 }
@@ -59,7 +81,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .from("settings")
         .select("*")
         .eq("user_id", userId)
-        .maybeSingle()
+        .maybeSingle(),
+      { silent: true },
     );
 
     if (!data) return DEFAULT_SETTINGS;
@@ -99,7 +122,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .from("daily_goal_data")
         .select("*")
         .eq("user_id", userId)
-        .maybeSingle()
+        .maybeSingle(),
+      { silent: true },
     );
 
     const today = getToday();
@@ -160,7 +184,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       await this.supabase
         .from("streak_history")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id", userId),
+      { silent: true },
     );
 
     const days: StreakHistory["days"] = {};
@@ -225,7 +250,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .from("tasks")
         .select("*")
         .eq("user_id", userId)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: true }),
+      { silent: true },
     );
 
     if (!data) return [];
@@ -332,7 +358,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .from("projects")
         .select("*")
         .eq("user_id", userId)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: true }),
+      { silent: true },
     );
 
     const projects: Project[] = data
@@ -397,7 +424,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .from("user_preferences")
         .select("selected_project_id")
         .eq("user_id", userId)
-        .maybeSingle()
+        .maybeSingle(),
+      { silent: true },
     );
 
     return data?.selected_project_id ?? ALL_PROJECTS_ID;

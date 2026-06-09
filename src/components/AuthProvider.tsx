@@ -51,18 +51,22 @@ async function getSessionWithLockRetry(
   return { session: null, error: lastError };
 }
 
-function applyAuthState(
+async function applyAuthState(
   sessionUser: User | null,
   setUser: (u: User | null) => void,
   setLoading: (v: boolean) => void,
 ) {
+  try {
+    if (sessionUser) {
+      await activateSupabaseStorage();
+    } else {
+      activateLocalStorage();
+    }
+  } catch (err) {
+    console.error("[Foci] Storage activation failed:", err);
+  }
   setUser(sessionUser);
   setLoading(false);
-  if (sessionUser) {
-    void activateSupabaseStorage();
-  } else {
-    activateLocalStorage();
-  }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -92,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn("[Foci] Auth lock busy; using auth state event or guest mode");
       }
 
-      applyAuthState(session?.user ?? null, setUser, setLoading);
+      void applyAuthState(session?.user ?? null, setUser, setLoading);
       clearTimeout(safetyTimeout);
     })();
 
@@ -100,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (cancelled) return;
-      applyAuthState(session?.user ?? null, setUser, setLoading);
+      void applyAuthState(session?.user ?? null, setUser, setLoading);
       clearTimeout(safetyTimeout);
     });
 

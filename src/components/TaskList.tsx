@@ -227,9 +227,10 @@ export default function TaskList({
           }
         }
 
-        setTasksReady(true);
       } catch (err) {
         console.error("[Foci] Failed to load data:", err);
+      } finally {
+        setTasksReady(true);
       }
     };
 
