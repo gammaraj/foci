@@ -89,6 +89,24 @@ content/posts/   # MDX blog posts
 docs/            # Architecture & ops docs
 ```
 
+## Uptime monitoring
+
+`GET /api/health` probes Supabase **PostgREST** (the same REST path Foci uses for tasks). Returns `200` when healthy, `503` when PostgREST or the DB path is failing.
+
+```bash
+curl -s https://usefoci.com/api/health | jq
+```
+
+Example alert setup (UptimeRobot, Better Stack, Checkly, etc.):
+
+| Setting | Value |
+|---------|--------|
+| URL | `https://usefoci.com/api/health` |
+| Interval | 5 minutes |
+| Alert when | HTTP status is not `200`, or response body contains `"status":"degraded"` |
+
+`HEAD /api/health` is supported for monitors that only check status codes.
+
 ## Deployment
 
 Push to `main` → Vercel deploy + GitHub Actions CI (build, audit, lint, unit + E2E tests, content integrity).
