@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
+import { positionTourTooltip } from "@/lib/tour-tooltip";
 
 interface Step {
   target: string; // CSS selector
@@ -105,34 +106,7 @@ export default function OnboardingTour() {
       return;
     }
 
-    const rect = el.getBoundingClientRect();
-    const style: React.CSSProperties = { position: "fixed", zIndex: 9999 };
-
-    switch (step.position) {
-      case "bottom":
-        style.top = rect.bottom + 12;
-        style.left = Math.max(16, rect.left + rect.width / 2 - 150);
-        break;
-      case "top":
-        style.bottom = window.innerHeight - rect.top + 12;
-        style.left = Math.max(16, rect.left + rect.width / 2 - 150);
-        break;
-      case "left":
-        style.top = rect.top + rect.height / 2 - 40;
-        style.right = window.innerWidth - rect.left + 12;
-        break;
-      case "right":
-        style.top = rect.top + rect.height / 2 - 40;
-        style.left = rect.right + 12;
-        break;
-    }
-
-    // Keep within viewport
-    if (typeof style.left === "number") {
-      style.left = Math.min(style.left, window.innerWidth - 320);
-    }
-
-    setTooltipStyle(style);
+    setTooltipStyle(positionTourTooltip(el.getBoundingClientRect(), step.position));
   }, [currentStep, finish]);
 
   useEffect(() => {

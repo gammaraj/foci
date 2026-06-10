@@ -61,7 +61,7 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
   ];
 
   return (
-    <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full">
+    <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl shadow-sm" style={{ background: "linear-gradient(135deg, #d97706, #c2410c)", boxShadow: "0 1px 3px rgba(217,119,6,0.3)" }}>
@@ -122,9 +122,8 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
           )}
         </div>
 
-        {/* Mobile: theme toggle + login/burger */}
-        <div className="flex sm:hidden items-center gap-1">
-          {toolbarSlot}
+        {/* Mobile: settings, theme, menu (toolbar actions live in the menu) */}
+        <div className="flex sm:hidden items-center gap-0.5">
           {onOpenSettings && (
             <button
               type="button"
@@ -138,42 +137,38 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
           )}
           <button
             onClick={cycleTheme}
-            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
             aria-label={`Theme: ${theme}. Click to change.`}
           >
             {themeIcon}
           </button>
-          {user ? (
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="Toggle menu"
-              aria-expanded={menuOpen}
-            >
-              {menuOpen ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className="text-sm font-medium px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-            >
-              Log in
-            </Link>
-          )}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors touch-target-sm"
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
         <div className="sm:hidden mt-3 pb-3 border-t border-slate-200 dark:border-slate-700">
+          {toolbarSlot && (
+            <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-slate-200/80 dark:border-slate-700/80">
+              {toolbarSlot}
+            </div>
+          )}
           <div className="flex flex-col gap-1 pt-3">
             {navLinks.map((link) => (
               <Link

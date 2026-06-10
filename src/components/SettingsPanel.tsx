@@ -160,7 +160,7 @@ export default function SettingsPanel({
       <div className="settings-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Settings" tabIndex={-1}>
         {/* Header */}
         <div
-          className="section-header-gradient px-4 sm:px-6 py-3 sm:py-4 text-slate-700 dark:text-white flex justify-between items-center rounded-t-[20px]"
+          className="section-header-gradient px-4 sm:px-6 py-3 sm:py-4 text-slate-700 dark:text-white flex justify-between items-center sm:rounded-t-[20px]"
         >
           <h3 className="text-xl font-bold flex items-center gap-2">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

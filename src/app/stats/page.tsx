@@ -511,8 +511,8 @@ export default function StatsPage() {
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 sm:mb-8">
+          <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
               Stats &amp; Analytics
             </h1>
@@ -521,7 +521,7 @@ export default function StatsPage() {
             </p>
           </div>
           {/* Range toggle */}
-          <div className="flex gap-1.5 bg-slate-100 dark:bg-[#162a4a] rounded-lg p-1">
+          <div className="flex gap-1.5 bg-slate-100 dark:bg-[#162a4a] rounded-lg p-1 self-start sm:self-auto shrink-0">
             {([7, 30] as const).map((r) => (
               <button
                 key={r}
@@ -589,11 +589,11 @@ export default function StatsPage() {
 
         {/* Heatmap */}
         <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm mb-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
               Activity
             </h2>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 shrink-0">
               <span>Less</span>
               <div className="flex gap-[3px]">
                 {["var(--heatmap-empty)", "var(--heatmap-l1)", "var(--heatmap-l2)", "var(--heatmap-l3)", "var(--heatmap-l4)"].map((c, i) => (

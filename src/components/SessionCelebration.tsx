@@ -34,7 +34,7 @@ export default function SessionCelebration({
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-20 lg:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
+    <div className="fixed bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
       <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-blue-300 dark:border-blue-600 p-4 shadow-2xl">
         <div className="flex items-start gap-3">
           <span className="text-2xl" aria-hidden="true">{goalMet ? "🎉" : "✅"}</span>

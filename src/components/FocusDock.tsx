@@ -82,185 +82,212 @@ export function FocusDockToolbar({
       ? Math.min(100, Math.round((sessions.count / sessions.goal) * 100))
       : 0;
 
-  return (
-    <div
-      className={`flex items-center gap-1.5 min-w-0 w-full transition-colors ${
-        embedded ? "flex-nowrap" : "flex-wrap gap-y-1 sm:w-auto"
-      } ${
+  const embeddedChrome =
+    isBreak
+      ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
+      : isRunning
+        ? "border border-blue-300/50 dark:border-blue-600/40 bg-blue-50/60 dark:bg-blue-900/15"
+        : "";
+
+  const sessionsLink = sessions ? (
+    <Link
+      href="/stats"
+      className={
         embedded
-          ? `px-0 py-0.5 ${
-              isBreak
-                ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
-                : isRunning
-                  ? "border border-blue-300/50 dark:border-blue-600/40 bg-blue-50/60 dark:bg-blue-900/15"
-                  : ""
-            }`
-          : `px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm ${
-          isBreak
-            ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
-            : isRunning
-              ? "border-blue-300/60 dark:border-blue-600/50 bg-blue-50/80 dark:bg-blue-900/25"
-              : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
-        }`
-      }`}
+          ? "shrink-0 group min-w-0"
+          : "flex flex-col items-center gap-0.5 shrink-0 group min-w-0 px-0.5"
+      }
+      title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
+      aria-label={`${sessions.count} of ${sessions.goal} focus sessions today`}
     >
-      {sessions && (
-        <>
-          <Link
-            href="/stats"
-            className={
-              embedded
-                ? "shrink-0 group min-w-0"
-                : "flex flex-col items-center gap-0.5 shrink-0 group min-w-0 px-0.5"
-            }
-            title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
-            aria-label={`${sessions.count} of ${sessions.goal} focus sessions today`}
-          >
-            {embedded ? (
-              <span className="flex items-baseline gap-1 tabular-nums leading-none whitespace-nowrap">
-                <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
-                  {sessions.count}/{sessions.goal}
-                </span>
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                  Sessions
-                </span>
-                {sessions.streak > 0 && (
-                  <span
-                    className="text-xs font-medium text-orange-600 dark:text-orange-400"
-                    title={`${sessions.streak}-day streak`}
-                  >
-                    🔥{sessions.streak}d
-                  </span>
-                )}
-              </span>
-            ) : (
-              <>
-                <span className="flex items-center gap-1 tabular-nums text-xs sm:text-sm font-semibold leading-none whitespace-nowrap">
-                  <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
-                    {sessions.count}/{sessions.goal}
-                  </span>
-                  {sessions.streak > 0 && (
-                    <span
-                      className="hidden sm:inline text-orange-600 dark:text-orange-400 text-xs font-medium"
-                      title={`${sessions.streak}-day streak`}
-                    >
-                      🔥 {sessions.streak}d
-                    </span>
-                  )}
-                </span>
-                <span className="hidden sm:block text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
-                  Sessions
-                </span>
-                <span
-                  className="hidden sm:block w-full min-w-[2.25rem] h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
-                  aria-hidden
-                >
-                  <span
-                    className="block h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
-                    style={{ width: `${sessionProgress}%` }}
-                  />
-                </span>
-              </>
-            )}
-          </Link>
-          {!embedded && (
-            <span className="hidden sm:inline text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
-              ·
+      {embedded ? (
+        <span className="flex items-baseline gap-1 tabular-nums leading-none whitespace-nowrap">
+          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
+            {sessions.count}/{sessions.goal}
+          </span>
+          <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+            Sessions
+          </span>
+          {sessions.streak > 0 && (
+            <span
+              className="hidden sm:inline text-xs font-medium text-orange-600 dark:text-orange-400"
+              title={`${sessions.streak}-day streak`}
+            >
+              🔥{sessions.streak}d
             </span>
           )}
+        </span>
+      ) : (
+        <>
+          <span className="flex items-center gap-1 tabular-nums text-xs sm:text-sm font-semibold leading-none whitespace-nowrap">
+            <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
+              {sessions.count}/{sessions.goal}
+            </span>
+            {sessions.streak > 0 && (
+              <span
+                className="hidden sm:inline text-orange-600 dark:text-orange-400 text-xs font-medium"
+                title={`${sessions.streak}-day streak`}
+              >
+                🔥 {sessions.streak}d
+              </span>
+            )}
+          </span>
+          <span className="hidden sm:block text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
+            Sessions
+          </span>
+          <span
+            className="hidden sm:block w-full min-w-[2.25rem] h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+            aria-hidden
+          >
+            <span
+              className="block h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
+              style={{ width: `${sessionProgress}%` }}
+            />
+          </span>
         </>
       )}
+    </Link>
+  ) : null;
+
+  const timerLabelButton = (
+    <button
+      type="button"
+      onClick={onToggleExpanded}
+      className={`flex items-center gap-1.5 min-w-0 text-left ${embedded ? "" : "flex-1 sm:flex-initial"}`}
+      aria-expanded={expanded}
+      aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
+      title={
+        expanded
+          ? "Collapse timer"
+          : showShortcutHint
+            ? "Expand timer — press ? for shortcuts"
+            : "Expand timer"
+      }
+    >
+      <span
+        className={`app-section-label shrink-0 ${
+          isBreak
+            ? "text-green-600 dark:text-green-400"
+            : "text-slate-500 dark:text-slate-400"
+        }`}
+      >
+        {isBreak ? "Break" : "Timer"}
+      </span>
+      <span
+        className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none ${
+          isBreak
+            ? "text-green-700 dark:text-green-300"
+            : isRunning
+              ? "text-blue-600 dark:text-blue-400"
+              : "text-slate-800 dark:text-slate-100"
+        }`}
+      >
+        {displayTime}
+      </span>
+      {activeTaskTitle && (
+        <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[5rem] lg:max-w-[7rem]">
+          {activeTaskTitle}
+        </span>
+      )}
+    </button>
+  );
+
+  const timerControls = (
+    <TimerControls
+      isRunning={isRunning}
+      onStartPause={onStartPause}
+      onReset={onReset}
+      compact
+      dock={embedded}
+      emphasizeStart={emphasizeStart}
+    />
+  );
+
+  const shortcutsButton =
+    embedded && onShowShortcuts ? (
       <button
         type="button"
-        onClick={onToggleExpanded}
-        className={`flex items-center gap-1.5 min-w-0 text-left ${embedded ? "flex-1" : "flex-1 sm:flex-initial"}`}
-        aria-expanded={expanded}
-        aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
-        title={
-          expanded
-            ? "Collapse timer"
-            : showShortcutHint
-              ? "Expand timer — press ? for shortcuts"
-              : "Expand timer"
-        }
+        onClick={() => {
+          dismissShortcutHint();
+          onShowShortcuts();
+        }}
+        className={`relative hidden sm:flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-colors ${
+          showShortcutHint
+            ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
+            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
+        }`}
+        aria-label="Keyboard shortcuts"
+        title={showShortcutHint ? "Keyboard shortcuts (press ?)" : "Keyboard shortcuts (?)"}
       >
-        <span
-          className={`app-section-label shrink-0 ${
-            isBreak
-              ? "text-green-600 dark:text-green-400"
-              : "text-slate-500 dark:text-slate-400"
-          }`}
-        >
-          {isBreak ? "Break" : "Timer"}
-        </span>
-        <span
-          className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none ${
-            isBreak
-              ? "text-green-700 dark:text-green-300"
-              : isRunning
-                ? "text-blue-600 dark:text-blue-400"
-                : "text-slate-800 dark:text-slate-100"
-          }`}
-        >
-          {displayTime}
-        </span>
-        {activeTaskTitle && (
-          <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[5rem] lg:max-w-[7rem]">
-            {activeTaskTitle}
-          </span>
+        ?
+        {showShortcutHint && (
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-hidden />
         )}
       </button>
-      <TimerControls
-        isRunning={isRunning}
-        onStartPause={onStartPause}
-        onReset={onReset}
-        compact
-        dock={embedded}
-        emphasizeStart={emphasizeStart}
-      />
-      {embedded && onShowShortcuts && (
-        <button
-          type="button"
-          onClick={() => {
-            dismissShortcutHint();
-            onShowShortcuts();
-          }}
-          className={`relative w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center shrink-0 transition-colors ${
-            showShortcutHint
-              ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
-              : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
-          }`}
-          aria-label="Keyboard shortcuts"
-          title={showShortcutHint ? "Keyboard shortcuts (press ?)" : "Keyboard shortcuts (?)"}
-        >
-          ?
-          {showShortcutHint && (
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-hidden />
-          )}
-        </button>
-      )}
-      <button
-        type="button"
-        onClick={onToggleExpanded}
-        className={`flex-shrink-0 touch-target-sm ${
-          embedded
-            ? "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-            : "p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-        }`}
-        aria-expanded={expanded}
-        aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
-        title={expanded ? "Collapse timer" : "Expand timer"}
+    ) : null;
+
+  const expandChevron = (
+    <button
+      type="button"
+      onClick={onToggleExpanded}
+      className={`flex-shrink-0 touch-target-sm ${
+        embedded
+          ? "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+          : "p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+      }`}
+      aria-expanded={expanded}
+      aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
+      title={expanded ? "Collapse timer" : "Expand timer"}
+    >
+      <svg
+        className={`${embedded ? "w-4 h-4" : "w-3.5 h-3.5"} transition-transform ${expanded ? "rotate-180" : ""}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden
       >
-        <svg
-          className={`${embedded ? "w-4 h-4" : "w-3.5 h-3.5"} transition-transform ${expanded ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  );
+
+  if (embedded) {
+    return (
+      <div
+        className={`flex items-center justify-between gap-2 min-w-0 w-full px-0 py-0.5 transition-colors ${embeddedChrome}`}
+      >
+        <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+          {sessionsLink}
+          {timerLabelButton}
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0 pl-1">
+          {timerControls}
+          {shortcutsButton}
+          {expandChevron}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`flex items-center gap-1.5 min-w-0 w-full flex-wrap gap-y-1 sm:w-auto px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm transition-colors ${
+        isBreak
+          ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
+          : isRunning
+            ? "border-blue-300/60 dark:border-blue-600/50 bg-blue-50/80 dark:bg-blue-900/25"
+            : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
+      }`}
+    >
+      {sessionsLink}
+      {sessions && (
+        <span className="hidden sm:inline text-slate-300 dark:text-slate-600 shrink-0" aria-hidden>
+          ·
+        </span>
+      )}
+      <div className="flex-1 sm:flex-initial min-w-0">{timerLabelButton}</div>
+      {timerControls}
+      {expandChevron}
     </div>
   );
 }

@@ -81,7 +81,7 @@ export default function WhatsNewBanner({ focusMode }: WhatsNewBannerProps) {
 
       {open && (
         <div
-          className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm rounded-xl border border-violet-200/70 dark:border-violet-800/45 bg-white dark:bg-[#1a2540] shadow-2xl z-50 overflow-hidden"
+          className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-80 w-auto rounded-xl border border-violet-200/70 dark:border-violet-800/45 bg-white dark:bg-[#1a2540] shadow-2xl overflow-hidden"
           role="dialog"
           aria-label="What's new"
         >

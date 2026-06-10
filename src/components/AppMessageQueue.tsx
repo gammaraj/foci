@@ -142,9 +142,9 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
   if (activeId === "notification") {
     return (
       <div className="px-2 sm:px-4 pt-2">
-        <div className="max-w-[1280px] mx-auto p-3 rounded-xl app-surface flex items-center justify-between gap-3">
+        <div className="max-w-[1280px] mx-auto p-3 rounded-xl app-surface flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-sm text-slate-700 dark:text-slate-200">Enable reminders for due dates and invites?</p>
-          <div className="flex gap-2 flex-shrink-0">
+          <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
             <button
               type="button"
               className="px-3 py-1.5 text-sm font-medium rounded-lg bg-blue-600 text-white touch-target-sm"
@@ -167,9 +167,9 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
   if (activeId === "pwa" && deferredPrompt) {
     return (
       <div className="px-2 sm:px-4 pt-2">
-        <div className="max-w-[1280px] mx-auto p-3 rounded-xl app-surface flex items-center justify-between gap-3">
+        <div className="max-w-[1280px] mx-auto p-3 rounded-xl app-surface flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-sm text-slate-700 dark:text-slate-200">Install Foci for offline access and a home-screen icon.</p>
-          <div className="flex gap-2 flex-shrink-0">
+          <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
             <button
               type="button"
               className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 touch-target-sm"
