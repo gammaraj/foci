@@ -16,18 +16,19 @@ function BucketColumnTitle({ project }: { project: Project }) {
   const showSubtitle = !!subtitle && subtitle !== project.name;
 
   return (
-    <div className="min-w-0 flex-1">
+    <div className="min-w-0 flex-1 lg:min-h-[2.75rem] flex flex-col justify-center">
       <h3 className="truncate text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
         {project.name}
       </h3>
-      {showSubtitle && (
-        <p
-          className="hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5"
-          title={subtitle}
-        >
-          {subtitle}
-        </p>
-      )}
+      <p
+        className={`hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5 min-h-[1.125rem] ${
+          showSubtitle ? "" : "invisible select-none"
+        }`}
+        title={showSubtitle ? subtitle : undefined}
+        aria-hidden={!showSubtitle}
+      >
+        {showSubtitle ? subtitle : "\u00a0"}
+      </p>
     </div>
   );
 }
@@ -496,15 +497,7 @@ function BucketColumn({
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
   const isAlt = columnIndex % 2 === 1;
-  const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(() => {
-    const lanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
-    const collapsed = new Set<BucketSwimlaneId>();
-    const undated = lanes.find((l) => l.id === "undated");
-    if (undated && undated.tasks.length >= LANE_COLLAPSE_THRESHOLD) {
-      collapsed.add("undated");
-    }
-    return collapsed;
-  });
+  const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(() => new Set());
 
   const toggleLane = (laneId: BucketSwimlaneId) => {
     setCollapsedLanes((prev) => {
@@ -527,7 +520,7 @@ function BucketColumn({
       } ${columnHighlighted ? "ring-2 ring-blue-400/40 dark:ring-blue-500/35" : ""}`}
     >
       <div
-        className={`group/col flex items-start gap-2 px-2.5 py-2 border-b shrink-0 ${
+        className={`group/col flex items-center gap-2 px-2.5 py-2 border-b shrink-0 lg:min-h-[4.25rem] ${
           isAlt
             ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/90 dark:bg-[#111827]/70"
             : "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0f172a]/75"
@@ -538,7 +531,7 @@ function BucketColumn({
           <button
             type="button"
             onClick={() => onToggleProjectFavorite(project.id)}
-            className={`flex-shrink-0 p-0.5 rounded transition-colors mt-0.5 ${
+            className={`flex-shrink-0 p-0.5 rounded transition-colors ${
               project.favorite
                 ? "text-amber-400 hover:text-amber-500"
                 : "text-slate-300 dark:text-slate-600 opacity-0 group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
@@ -556,7 +549,7 @@ function BucketColumn({
             </svg>
           </button>
         ) : project.favorite ? (
-          <span title="Pinned — appears first in bucket view" className="flex-shrink-0 mt-0.5">
+          <span title="Pinned — appears first in bucket view" className="flex-shrink-0">
             <svg
               className="w-3.5 h-3.5 text-amber-400"
               viewBox="0 0 20 20"
@@ -569,20 +562,20 @@ function BucketColumn({
         ) : null}
         {project.color && (
           <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10 mt-1"
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
             style={{ backgroundColor: project.color }}
             title={`${project.name} color`}
             aria-hidden
           />
         )}
         <BucketColumnTitle project={project} />
-        <span className="text-xs tabular-nums font-semibold text-slate-500 dark:text-slate-400 shrink-0 self-start mt-0.5">
+        <span className="text-xs tabular-nums font-semibold text-slate-500 dark:text-slate-400 shrink-0">
           {tasks.length}
         </span>
       </div>
 
       <div
-        className="flex-1 overflow-y-auto p-1.5 min-h-[80px]"
+        className="flex-1 overflow-y-auto p-2 min-h-[80px]"
         onDragOver={(e) => {
           if (!dragEnabled || !dragTaskId) return;
           e.preventDefault();
@@ -612,7 +605,7 @@ function BucketColumn({
             )}
           </p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-4">
             {swimlanes.map((lane) => {
               const swimlaneId = lane.id as BucketSwimlaneId;
               const laneHighlighted =
@@ -645,7 +638,7 @@ function BucketColumn({
                     <button
                       type="button"
                       onClick={() => toggleLane(swimlaneId)}
-                      className={`w-full flex items-center gap-1 app-section-label px-0.5 mb-1 leading-none text-left ${
+                      className={`w-full flex items-center gap-1 app-section-label px-0.5 mb-2 leading-none text-left ${
                         lane.id === "overdue"
                           ? "text-red-600/90 dark:text-red-400/90"
                           : "text-slate-500 dark:text-slate-400"
@@ -670,7 +663,7 @@ function BucketColumn({
                     </button>
                   ) : (
                     <p
-                      className={`app-section-label px-0.5 mb-1 leading-none ${
+                      className={`app-section-label px-0.5 mb-2 leading-none ${
                         lane.id === "overdue"
                           ? "text-red-600/90 dark:text-red-400/90"
                           : "text-slate-500 dark:text-slate-400"
@@ -684,7 +677,7 @@ function BucketColumn({
                   )
                 )}
                 {!isCollapsed && (
-                <div className="space-y-1 min-h-[1.25rem]">
+                <div className="space-y-1.5 min-h-[1.25rem]">
                   {lane.tasks.map((task, taskIdx) => (
                     <BucketTaskCard
                       key={task.id}
