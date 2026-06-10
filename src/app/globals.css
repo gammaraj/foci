@@ -187,6 +187,20 @@ body {
   }
 }
 
+/* Bucket swimlanes — sentence case, lighter than app-section-label */
+.bucket-lane-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  line-height: 1.25;
+}
+@media (min-width: 640px) {
+  .bucket-lane-label {
+    font-size: 0.8125rem;
+  }
+}
+
 .app-badge {
   font-size: 0.75rem;
   font-weight: 700;

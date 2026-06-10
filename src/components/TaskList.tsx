@@ -1533,27 +1533,27 @@ export default function TaskList({
 
       {/* Bucket toolbar — projects only (counts live in header subtitle) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="px-3 sm:px-4 py-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 border-b border-slate-100/80 dark:border-[#243350]/60">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
+        <div className="px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <button
               type="button"
               onClick={openProjectManage}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-semibold rounded-md border border-violet-300/80 dark:border-violet-600/50 bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-100 shadow-sm hover:bg-violet-200/90 dark:hover:bg-violet-950/60 hover:border-violet-400 dark:hover:border-violet-500 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-1.5 px-2 py-1 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
               data-tour="manage-projects"
             >
-              <svg className="w-4 h-4 text-violet-600 dark:text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
               </svg>
               Manage projects
             </button>
-            <span className="hidden lg:inline app-text-meta text-slate-500 dark:text-slate-400">
-              Drag to reorder · ★ pin · scroll for more
+            <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
+              Drag to reorder · pin columns · scroll for more
             </span>
           </div>
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-semibold rounded-md border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-950/25 text-blue-700 dark:text-blue-300 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-950/40 hover:border-blue-300 dark:hover:border-blue-600 active:scale-[0.98] transition-all shrink-0"
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-medium text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors shrink-0"
           >
             + Project
           </button>

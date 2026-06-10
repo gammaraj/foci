@@ -17,7 +17,7 @@ function BucketColumnTitle({ project }: { project: Project }) {
 
   return (
     <div className="min-w-0 flex-1 lg:min-h-[2.75rem] flex flex-col justify-center">
-      <h3 className="truncate text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
+      <h3 className="truncate text-sm sm:text-base font-semibold tracking-tight text-slate-900 dark:text-white leading-tight">
         {project.name}
       </h3>
       <p
@@ -83,7 +83,7 @@ function buildSwimlanes(
   const lanes: BucketSwimlane[] = [];
   if (overdue.length > 0) lanes.push({ id: "overdue", label: "Overdue", tasks: overdue });
   if (dated.length > 0) lanes.push({ id: "dated", label: datedLaneLabel, tasks: dated });
-  if (undated.length > 0) lanes.push({ id: "undated", label: "No Date", tasks: undated });
+  if (undated.length > 0) lanes.push({ id: "undated", label: "No date", tasks: undated });
   return lanes;
 }
 
@@ -106,15 +106,15 @@ function DueBadge({
 
   return (
     <span
-      className={`relative inline-flex items-center gap-0.5 font-semibold rounded-full shrink-0 leading-none ${
-        compact ? "text-[11px] px-1 py-px" : "text-xs gap-1 px-1.5 py-0.5"
+      className={`relative inline-flex items-center gap-0.5 font-medium shrink-0 leading-none ${
+        compact ? "text-[11px] px-1 py-px rounded-md" : "text-xs gap-1 px-1.5 py-0.5 rounded-md"
       } ${
         overdue
-          ? "bg-red-50 dark:bg-red-900/25 text-red-600 dark:text-red-300"
+          ? "text-red-600 dark:text-red-400"
           : isToday
-            ? "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300"
-            : "bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400"
-      } ${interactive ? "cursor-pointer hover:ring-1 hover:ring-blue-400/40" : ""}`}
+            ? "text-amber-700 dark:text-amber-300"
+            : "text-slate-400 dark:text-slate-500"
+      } ${interactive ? "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400" : ""}`}
       title={interactive ? "Change due date" : undefined}
     >
       {!compact && (
@@ -200,13 +200,14 @@ function BucketTaskCard({
   const canEdit = !!onStartEdit;
   const canOpenDetail = !!onToggleTaskDetail;
   const compactIconBtn =
-    "w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-colors";
-  const compactPlayBtn = (playing: boolean, emphasize: boolean) =>
-    `w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-      playing || emphasize
-        ? "border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700"
-        : "border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25"
-    } ${emphasize ? "ring-1 ring-blue-400/35" : ""}`;
+    "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors";
+  const compactPlayBtn = (playing: boolean, filled: boolean) =>
+    `w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ${
+      playing || filled
+        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25 hover:bg-blue-700"
+        : "text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/90 dark:hover:bg-blue-950/40"
+    }`;
+  const playVisible = isActive || isTimerRunning;
 
   return (
     <div
@@ -229,14 +230,16 @@ function BucketTaskCard({
         onDrop?.();
       }}
       onDragEnd={onDragEnd}
-      className={`group rounded-md border px-1.5 py-1 transition-colors ${
+      className={`group relative rounded-xl px-2 py-1.5 transition-all duration-150 ${
         isDetailOpen
-          ? "border-violet-400 dark:border-violet-500 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
+          ? "bg-violet-50/80 dark:bg-violet-950/25"
           : isActive
-            ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 ring-1 ring-blue-400/25"
-            : "border-slate-300 dark:border-[#243350] bg-white dark:bg-[#111827] shadow-sm dark:shadow-none hover:border-slate-400 dark:hover:border-[#2d4266]"
-      } ${isDragging ? "opacity-50" : ""} ${
-        isDragOver ? "border-t-2 border-t-blue-500 dark:border-t-blue-400" : ""
+            ? "bg-blue-50/90 dark:bg-blue-950/30"
+            : "hover:bg-slate-50/90 dark:hover:bg-white/[0.04]"
+      } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
+        isDragOver
+          ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-blue-500 dark:before:bg-blue-400"
+          : ""
       }`}
     >
       <div className="flex items-center gap-1 min-h-[1.5rem]">
@@ -285,10 +288,10 @@ function BucketTaskCard({
         <button
           type="button"
           onClick={() => onToggleComplete(task.id)}
-          className={`w-3.5 h-3.5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+          className={`w-4 h-4 rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-colors ${
             task.completed
-              ? "bg-green-500 border-green-500 text-white"
-              : "border-slate-300 dark:border-slate-600 hover:border-green-400"
+              ? "bg-emerald-500 border-emerald-500 text-white"
+              : "border-slate-300/90 dark:border-slate-600 hover:border-emerald-400 dark:hover:border-emerald-500"
           }`}
           aria-label={`Mark "${task.title}" complete`}
         >
@@ -318,13 +321,13 @@ function BucketTaskCard({
           <button
             type="button"
             onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-tight truncate hover:text-blue-700 dark:hover:text-blue-300 rounded px-0.5 -mx-0.5 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/60 transition-colors"
+            className="flex-1 min-w-0 text-left text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug truncate hover:text-slate-900 dark:hover:text-white transition-colors"
             title={task.title}
           >
             {task.title}
           </button>
         ) : (
-          <p className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-tight truncate" title={task.title}>
+          <p className="flex-1 min-w-0 text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug truncate" title={task.title}>
             {task.title}
           </p>
         )}
@@ -390,38 +393,45 @@ function BucketTaskCard({
             )}
           </div>
         )}
-        {!isEditing &&
-          (isActive && isTimerRunning ? (
-            <span
-              className={`${compactPlayBtn(true, false)} cursor-default`}
-              title="Timer running on this task"
-              aria-label="Active — timer running"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            </span>
-          ) : isActive ? (
-            <button
-              type="button"
-              onClick={() => onSelectTask(null)}
-              className={`${compactPlayBtn(false, false)} border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400`}
-              title="Clear selection"
-              aria-label="Clear focus selection"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onStartTask(task.id)}
-              className={compactPlayBtn(false, true)}
-              title={`Focus on "${task.title}" — starts timer`}
-              aria-label={`Focus on "${task.title}"`}
-            >
-              <MiniPlayPauseIcon playing={false} size="sm" />
-            </button>
-          ))}
+        {!isEditing && (
+          <div
+            className={`shrink-0 transition-opacity duration-150 ${
+              playVisible ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+            }`}
+          >
+            {isActive && isTimerRunning ? (
+              <span
+                className={`${compactPlayBtn(true, true)} cursor-default`}
+                title="Timer running on this task"
+                aria-label="Active — timer running"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              </span>
+            ) : isActive ? (
+              <button
+                type="button"
+                onClick={() => onSelectTask(null)}
+                className={compactPlayBtn(false, false)}
+                title="Clear selection"
+                aria-label="Clear focus selection"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onStartTask(task.id)}
+                className={compactPlayBtn(false, false)}
+                title={`Focus on "${task.title}" — starts timer`}
+                aria-label={`Focus on "${task.title}"`}
+              >
+                <MiniPlayPauseIcon playing={false} size="sm" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -431,7 +441,6 @@ function BucketColumn({
   project,
   tasks,
   datedLaneLabel,
-  columnIndex,
   activeTaskId,
   isTimerRunning,
   dragTaskId,
@@ -463,7 +472,6 @@ function BucketColumn({
   project: Project;
   tasks: Task[];
   datedLaneLabel: string;
-  columnIndex: number;
   activeTaskId: string | null;
   isTimerRunning: boolean;
   dragTaskId: string | null;
@@ -496,7 +504,6 @@ function BucketColumn({
   const addInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
-  const isAlt = columnIndex % 2 === 1;
   const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(() => new Set());
 
   const toggleLane = (laneId: BucketSwimlaneId) => {
@@ -513,18 +520,12 @@ function BucketColumn({
 
   return (
     <div
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-colors ${
-        isAlt
-          ? "border-slate-300 dark:border-[#2a3f5f] bg-slate-100 dark:bg-[#0d1526]/85 shadow-sm"
-          : "border-slate-300 dark:border-[#243350] bg-white dark:bg-[#131d30]/55 shadow-sm"
-      } ${columnHighlighted ? "ring-2 ring-blue-400/40 dark:ring-blue-500/35" : ""}`}
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none backdrop-blur-sm ${
+        columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""
+      }`}
     >
       <div
-        className={`group/col flex items-center gap-2 px-2.5 py-2 border-b shrink-0 lg:min-h-[4.25rem] ${
-          isAlt
-            ? "border-slate-300 dark:border-[#2a3f5f] bg-slate-200/70 dark:bg-[#111827]/70"
-            : "border-slate-300 dark:border-[#2a3f5f] bg-slate-100 dark:bg-[#0f172a]/75"
-        }`}
+        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem]"
         title={project.description?.trim() || project.name}
       >
         {onToggleProjectFavorite ? (
@@ -569,13 +570,13 @@ function BucketColumn({
           />
         )}
         <BucketColumnTitle project={project} />
-        <span className="text-xs tabular-nums font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+        <span className="text-[11px] tabular-nums font-medium text-slate-500 dark:text-slate-400 bg-slate-100/90 dark:bg-white/10 rounded-full px-2 py-0.5 shrink-0">
           {tasks.length}
         </span>
       </div>
 
       <div
-        className="flex-1 overflow-y-auto p-2 min-h-[80px]"
+        className="flex-1 overflow-y-auto px-2 pb-2 pt-0.5 min-h-[80px]"
         onDragOver={(e) => {
           if (!dragEnabled || !dragTaskId) return;
           e.preventDefault();
@@ -615,11 +616,7 @@ function BucketColumn({
               return (
               <div
                 key={lane.id}
-                className={`${
-                  lane.id === "overdue"
-                    ? "border-l-2 border-l-red-500/70 dark:border-l-red-400/60 pl-1.5"
-                    : ""
-                } ${laneHighlighted ? "ring-1 ring-blue-400/50 rounded-md" : ""}`}
+                className={`${laneHighlighted ? "ring-1 ring-blue-400/40 rounded-xl" : ""}`}
                 onDragOver={(e) => {
                   if (!dragEnabled || !dragTaskId) return;
                   e.preventDefault();
@@ -638,11 +635,11 @@ function BucketColumn({
                     <button
                       type="button"
                       onClick={() => toggleLane(swimlaneId)}
-                      className={`w-full flex items-center gap-1 app-section-label px-0.5 mb-2 leading-none text-left ${
+                      className={`w-full flex items-center gap-1.5 bucket-lane-label px-1 mb-1.5 text-left ${
                         lane.id === "overdue"
-                          ? "text-red-600/90 dark:text-red-400/90"
-                          : "text-slate-500 dark:text-slate-400"
-                      } hover:opacity-80 transition-opacity`}
+                          ? "text-red-500 dark:text-red-400"
+                          : "text-slate-400 dark:text-slate-500"
+                      } hover:text-slate-600 dark:hover:text-slate-300 transition-colors`}
                       aria-expanded={!isCollapsed}
                     >
                       <svg
@@ -663,10 +660,10 @@ function BucketColumn({
                     </button>
                   ) : (
                     <p
-                      className={`app-section-label px-0.5 mb-2 leading-none ${
+                      className={`bucket-lane-label px-1 mb-1.5 ${
                         lane.id === "overdue"
-                          ? "text-red-600/90 dark:text-red-400/90"
-                          : "text-slate-500 dark:text-slate-400"
+                          ? "text-red-500 dark:text-red-400"
+                          : "text-slate-400 dark:text-slate-500"
                       }`}
                     >
                       {lane.label}
@@ -677,7 +674,7 @@ function BucketColumn({
                   )
                 )}
                 {!isCollapsed && (
-                <div className="space-y-1.5 min-h-[1.25rem]">
+                <div className="space-y-0.5 min-h-[1.25rem]">
                   {lane.tasks.map((task, taskIdx) => (
                     <BucketTaskCard
                       key={task.id}
@@ -723,7 +720,7 @@ function BucketColumn({
       </div>
 
       <form
-        className="px-1.5 py-1 border-t border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-transparent shrink-0"
+        className="px-3 py-2.5 shrink-0"
         onSubmit={(e) => {
           e.preventDefault();
           const title = draft.trim();
@@ -732,24 +729,24 @@ function BucketColumn({
           setDraft("");
         }}
       >
-        <div className="flex gap-1">
+        <div className="flex items-center gap-2 rounded-xl bg-slate-100/70 dark:bg-white/5 px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500/15 dark:focus-within:ring-blue-400/20 transition-shadow">
           <input
             ref={addInputRef}
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Add task…"
+            placeholder="Add a task…"
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+            className="flex-1 min-w-0 text-sm bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
           <button
             type="submit"
             disabled={!draft.trim()}
-            className="px-2 py-1 text-sm font-bold rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="Add task"
             title="Add task"
           >
-            +
+            Add
           </button>
         </div>
       </form>
@@ -821,16 +818,15 @@ export default function TaskBucketView({
     <div className="px-3 sm:px-4 pb-3 pt-1 min-h-0">
       <div className="relative">
         <div
-          className="w-full flex gap-3 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
+          className="w-full flex gap-4 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
           onScroll={showScrollHint ? dismissScrollHint : undefined}
         >
-        {orderedColumns.map((project, columnIndex) => (
+        {orderedColumns.map((project) => (
           <BucketColumn
             key={project.id}
             project={project}
             tasks={tasksByProject.get(project.id) ?? []}
             datedLaneLabel={datedLaneLabel}
-            columnIndex={columnIndex}
             activeTaskId={activeTaskId}
             isTimerRunning={isTimerRunning}
             dragTaskId={dragTaskId}
