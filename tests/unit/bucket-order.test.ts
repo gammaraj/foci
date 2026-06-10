@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyBucketDrop } from "@/components/task-list/bucket-order";
+import { applyBucketDrop, moveBucketTaskInLane } from "@/components/task-list/bucket-order";
 import type { Task } from "@/lib/types";
 
 function task(
@@ -48,6 +48,16 @@ describe("applyBucketDrop", () => {
     );
     expect(result).not.toBeNull();
     expect(result!.find((t) => t.id === "a")?.projectId).toBe("p2");
+  });
+
+  it("moves a task up within its swimlane", () => {
+    const result = moveBucketTaskInLane(tasks, "b", "up", null);
+    expect(result).not.toBeNull();
+    const ordered = result!
+      .filter((t) => t.projectId === "p1")
+      .sort((x, y) => (x.order ?? 0) - (y.order ?? 0))
+      .map((t) => t.id);
+    expect(ordered).toEqual(["b", "a"]);
   });
 
   it("rejects cross-swimlane reorder in the same project", () => {

@@ -152,3 +152,38 @@ export function applyBucketDrop(
 
   return updated;
 }
+
+/** Move a task up/down within its project swimlane. */
+export function moveBucketTaskInLane(
+  allTasks: Task[],
+  taskId: string,
+  direction: "up" | "down",
+  activeTaskId: string | null
+): Task[] | null {
+  const task = allTasks.find((t) => t.id === taskId);
+  if (!task || task.completed || task.archivedAt) return null;
+
+  const laneId = getBucketSwimlaneId(task);
+  const pool = allTasks.filter(
+    (t) => t.projectId === task.projectId && !t.completed && !t.archivedAt
+  );
+  const laneTasks = tasksInSwimlane(pool, laneId, activeTaskId);
+  const idx = laneTasks.findIndex((t) => t.id === taskId);
+  if (idx === -1) return null;
+
+  const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+  if (targetIdx < 0 || targetIdx >= laneTasks.length) return null;
+
+  const reordered = [...laneTasks];
+  [reordered[idx], reordered[targetIdx]] = [reordered[targetIdx], reordered[idx]];
+
+  const laneOverrides: Partial<Record<BucketSwimlaneId, string[]>> = {
+    [laneId]: reordered.map((t) => t.id),
+  };
+
+  return applyOrderToProject(
+    allTasks,
+    task.projectId,
+    projectLaneIds(pool, laneOverrides, activeTaskId)
+  );
+}

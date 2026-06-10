@@ -17,7 +17,7 @@ const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
-import { applyBucketDrop, type BucketDropTarget } from "@/components/task-list/bucket-order";
+import { applyBucketDrop, moveBucketTaskInLane, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailDrawer, TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import {
@@ -887,6 +887,11 @@ export default function TaskList({
     persist(updated);
   };
 
+  const handleBucketMove = (taskId: string, direction: "up" | "down") => {
+    const updated = moveBucketTaskInLane(tasks, taskId, direction, activeTaskId);
+    if (updated) persist(updated);
+  };
+
   const setTaskRecurrence = (taskId: string, recurrence: RecurrenceType | undefined) => {
     const updated = tasks.map((t) =>
       t.id === taskId ? { ...t, recurrence } : t
@@ -1528,12 +1533,12 @@ export default function TaskList({
 
       {/* Bucket toolbar — projects only (counts live in header subtitle) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-slate-100/80 dark:border-[#243350]/60">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+        <div className="px-3 sm:px-4 py-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 border-b border-slate-100/80 dark:border-[#243350]/60">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
             <button
               type="button"
               onClick={openProjectManage}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg border border-violet-300/80 dark:border-violet-600/50 bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-100 shadow-sm hover:bg-violet-200/90 dark:hover:bg-violet-950/60 hover:border-violet-400 dark:hover:border-violet-500 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-semibold rounded-md border border-violet-300/80 dark:border-violet-600/50 bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-100 shadow-sm hover:bg-violet-200/90 dark:hover:bg-violet-950/60 hover:border-violet-400 dark:hover:border-violet-500 active:scale-[0.98] transition-all"
               data-tour="manage-projects"
             >
               <svg className="w-4 h-4 text-violet-600 dark:text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -1541,16 +1546,16 @@ export default function TaskList({
               </svg>
               Manage projects
             </button>
-            <span className="hidden md:inline app-text-meta text-slate-500 dark:text-slate-400">
-              Drag tasks to reorder or move · ★ pin columns · scroll for more
+            <span className="hidden lg:inline app-text-meta text-slate-500 dark:text-slate-400">
+              Drag to reorder · ★ pin · scroll for more
             </span>
           </div>
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-lg border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-950/25 text-blue-700 dark:text-blue-300 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-950/40 hover:border-blue-300 dark:hover:border-blue-600 active:scale-[0.98] transition-all shrink-0"
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-semibold rounded-md border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-950/25 text-blue-700 dark:text-blue-300 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-950/40 hover:border-blue-300 dark:hover:border-blue-600 active:scale-[0.98] transition-all shrink-0"
           >
-            + New project
+            + Project
           </button>
         </div>
       )}
@@ -1592,6 +1597,7 @@ export default function TaskList({
           expandedTaskId={expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
           onBucketDrop={handleBucketDrop}
+          onBucketMove={handleBucketMove}
         />
       )}
 

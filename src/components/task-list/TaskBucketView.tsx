@@ -4,10 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
-import { MiniPlayPauseIcon, miniPlayButtonClass, miniResetButtonClass } from "@/components/FocusStripControls";
+import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
   sortBucketTasks,
-  getBucketSwimlaneId,
   type BucketDropTarget,
   type BucketSwimlaneId,
 } from "@/components/task-list/bucket-order";
@@ -23,7 +22,7 @@ function BucketColumnTitle({ project }: { project: Project }) {
       </h3>
       {showSubtitle && (
         <p
-          className="truncate text-xs app-text-meta font-normal leading-tight mt-0.5"
+          className="hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5"
           title={subtitle}
         >
           {subtitle}
@@ -59,7 +58,10 @@ interface TaskBucketViewProps {
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
   onBucketDrop?: (draggedTaskId: string, target: BucketDropTarget) => void;
+  onBucketMove?: (taskId: string, direction: "up" | "down") => void;
 }
+
+const LANE_COLLAPSE_THRESHOLD = 4;
 
 interface BucketSwimlane {
   id: string;
@@ -88,10 +90,12 @@ function DueBadge({
   dueDate,
   taskId,
   onSetDueDate,
+  compact = false,
 }: {
   dueDate: string;
   taskId?: string;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
+  compact?: boolean;
 }) {
   const today = getToday();
   const overdue = isDueDateOverdue(dueDate);
@@ -101,7 +105,9 @@ function DueBadge({
 
   return (
     <span
-      className={`relative inline-flex items-center gap-1 text-xs font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+      className={`relative inline-flex items-center gap-0.5 font-semibold rounded-full shrink-0 leading-none ${
+        compact ? "text-[11px] px-1 py-px" : "text-xs gap-1 px-1.5 py-0.5"
+      } ${
         overdue
           ? "bg-red-50 dark:bg-red-900/25 text-red-600 dark:text-red-300"
           : isToday
@@ -110,9 +116,11 @@ function DueBadge({
       } ${interactive ? "cursor-pointer hover:ring-1 hover:ring-blue-400/40" : ""}`}
       title={interactive ? "Change due date" : undefined}
     >
-      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
+      {!compact && (
+        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )}
       {label}
       {interactive && (
         <input
@@ -156,6 +164,10 @@ function BucketTaskCard({
   onDragOver,
   onDrop,
   onDragEnd,
+  canMoveUp,
+  canMoveDown,
+  onMoveUp,
+  onMoveDown,
 }: {
   task: Task;
   isActive: boolean;
@@ -179,10 +191,21 @@ function BucketTaskCard({
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: () => void;
   onDragEnd?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }) {
-  const showFocusAction = isActive || isTimerRunning;
   const canEdit = !!onStartEdit;
   const canOpenDetail = !!onToggleTaskDetail;
+  const compactIconBtn =
+    "w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-colors";
+  const compactPlayBtn = (playing: boolean, emphasize: boolean) =>
+    `w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+      playing || emphasize
+        ? "border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700"
+        : "border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25"
+    } ${emphasize ? "ring-1 ring-blue-400/35" : ""}`;
 
   return (
     <div
@@ -205,7 +228,7 @@ function BucketTaskCard({
         onDrop?.();
       }}
       onDragEnd={onDragEnd}
-      className={`group rounded-lg border px-2 py-1.5 transition-colors ${
+      className={`group rounded-md border px-1.5 py-1 transition-colors ${
         isDetailOpen
           ? "border-violet-400 dark:border-violet-500 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
           : isActive
@@ -215,13 +238,45 @@ function BucketTaskCard({
         isDragOver ? "border-t-2 border-t-blue-500 dark:border-t-blue-400" : ""
       }`}
     >
-      <div className="flex items-start gap-1.5">
+      <div className="flex items-center gap-1 min-h-[1.5rem]">
+        {onMoveUp && onMoveDown && (
+          <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveUp();
+              }}
+              disabled={!canMoveUp}
+              className="p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all"
+              aria-label="Move up"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveDown();
+              }}
+              disabled={!canMoveDown}
+              className="p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all"
+              aria-label="Move down"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
         {dragEnabled && (
           <div
-            className="hidden sm:flex flex-shrink-0 mt-0.5 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="hidden sm:flex flex-shrink-0 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
             aria-hidden
           >
-            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
             </svg>
           </div>
@@ -229,7 +284,7 @@ function BucketTaskCard({
         <button
           type="button"
           onClick={() => onToggleComplete(task.id)}
-          className={`mt-0.5 w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+          className={`w-3.5 h-3.5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
             task.completed
               ? "bg-green-500 border-green-500 text-white"
               : "border-slate-300 dark:border-slate-600 hover:border-green-400"
@@ -237,132 +292,60 @@ function BucketTaskCard({
           aria-label={`Mark "${task.title}" complete`}
         >
           {task.completed && (
-            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           )}
         </button>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start gap-1 min-w-0">
-            {isEditing ? (
-              <input
-                type="text"
-                value={editTitle}
-                onChange={(e) => onEditTitleChange?.(e.target.value)}
-                onBlur={() => onSaveEdit?.(task.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") onSaveEdit?.(task.id);
-                  if (e.key === "Escape") onCancelEdit?.();
-                }}
-                onClick={(e) => e.stopPropagation()}
-                maxLength={MAX_TASK_TITLE}
-                className="flex-1 min-w-0 text-sm font-medium px-1 py-0.5 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                autoFocus
-                aria-label="Edit task title"
-              />
-            ) : canEdit ? (
-              <button
-                type="button"
-                onClick={() => onStartEdit?.(task)}
-                className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2 hover:text-blue-700 dark:hover:text-blue-300 rounded px-0.5 -mx-0.5 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/60 transition-colors"
-                title="Click to edit"
+        {isEditing ? (
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => onEditTitleChange?.(e.target.value)}
+            onBlur={() => onSaveEdit?.(task.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onSaveEdit?.(task.id);
+              if (e.key === "Escape") onCancelEdit?.();
+            }}
+            onClick={(e) => e.stopPropagation()}
+            maxLength={MAX_TASK_TITLE}
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
+            autoFocus
+            aria-label="Edit task title"
+          />
+        ) : canEdit ? (
+          <button
+            type="button"
+            onClick={() => onStartEdit?.(task)}
+            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-tight truncate hover:text-blue-700 dark:hover:text-blue-300 rounded px-0.5 -mx-0.5 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/60 transition-colors"
+            title={task.title}
+          >
+            {task.title}
+          </button>
+        ) : (
+          <p className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-tight truncate" title={task.title}>
+            {task.title}
+          </p>
+        )}
+        {!isEditing && task.dueDate && (
+          <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact />
+        )}
+        {!isEditing && (
+          <div
+            className={`flex items-center gap-0.5 shrink-0 transition-opacity ${
+              isDetailOpen
+                ? "opacity-100"
+                : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+            }`}
+          >
+            {!task.dueDate && onSetDueDate && (
+              <label
+                className={`${compactIconBtn} relative text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] cursor-pointer`}
+                title="Add due date"
               >
-                {task.title}
-              </button>
-            ) : (
-              <p
-                className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
-                title={task.title}
-              >
-                {task.title}
-              </p>
-            )}
-            <div
-              className={`flex items-center gap-1 shrink-0 transition-opacity ${
-                showFocusAction || isEditing || isDetailOpen
-                  ? "opacity-100"
-                  : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
-              }`}
-            >
-              {canEdit && !isEditing && (
-                <button
-                  type="button"
-                  onClick={() => onStartEdit?.(task)}
-                  className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors touch-target-sm"
-                  title="Rename"
-                  aria-label={`Rename "${task.title}"`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
-              )}
-              {canOpenDetail && !isEditing && (
-                <button
-                  type="button"
-                  onClick={() => onToggleTaskDetail!(task.id)}
-                  className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors touch-target-sm ${
-                    isDetailOpen
-                      ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
-                      : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                  }`}
-                  title={isDetailOpen ? "Close details" : "Task details"}
-                  aria-label={isDetailOpen ? `Close details for "${task.title}"` : `Open details for "${task.title}"`}
-                  aria-pressed={!!isDetailOpen}
-                >
-                  <svg
-                    className={`w-4 h-4 transition-transform duration-200 ${isDetailOpen ? "rotate-90" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              )}
-              {isActive && isTimerRunning ? (
-                <span
-                  className={`${miniPlayButtonClass(true, true)} cursor-default`}
-                  title="Timer running on this task"
-                  aria-label="Active — timer running"
-                >
-                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                </span>
-              ) : isActive ? (
-                <button
-                  type="button"
-                  onClick={() => onSelectTask(null)}
-                  className={miniResetButtonClass(true)}
-                  title="Clear selection"
-                  aria-label="Clear focus selection"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => onStartTask(task.id)}
-                  className={miniPlayButtonClass(false, true, true)}
-                  title={`Focus on "${task.title}" — starts timer`}
-                  aria-label={`Focus on "${task.title}"`}
-                >
-                  <MiniPlayPauseIcon playing={false} size="sm" />
-                </button>
-              )}
-            </div>
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            {task.dueDate ? (
-              <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} />
-            ) : onSetDueDate ? (
-              <label className="relative inline-flex items-center gap-1 text-xs app-text-meta font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Add date
                 <input
                   type="date"
                   value=""
@@ -379,9 +362,65 @@ function BucketTaskCard({
                   aria-label="Add due date"
                 />
               </label>
-            ) : null}
+            )}
+            {canOpenDetail && (
+              <button
+                type="button"
+                onClick={() => onToggleTaskDetail!(task.id)}
+                className={`${compactIconBtn} ${
+                  isDetailOpen
+                    ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
+                    : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                }`}
+                title={isDetailOpen ? "Close details" : "Task details"}
+                aria-label={isDetailOpen ? `Close details for "${task.title}"` : `Open details for "${task.title}"`}
+                aria-pressed={!!isDetailOpen}
+              >
+                <svg
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${isDetailOpen ? "rotate-90" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
           </div>
-        </div>
+        )}
+        {!isEditing &&
+          (isActive && isTimerRunning ? (
+            <span
+              className={`${compactPlayBtn(true, false)} cursor-default`}
+              title="Timer running on this task"
+              aria-label="Active — timer running"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            </span>
+          ) : isActive ? (
+            <button
+              type="button"
+              onClick={() => onSelectTask(null)}
+              className={`${compactPlayBtn(false, false)} border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400`}
+              title="Clear selection"
+              aria-label="Clear focus selection"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onStartTask(task.id)}
+              className={compactPlayBtn(false, true)}
+              title={`Focus on "${task.title}" — starts timer`}
+              aria-label={`Focus on "${task.title}"`}
+            >
+              <MiniPlayPauseIcon playing={false} size="sm" />
+            </button>
+          ))}
       </div>
     </div>
   );
@@ -418,6 +457,7 @@ function BucketColumn({
   onDropOnTask,
   onDropOnLane,
   onDragEnd,
+  onBucketMove,
 }: {
   project: Project;
   tasks: Task[];
@@ -449,26 +489,45 @@ function BucketColumn({
   onDropOnTask: (taskId: string, swimlaneId: BucketSwimlaneId) => void;
   onDropOnLane: (swimlaneId: BucketSwimlaneId) => void;
   onDragEnd: () => void;
+  onBucketMove?: (taskId: string, direction: "up" | "down") => void;
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
   const isAlt = columnIndex % 2 === 1;
+  const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(() => {
+    const lanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
+    const collapsed = new Set<BucketSwimlaneId>();
+    const undated = lanes.find((l) => l.id === "undated");
+    if (undated && undated.tasks.length >= LANE_COLLAPSE_THRESHOLD) {
+      collapsed.add("undated");
+    }
+    return collapsed;
+  });
+
+  const toggleLane = (laneId: BucketSwimlaneId) => {
+    setCollapsedLanes((prev) => {
+      const next = new Set(prev);
+      if (next.has(laneId)) next.delete(laneId);
+      else next.add(laneId);
+      return next;
+    });
+  };
 
   const columnHighlighted =
     dragOverColumn?.projectId === project.id && dragTaskId != null;
 
   return (
     <div
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border max-h-[min(70vh,640px)] transition-colors ${
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-colors ${
         isAlt
           ? "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0d1526]/85 shadow-sm"
           : "border-slate-200 dark:border-[#243350] bg-white/90 dark:bg-[#131d30]/55"
       } ${columnHighlighted ? "ring-2 ring-blue-400/40 dark:ring-blue-500/35" : ""}`}
     >
       <div
-        className={`group/col flex items-start gap-2 px-3 py-2.5 border-b shrink-0 ${
+        className={`group/col flex items-start gap-2 px-2.5 py-2 border-b shrink-0 ${
           isAlt
             ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/90 dark:bg-[#111827]/70"
             : "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0f172a]/75"
@@ -523,7 +582,7 @@ function BucketColumn({
       </div>
 
       <div
-        className="flex-1 overflow-y-auto p-2 min-h-[120px]"
+        className="flex-1 overflow-y-auto p-1.5 min-h-[80px]"
         onDragOver={(e) => {
           if (!dragEnabled || !dragTaskId) return;
           e.preventDefault();
@@ -553,19 +612,21 @@ function BucketColumn({
             )}
           </p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {swimlanes.map((lane) => {
               const swimlaneId = lane.id as BucketSwimlaneId;
               const laneHighlighted =
                 dragOverColumn?.projectId === project.id && dragOverColumn.swimlaneId === swimlaneId;
+              const isCollapsible = lane.tasks.length >= LANE_COLLAPSE_THRESHOLD;
+              const isCollapsed = collapsedLanes.has(swimlaneId);
               return (
               <div
                 key={lane.id}
                 className={`${
                   lane.id === "overdue"
-                    ? "rounded-lg bg-red-50/60 dark:bg-red-950/20 border border-red-100/80 dark:border-red-900/30 p-1"
+                    ? "border-l-2 border-l-red-500/70 dark:border-l-red-400/60 pl-1.5"
                     : ""
-                } ${laneHighlighted ? "ring-1 ring-blue-400/50 rounded-lg" : ""}`}
+                } ${laneHighlighted ? "ring-1 ring-blue-400/50 rounded-md" : ""}`}
                 onDragOver={(e) => {
                   if (!dragEnabled || !dragTaskId) return;
                   e.preventDefault();
@@ -580,21 +641,51 @@ function BucketColumn({
                 }}
               >
                 {showLaneHeaders && (
-                  <p
-                    className={`app-section-label px-0.5 mb-1.5 leading-none ${
-                      lane.id === "overdue"
-                        ? "text-red-600/90 dark:text-red-400/90"
-                        : "text-slate-500 dark:text-slate-400"
-                    }`}
-                  >
-                    {lane.label}
-                    <span className="ml-1 tabular-nums font-normal normal-case tracking-normal">
-                      ({lane.tasks.length})
-                    </span>
-                  </p>
+                  isCollapsible ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleLane(swimlaneId)}
+                      className={`w-full flex items-center gap-1 app-section-label px-0.5 mb-1 leading-none text-left ${
+                        lane.id === "overdue"
+                          ? "text-red-600/90 dark:text-red-400/90"
+                          : "text-slate-500 dark:text-slate-400"
+                      } hover:opacity-80 transition-opacity`}
+                      aria-expanded={!isCollapsed}
+                    >
+                      <svg
+                        className={`w-3 h-3 shrink-0 transition-transform ${isCollapsed ? "" : "rotate-90"}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span className="truncate">
+                        {lane.label}
+                        <span className="ml-1 tabular-nums font-normal normal-case tracking-normal">
+                          ({lane.tasks.length})
+                        </span>
+                      </span>
+                    </button>
+                  ) : (
+                    <p
+                      className={`app-section-label px-0.5 mb-1 leading-none ${
+                        lane.id === "overdue"
+                          ? "text-red-600/90 dark:text-red-400/90"
+                          : "text-slate-500 dark:text-slate-400"
+                      }`}
+                    >
+                      {lane.label}
+                      <span className="ml-1 tabular-nums font-normal normal-case tracking-normal">
+                        ({lane.tasks.length})
+                      </span>
+                    </p>
+                  )
                 )}
-                <div className="space-y-1.5 min-h-[1.5rem]">
-                  {lane.tasks.map((task) => (
+                {!isCollapsed && (
+                <div className="space-y-1 min-h-[1.25rem]">
+                  {lane.tasks.map((task, taskIdx) => (
                     <BucketTaskCard
                       key={task.id}
                       task={task}
@@ -619,9 +710,18 @@ function BucketColumn({
                       onDragOver={() => onDragOverTask(task.id)}
                       onDrop={() => onDropOnTask(task.id, swimlaneId)}
                       onDragEnd={onDragEnd}
+                      canMoveUp={taskIdx > 0}
+                      canMoveDown={taskIdx < lane.tasks.length - 1}
+                      onMoveUp={
+                        onBucketMove ? () => onBucketMove(task.id, "up") : undefined
+                      }
+                      onMoveDown={
+                        onBucketMove ? () => onBucketMove(task.id, "down") : undefined
+                      }
                     />
                   ))}
                 </div>
+                )}
               </div>
             );
             })}
@@ -630,7 +730,7 @@ function BucketColumn({
       </div>
 
       <form
-        className="p-2 border-t border-slate-100 dark:border-[#243350] shrink-0"
+        className="px-1.5 py-1 border-t border-slate-100 dark:border-[#243350] shrink-0"
         onSubmit={(e) => {
           e.preventDefault();
           const title = draft.trim();
@@ -639,22 +739,24 @@ function BucketColumn({
           setDraft("");
         }}
       >
-        <div className="flex gap-1.5">
+        <div className="flex gap-1">
           <input
             ref={addInputRef}
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="+ Add task"
+            placeholder="Add task…"
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+            className="flex-1 min-w-0 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
           />
           <button
             type="submit"
             disabled={!draft.trim()}
-            className="px-2 py-1.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-2 py-1 text-sm font-bold rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Add task"
+            title="Add task"
           >
-            Add
+            +
           </button>
         </div>
       </form>
@@ -683,6 +785,7 @@ export default function TaskBucketView({
   expandedTaskId = null,
   onToggleTaskDetail,
   onBucketDrop,
+  onBucketMove,
 }: TaskBucketViewProps) {
   // Keep column order stable (favorites → manual order → name) regardless of active time filter.
   const orderedColumns = projects;
@@ -722,7 +825,7 @@ export default function TaskBucketView({
   };
 
   return (
-    <div className="px-3 sm:px-4 pb-4 pt-1">
+    <div className="px-3 sm:px-4 pb-3 pt-1 min-h-0">
       <div className="relative">
         <div
           className="w-full flex gap-3 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
@@ -776,6 +879,7 @@ export default function TaskBucketView({
               })
             }
             onDragEnd={clearDrag}
+            onBucketMove={onBucketMove}
           />
         ))}
         </div>
