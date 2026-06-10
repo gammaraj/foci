@@ -1558,10 +1558,10 @@ export default function TaskList({
       {/* Bucket view — all projects as columns */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="flex-[0_0_calc((100%-2.25rem)/4)] min-w-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse"
+              className="flex-[0_0_calc((100%-1.5rem)/3)] min-w-0 rounded-xl border border-slate-200 dark:border-[#243350] p-3 space-y-2 animate-pulse"
             >
               <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
               <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg" />

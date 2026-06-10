@@ -33,9 +33,9 @@ function BucketColumnTitle({ project }: { project: Project }) {
   );
 }
 
-/** Fit 4 full columns in the scroll viewport; extra projects scroll horizontally. */
+/** Fit 3 full columns in the scroll viewport; extra projects scroll horizontally. */
 const BUCKET_COLUMN_CLASS =
-  "flex-[0_0_calc((100%-0.75rem)/1.12)] sm:flex-[0_0_calc((100%-2.25rem)/4)] min-w-0";
+  "flex-[0_0_calc((100%-0.75rem)/1.12)] sm:flex-[0_0_calc((100%-1.5rem)/3)] min-w-0";
 
 interface TaskBucketViewProps {
   projects: Project[];
@@ -711,7 +711,7 @@ export default function TaskBucketView({
   };
 
   useEffect(() => {
-    if (orderedColumns.length <= 4) return;
+    if (orderedColumns.length <= 3) return;
     if (typeof window !== "undefined" && localStorage.getItem("foci-bucket-scroll-hint") === "1") return;
     setShowScrollHint(true);
   }, [orderedColumns.length]);
