@@ -17,7 +17,7 @@ export function ProjectTabName({
             {project.name}
           </span>
           <span
-            className="block truncate text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
+            className="block truncate text-xs app-text-meta font-medium leading-tight mt-0.5"
             title={desc}
           >
             {desc}
@@ -34,7 +34,7 @@ export function ProjectTabName({
       <span className="inline-flex items-center gap-1.5 min-w-0 max-w-full">
         <span className="truncate font-medium">{label}</span>
         <span
-          className="shrink-0 text-[10px] font-bold uppercase tracking-wide px-1 py-0.5 rounded bg-slate-200/90 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400"
+          className="shrink-0 text-xs app-badge font-bold uppercase tracking-wide px-1 py-0.5 rounded bg-slate-200/90 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400"
           title={`Project code: ${project.name}`}
         >
           {project.name}

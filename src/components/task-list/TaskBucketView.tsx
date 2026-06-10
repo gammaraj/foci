@@ -12,12 +12,12 @@ function BucketColumnTitle({ project }: { project: Project }) {
 
   return (
     <div className="min-w-0 flex-1">
-      <h3 className="truncate text-sm font-bold text-slate-900 dark:text-white leading-tight">
+      <h3 className="truncate text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
         {project.name}
       </h3>
       {showSubtitle && (
         <p
-          className="truncate text-[11px] font-normal text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
+          className="truncate text-xs app-text-meta font-normal leading-tight mt-0.5"
           title={subtitle}
         >
           {subtitle}
@@ -117,7 +117,7 @@ function DueBadge({
 
   return (
     <span
-      className={`relative inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+      className={`relative inline-flex items-center gap-1 text-xs font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
         overdue
           ? "bg-red-50 dark:bg-red-900/25 text-red-600 dark:text-red-300"
           : isToday
@@ -329,7 +329,7 @@ function BucketTaskCard({
             {task.dueDate ? (
               <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} />
             ) : onSetDueDate ? (
-              <label className="relative inline-flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+              <label className="relative inline-flex items-center gap-1 text-xs app-text-meta font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                 <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -472,7 +472,7 @@ function BucketColumn({
 
       <div className="flex-1 overflow-y-auto p-2 min-h-[120px]">
         {tasks.length === 0 ? (
-          <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6 px-2">
+          <p className="text-sm app-text-meta text-slate-400 dark:text-slate-500 text-center py-6 px-2">
             No tasks ·{" "}
             <button
               type="button"
@@ -495,10 +495,10 @@ function BucketColumn({
               >
                 {showLaneHeaders && (
                   <p
-                    className={`text-[10px] font-medium uppercase tracking-wide px-0.5 mb-1.5 ${
+                    className={`app-section-label px-0.5 mb-1.5 leading-none ${
                       lane.id === "overdue"
                         ? "text-red-600/90 dark:text-red-400/90"
-                        : "text-slate-400/80 dark:text-slate-500/80"
+                        : "text-slate-500 dark:text-slate-400"
                     }`}
                   >
                     {lane.label}
@@ -553,12 +553,12 @@ function BucketColumn({
             onChange={(e) => setDraft(e.target.value)}
             placeholder="+ Add task"
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 px-2.5 py-1.5 text-xs border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+            className="flex-1 min-w-0 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
           />
           <button
             type="submit"
             disabled={!draft.trim()}
-            className="px-2 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-2 py-1.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Add
           </button>
@@ -643,7 +643,7 @@ export default function TaskBucketView({
               className="absolute right-0 top-0 bottom-2 w-20 pointer-events-none bg-gradient-to-l from-white/95 via-white/70 to-transparent dark:from-[#0f172a]/95 dark:via-[#0f172a]/70 dark:to-transparent"
               aria-hidden
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 pointer-events-none whitespace-nowrap">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 dark:text-slate-400 pointer-events-none whitespace-nowrap">
               More →
             </span>
           </>

@@ -458,7 +458,7 @@ export default function ProjectManageView({
             <button
               type="button"
               onClick={() => setShowArchived((v) => !v)}
-              className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wide hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              className="flex items-center gap-2 app-section-label text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               aria-expanded={showArchived}
             >
               <svg
@@ -509,7 +509,7 @@ export default function ProjectManageView({
 
         {user && sharedProjects.length > 0 && (
           <div className="pt-3 border-t border-slate-100 dark:border-[#243350]">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
+            <p className="app-section-label text-slate-400 mb-2">
               Shared with me
             </p>
             <div className="space-y-1">

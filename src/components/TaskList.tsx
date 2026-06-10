@@ -1273,7 +1273,7 @@ export default function TaskList({
             <select
               value={viewMode}
               onChange={(e) => selectViewMode(e.target.value as TaskViewMode)}
-              className="sm:hidden text-xs font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
+              className="sm:hidden text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
               aria-label="Task view mode"
               data-tour="view-modes"
             >
@@ -1528,7 +1528,7 @@ export default function TaskList({
               </svg>
               Manage projects
             </button>
-            <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400">
+            <span className="hidden md:inline app-text-meta text-slate-500 dark:text-slate-400">
               ★ Pin columns to reorder · scroll for more
             </span>
           </div>
@@ -2209,7 +2209,7 @@ export default function TaskList({
               {/* Task content */}
               <div className="flex-1 min-w-0">
                 <div
-                  className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base font-medium text-slate-800 dark:text-slate-50 break-words leading-normal"
+                  className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-slate-800 dark:text-slate-50 break-words leading-normal"
                 >
                   {editingId === task.id ? (
                     <input
@@ -2222,7 +2222,7 @@ export default function TaskList({
                         if (e.key === "Escape") setEditingId(null);
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full px-1 py-0.5 text-base font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                      className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
                       autoFocus
                     />
                   ) : (
@@ -2289,7 +2289,7 @@ export default function TaskList({
                     <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
                   )}
                   {task.description && (
-                    <span className="text-xs text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
+                    <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" />
                       </svg>
@@ -2318,7 +2318,7 @@ export default function TaskList({
                   {task.recurrence && (
                     <>
                       <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
+                      <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
@@ -2450,7 +2450,7 @@ export default function TaskList({
         {completedTasks.length > 0 && (
           <div className="pt-2 border-t border-slate-100 dark:border-[#1e3050]">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wide">
+              <span className="app-section-label text-slate-500 dark:text-slate-300">
                 Completed ({completedTasks.length})
               </span>
               <div className="flex items-center gap-2">

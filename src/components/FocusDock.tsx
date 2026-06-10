@@ -148,7 +148,7 @@ export function FocusDockToolbar({
                     </span>
                   )}
                 </span>
-                <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
+                <span className="hidden sm:block text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
                   Sessions
                 </span>
                 <span
