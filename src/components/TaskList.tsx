@@ -17,6 +17,7 @@ const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
+import { applyBucketDrop, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailDrawer, TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import {
@@ -874,6 +875,18 @@ export default function TaskList({
     persistOne(updated, changed);
   };
 
+  const handleBucketDrop = (draggedTaskId: string, target: BucketDropTarget) => {
+    const updated = applyBucketDrop(tasks, draggedTaskId, target, activeTaskId);
+    if (!updated) {
+      showToast(
+        "Drag within the same due-date group to reorder, or drop on another project column to move.",
+        "error"
+      );
+      return;
+    }
+    persist(updated);
+  };
+
   const setTaskRecurrence = (taskId: string, recurrence: RecurrenceType | undefined) => {
     const updated = tasks.map((t) =>
       t.id === taskId ? { ...t, recurrence } : t
@@ -1529,7 +1542,7 @@ export default function TaskList({
               Manage projects
             </button>
             <span className="hidden md:inline app-text-meta text-slate-500 dark:text-slate-400">
-              ★ Pin columns to reorder · scroll for more
+              Drag tasks to reorder or move · ★ pin columns · scroll for more
             </span>
           </div>
           <button
@@ -1578,6 +1591,7 @@ export default function TaskList({
           onSetDueDate={setDueDate}
           expandedTaskId={expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
+          onBucketDrop={handleBucketDrop}
         />
       )}
 

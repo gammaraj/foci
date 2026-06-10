@@ -5,6 +5,12 @@ import type { Project, Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { MiniPlayPauseIcon, miniPlayButtonClass, miniResetButtonClass } from "@/components/FocusStripControls";
+import {
+  sortBucketTasks,
+  getBucketSwimlaneId,
+  type BucketDropTarget,
+  type BucketSwimlaneId,
+} from "@/components/task-list/bucket-order";
 
 function BucketColumnTitle({ project }: { project: Project }) {
   const subtitle = project.description?.trim();
@@ -52,29 +58,7 @@ interface TaskBucketViewProps {
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
-}
-
-function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Task[] {
-  return [...tasks].sort((a, b) => {
-    if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
-    if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
-
-    const aOverdue = a.dueDate && isDueDateOverdue(a.dueDate);
-    const bOverdue = b.dueDate && isDueDateOverdue(b.dueDate);
-    if (aOverdue && !bOverdue) return -1;
-    if (!aOverdue && bOverdue) return 1;
-
-    if (a.dueDate && !b.dueDate) return -1;
-    if (!a.dueDate && b.dueDate) return 1;
-    if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) {
-      return a.dueDate < b.dueDate ? -1 : 1;
-    }
-
-    if (a.order != null && b.order != null) return a.order - b.order;
-    if (a.order != null) return -1;
-    if (b.order != null) return 1;
-    return (b.createdAt || 0) - (a.createdAt || 0);
-  });
+  onBucketDrop?: (draggedTaskId: string, target: BucketDropTarget) => void;
 }
 
 interface BucketSwimlane {
@@ -155,6 +139,9 @@ function BucketTaskCard({
   isTimerRunning,
   isEditing,
   editTitle,
+  isDragging,
+  isDragOver,
+  dragEnabled,
   onToggleComplete,
   onStartTask,
   onSelectTask,
@@ -165,12 +152,19 @@ function BucketTaskCard({
   onSetDueDate,
   isDetailOpen,
   onToggleTaskDetail,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: {
   task: Task;
   isActive: boolean;
   isTimerRunning: boolean;
   isEditing: boolean;
   editTitle: string;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  dragEnabled?: boolean;
   onToggleComplete: (taskId: string) => void;
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
@@ -181,6 +175,10 @@ function BucketTaskCard({
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   isDetailOpen?: boolean;
   onToggleTaskDetail?: (taskId: string) => void;
+  onDragStart?: () => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: () => void;
+  onDragEnd?: () => void;
 }) {
   const showFocusAction = isActive || isTimerRunning;
   const canEdit = !!onStartEdit;
@@ -188,15 +186,46 @@ function BucketTaskCard({
 
   return (
     <div
+      draggable={dragEnabled && !isEditing}
+      onDragStart={(e) => {
+        if (!dragEnabled || isEditing) return;
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", task.id);
+        onDragStart?.();
+      }}
+      onDragOver={(e) => {
+        if (!dragEnabled) return;
+        e.preventDefault();
+        onDragOver?.(e);
+      }}
+      onDrop={(e) => {
+        if (!dragEnabled) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onDrop?.();
+      }}
+      onDragEnd={onDragEnd}
       className={`group rounded-lg border px-2 py-1.5 transition-colors ${
         isDetailOpen
           ? "border-violet-400 dark:border-violet-500 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
           : isActive
             ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 ring-1 ring-blue-400/25"
             : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#111827] hover:border-slate-300 dark:hover:border-[#2d4266]"
+      } ${isDragging ? "opacity-50" : ""} ${
+        isDragOver ? "border-t-2 border-t-blue-500 dark:border-t-blue-400" : ""
       }`}
     >
       <div className="flex items-start gap-1.5">
+        {dragEnabled && (
+          <div
+            className="hidden sm:flex flex-shrink-0 mt-0.5 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-hidden
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
+            </svg>
+          </div>
+        )}
         <button
           type="button"
           onClick={() => onToggleComplete(task.id)}
@@ -365,6 +394,10 @@ function BucketColumn({
   columnIndex,
   activeTaskId,
   isTimerRunning,
+  dragTaskId,
+  dragOverTaskId,
+  dragOverColumn,
+  dragEnabled,
   onToggleComplete,
   onStartTask,
   onSelectTask,
@@ -379,6 +412,12 @@ function BucketColumn({
   onSetDueDate,
   expandedTaskId,
   onToggleTaskDetail,
+  onDragStart,
+  onDragOverTask,
+  onDragOverLane,
+  onDropOnTask,
+  onDropOnLane,
+  onDragEnd,
 }: {
   project: Project;
   tasks: Task[];
@@ -386,6 +425,10 @@ function BucketColumn({
   columnIndex: number;
   activeTaskId: string | null;
   isTimerRunning: boolean;
+  dragTaskId: string | null;
+  dragOverTaskId: string | null;
+  dragOverColumn: { projectId: string; swimlaneId: BucketSwimlaneId } | null;
+  dragEnabled: boolean;
   onToggleComplete: (taskId: string) => void;
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
@@ -400,6 +443,12 @@ function BucketColumn({
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
+  onDragStart: (taskId: string) => void;
+  onDragOverTask: (taskId: string) => void;
+  onDragOverLane: (swimlaneId: BucketSwimlaneId) => void;
+  onDropOnTask: (taskId: string, swimlaneId: BucketSwimlaneId) => void;
+  onDropOnLane: (swimlaneId: BucketSwimlaneId) => void;
+  onDragEnd: () => void;
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
@@ -407,13 +456,16 @@ function BucketColumn({
   const showLaneHeaders = tasks.length > 0;
   const isAlt = columnIndex % 2 === 1;
 
+  const columnHighlighted =
+    dragOverColumn?.projectId === project.id && dragTaskId != null;
+
   return (
     <div
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border max-h-[min(70vh,640px)] ${
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border max-h-[min(70vh,640px)] transition-colors ${
         isAlt
           ? "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0d1526]/85 shadow-sm"
           : "border-slate-200 dark:border-[#243350] bg-white/90 dark:bg-[#131d30]/55"
-      }`}
+      } ${columnHighlighted ? "ring-2 ring-blue-400/40 dark:ring-blue-500/35" : ""}`}
     >
       <div
         className={`group/col flex items-start gap-2 px-3 py-2.5 border-b shrink-0 ${
@@ -470,28 +522,62 @@ function BucketColumn({
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-2 min-h-[120px]">
+      <div
+        className="flex-1 overflow-y-auto p-2 min-h-[120px]"
+        onDragOver={(e) => {
+          if (!dragEnabled || !dragTaskId) return;
+          e.preventDefault();
+          onDragOverLane("undated");
+        }}
+        onDrop={(e) => {
+          if (!dragEnabled || !dragTaskId) return;
+          e.preventDefault();
+          onDropOnLane(tasks.length === 0 ? "undated" : (dragOverColumn?.swimlaneId ?? "undated"));
+        }}
+      >
         {tasks.length === 0 ? (
           <p className="text-sm app-text-meta text-slate-400 dark:text-slate-500 text-center py-6 px-2">
-            No tasks ·{" "}
-            <button
-              type="button"
-              onClick={() => addInputRef.current?.focus()}
-              className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              + Add
-            </button>
+            {dragEnabled && dragTaskId ? (
+              <span className="text-blue-600 dark:text-blue-400 font-medium">Drop here to move</span>
+            ) : (
+              <>
+                No tasks ·{" "}
+                <button
+                  type="button"
+                  onClick={() => addInputRef.current?.focus()}
+                  className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  + Add
+                </button>
+              </>
+            )}
           </p>
         ) : (
           <div className="space-y-3">
-            {swimlanes.map((lane) => (
+            {swimlanes.map((lane) => {
+              const swimlaneId = lane.id as BucketSwimlaneId;
+              const laneHighlighted =
+                dragOverColumn?.projectId === project.id && dragOverColumn.swimlaneId === swimlaneId;
+              return (
               <div
                 key={lane.id}
-                className={
+                className={`${
                   lane.id === "overdue"
                     ? "rounded-lg bg-red-50/60 dark:bg-red-950/20 border border-red-100/80 dark:border-red-900/30 p-1"
                     : ""
-                }
+                } ${laneHighlighted ? "ring-1 ring-blue-400/50 rounded-lg" : ""}`}
+                onDragOver={(e) => {
+                  if (!dragEnabled || !dragTaskId) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDragOverLane(swimlaneId);
+                }}
+                onDrop={(e) => {
+                  if (!dragEnabled || !dragTaskId) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDropOnLane(swimlaneId);
+                }}
               >
                 {showLaneHeaders && (
                   <p
@@ -507,7 +593,7 @@ function BucketColumn({
                     </span>
                   </p>
                 )}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 min-h-[1.5rem]">
                   {lane.tasks.map((task) => (
                     <BucketTaskCard
                       key={task.id}
@@ -516,6 +602,9 @@ function BucketColumn({
                       isTimerRunning={isTimerRunning}
                       isEditing={editingTaskId === task.id}
                       editTitle={editTitle}
+                      isDragging={dragTaskId === task.id}
+                      isDragOver={dragOverTaskId === task.id && dragTaskId !== task.id}
+                      dragEnabled={dragEnabled}
                       onToggleComplete={onToggleComplete}
                       onStartTask={onStartTask}
                       onSelectTask={onSelectTask}
@@ -526,11 +615,16 @@ function BucketColumn({
                       onSetDueDate={onSetDueDate}
                       isDetailOpen={expandedTaskId === task.id}
                       onToggleTaskDetail={onToggleTaskDetail}
+                      onDragStart={() => onDragStart(task.id)}
+                      onDragOver={() => onDragOverTask(task.id)}
+                      onDrop={() => onDropOnTask(task.id, swimlaneId)}
+                      onDragEnd={onDragEnd}
                     />
                   ))}
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>
@@ -588,10 +682,33 @@ export default function TaskBucketView({
   onSetDueDate,
   expandedTaskId = null,
   onToggleTaskDetail,
+  onBucketDrop,
 }: TaskBucketViewProps) {
   // Keep column order stable (favorites → manual order → name) regardless of active time filter.
   const orderedColumns = projects;
   const [showScrollHint, setShowScrollHint] = useState(false);
+  const [dragTaskId, setDragTaskId] = useState<string | null>(null);
+  const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<{
+    projectId: string;
+    swimlaneId: BucketSwimlaneId;
+  } | null>(null);
+  const dragEnabled = !!onBucketDrop;
+
+  const clearDrag = () => {
+    setDragTaskId(null);
+    setDragOverTaskId(null);
+    setDragOverColumn(null);
+  };
+
+  const commitDrop = (target: BucketDropTarget) => {
+    if (!dragTaskId || !onBucketDrop) {
+      clearDrag();
+      return;
+    }
+    onBucketDrop(dragTaskId, target);
+    clearDrag();
+  };
 
   useEffect(() => {
     if (orderedColumns.length <= 4) return;
@@ -620,6 +737,10 @@ export default function TaskBucketView({
             columnIndex={columnIndex}
             activeTaskId={activeTaskId}
             isTimerRunning={isTimerRunning}
+            dragTaskId={dragTaskId}
+            dragOverTaskId={dragOverTaskId}
+            dragOverColumn={dragOverColumn}
+            dragEnabled={dragEnabled}
             onToggleComplete={onToggleComplete}
             onStartTask={onStartTask}
             onSelectTask={onSelectTask}
@@ -634,6 +755,27 @@ export default function TaskBucketView({
             onSetDueDate={onSetDueDate}
             expandedTaskId={expandedTaskId}
             onToggleTaskDetail={onToggleTaskDetail}
+            onDragStart={setDragTaskId}
+            onDragOverTask={setDragOverTaskId}
+            onDragOverLane={(swimlaneId) =>
+              setDragOverColumn({ projectId: project.id, swimlaneId })
+            }
+            onDropOnTask={(taskId, swimlaneId) =>
+              commitDrop({
+                type: "task",
+                projectId: project.id,
+                taskId,
+                swimlaneId,
+              })
+            }
+            onDropOnLane={(swimlaneId) =>
+              commitDrop({
+                type: "column",
+                projectId: project.id,
+                swimlaneId,
+              })
+            }
+            onDragEnd={clearDrag}
           />
         ))}
         </div>
