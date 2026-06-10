@@ -17,7 +17,7 @@ export function ProjectTabName({
             {project.name}
           </span>
           <span
-            className="block truncate text-xs app-text-meta font-medium leading-tight mt-0.5"
+            className="block truncate text-xs app-text-meta font-medium leading-tight mt-0.5 text-slate-500 dark:text-slate-400"
             title={desc}
           >
             {desc}

@@ -21,7 +21,7 @@ function BucketColumnTitle({ project }: { project: Project }) {
         {project.name}
       </h3>
       <p
-        className={`hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5 min-h-[1.125rem] ${
+        className={`hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5 min-h-[1.125rem] text-slate-500 dark:text-slate-400 ${
           showSubtitle ? "" : "invisible select-none"
         }`}
         title={showSubtitle ? subtitle : undefined}
@@ -234,7 +234,7 @@ function BucketTaskCard({
           ? "border-violet-400 dark:border-violet-500 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
           : isActive
             ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 ring-1 ring-blue-400/25"
-            : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#111827] hover:border-slate-300 dark:hover:border-[#2d4266]"
+            : "border-slate-300 dark:border-[#243350] bg-white dark:bg-[#111827] shadow-sm dark:shadow-none hover:border-slate-400 dark:hover:border-[#2d4266]"
       } ${isDragging ? "opacity-50" : ""} ${
         isDragOver ? "border-t-2 border-t-blue-500 dark:border-t-blue-400" : ""
       }`}
@@ -515,15 +515,15 @@ function BucketColumn({
     <div
       className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-xl border min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-colors ${
         isAlt
-          ? "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0d1526]/85 shadow-sm"
-          : "border-slate-200 dark:border-[#243350] bg-white/90 dark:bg-[#131d30]/55"
+          ? "border-slate-300 dark:border-[#2a3f5f] bg-slate-100 dark:bg-[#0d1526]/85 shadow-sm"
+          : "border-slate-300 dark:border-[#243350] bg-white dark:bg-[#131d30]/55 shadow-sm"
       } ${columnHighlighted ? "ring-2 ring-blue-400/40 dark:ring-blue-500/35" : ""}`}
     >
       <div
         className={`group/col flex items-center gap-2 px-2.5 py-2 border-b shrink-0 lg:min-h-[4.25rem] ${
           isAlt
-            ? "border-slate-200/80 dark:border-[#2a3f5f] bg-slate-100/90 dark:bg-[#111827]/70"
-            : "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/95 dark:bg-[#0f172a]/75"
+            ? "border-slate-300 dark:border-[#2a3f5f] bg-slate-200/70 dark:bg-[#111827]/70"
+            : "border-slate-300 dark:border-[#2a3f5f] bg-slate-100 dark:bg-[#0f172a]/75"
         }`}
         title={project.description?.trim() || project.name}
       >
@@ -723,7 +723,7 @@ function BucketColumn({
       </div>
 
       <form
-        className="px-1.5 py-1 border-t border-slate-100 dark:border-[#243350] shrink-0"
+        className="px-1.5 py-1 border-t border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-transparent shrink-0"
         onSubmit={(e) => {
           e.preventDefault();
           const title = draft.trim();
