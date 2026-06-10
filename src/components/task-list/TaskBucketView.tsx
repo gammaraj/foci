@@ -230,12 +230,12 @@ function BucketTaskCard({
         onDrop?.();
       }}
       onDragEnd={onDragEnd}
-      className={`group relative rounded-xl px-2 py-1.5 transition-all duration-150 ${
+      className={`group relative rounded-lg border px-2 py-1.5 transition-all duration-150 ${
         isDetailOpen
-          ? "bg-violet-50/80 dark:bg-violet-950/25"
+          ? "border-violet-200/90 dark:border-violet-500/40 bg-violet-50/80 dark:bg-violet-950/25"
           : isActive
-            ? "bg-blue-50/90 dark:bg-blue-950/30"
-            : "hover:bg-slate-50/90 dark:hover:bg-white/[0.04]"
+            ? "border-blue-200/90 dark:border-blue-500/40 bg-blue-50/90 dark:bg-blue-950/30"
+            : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.02] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.04]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
         isDragOver
           ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-blue-500 dark:before:bg-blue-400"
@@ -674,7 +674,7 @@ function BucketColumn({
                   )
                 )}
                 {!isCollapsed && (
-                <div className="space-y-0.5 min-h-[1.25rem]">
+                <div className="space-y-1 min-h-[1.25rem]">
                   {lane.tasks.map((task, taskIdx) => (
                     <BucketTaskCard
                       key={task.id}
