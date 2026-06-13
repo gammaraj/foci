@@ -440,7 +440,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       <div
         className={`flex items-center gap-1.5 transition-colors ${
           stripEmbedded
-            ? "w-full min-w-0 shrink-0 min-h-[2.75rem] px-0 py-0.5"
+            ? "w-full min-w-0 shrink-0 h-full min-h-[3.5rem] px-0 py-0"
             : inline
               ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
               : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"

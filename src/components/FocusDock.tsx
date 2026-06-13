@@ -254,7 +254,7 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`flex items-center justify-between gap-2 min-w-0 w-full px-0 py-0.5 transition-colors ${embeddedChrome}`}
+        className={`flex items-center justify-between gap-2 min-w-0 w-full h-full min-h-[3.5rem] px-0 transition-colors ${embeddedChrome}`}
       >
         <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
           {sessionsLink}
