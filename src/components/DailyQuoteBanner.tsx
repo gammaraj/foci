@@ -24,7 +24,9 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
     >
       <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
         <div className="flex flex-col sm:flex-row sm:items-stretch gap-y-1.5 gap-x-3 min-w-0">
-          <WeatherTime compact />
+          <div className="min-w-0 sm:flex-1">
+            <WeatherTime compact />
+          </div>
           {hasFocusStrip && (
             <div className="w-full min-w-0 sm:flex-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden">
               <div

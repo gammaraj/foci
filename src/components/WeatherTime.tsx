@@ -86,35 +86,30 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
 
   if (compact) {
     return (
-      <div className="flex items-center gap-1.5 min-h-[2.75rem] min-w-0 px-3 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm">
-        <span className="flex items-center gap-1.5 min-w-0 shrink-0">
+      <div className="flex items-center gap-2 min-h-[2.75rem] min-w-0 w-full px-3 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden">
+        <span className="flex items-center gap-1.5 shrink-0">
           <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Time</span>
           <span className="text-base sm:text-lg font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
             {formatClock(now)}
           </span>
         </span>
         {weather && (
-          <>
-            <span className="text-slate-300 dark:text-slate-600 shrink-0 hidden sm:inline" aria-hidden>
-              ·
+          <span
+            className="flex items-center gap-1.5 min-w-0 flex-1 justify-end overflow-hidden"
+            title={`${weather.description}${weather.city ? ` · ${weather.city}` : ""}`}
+          >
+            <span className="text-base sm:text-lg leading-none shrink-0" aria-hidden>
+              {weather.icon}
             </span>
-            <span
-              className="flex items-center gap-1.5 min-w-0"
-              title={weather.description}
-            >
-              <span className="text-base sm:text-lg leading-none shrink-0" aria-hidden>
-                {weather.icon}
-              </span>
-              <span className="text-base sm:text-lg font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
-                {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
-              </span>
-              {weather.city && (
-                <span className="text-base sm:text-lg font-semibold leading-none text-slate-800 dark:text-slate-100 truncate hidden md:inline">
-                  {weather.city}
-                </span>
-              )}
+            <span className="text-base sm:text-lg font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap shrink-0">
+              {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
             </span>
-          </>
+            {weather.city && (
+              <span className="text-sm sm:text-base font-medium leading-none text-slate-600 dark:text-slate-300 truncate min-w-0">
+                {weather.city}
+              </span>
+            )}
+          </span>
         )}
       </div>
     );
@@ -134,16 +129,16 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
         </p>
       </div>
       {weather && (
-        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 text-right">
-          <span className="text-lg sm:text-xl" title={weather.description}>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 text-right min-w-0 max-w-[50%]">
+          <span className="text-lg sm:text-xl shrink-0" title={weather.description}>
             {weather.icon}
           </span>
-          <div className="flex items-center gap-1 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 tabular-nums">
-            <span>
+          <div className="flex items-center gap-1 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 tabular-nums min-w-0">
+            <span className="shrink-0">
               {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
             </span>
             {weather.city && (
-              <p className="text-xs sm:text-sm font-normal text-slate-400 dark:text-slate-300 truncate max-w-[100px] sm:max-w-[120px]">
+              <p className="text-xs sm:text-sm font-normal text-slate-500 dark:text-slate-300 truncate min-w-0">
                 {weather.city}
               </p>
             )}

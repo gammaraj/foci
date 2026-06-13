@@ -60,6 +60,7 @@ interface TaskBucketViewProps {
   onToggleTaskDetail?: (taskId: string) => void;
   onBucketDrop?: (draggedTaskId: string, target: BucketDropTarget) => void;
   onBucketMove?: (taskId: string, direction: "up" | "down") => void;
+  renderBelowTask?: (task: Task, compact?: boolean) => React.ReactNode;
 }
 
 const LANE_COLLAPSE_THRESHOLD = 4;
@@ -468,6 +469,7 @@ function BucketColumn({
   onDropOnLane,
   onDragEnd,
   onBucketMove,
+  renderBelowTask,
 }: {
   project: Project;
   tasks: Task[];
@@ -499,6 +501,7 @@ function BucketColumn({
   onDropOnLane: (swimlaneId: BucketSwimlaneId) => void;
   onDragEnd: () => void;
   onBucketMove?: (taskId: string, direction: "up" | "down") => void;
+  renderBelowTask?: (task: Task, compact?: boolean) => React.ReactNode;
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
@@ -676,8 +679,8 @@ function BucketColumn({
                 {!isCollapsed && (
                 <div className="space-y-1 min-h-[1.25rem]">
                   {lane.tasks.map((task, taskIdx) => (
+                    <div key={task.id} className="min-w-0">
                     <BucketTaskCard
-                      key={task.id}
                       task={task}
                       isActive={activeTaskId === task.id}
                       isTimerRunning={isTimerRunning}
@@ -709,6 +712,8 @@ function BucketColumn({
                         onBucketMove ? () => onBucketMove(task.id, "down") : undefined
                       }
                     />
+                    {renderBelowTask?.(task, true)}
+                    </div>
                   ))}
                 </div>
                 )}
@@ -776,6 +781,7 @@ export default function TaskBucketView({
   onToggleTaskDetail,
   onBucketDrop,
   onBucketMove,
+  renderBelowTask,
 }: TaskBucketViewProps) {
   // Keep column order stable (favorites → manual order → name) regardless of active time filter.
   const orderedColumns = projects;
@@ -869,6 +875,7 @@ export default function TaskBucketView({
             }
             onDragEnd={clearDrag}
             onBucketMove={onBucketMove}
+            renderBelowTask={renderBelowTask}
           />
         ))}
         </div>

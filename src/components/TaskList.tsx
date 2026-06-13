@@ -18,7 +18,8 @@ import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import { applyBucketDrop, moveBucketTaskInLane, type BucketDropTarget } from "@/components/task-list/bucket-order";
-import { TaskDetailDrawer, TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
+import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
+import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import {
   MAX_TASK_TITLE,
@@ -121,6 +122,9 @@ export default function TaskList({
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
+    setExpandedTaskId(null);
+    setNewSubtaskTitle("");
+    setEditingSubtaskId(null);
     if (mode !== "plan") {
       localStorage.setItem("foci_task_view_mode", mode);
       localStorage.setItem("foci_task_view_explicit", "1");
@@ -787,6 +791,7 @@ export default function TaskList({
     const changed = updated.find((t) => t.id === taskId)!;
     persistOne(updated, changed);
     setNewSubtaskTitle("");
+    setExpandedTaskId(taskId);
   };
 
   const toggleSubtask = (taskId: string, subtaskId: string) => {
@@ -1129,28 +1134,53 @@ export default function TaskList({
   const isFocusMode = !!focusProjectId;
   const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
 
-  const taskDetailDrawer =
-    !isFocusMode && !projectManageOpen && expandedTaskId && ["list", "bucket", "calendar"].includes(viewMode)
-      ? (() => {
-          const detailTask = tasks.find((t) => t.id === expandedTaskId && !t.archivedAt);
-          if (!detailTask) return null;
-          return (
-            <TaskDetailDrawer task={detailTask} onClose={closeTaskDetail}>
-              <TaskDetailPanel
-                task={detailTask}
-                variant="drawer"
-                {...taskDetailPanelProps(detailTask)}
-                onDeleteTask={() => {
-                  deleteTask(detailTask.id);
-                  closeTaskDetail();
-                }}
-                onStartTask={() => onStartTask(detailTask.id)}
-                onDeselectTask={() => onSelectTask(null)}
-              />
-            </TaskDetailDrawer>
-          );
-        })()
-      : null;
+  const taskSubtaskSectionProps = (task: Task) => ({
+    task,
+    newSubtaskTitle,
+    onNewSubtaskTitleChange: setNewSubtaskTitle,
+    onAddSubtask: () => addSubtask(task.id),
+    editingSubtaskId,
+    editSubtaskTitle,
+    onStartEditSubtask: startEditingSubtask,
+    onEditSubtaskTitleChange: setEditSubtaskTitle,
+    onSaveSubtaskEdit: (subId: string) => saveSubtaskEdit(task.id, subId),
+    onCancelEditSubtask: () => setEditingSubtaskId(null),
+    onToggleSubtask: (subId: string) => toggleSubtask(task.id, subId),
+    onSetSubtaskDueDate: (subId: string, date: string | undefined) =>
+      setSubtaskDueDate(task.id, subId, date),
+    onDeleteSubtask: (subId: string) => deleteSubtask(task.id, subId),
+  });
+
+  const renderTaskInlineExpansion = (task: Task, compact = false) => {
+    const subtasks = task.subtasks || [];
+    const hasSubtasks = subtasks.length > 0;
+    const isExpanded = expandedTaskId === task.id;
+    if (!hasSubtasks && !isExpanded) return null;
+
+    return (
+      <div className="overflow-hidden">
+        <TaskSubtaskSection
+          {...taskSubtaskSectionProps(task)}
+          showAddForm={isExpanded || hasSubtasks}
+          compact={compact}
+        />
+        {isExpanded && (
+          <TaskDetailPanel
+            task={task}
+            variant="inline"
+            hideSubtasks
+            {...taskDetailPanelProps(task)}
+            onDeleteTask={() => {
+              deleteTask(task.id);
+              closeTaskDetail();
+            }}
+            onStartTask={() => onStartTask(task.id)}
+            onDeselectTask={() => onSelectTask(null)}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
@@ -1508,6 +1538,7 @@ export default function TaskList({
           onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate)}
           expandedTaskId={expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
+          renderBelowTask={renderTaskInlineExpansion}
         />
       )}
 
@@ -1598,10 +1629,9 @@ export default function TaskList({
           onToggleTaskDetail={toggleTaskDetail}
           onBucketDrop={handleBucketDrop}
           onBucketMove={handleBucketMove}
+          renderBelowTask={renderTaskInlineExpansion}
         />
       )}
-
-      {taskDetailDrawer}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
@@ -2087,7 +2117,6 @@ export default function TaskList({
         <div className="space-y-2">
           {pendingTasks.map((task, index) => {
             const subtasks = task.subtasks || [];
-            const completedSubtasks = subtasks.filter((s) => s.completed).length;
             const hasSubtasks = subtasks.length > 0;
             const isExpanded = expandedTaskId === task.id;
             const isOverdue = task.dueDate && isDueDateOverdue(task.dueDate);
@@ -2168,8 +2197,7 @@ export default function TaskList({
               onDragOver={(e) => handleDragOver(e, task.id)}
               onDrop={() => handleDrop(task.id)}
               onDragEnd={handleDragEnd}
-              onClick={() => toggleTaskDetail(task.id)}
-              className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors cursor-pointer ${
+              className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors ${
                 activeTaskId === task.id
                   ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-blue-400/30 dark:ring-blue-500/25"
                   : isExpanded
@@ -2305,7 +2333,7 @@ export default function TaskList({
                       />
                     </div>
                   )}
-                  {(hasSubtasks || task.description || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
+                  {(task.description || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
                     <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
                   )}
                   {task.description && (
@@ -2315,16 +2343,8 @@ export default function TaskList({
                       </svg>
                     </span>
                   )}
-                  {task.description && (hasSubtasks || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
+                  {task.description && (task.sessions > 0 || (task.timeSpent || 0) > 0) && (
                     <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
-                  )}
-                  {hasSubtasks && (
-                    <span className="app-text-meta text-slate-500 dark:text-slate-300">
-                      {completedSubtasks}/{subtasks.length} subtask{subtasks.length !== 1 ? "s" : ""}
-                    </span>
-                  )}
-                  {hasSubtasks && (task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-400 dark:text-slate-400">·</span>
                   )}
                   {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
                     <span className="app-text-meta text-slate-500 dark:text-slate-300">
@@ -2349,19 +2369,26 @@ export default function TaskList({
                 </div>
               </div>
 
-              {/* Details chevron indicator */}
-              <div
-                className={`flex-shrink-0 min-w-[28px] sm:min-w-[36px] min-h-[28px] sm:min-h-[36px] rounded-md flex items-center justify-center ${
+              {/* Details chevron — expand task metadata & first subtask form */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTaskDetail(task.id);
+                }}
+                className={`flex-shrink-0 min-w-[28px] sm:min-w-[36px] min-h-[28px] sm:min-h-[36px] rounded-md flex items-center justify-center transition-colors hover:bg-slate-100 dark:hover:bg-[#1a2d4a] ${
                   isExpanded
                     ? "text-violet-500 dark:text-violet-400"
-                    : "text-slate-300 dark:text-slate-500"
+                    : "text-slate-300 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-300"
                 }`}
                 title={isExpanded ? "Close details" : "Task details"}
+                aria-label={isExpanded ? "Close task details" : "Open task details"}
+                aria-expanded={isExpanded}
               >
                 <svg className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </div>
+              </button>
 
               {activeTaskId === task.id && !isTimerRunning && (
                 <span className="lg:hidden flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-xs font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50">
@@ -2461,6 +2488,7 @@ export default function TaskList({
                 </button>
               </div>
             )}
+            {renderTaskInlineExpansion(task)}
             </div>
             );
           })}

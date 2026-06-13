@@ -24,6 +24,7 @@ export interface TaskCalendarViewProps {
   onQuickAdd?: (title: string, dueDate: string) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
+  renderBelowTask?: (task: Task) => React.ReactNode;
 }
 
 export default function TaskCalendarView({
@@ -40,6 +41,7 @@ export default function TaskCalendarView({
   onQuickAdd,
   expandedTaskId = null,
   onToggleTaskDetail,
+  renderBelowTask,
 }: TaskCalendarViewProps) {
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS_ID);
   const [quickAddTitle, setQuickAddTitle] = useState("");
@@ -254,8 +256,8 @@ export default function TaskCalendarView({
           ) : (
             <div className="space-y-1.5">
               {selectedTasks.map((task) => (
+                <div key={task.id}>
                 <div
-                  key={task.id}
                   role={onToggleTaskDetail ? "button" : undefined}
                   tabIndex={onToggleTaskDetail ? 0 : undefined}
                   onClick={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
@@ -320,6 +322,8 @@ export default function TaskCalendarView({
                     </svg>
                   </button>
                 </div>
+                {renderBelowTask?.(task)}
+                </div>
               ))}
             </div>
           )}
@@ -333,8 +337,8 @@ export default function TaskCalendarView({
           </h4>
           <div className="space-y-1">
             {unscheduledTasks.slice(0, 8).map((task) => (
+              <div key={task.id}>
               <div
-                key={task.id}
                 role={onToggleTaskDetail ? "button" : undefined}
                 tabIndex={onToggleTaskDetail ? 0 : undefined}
                 onClick={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
@@ -372,6 +376,8 @@ export default function TaskCalendarView({
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }}
                   />
                 </div>
+              </div>
+              {renderBelowTask?.(task)}
               </div>
             ))}
             {unscheduledTasks.length > 8 && (

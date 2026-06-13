@@ -4,6 +4,7 @@ import React from "react";
 import type { Project, RecurrenceType, Subtask, Task, TaskPriority } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
+import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 
 export interface TaskDetailPanelProps {
   task: Task;
@@ -37,6 +38,8 @@ export interface TaskDetailPanelProps {
   onDeleteTask?: () => void;
   onStartTask?: () => void;
   onDeselectTask?: () => void;
+  /** When subtasks are shown inline below the task row */
+  hideSubtasks?: boolean;
 }
 
 export function TaskDetailPanel({
@@ -71,11 +74,9 @@ export function TaskDetailPanel({
   onDeleteTask,
   onStartTask,
   onDeselectTask,
+  hideSubtasks = false,
 }: TaskDetailPanelProps) {
   const pad = variant === "drawer" ? "px-4" : "px-4";
-  const subtasks = task.subtasks || [];
-  const hasSubtasks = subtasks.length > 0;
-  const completedSubtasks = subtasks.filter((s) => s.completed).length;
   const wrapperClass =
     variant === "inline"
       ? `border border-t-0 rounded-b-xl py-3 space-y-2 ${
@@ -214,133 +215,24 @@ export function TaskDetailPanel({
         )}
       </div>
 
-      <div className="border-t border-slate-100 dark:border-[#1e3050] pt-2 mt-1">
-        {hasSubtasks && (
-          <div className={`${pad} pb-1`}>
-            <span className="text-xs font-medium text-slate-400 dark:text-slate-400 uppercase tracking-wide">
-              Subtasks ({completedSubtasks}/{subtasks.length})
-            </span>
-          </div>
-        )}
-        {subtasks.map((sub) => (
-          <div
-            key={sub.id}
-            className="group/sub flex items-center gap-2.5 py-1 pl-6 pr-4 ml-4 border-l-2 border-slate-200 dark:border-[#243350]"
-          >
-            <button
-              type="button"
-              onClick={() => onToggleSubtask(sub.id)}
-              className={`flex-shrink-0 w-5 h-5 rounded border-[1.5px] transition-colors flex items-center justify-center ${
-                sub.completed
-                  ? "border-green-400 bg-green-500"
-                  : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
-              }`}
-              aria-label={`Toggle subtask "${sub.title}"`}
-            >
-              {sub.completed && (
-                <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </button>
-            {editingSubtaskId === sub.id ? (
-              <input
-                type="text"
-                value={editSubtaskTitle}
-                onChange={(e) => onEditSubtaskTitleChange(e.target.value)}
-                onBlur={() => onSaveSubtaskEdit(sub.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") onSaveSubtaskEdit(sub.id);
-                  if (e.key === "Escape") onCancelEditSubtask();
-                }}
-                className="flex-1 px-1 py-0.5 text-sm border border-blue-300 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                autoFocus
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => onStartEditSubtask(sub)}
-                className={`flex-1 text-left text-sm ${
-                  sub.completed
-                    ? "text-slate-400 dark:text-slate-400 line-through"
-                    : "text-slate-700 dark:text-slate-200"
-                }`}
-              >
-                {sub.title}
-              </button>
-            )}
-            <div
-              className={`relative flex-shrink-0 p-1 transition-colors ${
-                sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
-                  ? "text-red-500 dark:text-red-400"
-                  : sub.dueDate
-                    ? "text-slate-500 dark:text-slate-400"
-                    : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100"
-              }`}
-              title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}
-            >
-              {sub.dueDate ? (
-                <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
-              ) : (
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              )}
-              <input
-                type="date"
-                value={sub.dueDate ?? ""}
-                onChange={(e) => onSetSubtaskDueDate(sub.id, e.target.value || undefined)}
-                onFocus={(e) => {
-                  try {
-                    (e.target as HTMLInputElement).showPicker();
-                  } catch {}
-                }}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                aria-label="Subtask due date"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => onDeleteSubtask(sub.id)}
-              className="flex-shrink-0 p-1 text-slate-400 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 transition-all"
-              aria-label={`Delete subtask "${sub.title}"`}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        ))}
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onAddSubtask();
-          }}
-          className="flex items-center gap-2 pl-6 pr-4 ml-4 border-l-2 border-slate-200 dark:border-[#243350] pt-1"
-        >
-          <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-slate-400">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
-          <input
-            type="text"
-            value={newSubtaskTitle}
-            onChange={(e) => onNewSubtaskTitleChange(e.target.value)}
-            placeholder="Add a subtask..."
-            className="flex-1 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-400 outline-none"
-          />
-          <button
-            type="submit"
-            disabled={!newSubtaskTitle.trim()}
-            className="px-2 py-1 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Add
-          </button>
-        </form>
-      </div>
+      {!hideSubtasks && (
+        <TaskSubtaskSection
+          task={task}
+          showAddForm
+          newSubtaskTitle={newSubtaskTitle}
+          onNewSubtaskTitleChange={onNewSubtaskTitleChange}
+          onAddSubtask={onAddSubtask}
+          editingSubtaskId={editingSubtaskId}
+          editSubtaskTitle={editSubtaskTitle}
+          onStartEditSubtask={onStartEditSubtask}
+          onEditSubtaskTitleChange={onEditSubtaskTitleChange}
+          onSaveSubtaskEdit={onSaveSubtaskEdit}
+          onCancelEditSubtask={onCancelEditSubtask}
+          onToggleSubtask={onToggleSubtask}
+          onSetSubtaskDueDate={onSetSubtaskDueDate}
+          onDeleteSubtask={onDeleteSubtask}
+        />
+      )}
 
       {(onDeleteTask || onStartTask) && (
         <div
