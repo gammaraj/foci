@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import type { Project, Task } from "@/lib/types";
+import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
@@ -107,16 +107,24 @@ function DueBadge({
 
   return (
     <span
-      className={`relative inline-flex items-center gap-0.5 font-medium shrink-0 leading-none ${
-        compact ? "text-[11px] px-1 py-px rounded-md" : "text-xs gap-1 px-1.5 py-0.5 rounded-md"
+      className={`relative inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
+        compact ? "text-[11px] px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
       } ${
         overdue
-          ? "text-red-600 dark:text-red-400"
+          ? "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
           : isToday
-            ? "text-amber-700 dark:text-amber-300"
-            : "text-slate-400 dark:text-slate-500"
-      } ${interactive ? "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400" : ""}`}
-      title={interactive ? "Change due date" : undefined}
+            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
+            : "text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-white/5 border border-slate-200/70 dark:border-[#2a3f5f]/80"
+      } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`}
+      title={
+        interactive
+          ? "Change due date"
+          : overdue
+            ? "Overdue"
+            : isToday
+              ? "Due today"
+              : undefined
+      }
     >
       {!compact && (
         <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -138,6 +146,28 @@ function DueBadge({
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           aria-label="Change due date"
         />
+      )}
+    </span>
+  );
+}
+
+function ProjectTaskCountBadge({ tasks }: { tasks: Task[] }) {
+  const overdueCount = tasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length;
+  const title = `${tasks.length} open task${tasks.length === 1 ? "" : "s"}${
+    overdueCount > 0 ? ` · ${overdueCount} overdue` : ""
+  }`;
+
+  return (
+    <span
+      title={title}
+      className="inline-flex items-center gap-1 text-[11px] tabular-nums font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/10 rounded-full px-2 py-0.5 shrink-0"
+    >
+      <span className="font-semibold text-slate-800 dark:text-slate-100">{tasks.length}</span>
+      <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">open</span>
+      {overdueCount > 0 && (
+        <span className="text-[10px] font-semibold text-red-600 dark:text-red-400">
+          · {overdueCount} late
+        </span>
       )}
     </span>
   );
@@ -200,6 +230,7 @@ function BucketTaskCard({
 }) {
   const canEdit = !!onStartEdit;
   const canOpenDetail = !!onToggleTaskDetail;
+  const isOverdue = !!(task.dueDate && isDueDateOverdue(task.dueDate));
   const compactIconBtn =
     "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors";
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
@@ -236,7 +267,9 @@ function BucketTaskCard({
           ? "border-violet-200/90 dark:border-violet-500/40 bg-violet-50/80 dark:bg-violet-950/25"
           : isActive
             ? "border-blue-200/90 dark:border-blue-500/40 bg-blue-50/90 dark:bg-blue-950/30"
-            : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.02] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.04]"
+            : isOverdue
+              ? "border-red-200/80 dark:border-red-800/50 border-l-[3px] border-l-red-500 dark:border-l-red-400 bg-red-50/55 dark:bg-red-950/20 hover:border-red-300/90 dark:hover:border-red-700/60 hover:bg-red-50/80 dark:hover:bg-red-950/30"
+              : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.03] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.05]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
         isDragOver
           ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-blue-500 dark:before:bg-blue-400"
@@ -322,13 +355,16 @@ function BucketTaskCard({
           <button
             type="button"
             onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug truncate hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:truncate-none group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10 hover:text-slate-900 dark:hover:text-white transition-colors"
             title={task.title}
           >
             {task.title}
           </button>
         ) : (
-          <p className="flex-1 min-w-0 text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug truncate" title={task.title}>
+          <p
+            className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:truncate-none group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10"
+            title={task.title}
+          >
             {task.title}
           </p>
         )}
@@ -520,15 +556,31 @@ function BucketColumn({
 
   const columnHighlighted =
     dragOverColumn?.projectId === project.id && dragTaskId != null;
+  const isPersonal = project.id === DEFAULT_PROJECT_ID;
 
   return (
     <div
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none backdrop-blur-sm ${
-        columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""
-      }`}
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm ${
+        isPersonal
+          ? "bg-slate-50/95 dark:bg-[#151c2c]/95 border border-slate-200/90 dark:border-slate-600/40 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.05)] dark:shadow-none"
+          : "bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none"
+      } ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
     >
       <div
-        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem]"
+        className={`group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl ${
+          isPersonal
+            ? "bg-gradient-to-br from-slate-100/90 to-slate-50/50 dark:from-slate-800/55 dark:to-[#151c2c]/40 border-b border-slate-200/80 dark:border-slate-600/30"
+            : project.color
+              ? "border-b border-slate-200/60 dark:border-[#243350]/60"
+              : "border-b border-slate-200/60 dark:border-[#243350]/60"
+        }`}
+        style={
+          !isPersonal && project.color
+            ? {
+                background: `linear-gradient(135deg, color-mix(in srgb, ${project.color} 12%, transparent), transparent 72%)`,
+              }
+            : undefined
+        }
         title={project.description?.trim() || project.name}
       >
         {onToggleProjectFavorite ? (
@@ -573,9 +625,15 @@ function BucketColumn({
           />
         )}
         <BucketColumnTitle project={project} />
-        <span className="text-[11px] tabular-nums font-medium text-slate-500 dark:text-slate-400 bg-slate-100/90 dark:bg-white/10 rounded-full px-2 py-0.5 shrink-0">
-          {tasks.length}
-        </span>
+        {isPersonal && (
+          <span
+            className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-slate-600/50 rounded-full px-2 py-0.5 shrink-0"
+            title="Personal tasks — your default bucket"
+          >
+            Personal
+          </span>
+        )}
+        <ProjectTaskCountBadge tasks={tasks} />
       </div>
 
       <div

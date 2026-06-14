@@ -253,7 +253,8 @@ interface AmbientSoundsProps {
 
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
-const FOCUS_STRIP_VALUE = "text-base sm:text-lg font-semibold leading-none text-slate-800 dark:text-slate-100";
+const FOCUS_STRIP_VALUE =
+  "text-xs sm:text-sm font-medium leading-tight text-slate-700 dark:text-slate-200";
 
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const stripEmbedded = inline && embedded;
@@ -502,8 +503,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
           {stripEmbedded ? (
-            <span className="flex items-center gap-1.5 min-w-0">
-              <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Music</span>
+            <span className="flex flex-col min-w-0 gap-0.5">
+              <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none">
+                Music
+              </span>
               <span className={`${FOCUS_STRIP_VALUE} truncate`}>{nowPlayingLabel}</span>
             </span>
           ) : (

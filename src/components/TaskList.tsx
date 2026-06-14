@@ -1564,7 +1564,7 @@ export default function TaskList({
 
       {/* Bucket toolbar — projects only (counts live in header subtitle) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <div className="px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <button
               type="button"
@@ -1584,9 +1584,13 @@ export default function TaskList({
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-medium text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-200 rounded-lg border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 shadow-sm transition-colors shrink-0"
+            title="Create a new project bucket"
           >
-            + Project
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            New project
           </button>
         </div>
       )}

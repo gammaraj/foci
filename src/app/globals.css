@@ -141,7 +141,7 @@ body {
   color: var(--app-text-muted);
 }
 .dark .app-shell {
-  --app-text-muted: #94a3b8;
+  --app-text-muted: #a8b6c9;
 }
 .dark .app-shell .app-text-meta {
   color: var(--app-text-muted);

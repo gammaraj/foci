@@ -101,16 +101,16 @@ export function FocusDockToolbar({
       aria-label={`${sessions.count} of ${sessions.goal} focus sessions today`}
     >
       {embedded ? (
-        <span className="flex items-baseline gap-1 tabular-nums leading-none whitespace-nowrap">
+        <span className="flex items-baseline gap-1 tabular-nums leading-none whitespace-nowrap min-w-0">
           <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
             {sessions.count}/{sessions.goal}
           </span>
-          <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-            Sessions
+          <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
+            focus sessions
           </span>
           {sessions.streak > 0 && (
             <span
-              className="hidden sm:inline text-xs font-medium text-orange-600 dark:text-orange-400"
+              className="text-xs font-medium text-orange-600 dark:text-orange-400 shrink-0"
               title={`${sessions.streak}-day streak`}
             >
               🔥{sessions.streak}d
@@ -132,8 +132,8 @@ export function FocusDockToolbar({
               </span>
             )}
           </span>
-          <span className="hidden sm:block text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 leading-none">
-            Sessions
+          <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 leading-none">
+            focus sessions
           </span>
           <span
             className="hidden sm:block w-full min-w-[2.25rem] h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
