@@ -1117,10 +1117,15 @@ export default function TaskList({
   const bucketDatedCount = bucketOpenTasks.filter((t) => t.dueDate).length;
   const bucketUndatedCount = bucketOpenTasks.filter((t) => !t.dueDate).length;
   const bucketTasksByProject = new Map<string, Task[]>();
+  const bucketCompletedCountByProject = new Map<string, number>();
   for (const project of sortedProjects) {
     bucketTasksByProject.set(
       project.id,
       bucketOpenTasks.filter((t) => t.projectId === project.id)
+    );
+    bucketCompletedCountByProject.set(
+      project.id,
+      tasks.filter((t) => !t.archivedAt && t.completed && t.projectId === project.id).length
     );
   }
   const completedTasks = projectTasks.filter((t) => t.completed);
@@ -1614,6 +1619,7 @@ export default function TaskList({
         <TaskBucketView
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
+          completedCountByProject={bucketCompletedCountByProject}
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
           datedLaneLabel={bucketDatedLaneLabel}

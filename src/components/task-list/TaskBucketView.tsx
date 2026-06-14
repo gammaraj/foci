@@ -40,6 +40,8 @@ const BUCKET_COLUMN_CLASS =
 interface TaskBucketViewProps {
   projects: Project[];
   tasksByProject: Map<string, Task[]>;
+  /** Non-archived completed tasks per project (for column header counts). */
+  completedCountByProject?: Map<string, number>;
   activeTaskId: string | null;
   isTimerRunning: boolean;
   /** Label for the dated (in-scope) swimlane, e.g. "Due today". */
@@ -151,19 +153,24 @@ function DueBadge({
   );
 }
 
-function ProjectTaskCountBadge({ tasks }: { tasks: Task[] }) {
+function ProjectTaskCountBadge({ tasks, completedCount = 0 }: { tasks: Task[]; completedCount?: number }) {
   const overdueCount = tasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length;
-  const title = `${tasks.length} open task${tasks.length === 1 ? "" : "s"}${
+  const title = `${tasks.length} open · ${completedCount} completed${
     overdueCount > 0 ? ` · ${overdueCount} overdue` : ""
   }`;
 
   return (
     <span
       title={title}
-      className="inline-flex items-center gap-1 text-[11px] tabular-nums font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/10 rounded-full px-2 py-0.5 shrink-0"
+      className="inline-flex items-center gap-1 text-[11px] tabular-nums font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/10 rounded-full px-2 py-0.5 shrink-0 max-w-full overflow-hidden"
     >
       <span className="font-semibold text-slate-800 dark:text-slate-100">{tasks.length}</span>
       <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">open</span>
+      {completedCount > 0 && (
+        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+          · {completedCount} done
+        </span>
+      )}
       {overdueCount > 0 && (
         <span className="text-[10px] font-semibold text-red-600 dark:text-red-400">
           · {overdueCount} late
@@ -477,6 +484,7 @@ function BucketTaskCard({
 function BucketColumn({
   project,
   tasks,
+  completedCount = 0,
   datedLaneLabel,
   activeTaskId,
   isTimerRunning,
@@ -509,6 +517,7 @@ function BucketColumn({
 }: {
   project: Project;
   tasks: Task[];
+  completedCount?: number;
   datedLaneLabel: string;
   activeTaskId: string | null;
   isTimerRunning: boolean;
@@ -633,7 +642,7 @@ function BucketColumn({
             Personal
           </span>
         )}
-        <ProjectTaskCountBadge tasks={tasks} />
+        <ProjectTaskCountBadge tasks={tasks} completedCount={completedCount} />
       </div>
 
       <div
@@ -820,6 +829,7 @@ function BucketColumn({
 export default function TaskBucketView({
   projects,
   tasksByProject,
+  completedCountByProject,
   activeTaskId,
   isTimerRunning,
   datedLaneLabel = "Scheduled",
@@ -890,6 +900,7 @@ export default function TaskBucketView({
             key={project.id}
             project={project}
             tasks={tasksByProject.get(project.id) ?? []}
+            completedCount={completedCountByProject?.get(project.id) ?? 0}
             datedLaneLabel={datedLaneLabel}
             activeTaskId={activeTaskId}
             isTimerRunning={isTimerRunning}
