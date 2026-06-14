@@ -106,7 +106,7 @@ export function FocusDockToolbar({
             {sessions.count}/{sessions.goal}
           </span>
           <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
-            focus sessions
+            sessions
           </span>
           {sessions.streak > 0 && (
             <span

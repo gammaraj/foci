@@ -431,7 +431,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         stripEmbedded
-          ? "w-full min-w-0 flex flex-col scroll-mt-24"
+          ? "w-full min-w-0 flex flex-col scroll-mt-24 relative"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -606,7 +606,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           collapsed
             ? "hidden"
             : stripEmbedded
-              ? "w-full space-y-1.5 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80"
+              ? "w-full space-y-1.5 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 sm:absolute sm:top-full sm:left-[calc(-100%*2/3)] sm:z-30 sm:w-[calc(100%*5/3)] sm:max-w-[calc(100vw-1.5rem)] sm:pt-1.5 sm:pb-2 sm:px-2.5 sm:sm:px-3 sm:border sm:border-t-0 border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] sm:rounded-b-xl sm:shadow-lg"
               : inline
                 ? "space-y-1.5"
                 : "space-y-2"
@@ -651,9 +651,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           ] as const
         ).map((tab) => {
           const active = mode === tab.id;
-          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1 sm:px-1.5 ${
+          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 ${
             stripEmbedded ? "py-1.5" : "py-1.5"
-          } text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
+          } text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
             active
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
               : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
@@ -697,7 +697,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 key={s.id}
                 onClick={() => playSound(s.id)}
                 className={`flex flex-col items-center gap-0.5 rounded-lg font-medium transition-all ${
-                  stripEmbedded ? "py-1 px-0.5 text-xs sm:text-sm" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
+                  stripEmbedded ? "py-1.5 px-1 text-[11px] sm:text-xs" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
                 } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"

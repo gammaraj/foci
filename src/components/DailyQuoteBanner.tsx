@@ -23,27 +23,29 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
       aria-label="Weather and focus timer"
     >
       <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
-        <div className="flex flex-col sm:flex-row sm:items-stretch gap-y-1.5 gap-x-3 min-w-0">
-          <div className="min-w-0 sm:flex-1 flex items-stretch">
+        <div className="flex flex-col sm:grid sm:grid-cols-[minmax(0,11.5rem)_minmax(0,1fr)] sm:items-stretch gap-y-1.5 gap-x-2.5 min-w-0">
+          <div className="min-w-0 sm:max-w-[11.5rem] flex items-stretch shrink-0">
             <WeatherTime compact />
           </div>
           {hasFocusStrip && (
-            <div className="w-full min-w-0 sm:flex-1 flex rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden min-h-[3.5rem]">
+            <div className="w-full min-w-0 flex flex-col rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible min-h-[3.5rem]">
               <div
                 className={`grid min-w-0 flex-1 ${
                   timerToolbar && musicToolbar
-                    ? "grid-cols-1 sm:grid-cols-2 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
+                    ? "grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
                     : "grid-cols-1"
                 }`}
               >
                 {timerToolbar && (
-                  <div className="min-w-0 flex flex-col px-3 border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80">
+                  <div className="min-w-0 flex flex-col px-2.5 sm:px-3 border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80">
                     <div className="flex items-center min-h-[3.5rem] w-full">{timerToolbar}</div>
                     {timerPanel}
                   </div>
                 )}
                 {musicToolbar && (
-                  <div className="min-w-0 flex items-center px-3 min-h-[3.5rem]">{musicToolbar}</div>
+                  <div className="min-w-0 relative flex flex-col px-2.5 sm:px-3 overflow-visible">
+                    <div className="flex items-center min-h-[3.5rem] w-full min-w-0">{musicToolbar}</div>
+                  </div>
                 )}
               </div>
             </div>
