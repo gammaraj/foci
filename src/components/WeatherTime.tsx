@@ -38,9 +38,11 @@ function getGreeting(hour: number): string {
 interface WeatherTimeProps {
   /** Single-line layout for /app to save vertical space. */
   compact?: boolean;
+  /** Inside the combined focus strip — no separate card border. */
+  embedded?: boolean;
 }
 
-export default function WeatherTime({ compact = false }: WeatherTimeProps) {
+export default function WeatherTime({ compact = false, embedded = false }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -85,8 +87,12 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
   const greeting = getGreeting(now.getHours());
 
   if (compact) {
+    const chrome = embedded
+      ? "min-h-[3.5rem] min-w-0 w-full h-full overflow-hidden"
+      : "min-h-[3.5rem] min-w-0 w-full h-full px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden";
+
     return (
-      <div className="flex items-center justify-between gap-2 min-h-[3.5rem] min-w-0 w-full h-full px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden">
+      <div className={`flex items-center justify-between gap-1.5 ${chrome}`}>
         <span className="flex items-center gap-1 shrink-0 min-w-0">
           <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">
             Time
@@ -97,7 +103,7 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
         </span>
         {weather && (
           <span
-            className="flex items-center gap-1 min-w-0 shrink-0 overflow-hidden"
+            className="flex items-center gap-1 min-w-0 flex-1 justify-end overflow-hidden"
             title={`${weather.description}${weather.city ? ` · ${weather.city}` : ""}`}
           >
             <span className="text-sm sm:text-base leading-none shrink-0" aria-hidden>
@@ -107,7 +113,7 @@ export default function WeatherTime({ compact = false }: WeatherTimeProps) {
               {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
             </span>
             {weather.city && (
-              <span className="hidden xl:inline text-xs font-medium leading-none text-slate-600 dark:text-slate-300 truncate max-w-[5.5rem]">
+              <span className="text-xs font-medium leading-none text-slate-600 dark:text-slate-300 truncate min-w-0">
                 {weather.city}
               </span>
             )}
