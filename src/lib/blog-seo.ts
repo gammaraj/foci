@@ -7,6 +7,53 @@ export const FEATURED_POST_SLUGS = [
   "52-17-rule-guide",
 ] as const;
 
+/** GSC SERP overrides — shorter titles/descriptions for CTR without changing on-page H1. */
+export const BLOG_POST_META_OVERRIDES: Record<
+  string,
+  { title?: string; description?: string }
+> = {
+  "best-free-pomodoro-apps-2026": {
+    title: "Best Free Pomodoro App 2026 (7 Tested & Ranked)",
+    description:
+      "Best free Pomodoro app in 2026 — 7 timers tested for tasks, ads, and sounds. Foci ranks #1 with no signup. Compare Pomofocus, Forest, and Focus To-Do.",
+  },
+  "foci-vs-focusatwill": {
+    title: "Foci vs Focus@Will (2026): Free App vs $10/Month",
+    description:
+      "Foci vs Focus@Will — free Pomodoro timer, tasks, and built-in lo-fi vs a $9.99/month music subscription. Feature table and which to pick for daily focus.",
+  },
+  "foci-vs-todoist": {
+    title: "Foci vs Todoist (2026): Focus Timer + Tasks vs Task Manager",
+    description:
+      "Foci vs Todoist for productivity — Pomodoro timer and task tracking in one free app vs a premium task manager. See when to use each or both together.",
+  },
+  "foci-vs-forest-app": {
+    title: "Foci vs Forest App (2026): Free Alternative That Does More",
+    description:
+      "Foci vs Forest app — free timer, tasks, and ambient sounds vs paid gamified tree planting. Compare features, pricing, and which fits serious work.",
+  },
+  "best-music-for-studying-and-focus": {
+    title: "Best Music for Studying & Focus (2026 Guide)",
+    description:
+      "What music helps you focus? Lo-fi, brown noise, classical, and rain ranked for studying and deep work — with free sounds built into Foci.",
+  },
+  "52-17-rule-guide": {
+    title: "52/17 Rule: Work 52 Min, Break 17 (2026 Guide)",
+    description:
+      "What is the 52/17 rule? DeskTime research, vs Pomodoro, and the Francesco Cirillo myth debunked. Try the 52/17 preset free in Foci.",
+  },
+  "pomodoro-vs-flowtime-vs-52-17": {
+    title: "Flowtime vs Pomodoro vs 52/17: Which Wins? (2026)",
+    description:
+      "Flowtime technique vs Pomodoro vs 52/17 compared with pros, cons, and a clear verdict for studying and coding — plus a free timer for any method.",
+  },
+  "flowtime-technique-guide": {
+    title: "Flowtime Technique: Complete Guide (2026)",
+    description:
+      "What is the Flowtime technique? How flowmodoro works, break ratios, vs Pomodoro, and when to use it — start free in Foci today.",
+  },
+};
+
 /** GSC: high-impression pages — curated related links for internal PageRank. */
 export const GSC_RELATED_LINKS: Record<string, readonly string[]> = {
   "pomodoro-vs-flowtime-vs-52-17": [
@@ -33,6 +80,21 @@ export const GSC_RELATED_LINKS: Record<string, readonly string[]> = {
     "pomodoro-vs-flowtime-vs-52-17",
     "pomodoro-technique-guide",
     "flowtime-technique-guide",
+  ],
+  "foci-vs-focusatwill": [
+    "best-music-for-studying-and-focus",
+    "brown-noise-for-studying-and-focus",
+    "best-free-pomodoro-apps-2026",
+  ],
+  "foci-vs-todoist": [
+    "migrate-from-todoist-to-foci",
+    "best-free-pomodoro-apps-2026",
+    "foci-vs-forest-app",
+  ],
+  "foci-vs-forest-app": [
+    "forest-app-alternatives",
+    "best-free-pomodoro-apps-2026",
+    "foci-vs-todoist",
   ],
 };
 
@@ -204,6 +266,52 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
       question: "Is brown noise good for studying?",
       answer:
         "Yes. Brown noise masks irregular background sounds without high-frequency fatigue. Research and user reports suggest it helps ADHD focus and long study sessions especially well.",
+    },
+  ],
+  "foci-vs-focusatwill": [
+    {
+      question: "Is Focus@Will worth it?",
+      answer:
+        "Focus@Will costs $9.99/month for focus music channels. It suits users who only need curated audio. Foci is free and adds a Pomodoro timer, task tracking, daily goals, and built-in lo-fi and brown noise — a better value for most students and remote workers.",
+    },
+    {
+      question: "What is a free alternative to Focus@Will?",
+      answer:
+        "Foci is a free Focus@Will alternative with built-in lo-fi, Indian classical, rain, café, and brown noise alongside a Pomodoro timer and task list. No subscription or signup required.",
+    },
+    {
+      question: "Foci vs Focus@Will: which is better?",
+      answer:
+        "Choose Focus@Will if you only want premium curated focus music and already have a separate timer. Choose Foci for an all-in-one free focus system — timer, tasks, sounds, and streak stats in one browser tab.",
+    },
+  ],
+  "foci-vs-todoist": [
+    {
+      question: "Can Todoist replace a Pomodoro timer?",
+      answer:
+        "Todoist is a task manager without a built-in focus timer. You capture and organize tasks in Todoist but work elsewhere. Foci combines Pomodoro timing with task tracking so you log time on what you actually complete.",
+    },
+    {
+      question: "Foci vs Todoist: which should I use?",
+      answer:
+        "Use Todoist when you need advanced project hierarchy, labels, and integrations across your whole life. Use Foci when you struggle to start and need timer plus tasks in one calm window. Many people use Todoist for planning and Foci for execution.",
+    },
+    {
+      question: "Is there a free Todoist alternative with a timer?",
+      answer:
+        "Foci is a free alternative that adds Pomodoro timing, ambient sounds, daily goals, and streak tracking to task management — features Todoist locks behind premium or does not offer at all.",
+    },
+  ],
+  "foci-vs-forest-app": [
+    {
+      question: "Is there a free alternative to Forest app?",
+      answer:
+        "Foci is a free Forest alternative with a Pomodoro timer, task tracking, ambient sounds, and streak stats — without planting virtual trees or paying for Pro features.",
+    },
+    {
+      question: "Foci vs Forest: which is better for studying?",
+      answer:
+        "Forest gamifies focus with virtual trees and works well for phone distraction. Foci suits longer study sessions with task time logging, brown noise, lo-fi, and a desktop-first workflow without gamification fatigue.",
     },
   ],
   "52-17-rule-guide": [

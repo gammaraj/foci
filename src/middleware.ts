@@ -4,6 +4,13 @@ import { updateSession } from "@/lib/supabase/middleware";
 const isDev = process.env.NODE_ENV === "development";
 
 export async function middleware(request: NextRequest) {
+  const proto = request.headers.get("x-forwarded-proto");
+  if (proto === "http") {
+    const host = request.headers.get("host") ?? "usefoci.com";
+    const dest = `https://${host}${request.nextUrl.pathname}${request.nextUrl.search}`;
+    return NextResponse.redirect(dest, 301);
+  }
+
   const response = await updateSession(request);
 
   // Generate a per-request nonce for CSP

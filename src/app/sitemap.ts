@@ -64,31 +64,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
       images: [`${siteUrl}/opengraph-image`],
     },
-    {
-      url: `${siteUrl}/stats`,
-      lastModified: siteContentDate,
-      changeFrequency: "weekly",
-      priority: 0.7,
-      images: [`${siteUrl}/opengraph-image`],
-    },
-    {
-      url: `${siteUrl}/login`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${siteUrl}/llms.txt`,
-      lastModified: siteContentDate,
-      changeFrequency: "monthly",
-      priority: 0.4,
-    },
-    {
-      url: `${siteUrl}/llms-full.txt`,
-      lastModified: siteContentDate,
-      changeFrequency: "monthly",
-      priority: 0.4,
-    },
     ...posts,
   ];
 }

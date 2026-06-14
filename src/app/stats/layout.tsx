@@ -8,6 +8,7 @@ const description =
 export const metadata: Metadata = {
   title: absolutePageTitle(title),
   description,
+  robots: { index: false, follow: true },
   keywords: [
     "productivity stats",
     "focus analytics",

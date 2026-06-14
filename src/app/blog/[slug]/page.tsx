@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
-import { BLOG_POST_FAQS, GSC_RELATED_LINKS } from "@/lib/blog-seo";
+import { BLOG_POST_FAQS, BLOG_POST_META_OVERRIDES, GSC_RELATED_LINKS } from "@/lib/blog-seo";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { SAT_TUTORING_BLOG_SLUGS } from "@/lib/partner-promos";
 import GuideLinkHub from "@/components/GuideLinkHub";
@@ -28,16 +28,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(slug);
   if (!post) return {};
   const { meta } = post;
+  const overrides = BLOG_POST_META_OVERRIDES[slug];
+  const pageTitle = overrides?.title ?? meta.title;
+  const pageDescription = overrides?.description ?? meta.description;
   const ogImage = `https://usefoci.com/blog/${meta.slug}/opengraph-image`;
   return {
-    title: absolutePageTitle(meta.title),
-    description: meta.description,
+    title: absolutePageTitle(pageTitle),
+    description: pageDescription,
     keywords: meta.tags,
     authors: [{ name: "Foci", url: "https://usefoci.com" }],
     alternates: { canonical: `/blog/${meta.slug}` },
     openGraph: {
-      title: meta.title,
-      description: meta.description,
+      title: pageTitle,
+      description: pageDescription,
       type: "article",
       publishedTime: meta.date,
       url: `https://usefoci.com/blog/${meta.slug}`,
@@ -48,14 +51,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: meta.title,
+          alt: pageTitle,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: meta.title,
-      description: meta.description,
+      title: pageTitle,
+      description: pageDescription,
       images: [ogImage],
     },
   };
