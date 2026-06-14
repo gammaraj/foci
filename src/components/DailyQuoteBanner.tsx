@@ -26,17 +26,17 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
       <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
         {threeColumnStrip ? (
           <div
-            className="grid min-w-0 grid-cols-1 sm:grid-cols-[3fr_3fr_4fr] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80 min-h-[3.5rem]"
+            className="grid min-w-0 grid-cols-1 sm:grid-cols-[2.5fr_3.5fr_4fr] sm:items-start rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
           >
-            <div className="min-w-0 px-2.5 sm:px-3 flex items-center">
+            <div className="min-w-0 px-2.5 sm:px-3 flex items-center min-h-[3.5rem]">
               <WeatherTime compact embedded />
             </div>
             <div className="min-w-0 flex flex-col px-2.5 sm:px-3 border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80">
-              <div className="flex items-center min-h-[3.5rem] w-full">{timerToolbar}</div>
+              <div className="flex items-center min-h-[3.5rem] w-full shrink-0">{timerToolbar}</div>
               {timerPanel}
             </div>
-            <div className="min-w-0 relative flex flex-col px-2.5 sm:px-3 overflow-visible">
-              <div className="flex items-center min-h-[3.5rem] w-full min-w-0">{musicToolbar}</div>
+            <div className="min-w-0 flex flex-col px-2.5 sm:px-3 pb-2 overflow-x-auto">
+              {musicToolbar}
             </div>
           </div>
         ) : (
@@ -60,8 +60,8 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
                     </div>
                   )}
                   {musicToolbar && (
-                    <div className="min-w-0 relative flex flex-col px-2.5 sm:px-3 overflow-visible">
-                      <div className="flex items-center min-h-[3.5rem] w-full min-w-0">{musicToolbar}</div>
+                    <div className="min-w-0 flex flex-col px-2.5 sm:px-3 pb-2 overflow-x-auto">
+                      {musicToolbar}
                     </div>
                   )}
                 </div>

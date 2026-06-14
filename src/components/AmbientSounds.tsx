@@ -431,7 +431,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         stripEmbedded
-          ? "w-full min-w-0 flex flex-col scroll-mt-24 relative"
+          ? "w-full min-w-0 flex flex-col scroll-mt-24"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -606,7 +606,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           collapsed
             ? "hidden"
             : stripEmbedded
-              ? "w-full space-y-1.5 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 sm:absolute sm:top-full sm:left-[calc(-100%*1.5)] sm:z-30 sm:w-[calc(100%*2.5)] sm:max-w-[calc(100vw-1.5rem)] sm:pt-1.5 sm:pb-2 sm:px-2.5 sm:sm:px-3 sm:border sm:border-t-0 border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] sm:rounded-b-xl sm:shadow-lg"
+              ? "w-full min-w-0 space-y-1.5 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80"
               : inline
                 ? "space-y-1.5"
                 : "space-y-2"
