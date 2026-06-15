@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
+import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
   sortBucketTasks,
@@ -148,33 +149,6 @@ function DueBadge({
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           aria-label="Change due date"
         />
-      )}
-    </span>
-  );
-}
-
-function ProjectTaskCountBadge({ tasks, completedCount = 0 }: { tasks: Task[]; completedCount?: number }) {
-  const overdueCount = tasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length;
-  const title = `${tasks.length} open · ${completedCount} completed${
-    overdueCount > 0 ? ` · ${overdueCount} overdue` : ""
-  }`;
-
-  return (
-    <span
-      title={title}
-      className="inline-flex items-center gap-1 text-[11px] tabular-nums font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/10 rounded-full px-2 py-0.5 shrink-0 max-w-full overflow-hidden"
-    >
-      <span className="font-semibold text-slate-800 dark:text-slate-100">{tasks.length}</span>
-      <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">open</span>
-      {completedCount > 0 && (
-        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-          · {completedCount} done
-        </span>
-      )}
-      {overdueCount > 0 && (
-        <span className="text-[10px] font-semibold text-red-600 dark:text-red-400">
-          · {overdueCount} late
-        </span>
       )}
     </span>
   );
@@ -636,13 +610,18 @@ function BucketColumn({
         <BucketColumnTitle project={project} />
         {isPersonal && (
           <span
-            className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-slate-600/50 rounded-full px-2 py-0.5 shrink-0"
+            className="text-xs font-medium text-slate-600 dark:text-slate-200 bg-slate-100/95 dark:bg-[#1e3050]/90 border border-slate-200/90 dark:border-[#3a5070]/70 rounded-full px-2 py-1 shrink-0"
             title="Personal tasks — your default bucket"
           >
             Personal
           </span>
         )}
-        <ProjectTaskCountBadge tasks={tasks} completedCount={completedCount} />
+        <ProjectTaskCounts
+          variant="badge"
+          open={tasks.length}
+          completed={completedCount}
+          overdue={tasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length}
+        />
       </div>
 
       <div

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 
 interface WeatherData {
   temp: number;
+  high?: number;
+  low?: number;
   description: string;
   icon: string;
   city: string;
@@ -70,6 +72,8 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
         if (data.temp != null) {
           setWeather({
             temp: data.temp,
+            high: data.high,
+            low: data.low,
             description: data.description,
             icon: ICON_MAP[data.icon] || "🌡️",
             city: data.city || "",
@@ -86,14 +90,16 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
 
   const greeting = getGreeting(now.getHours());
 
+  const unitSuffix = weather?.unit === "celsius" ? "C" : "F";
+
   if (compact) {
     const chrome = embedded
-      ? "min-h-[3.5rem] min-w-0 w-full h-full overflow-hidden"
+      ? "min-h-[3.5rem] min-w-0 w-full h-full overflow-hidden py-1"
       : "min-h-[3.5rem] min-w-0 w-full h-full px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden";
 
     return (
       <div className={`flex items-center justify-between gap-1.5 ${chrome}`}>
-        <span className="flex items-center gap-1 shrink-0 min-w-0">
+        <span className="flex items-center gap-1 shrink-0 min-w-0 self-center">
           <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">
             Time
           </span>
@@ -102,22 +108,33 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
           </span>
         </span>
         {weather && (
-          <span
-            className="flex items-center gap-1 min-w-0 flex-1 justify-end overflow-hidden"
-            title={`${weather.description}${weather.city ? ` · ${weather.city}` : ""}`}
+          <div
+            className="flex flex-col items-end min-w-0 flex-1 justify-center overflow-hidden"
+            title={`${weather.description}${weather.city ? ` · ${weather.city}` : ""}${
+              weather.low != null && weather.high != null
+                ? ` · Low ${weather.low}° · High ${weather.high}°`
+                : ""
+            }`}
           >
-            <span className="text-sm sm:text-base leading-none shrink-0" aria-hidden>
-              {weather.icon}
+            <span className="flex items-center gap-1 min-w-0 max-w-full overflow-hidden">
+              <span className="text-sm sm:text-base leading-none shrink-0" aria-hidden>
+                {weather.icon}
+              </span>
+              <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap shrink-0">
+                {weather.temp}°{unitSuffix}
+              </span>
+              {weather.city && (
+                <span className="text-xs font-medium leading-none text-slate-600 dark:text-slate-300 truncate min-w-0">
+                  {weather.city}
+                </span>
+              )}
             </span>
-            <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap shrink-0">
-              {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
-            </span>
-            {weather.city && (
-              <span className="text-xs font-medium leading-none text-slate-600 dark:text-slate-300 truncate min-w-0">
-                {weather.city}
+            {weather.low != null && weather.high != null && (
+              <span className="text-[10px] sm:text-xs tabular-nums font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 whitespace-nowrap">
+                L {weather.low}° · H {weather.high}°
               </span>
             )}
-          </span>
+          </div>
         )}
       </div>
     );
@@ -141,14 +158,21 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
           <span className="text-lg sm:text-xl shrink-0" title={weather.description}>
             {weather.icon}
           </span>
-          <div className="flex items-center gap-1 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 tabular-nums min-w-0">
-            <span className="shrink-0">
-              {weather.temp}°{weather.unit === "celsius" ? "C" : "F"}
-            </span>
-            {weather.city && (
-              <p className="text-xs sm:text-sm font-normal text-slate-500 dark:text-slate-300 truncate min-w-0">
-                {weather.city}
-              </p>
+          <div className="flex flex-col items-end min-w-0">
+            <div className="flex items-center gap-1 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 tabular-nums min-w-0">
+              <span className="shrink-0">
+                {weather.temp}°{unitSuffix}
+              </span>
+              {weather.city && (
+                <span className="text-xs sm:text-sm font-normal text-slate-500 dark:text-slate-300 truncate min-w-0">
+                  {weather.city}
+                </span>
+              )}
+            </div>
+            {weather.low != null && weather.high != null && (
+              <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                L {weather.low}° · H {weather.high}°
+              </span>
             )}
           </div>
         </div>

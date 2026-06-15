@@ -79,7 +79,7 @@ export async function GET(request: Request) {
     const { latitude, longitude, city } = await getLocationFromIP(ip);
 
     const weatherRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=${unit}&timezone=auto`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=${unit}&timezone=auto`,
       { signal: AbortSignal.timeout(5000) },
     );
     if (!weatherRes.ok) throw new Error("Weather API error");
@@ -87,10 +87,12 @@ export async function GET(request: Request) {
 
     const weatherCode = weatherData.current?.weather_code ?? 0;
     const temp = Math.round(weatherData.current?.temperature_2m ?? 0);
+    const high = Math.round(weatherData.daily?.temperature_2m_max?.[0] ?? 0);
+    const low = Math.round(weatherData.daily?.temperature_2m_min?.[0] ?? 0);
     const { description, icon } = weatherCodeToInfo(weatherCode);
 
     return NextResponse.json(
-      { temp, description, icon, city, unit },
+      { temp, high, low, description, icon, city, unit },
       { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300" } },
     );
   } catch {

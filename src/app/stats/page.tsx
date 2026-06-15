@@ -587,53 +587,6 @@ export default function StatsPage() {
           />
         </div>
 
-        {/* Heatmap */}
-        <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm mb-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
-            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
-              Activity
-            </h2>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 shrink-0">
-              <span>Less</span>
-              <div className="flex gap-[3px]">
-                {["var(--heatmap-empty)", "var(--heatmap-l1)", "var(--heatmap-l2)", "var(--heatmap-l3)", "var(--heatmap-l4)"].map((c, i) => (
-                  <div key={i} className="w-3 h-3 rounded-[3px]" style={{ backgroundColor: c }} />
-                ))}
-              </div>
-              <span>More</span>
-            </div>
-          </div>
-          <Heatmap streakHistory={streakHistory} weeks={range === 7 ? 12 : 20} />
-        </div>
-
-        {/* Charts row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          {/* Sessions per day */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Sessions per Day
-            </h2>
-            <BarChart
-              data={sessionsData}
-              labelFn={range === 7 ? dayLabel : (k) => k.slice(8)}
-              color="#3b82f6"
-            />
-          </div>
-
-          {/* Focus time per day */}
-          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
-            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Focus Time per Day
-            </h2>
-            <BarChart
-              data={focusData}
-              labelFn={range === 7 ? dayLabel : (k) => k.slice(8)}
-              valueSuffix="m"
-              color="#10b981"
-            />
-          </div>
-        </div>
-
         {/* Project breakdown + Today's activity row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           {/* Project distribution donut + bars */}
@@ -698,7 +651,7 @@ export default function StatsPage() {
         </div>
 
         {/* Bottom insights row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           {/* Goal completion */}
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
@@ -778,6 +731,50 @@ export default function StatsPage() {
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total Tasks</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Activity heatmap + daily charts */}
+        <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm mb-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
+              Activity
+            </h2>
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 shrink-0">
+              <span>Less</span>
+              <div className="flex gap-[3px]">
+                {["var(--heatmap-empty)", "var(--heatmap-l1)", "var(--heatmap-l2)", "var(--heatmap-l3)", "var(--heatmap-l4)"].map((c, i) => (
+                  <div key={i} className="w-3 h-3 rounded-[3px]" style={{ backgroundColor: c }} />
+                ))}
+              </div>
+              <span>More</span>
+            </div>
+          </div>
+          <Heatmap streakHistory={streakHistory} weeks={range === 7 ? 12 : 20} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
+              Sessions per Day
+            </h2>
+            <BarChart
+              data={sessionsData}
+              labelFn={range === 7 ? dayLabel : (k) => k.slice(8)}
+              color="#3b82f6"
+            />
+          </div>
+
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
+              Focus Time per Day
+            </h2>
+            <BarChart
+              data={focusData}
+              labelFn={range === 7 ? dayLabel : (k) => k.slice(8)}
+              valueSuffix="m"
+              color="#10b981"
+            />
           </div>
         </div>
       </main>

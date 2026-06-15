@@ -1249,7 +1249,7 @@ export default function TaskList({
             </h2>
             {!focusMode && projectManageOpen && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
-                Star favorites · expand a project to see tasks
+                Star favorites · ⋯ on each project to rename, archive, or delete
               </p>
             )}
             {!focusMode && !projectManageOpen && (viewMode === "list" || viewMode === "bucket") && (
