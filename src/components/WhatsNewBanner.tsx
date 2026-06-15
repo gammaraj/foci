@@ -61,7 +61,7 @@ export default function WhatsNewBanner({ focusMode }: WhatsNewBannerProps) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-300 transition p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10"
+        className="relative nav-icon-btn p-2 rounded-full hover:!text-violet-300"
         aria-label={unseen ? "What's new — unread updates" : "What's new"}
         aria-expanded={open}
         title="What's new"

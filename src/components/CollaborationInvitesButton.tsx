@@ -145,7 +145,7 @@ export default function CollaborationInvitesButton() {
     <div className="relative" ref={panelRef}>
       <button
         onClick={() => setShowPanel((prev) => !prev)}
-        className="relative text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10"
+        className="relative nav-icon-btn p-2 rounded-full"
         aria-label={`${inviteCount} collaboration invite${inviteCount !== 1 ? "s" : ""}`}
         title={`${inviteCount} pending invite${inviteCount !== 1 ? "s" : ""}`}
       >

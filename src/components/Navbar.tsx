@@ -40,13 +40,18 @@ type NavLink = {
 function navLinkClass(active: boolean, mobile = false) {
   if (mobile) {
     return active
-      ? "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800"
-      : "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white";
+      ? "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-white bg-white/10"
+      : "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-slate-400 hover:bg-white/5 hover:text-white";
   }
   return active
-    ? "text-base font-medium transition-colors text-slate-900 dark:text-white"
-    : "text-base font-medium transition-colors text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+    ? "text-base font-medium transition-colors text-white"
+    : "text-base font-medium transition-colors text-slate-400 hover:text-white";
 }
+
+const chromeBtn =
+  "rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors";
+const chromeBtnPad = `${chromeBtn} p-2`;
+const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 border border-transparent hover:border-white/10`;
 
 function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   const { user } = useAuth();
@@ -134,135 +139,143 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   );
 
   return (
-    <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top">
-      <div className="flex items-center justify-between">
-        <Link href={logoHref} className="flex items-center gap-2.5">
-          <FociLogoMark
-            size={36}
-            idPrefix="nav"
-            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${FOCI_LOGO_SHADOW}`}
-          />
-          <FociWordmark className="text-lg sm:text-xl font-bold" />
-        </Link>
+    <header className="nav-chrome sticky top-0 z-30">
+      <nav className="relative px-4 sm:px-6 pb-3 sm:pb-3.5 max-w-[1280px] mx-auto w-full">
+        <div className="flex items-center justify-between">
+          <Link href={logoHref} className="flex items-center gap-2.5">
+            <FociLogoMark
+              size={36}
+              idPrefix="nav"
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${FOCI_LOGO_SHADOW}`}
+            />
+            <FociWordmark className="text-lg sm:text-xl font-bold" />
+          </Link>
 
-        <div className="hidden sm:flex items-center gap-6">
-          {navLinks.map((link) => renderNavLink(link))}
-          {toolbarSlot}
-          {onOpenSettings && (
-            <button
-              type="button"
-              onClick={onOpenSettings}
-              className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
-              aria-label="Open settings"
-              title="Timer and app settings"
-            >
-              <SettingsIcon className="w-[18px] h-[18px]" />
-              <span className="hidden md:inline text-sm font-medium">Settings</span>
-            </button>
-          )}
-          <button
-            onClick={cycleTheme}
-            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
-            aria-label={`Theme: ${theme}. Click to change.`}
-            title={`Theme: ${theme}`}
-          >
-            {themeIcon}
-          </button>
-          {user ? (
-            <UserMenu />
-          ) : (
-            <Link
-              href="/login"
-              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-            >
-              Log in
-            </Link>
-          )}
-        </div>
-
-        <div className="flex sm:hidden items-center gap-0.5">
-          {onOpenSettings && (
-            <button
-              type="button"
-              onClick={onOpenSettings}
-              className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
-              aria-label="Open settings"
-              title="Settings"
-            >
-              <SettingsIcon className="w-5 h-5" />
-            </button>
-          )}
-          <button
-            onClick={cycleTheme}
-            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
-            aria-label={`Theme: ${theme}. Click to change.`}
-          >
-            {themeIcon}
-          </button>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors touch-target-sm"
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {menuOpen && (
-        <div className="sm:hidden mt-3 pb-3 border-t border-slate-200 dark:border-slate-700">
-          {toolbarSlot && (
-            <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-slate-200/80 dark:border-slate-700/80">
-              {toolbarSlot}
-            </div>
-          )}
-          <div className="flex flex-col gap-1 pt-3">
-            {navLinks.map((link) => renderNavLink(link, true))}
+          <div className="hidden sm:flex items-center gap-6">
+            {navLinks.map((link) => renderNavLink(link))}
+            {toolbarSlot}
             {onOpenSettings && (
               <button
                 type="button"
-                onClick={() => {
-                  onOpenSettings();
-                  setMenuOpen(false);
-                }}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-left w-full"
+                onClick={onOpenSettings}
+                className={chromeBtnSettings}
+                aria-label="Open settings"
+                title="Timer and app settings"
               >
-                <SettingsIcon className="w-4 h-4" />
-                Settings
+                <SettingsIcon className="w-[18px] h-[18px]" />
+                <span className="hidden md:inline text-sm font-medium">Settings</span>
               </button>
             )}
+            <button
+              onClick={cycleTheme}
+              className={chromeBtnPad}
+              aria-label={`Theme: ${theme}. Click to change.`}
+              title={`Theme: ${theme}`}
+            >
+              {themeIcon}
+            </button>
             {user ? (
-              <div className="px-3 py-2">
-                <UserMenu />
-              </div>
+              <UserMenu />
             ) : (
               <Link
                 href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
+                className="text-sm font-medium px-4 py-2 rounded-lg bg-white text-slate-900 hover:bg-slate-100 transition-colors"
               >
                 Log in
               </Link>
             )}
           </div>
+
+          <div className="flex sm:hidden items-center gap-0.5">
+            {onOpenSettings && (
+              <button
+                type="button"
+                onClick={onOpenSettings}
+                className={`${chromeBtnPad} touch-target-sm`}
+                aria-label="Open settings"
+                title="Settings"
+              >
+                <SettingsIcon className="w-5 h-5" />
+              </button>
+            )}
+            <button
+              onClick={cycleTheme}
+              className={`${chromeBtnPad} touch-target-sm`}
+              aria-label={`Theme: ${theme}. Click to change.`}
+            >
+              {themeIcon}
+            </button>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className={`${chromeBtnPad} touch-target-sm`}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
-      )}
-    </nav>
+
+        {menuOpen && (
+          <div className="sm:hidden mt-3 pb-1 border-t border-white/10">
+            {toolbarSlot && (
+              <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-white/10">
+                {toolbarSlot}
+              </div>
+            )}
+            <div className="flex flex-col gap-1 pt-3">
+              {navLinks.map((link) => renderNavLink(link, true))}
+              {onOpenSettings && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenSettings();
+                    setMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-colors text-left w-full`}
+                >
+                  <SettingsIcon className="w-4 h-4" />
+                  Settings
+                </button>
+              )}
+              {user ? (
+                <div className="px-3 py-2">
+                  <UserMenu />
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg bg-white text-slate-900 hover:bg-slate-100 transition-colors"
+                >
+                  Log in
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+      </nav>
+    </header>
   );
 }
 
 export default function Navbar(props: NavbarProps) {
   return (
-    <Suspense fallback={<nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top" aria-hidden />}>
+    <Suspense
+      fallback={
+        <header className="nav-chrome sticky top-0 z-30" aria-hidden>
+          <nav className="px-4 sm:px-6 pb-3 max-w-[1280px] mx-auto w-full h-14" />
+        </header>
+      }
+    >
       <NavbarContent {...props} />
     </Suspense>
   );

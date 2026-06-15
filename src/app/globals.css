@@ -37,6 +37,22 @@ body {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
+/* Site chrome — same dark bar in light and dark page themes */
+.nav-chrome {
+  background: #0b1121;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+
+.nav-icon-btn {
+  color: rgb(148 163 184);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.nav-icon-btn:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
 /* ===== Section Header Gradient ===== */
 .section-header-gradient {
   background: linear-gradient(135deg, #d8e0ea 0%, #e4e9ff 100%);
