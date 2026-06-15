@@ -2118,7 +2118,7 @@ export default function TaskList({
                   : (currentProject?.name ?? "General")
             }...`}
             maxLength={MAX_TASK_TITLE}
-            className="w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+            className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
           <div className="flex gap-2 min-w-0 sm:contents">
           <div className="relative flex-1 min-w-0 sm:flex-shrink-0">

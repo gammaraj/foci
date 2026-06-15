@@ -114,13 +114,13 @@ function DueBadge({
   return (
     <span
       className={`relative inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
-        compact ? "text-[11px] px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
+        compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
       } ${
         overdue
           ? "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
           : isToday
             ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-            : "text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-white/5 border border-slate-200/70 dark:border-[#2a3f5f]/80"
+            : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
       } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`}
       title={
         interactive
@@ -713,9 +713,9 @@ function BucketColumn({
                       onClick={() => toggleLane(swimlaneId)}
                       className={`w-full flex items-center gap-1.5 bucket-lane-label px-1 mb-1.5 text-left ${
                         lane.id === "overdue"
-                          ? "text-red-500 dark:text-red-400"
-                          : "text-slate-400 dark:text-slate-500"
-                      } hover:text-slate-600 dark:hover:text-slate-300 transition-colors`}
+                          ? "text-red-600 dark:text-red-400"
+                          : ""
+                      } hover:text-slate-800 dark:hover:text-slate-200 transition-colors`}
                       aria-expanded={!isCollapsed}
                     >
                       <svg
@@ -729,7 +729,7 @@ function BucketColumn({
                       </svg>
                       <span className="truncate">
                         {lane.label}
-                        <span className="ml-1 tabular-nums font-normal normal-case tracking-normal">
+                        <span className="ml-1 tabular-nums font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal">
                           ({lane.tasks.length})
                         </span>
                       </span>
@@ -737,9 +737,7 @@ function BucketColumn({
                   ) : (
                     <p
                       className={`bucket-lane-label px-1 mb-1.5 ${
-                        lane.id === "overdue"
-                          ? "text-red-500 dark:text-red-400"
-                          : "text-slate-400 dark:text-slate-500"
+                        lane.id === "overdue" ? "text-red-600 dark:text-red-400" : ""
                       }`}
                     >
                       {lane.label}
@@ -830,7 +828,7 @@ function BucketQuickAddForm({
           onChange={(e) => onDraftChange(e.target.value)}
           placeholder="Add a task…"
           maxLength={MAX_TASK_TITLE}
-          className="flex-1 min-w-0 text-sm bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          className="app-placeholder flex-1 min-w-0 text-sm bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200"
         />
         <button
           type="submit"
