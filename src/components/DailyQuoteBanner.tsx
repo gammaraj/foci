@@ -19,7 +19,7 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
 
   return (
     <div
-      className="border-b border-slate-200/90 dark:border-[#243350] bg-[var(--panel-header-bg)] dark:bg-[#0f172a]/80 shadow-[0_4px_12px_-6px_rgba(15,23,42,0.12)] dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.35)]"
+      className="status-strip"
       role="status"
       aria-label="Weather and focus timer"
     >

@@ -96,6 +96,20 @@ body {
   border-bottom: 1px solid #243350;
 }
 
+/* Status strip below dark navbar — bridges chrome to page content */
+.status-strip {
+  border-bottom: 1px solid var(--surface-border);
+  box-shadow: 0 10px 24px -16px rgba(11, 17, 33, 0.4);
+}
+:root:not(.dark) .status-strip {
+  background: linear-gradient(180deg, #d5dde8 0%, #e8edf3 22%, #eef2f6 100%);
+}
+.dark .status-strip {
+  background: linear-gradient(180deg, #0d1528 0%, rgba(15, 23, 42, 0.92) 30%, rgba(15, 23, 42, 0.82) 100%);
+  border-bottom-color: #243350;
+  box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.45);
+}
+
 /* Toolbar strip — slightly off-white; card body stays pure white below */
 .panel-header-calm {
   background: var(--panel-header-bg);
