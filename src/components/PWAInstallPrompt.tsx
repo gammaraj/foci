@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FociLogoMark, FociWordmark, FOCI_LOGO_SHADOW } from "@/components/FociLogoMark";
+import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -51,7 +51,8 @@ export default function PWAInstallPrompt() {
         <FociLogoMark
           size={40}
           idPrefix="pwa"
-          className={`flex-shrink-0 rounded-xl ${FOCI_LOGO_SHADOW}`}
+          surface="light"
+          className="flex-shrink-0 rounded-xl"
         />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">

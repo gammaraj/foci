@@ -1,12 +1,12 @@
 import {
-  FOCI_BRAND_ORANGE,
   FOCI_LOGO_BG,
   FOCI_LOGO_DOT,
-  FOCI_LOGO_SHADOW,
   FOCI_RING,
   FOCI_RING_COLORS,
   FOCI_TAGLINE_FOCUS,
-  FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
+  FOCI_WORDMARK_ON_DARK,
+  FOCI_WORDMARK_ON_LIGHT,
+  getFociLogoShadow,
 } from "@/lib/logo-brand";
 
 /** Shared Foci ring-and-dot mark — keep in sync with public/favicon.svg */
@@ -14,14 +14,18 @@ export function FociLogoMark({
   size = 32,
   className,
   idPrefix = "mark",
+  surface = "dark",
 }: {
   size?: number;
   className?: string;
   idPrefix?: string;
+  /** "dark" = glow on navy; "light" = flat shadow for white backgrounds */
+  surface?: "dark" | "light";
 }) {
   const p = idPrefix;
   const { dim, mid, bright } = FOCI_RING_COLORS;
   const { r, stroke, dash, innerR, dotR, tileRx } = FOCI_RING;
+  const shadowClass = getFociLogoShadow(surface);
 
   return (
     <svg
@@ -30,7 +34,7 @@ export function FociLogoMark({
       viewBox="0 0 32 32"
       fill="none"
       shapeRendering="geometricPrecision"
-      className={className}
+      className={`${shadowClass} ${className ?? ""}`.trim()}
       aria-hidden
     >
       <defs>
@@ -59,7 +63,7 @@ export function FociLogoMark({
   );
 }
 
-/** Lowercase wordmark — solid orange on light pages; gradient on dark chrome */
+/** Lowercase wordmark — saturated orange aligned with icon; “i” tittle echoes aperture dot */
 export function FociWordmark({
   className = "",
   tone = "dark",
@@ -68,28 +72,27 @@ export function FociWordmark({
   /** "dark" = on nav/dark chrome; "light" = on white/light pages */
   tone?: "dark" | "light";
 }) {
-  if (tone === "light") {
-    return (
-      <span
-        className={`font-semibold tracking-tight lowercase ${className}`}
-        style={{ color: FOCI_BRAND_ORANGE }}
-      >
-        foci
-      </span>
-    );
-  }
+  const color = tone === "light" ? FOCI_WORDMARK_ON_LIGHT : FOCI_WORDMARK_ON_DARK;
 
   return (
     <span
-      className={`font-semibold tracking-tight lowercase bg-clip-text text-transparent ${className}`}
-      style={{
-        backgroundImage: FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
-        WebkitBackgroundClip: "text",
-        backgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-      }}
+      className={`font-semibold tracking-tight lowercase inline-flex items-baseline ${className}`}
+      aria-label="foci"
     >
-      foci
+      <span style={{ color }}>foc</span>
+      <span className="relative inline-block">
+        <span
+          className="pointer-events-none absolute left-1/2 z-[1] -translate-x-1/2 rounded-full"
+          style={{
+            width: "0.26em",
+            height: "0.26em",
+            top: "0.04em",
+            backgroundColor: FOCI_LOGO_DOT,
+          }}
+          aria-hidden
+        />
+        <span style={{ color }}>i</span>
+      </span>
     </span>
   );
 }
@@ -113,14 +116,15 @@ export function FociBrandLockup({
       <FociLogoMark
         size={markSize}
         idPrefix={idPrefix}
-        className={`flex-shrink-0 rounded-xl sm:rounded-2xl ${FOCI_LOGO_SHADOW}`}
+        surface={tone}
+        className="flex-shrink-0 rounded-xl sm:rounded-2xl"
       />
       <div className="flex flex-col items-start gap-0.5 min-w-0">
         <FociWordmark className="text-2xl sm:text-3xl font-bold leading-none" tone={tone} />
         {showTagline && (
           <p
             className={`text-[10px] sm:text-[11px] font-semibold tracking-[0.18em] uppercase ${
-              tone === "light" ? "text-orange-600" : "text-orange-300"
+              tone === "light" ? "text-orange-600" : "text-orange-400"
             }`}
           >
             {FOCI_TAGLINE_FOCUS}
@@ -131,4 +135,4 @@ export function FociBrandLockup({
   );
 }
 
-export { FOCI_LOGO_SHADOW };
+export { getFociLogoShadow } from "@/lib/logo-brand";
