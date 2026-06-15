@@ -1,4 +1,5 @@
 import {
+  FOCI_BRAND_ORANGE,
   FOCI_LOGO_BG,
   FOCI_LOGO_DOT,
   FOCI_LOGO_SHADOW,
@@ -6,7 +7,6 @@ import {
   FOCI_RING_COLORS,
   FOCI_TAGLINE_FOCUS,
   FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
-  FOCI_WORDMARK_GRADIENT_LIGHT_BG_CSS,
 } from "@/lib/logo-brand";
 
 /** Shared Foci ring-and-dot mark — keep in sync with public/favicon.svg */
@@ -59,7 +59,7 @@ export function FociLogoMark({
   );
 }
 
-/** Lowercase wordmark — use tone="light" on pale backgrounds */
+/** Lowercase wordmark — solid orange on light pages; gradient on dark chrome */
 export function FociWordmark({
   className = "",
   tone = "dark",
@@ -68,13 +68,26 @@ export function FociWordmark({
   /** "dark" = on nav/dark chrome; "light" = on white/light pages */
   tone?: "dark" | "light";
 }) {
-  const gradient =
-    tone === "light" ? FOCI_WORDMARK_GRADIENT_LIGHT_BG_CSS : FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
+  if (tone === "light") {
+    return (
+      <span
+        className={`font-semibold tracking-tight lowercase ${className}`}
+        style={{ color: FOCI_BRAND_ORANGE }}
+      >
+        foci
+      </span>
+    );
+  }
 
   return (
     <span
       className={`font-semibold tracking-tight lowercase bg-clip-text text-transparent ${className}`}
-      style={{ backgroundImage: gradient }}
+      style={{
+        backgroundImage: FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+      }}
     >
       foci
     </span>
@@ -107,7 +120,7 @@ export function FociBrandLockup({
         {showTagline && (
           <p
             className={`text-[10px] sm:text-[11px] font-semibold tracking-[0.18em] uppercase ${
-              tone === "light" ? "text-orange-700" : "text-orange-300"
+              tone === "light" ? "text-orange-600" : "text-orange-300"
             }`}
           >
             {FOCI_TAGLINE_FOCUS}
