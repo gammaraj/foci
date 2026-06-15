@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FociLogoMark, FOCI_LOGO_SHADOW } from "@/components/FociLogoMark";
+import { FociLogoMark, FociWordmark, FOCI_LOGO_SHADOW } from "@/components/FociLogoMark";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -54,8 +54,8 @@ export default function PWAInstallPrompt() {
           className={`flex-shrink-0 rounded-xl ${FOCI_LOGO_SHADOW}`}
         />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">
-            Install Foci
+          <p className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
+            Install <FociWordmark className="text-sm font-semibold" />
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-300 mt-0.5">
             Add to your home screen for quick access and offline use.

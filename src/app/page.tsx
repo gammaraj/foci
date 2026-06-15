@@ -6,6 +6,8 @@ import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import HomeAppMockup from "@/components/HomeAppMockup";
+import { FociBrandLockup } from "@/components/FociLogoMark";
+import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
 
 const siteUrl = "https://usefoci.com";
 
@@ -187,15 +189,12 @@ export default function LandingPage() {
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center px-4 sm:px-6">
-        <section className="text-center pt-12 sm:pt-20 pb-10 sm:pb-14 max-w-2xl mx-auto">
-          <p className="text-sm font-medium tracking-wide text-slate-500 dark:text-slate-400 mb-4">
-            Focus system
-          </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.08]">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
-              Foci
-            </span>
-            {" "}— deep work, one calm window
+        <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-2xl mx-auto">
+          <div className="flex justify-center mb-8 sm:mb-10">
+            <FociBrandLockup markSize={52} showTagline idPrefix="hero" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.12]">
+            {FOCI_TAGLINE_CALM}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
             Free Pomodoro timer, tasks, session tracking, and ambient sound — the focus app at usefoci.com, no signup required.

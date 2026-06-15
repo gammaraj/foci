@@ -25,7 +25,6 @@ export interface ProjectManageViewProps {
   setNewProjectName: (v: string) => void;
   activeTaskId: string | null;
   isTimerRunning: boolean;
-  onClose: () => void;
   onToggleFavorite: (id: string) => void;
   onOpenProject: (id: string) => void;
   onUpdateColor: (id: string, color: string) => void;
@@ -430,7 +429,6 @@ export default function ProjectManageView({
   setNewProjectName,
   activeTaskId,
   isTimerRunning,
-  onClose,
   onToggleFavorite,
   onOpenProject,
   onUpdateColor,
@@ -460,35 +458,8 @@ export default function ProjectManageView({
     });
   };
 
-  const pinnedCount = sortedProjects.filter((p) => p.favorite).length;
-
   return (
     <div className="flex flex-col min-h-0">
-      <div className="px-3 sm:px-4 pt-2 pb-3 border-b border-slate-100 dark:border-[#243350]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-2 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to tasks
-            </button>
-            <h3 className="text-base font-semibold text-slate-800 dark:text-white">Projects</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
-              {pinnedCount > 0 && (
-                <span className="text-amber-600 dark:text-amber-300"> · {pinnedCount} pinned</span>
-              )}
-              {" "}— tap ★ to pin · ⋯ to rename, archive, or delete
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(70vh,720px)]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
         {sortedProjects.map((project) => {

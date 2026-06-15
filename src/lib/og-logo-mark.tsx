@@ -1,14 +1,22 @@
-/** Logo mark for next/og ImageResponse (solid rings — Satori has no dashed strokes). */
-import { FOCI_LOGO_GRADIENT_CSS } from "@/lib/logo-brand";
+/** Logo mark for next/og ImageResponse (Satori — solid arcs, no dashed strokes). */
+import {
+  FOCI_LOGO_BG,
+  FOCI_LOGO_DOT,
+  FOCI_RING_COLORS,
+  FOCI_WORDMARK_GRADIENT_CSS,
+} from "@/lib/logo-brand";
 
 export function OgLogoMark({ size = 96 }: { size?: number }) {
-  const radius = size * 0.25;
-  const outer = size * 0.67;
-  const inner = size * 0.4;
-  const dot = size * 0.16;
-  const offset = (size - outer) / 2;
-  const innerOffset = (size - inner) / 2;
-  const dotOffset = (size - dot) / 2;
+  const tileRadius = size * 0.25;
+  const ringRadius = size * (10 / 32);
+  const ringDiameter = ringRadius * 2;
+  const ringOffset = (size - ringDiameter) / 2;
+  const ringStroke = size * (3.2 / 32);
+  const innerDiameter = size * (13 / 32);
+  const innerOffset = (size - innerDiameter) / 2;
+  const dotDiameter = size * (5.5 / 32);
+  const dotOffset = (size - dotDiameter) / 2;
+  const { dim, mid, bright } = FOCI_RING_COLORS;
 
   return (
     <div
@@ -24,27 +32,37 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
         style={{
           position: "absolute",
           inset: 0,
-          borderRadius: radius,
-          background: FOCI_LOGO_GRADIENT_CSS,
+          borderRadius: tileRadius,
+          background: FOCI_LOGO_BG,
         }}
       />
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          borderRadius: radius,
-          background: "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 55%)",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: offset,
-          left: offset,
-          width: outer,
-          height: outer,
+          top: ringOffset,
+          left: ringOffset,
+          width: ringDiameter,
+          height: ringDiameter,
           borderRadius: "50%",
-          border: `${Math.max(2, size * 0.028)}px solid #ffffff`,
+          border: `${ringStroke}px solid rgba(234, 88, 12, 0.14)`,
+          boxSizing: "border-box",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: ringOffset,
+          left: ringOffset,
+          width: ringDiameter,
+          height: ringDiameter,
+          borderRadius: "50%",
+          border: `${ringStroke}px solid transparent`,
+          borderTopColor: bright,
+          borderRightColor: bright,
+          borderBottomColor: dim,
+          borderLeftColor: mid,
+          transform: "rotate(-68deg)",
+          boxSizing: "border-box",
         }}
       />
       <div
@@ -52,10 +70,11 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
           position: "absolute",
           top: innerOffset,
           left: innerOffset,
-          width: inner,
-          height: inner,
+          width: innerDiameter,
+          height: innerDiameter,
           borderRadius: "50%",
-          border: `${Math.max(2, size * 0.022)}px solid rgba(255,255,255,0.9)`,
+          border: `${Math.max(1, size * 0.03)}px solid rgba(234, 88, 12, 0.2)`,
+          boxSizing: "border-box",
         }}
       />
       <div
@@ -63,14 +82,14 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
           position: "absolute",
           top: dotOffset,
           left: dotOffset,
-          width: dot,
-          height: dot,
+          width: dotDiameter,
+          height: dotDiameter,
           borderRadius: "50%",
-          background: "#ffffff",
+          background: FOCI_LOGO_DOT,
         }}
       />
     </div>
   );
 }
 
-export { FOCI_LOGO_GRADIENT_CSS as FOCI_LOGO_GRADIENT };
+export { FOCI_WORDMARK_GRADIENT_CSS as FOCI_LOGO_GRADIENT };

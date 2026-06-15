@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import UserMenu from "@/components/UserMenu";
-import { FociLogoMark, FOCI_LOGO_SHADOW } from "@/components/FociLogoMark";
+import { FociLogoMark, FociWordmark, FOCI_LOGO_SHADOW } from "@/components/FociLogoMark";
 
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
@@ -136,13 +136,13 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   return (
     <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top">
       <div className="flex items-center justify-between">
-        <Link href={logoHref} className="flex items-center gap-2">
+        <Link href={logoHref} className="flex items-center gap-2.5">
           <FociLogoMark
             size={36}
             idPrefix="nav"
             className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${FOCI_LOGO_SHADOW}`}
           />
-          <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Foci</span>
+          <FociWordmark className="text-lg sm:text-xl font-bold" />
         </Link>
 
         <div className="hidden sm:flex items-center gap-6">

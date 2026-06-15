@@ -990,6 +990,7 @@ export default function TaskList({
   const activeProjects = projects.filter((p) => !p.archived);
   const archivedProjects = projects.filter((p) => p.archived);
   const sortedProjects = sortProjectsForDisplay(activeProjects);
+  const pinnedProjectCount = sortedProjects.filter((p) => p.favorite).length;
   const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
   const isThisWeekFilter = selectedProjectId === THIS_WEEK_FILTER_ID;
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
@@ -1287,6 +1288,32 @@ export default function TaskList({
       >
         <div className="flex items-center justify-between min-w-0 gap-2">
           <div className="min-w-0 flex-shrink">
+            {projectManageOpen ? (
+              <>
+                <button
+                  type="button"
+                  onClick={closeProjectManage}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1.5 transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to tasks
+                </button>
+                <h2 className="text-base sm:text-lg font-semibold">Projects</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5">
+                  {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
+                  {pinnedProjectCount > 0 && (
+                    <span className="text-amber-600 dark:text-amber-300">
+                      {" "}
+                      · {pinnedProjectCount} pinned
+                    </span>
+                  )}
+                  {" "}— tap ★ to pin · ⋯ to rename, archive, or delete
+                </p>
+              </>
+            ) : (
+              <>
             <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
               <svg
                 className="w-5 h-5 flex-shrink-0"
@@ -1302,20 +1329,15 @@ export default function TaskList({
                 />
               </svg>
               <span>
-                {projectManageOpen ? "Projects" : "Tasks"}
-                {!projectManageOpen && viewMode === "plan" && (
+                Tasks
+                {viewMode === "plan" && (
                   <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
                     {" "}· AI plan
                   </span>
                 )}
               </span>
             </h2>
-            {!focusMode && projectManageOpen && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
-                Star favorites · ⋯ on each project to rename, archive, or delete
-              </p>
-            )}
-            {!focusMode && !projectManageOpen && (viewMode === "list" || viewMode === "bucket") && (
+            {!focusMode && (viewMode === "list" || viewMode === "bucket") && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
                 {viewMode === "bucket"
                   ? isTimeFilter
@@ -1331,6 +1353,8 @@ export default function TaskList({
                     ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
                     : "Pick a task, then hit Focus to start your session"}
               </p>
+            )}
+              </>
             )}
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
@@ -1480,7 +1504,7 @@ export default function TaskList({
         </div>
 
         {/* Time filters - mobile: own row below title */}
-        {!focusMode && (
+        {!focusMode && !projectManageOpen && (
         <div className="app-seg-track flex sm:hidden items-center gap-1 mt-3" data-tour="time-filters">
           <button
             onClick={() => selectProject(ALL_PROJECTS_ID)}
@@ -1547,7 +1571,6 @@ export default function TaskList({
           setNewProjectName={setNewProjectName}
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
-          onClose={closeProjectManage}
           onToggleFavorite={toggleProjectFavorite}
           onOpenProject={(id) => {
             closeProjectManage();
