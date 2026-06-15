@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import UserMenu from "@/components/UserMenu";
@@ -29,11 +29,33 @@ function SettingsIcon({ className }: { className?: string }) {
   );
 }
 
-export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
+type NavLink = {
+  key: string;
+  href: string;
+  label: string;
+  active: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+};
+
+function navLinkClass(active: boolean, mobile = false) {
+  if (mobile) {
+    return active
+      ? "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800"
+      : "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white";
+  }
+  return active
+    ? "text-base font-medium transition-colors text-slate-900 dark:text-white"
+    : "text-base font-medium transition-colors text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+}
+
+function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const projectsOpen = pathname === "/app" && searchParams.get("projects") === "1";
 
   const cycleTheme = () => {
     const next = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
@@ -55,16 +77,66 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
       </svg>
     );
 
-  const navLinks = [
-    ...(user ? [{ href: "/app", label: "My Tasks" }] : []),
-    { href: "/stats", label: "Stats" },
-    { href: "/blog", label: "Blog" },
-  ];
+  const openProjects = (e: React.MouseEvent) => {
+    if (pathname === "/app") {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent("foci-open-project-menu"));
+    }
+  };
+
+  const closeProjectsIfOpen = (e: React.MouseEvent) => {
+    if (pathname === "/app" && projectsOpen) {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent("foci-close-project-menu"));
+    }
+  };
+
+  const navLinks: NavLink[] = user
+    ? [
+        {
+          key: "tasks",
+          href: "/app",
+          label: "My Tasks",
+          active: pathname === "/app" && !projectsOpen,
+          onClick: closeProjectsIfOpen,
+        },
+        { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" },
+        {
+          key: "projects",
+          href: "/app?projects=1",
+          label: "Projects",
+          active: projectsOpen,
+          onClick: openProjects,
+        },
+        { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
+      ]
+    : [
+        { key: "try", href: "/app", label: "Try Foci", active: pathname === "/app" },
+        { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" },
+        { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
+      ];
+
+  const logoHref = user ? "/app" : "/";
+
+  const renderNavLink = (link: NavLink, mobile = false) => (
+    <Link
+      key={link.key}
+      href={link.href}
+      onClick={(e) => {
+        link.onClick?.(e);
+        if (mobile) setMenuOpen(false);
+      }}
+      className={navLinkClass(link.active, mobile)}
+      aria-current={link.active ? "page" : undefined}
+    >
+      {link.label}
+    </Link>
+  );
 
   return (
     <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top">
       <div className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={logoHref} className="flex items-center gap-2">
           <FociLogoMark
             size={36}
             idPrefix="nav"
@@ -73,21 +145,8 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
           <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Foci</span>
         </Link>
 
-        {/* Desktop nav */}
         <div className="hidden sm:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-base font-medium transition-colors ${
-                pathname === link.href
-                  ? "text-slate-900 dark:text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => renderNavLink(link))}
           {toolbarSlot}
           {onOpenSettings && (
             <button
@@ -121,7 +180,6 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
           )}
         </div>
 
-        {/* Mobile: settings, theme, menu (toolbar actions live in the menu) */}
         <div className="flex sm:hidden items-center gap-0.5">
           {onOpenSettings && (
             <button
@@ -160,7 +218,6 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="sm:hidden mt-3 pb-3 border-t border-slate-200 dark:border-slate-700">
           {toolbarSlot && (
@@ -169,20 +226,7 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
             </div>
           )}
           <div className="flex flex-col gap-1 pt-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  pathname === link.href
-                    ? "text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => renderNavLink(link, true))}
             {onOpenSettings && (
               <button
                 type="button"
@@ -213,5 +257,13 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
         </div>
       )}
     </nav>
+  );
+}
+
+export default function Navbar(props: NavbarProps) {
+  return (
+    <Suspense fallback={<nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top" aria-hidden />}>
+      <NavbarContent {...props} />
+    </Suspense>
   );
 }

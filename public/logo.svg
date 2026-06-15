@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" shape-rendering="geometricPrecision">
   <defs>
-    <linearGradient id="bg" x1="48" y1="32" x2="464" y2="480" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fde68a"/>
-      <stop offset="30%" stop-color="#fbbf24"/>
-      <stop offset="65%" stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#ea580c"/>
+    <linearGradient id="bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="24%" stop-color="#fdba74"/>
+      <stop offset="58%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#c2410c"/>
     </linearGradient>
-    <linearGradient id="shine" x1="256" y1="48" x2="256" y2="272" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+    <linearGradient id="shine" x1="160" y1="64" x2="352" y2="288" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
   </defs>

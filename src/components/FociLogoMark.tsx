@@ -1,3 +1,5 @@
+import { FOCI_LOGO_SHADOW, FOCI_LOGO_SVG_STOPS } from "@/lib/logo-brand";
+
 /** Shared Foci focus-ring logo — keep in sync with public/favicon.svg */
 export function FociLogoMark({
   size = 32,
@@ -9,6 +11,7 @@ export function FociLogoMark({
   idPrefix?: string;
 }) {
   const p = idPrefix;
+  const { highlight, warm, core, deep } = FOCI_LOGO_SVG_STOPS;
   return (
     <svg
       width={size}
@@ -20,14 +23,14 @@ export function FociLogoMark({
       aria-hidden
     >
       <defs>
-        <linearGradient id={`${p}-bg`} x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#fde68a" />
-          <stop offset="30%" stopColor="#fbbf24" />
-          <stop offset="65%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#ea580c" />
+        <linearGradient id={`${p}-bg`} x1="4" y1="3" x2="28" y2="29" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={highlight} />
+          <stop offset="24%" stopColor={warm} />
+          <stop offset="58%" stopColor={core} />
+          <stop offset="100%" stopColor={deep} />
         </linearGradient>
-        <linearGradient id={`${p}-shine`} x1="16" y1="3" x2="16" y2="17" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity={0.45} />
+        <linearGradient id={`${p}-shine`} x1="10" y1="4" x2="22" y2="18" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity={0.55} />
           <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
         </linearGradient>
       </defs>
@@ -61,5 +64,4 @@ export function FociLogoMark({
   );
 }
 
-export const FOCI_LOGO_SHADOW =
-  "shadow-[0_1px_2px_rgba(234,88,12,0.4),0_4px_12px_rgba(251,191,36,0.28)] ring-1 ring-white/30";
+export { FOCI_LOGO_SHADOW };

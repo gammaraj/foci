@@ -1,4 +1,6 @@
 /** Logo mark for next/og ImageResponse (solid rings — Satori has no dashed strokes). */
+import { FOCI_LOGO_GRADIENT_CSS } from "@/lib/logo-brand";
+
 export function OgLogoMark({ size = 96 }: { size?: number }) {
   const radius = size * 0.25;
   const outer = size * 0.67;
@@ -23,7 +25,7 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
           position: "absolute",
           inset: 0,
           borderRadius: radius,
-          background: "linear-gradient(135deg, #fde68a 0%, #fbbf24 28%, #f59e0b 62%, #ea580c 100%)",
+          background: FOCI_LOGO_GRADIENT_CSS,
         }}
       />
       <div
@@ -71,5 +73,4 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
   );
 }
 
-export const FOCI_LOGO_GRADIENT =
-  "linear-gradient(135deg, #fde68a 0%, #fbbf24 28%, #f59e0b 62%, #ea580c 100%)";
+export { FOCI_LOGO_GRADIENT_CSS as FOCI_LOGO_GRADIENT };

@@ -20,22 +20,28 @@ export function ProjectTaskCounts({
   const lateClass = "font-medium tabular-nums text-red-600 dark:text-red-300";
 
   const content = (
-    <>
-      <span className={numClass}>{open}</span>
-      <span className={labelClass}> open</span>
+    <span className="inline-flex items-center flex-wrap gap-x-1">
+      <span>
+        <span className={numClass}>{open}</span>
+        <span className={labelClass}> open</span>
+      </span>
       {completed > 0 && (
         <>
-          <span className={labelClass}> · </span>
+          <span className={labelClass} aria-hidden>
+            ·
+          </span>
           <span className={doneClass}>{completed} done</span>
         </>
       )}
       {overdue > 0 && (
         <>
-          <span className={labelClass}> · </span>
+          <span className={labelClass} aria-hidden>
+            ·
+          </span>
           <span className={lateClass}>{overdue} late</span>
         </>
       )}
-    </>
+    </span>
   );
 
   if (variant === "inline") {

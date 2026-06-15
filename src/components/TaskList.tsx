@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
@@ -21,6 +22,7 @@ import { applyBucketDrop, moveBucketTaskInLane, type BucketDropTarget } from "@/
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
+import OpenTaskList from "@/components/task-list/OpenTaskList";
 import {
   MAX_TASK_TITLE,
   MAX_PROJECT_NAME,
@@ -108,6 +110,20 @@ export default function TaskList({
 
   const viewBeforePlanRef = useRef<TaskViewMode>("bucket");
   const viewBeforeManageRef = useRef<TaskViewMode>("bucket");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const syncProjectsUrl = useCallback(
+    (open: boolean) => {
+      const hasProjects = searchParams.get("projects") === "1";
+      if (open && !hasProjects) {
+        router.replace("/app?projects=1", { scroll: false });
+      } else if (!open && hasProjects) {
+        router.replace("/app", { scroll: false });
+      }
+    },
+    [router, searchParams]
+  );
 
   const openProjectManage = useCallback(() => {
     viewBeforeManageRef.current =
@@ -115,12 +131,14 @@ export default function TaskList({
         ? viewMode
         : "bucket";
     setProjectManageOpen(true);
-  }, [viewMode]);
+    syncProjectsUrl(true);
+  }, [viewMode, syncProjectsUrl]);
 
   const closeProjectManage = useCallback(() => {
     setProjectManageOpen(false);
     setEditingProjectId(null);
-  }, []);
+    syncProjectsUrl(false);
+  }, [syncProjectsUrl]);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
@@ -164,22 +182,44 @@ export default function TaskList({
 
   useEffect(() => {
     const open = () => openProjectManage();
+    const close = () => closeProjectManage();
     window.addEventListener("foci-open-project-menu", open);
-    return () => window.removeEventListener("foci-open-project-menu", open);
-  }, [openProjectManage]);
+    window.addEventListener("foci-close-project-menu", close);
+    return () => {
+      window.removeEventListener("foci-open-project-menu", open);
+      window.removeEventListener("foci-close-project-menu", close);
+    };
+  }, [openProjectManage, closeProjectManage]);
+
+  useEffect(() => {
+    const shouldOpen = searchParams.get("projects") === "1";
+    setProjectManageOpen((wasOpen) => {
+      if (wasOpen === shouldOpen) return wasOpen;
+      if (shouldOpen) {
+        viewBeforeManageRef.current =
+          viewMode === "calendar" || viewMode === "list" || viewMode === "bucket"
+            ? viewMode
+            : "bucket";
+      }
+      return shouldOpen;
+    });
+    if (!shouldOpen) {
+      setEditingProjectId(null);
+    }
+  }, [searchParams, viewMode]);
   const newTaskDueDateInputRef = useRef<HTMLInputElement>(null);
 
   // Close project menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (projectMenuRef.current && !projectMenuRef.current.contains(e.target as Node)) {
-        setProjectManageOpen(false);
+        closeProjectManage();
         setShowOverflowProjectMenu(false);
       }
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  }, [closeProjectManage]);
 
   // Lock project selection in focus mode
   useEffect(() => {
@@ -336,7 +376,7 @@ export default function TaskList({
     saveSelectedProjectId(id).catch((err) => {
       console.error("[Foci] Failed to save selected project:", err);
     });
-    setProjectManageOpen(false);
+    closeProjectManage();
     setShowOverflowProjectMenu(false);
   };
 
@@ -348,7 +388,7 @@ export default function TaskList({
       selectedProjectId === THIS_YEAR_FILTER_ID;
     if (timeScope) {
       setProjectFilterId(projectId);
-      setProjectManageOpen(false);
+      closeProjectManage();
       setShowOverflowProjectMenu(false);
       return;
     }
@@ -359,7 +399,7 @@ export default function TaskList({
   const selectSharedProject = async (shared: SharedProject) => {
     setSelectedSharedProject(shared);
     setSelectedProjectId(`shared:${shared._ownerId}:${shared.id}`);
-    setProjectManageOpen(false);
+    closeProjectManage();
     
     // Load tasks for this shared project if not already loaded
     const key = `${shared._ownerId}:${shared.id}`;
@@ -727,59 +767,50 @@ export default function TaskList({
     setDragOverTaskId(taskId);
   };
 
-  const handleDrop = (targetId: string) => {
-    if (!dragTaskId || dragTaskId === targetId) {
-      setDragTaskId(null);
-      setDragOverTaskId(null);
-      return;
-    }
-
-    // Reorder within pendingTasks
-    const ordered = [...pendingTasks];
-    const fromIdx = ordered.findIndex((t) => t.id === dragTaskId);
-    const toIdx = ordered.findIndex((t) => t.id === targetId);
-    if (fromIdx === -1 || toIdx === -1) {
-      setDragTaskId(null);
-      setDragOverTaskId(null);
-      return;
-    }
-
-    const [moved] = ordered.splice(fromIdx, 1);
-    ordered.splice(toIdx, 0, moved);
-
-    // Assign order values
+  const applyTaskOrder = (ordered: Task[]) => {
     const orderMap = new Map<string, number>();
     ordered.forEach((t, i) => orderMap.set(t.id, i));
-
     const updated = tasks.map((t) =>
       orderMap.has(t.id) ? { ...t, order: orderMap.get(t.id)! } : t
     );
     persist(updated);
-    setDragTaskId(null);
-    setDragOverTaskId(null);
   };
+
+  const createTaskListDnD = (taskList: Task[]) => ({
+    onDrop: (targetId: string) => {
+      if (!dragTaskId || dragTaskId === targetId) {
+        setDragTaskId(null);
+        setDragOverTaskId(null);
+        return;
+      }
+      const ordered = [...taskList];
+      const fromIdx = ordered.findIndex((t) => t.id === dragTaskId);
+      const toIdx = ordered.findIndex((t) => t.id === targetId);
+      if (fromIdx === -1 || toIdx === -1) {
+        setDragTaskId(null);
+        setDragOverTaskId(null);
+        return;
+      }
+      const [moved] = ordered.splice(fromIdx, 1);
+      ordered.splice(toIdx, 0, moved);
+      applyTaskOrder(ordered);
+      setDragTaskId(null);
+      setDragOverTaskId(null);
+    },
+    onMoveTask: (taskId: string, direction: "up" | "down") => {
+      const ordered = [...taskList];
+      const idx = ordered.findIndex((t) => t.id === taskId);
+      if (idx === -1) return;
+      const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= ordered.length) return;
+      [ordered[idx], ordered[targetIdx]] = [ordered[targetIdx], ordered[idx]];
+      applyTaskOrder(ordered);
+    },
+  });
 
   const handleDragEnd = () => {
     setDragTaskId(null);
     setDragOverTaskId(null);
-  };
-
-  const moveTask = (taskId: string, direction: "up" | "down") => {
-    const ordered = [...pendingTasks];
-    const idx = ordered.findIndex((t) => t.id === taskId);
-    if (idx === -1) return;
-    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (targetIdx < 0 || targetIdx >= ordered.length) return;
-
-    [ordered[idx], ordered[targetIdx]] = [ordered[targetIdx], ordered[idx]];
-
-    const orderMap = new Map<string, number>();
-    ordered.forEach((t, i) => orderMap.set(t.id, i));
-
-    const updated = tasks.map((t) =>
-      orderMap.has(t.id) ? { ...t, order: orderMap.get(t.id)! } : t
-    );
-    persist(updated);
   };
 
   // Subtask helpers
@@ -1189,6 +1220,36 @@ export default function TaskList({
     );
   };
 
+  const renderOpenTasks = (taskList: Task[], options?: { className?: string }) => (
+    <OpenTaskList
+      tasks={taskList}
+      activeTaskId={activeTaskId}
+      isTimerRunning={isTimerRunning}
+      expandedTaskId={expandedTaskId}
+      editingId={editingId}
+      editTitle={editTitle}
+      dragTaskId={dragTaskId}
+      dragOverTaskId={dragOverTaskId}
+      onToggleComplete={toggleComplete}
+      onSaveEdit={saveEdit}
+      onStartEdit={startEditing}
+      onEditTitleChange={setEditTitle}
+      onCancelEdit={() => setEditingId(null)}
+      onToggleTaskDetail={toggleTaskDetail}
+      onStartTask={onStartTask}
+      onSelectTask={onSelectTask}
+      onDeleteTask={deleteTask}
+      onSetDueDate={setDueDate}
+      onSnoozeToToday={snoozeToToday}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      renderBelowTask={renderTaskInlineExpansion}
+      {...createTaskListDnD(taskList)}
+      className={options?.className ?? "space-y-2"}
+    />
+  );
+
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
 
@@ -1513,9 +1574,7 @@ export default function TaskList({
           }}
           onLeaveShared={handleLeaveSharedProject}
           onAddProject={addProject}
-          onToggleComplete={toggleComplete}
-          onStartTask={onStartTask}
-          onSelectTask={onSelectTask}
+          renderOpenTasks={renderOpenTasks}
         />
       )}
 
@@ -1848,7 +1907,7 @@ export default function TaskList({
             <button
               onClick={() => {
                 setShowOverflowProjectMenu((prev) => !prev);
-                setProjectManageOpen(false);
+                closeProjectManage();
               }}
               className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                 showOverflowProjectMenu
@@ -2158,385 +2217,39 @@ export default function TaskList({
 
         {/* First session nudge handled by AppMessageQueue on /app */}
 
-        <div className="space-y-2">
-          {pendingTasks.map((task, index) => {
-            const subtasks = task.subtasks || [];
-            const hasSubtasks = subtasks.length > 0;
-            const isExpanded = expandedTaskId === task.id;
-            const isOverdue = task.dueDate && isDueDateOverdue(task.dueDate);
-            const prevTask = index > 0 ? pendingTasks[index - 1] : null;
-            const prevIsOverdue = !!(prevTask?.dueDate && isDueDateOverdue(prevTask.dueDate));
-            const showOverdueHeader = isOverdue && !prevIsOverdue;
-            const showUpcomingHeader = !isOverdue && prevIsOverdue;
-            const showNoDueDateHeader =
-              isTimeFilter && !task.dueDate && (index === 0 || !!prevTask?.dueDate);
-            const isUndatedInTimeFilter = isTimeFilter && !task.dueDate;
-
-            if (isUndatedInTimeFilter && !noDueDateExpanded) {
-              if (!showNoDueDateHeader) return null;
-              return (
-                <button
-                  key="no-due-date-section"
-                  type="button"
-                  onClick={() => setNoDueDateExpanded(true)}
-                  className="mb-2 mt-3 pl-3 py-1.5 border-l-[3px] border-l-slate-300 dark:border-l-slate-600 w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors"
-                  aria-expanded={false}
-                >
-                  <svg
-                    className="w-3.5 h-3.5 text-slate-400 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
-                  <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">
-                    ({scopedUndatedOpenCount})
-                  </span>
-                </button>
-              );
-            }
-
-            return (
-            <div key={task.id}>
-            {showNoDueDateHeader && (
-              <button
-                type="button"
-                onClick={() => setNoDueDateExpanded((open) => !open)}
-                className="mb-2 mt-3 pl-3 py-1.5 border-l-[3px] border-l-slate-300 dark:border-l-slate-600 w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors"
-                aria-expanded={noDueDateExpanded}
-              >
-                <svg
-                  className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${noDueDateExpanded ? "rotate-90" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
-                <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">
-                  ({scopedUndatedOpenCount})
-                </span>
-              </button>
-            )}
-            {showOverdueHeader && (
-              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500">
-                <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
-              </div>
-            )}
-            {showUpcomingHeader && (
-              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 app-section-label text-slate-600 dark:text-slate-300">
-                Upcoming
-              </div>
-            )}
-            <div
-              draggable
-              aria-current={activeTaskId === task.id ? "true" : undefined}
-              data-linked-to-timer={activeTaskId === task.id ? "true" : undefined}
-              onDragStart={() => handleDragStart(task.id)}
-              onDragOver={(e) => handleDragOver(e, task.id)}
-              onDrop={() => handleDrop(task.id)}
-              onDragEnd={handleDragEnd}
-              className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors ${
-                activeTaskId === task.id
-                  ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-blue-400/30 dark:ring-blue-500/25"
-                  : isExpanded
-                    ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
-                  : isOverdue
-                    ? "border-slate-300 dark:border-[#1e3050] hover:bg-red-50/40 dark:hover:bg-red-950/15 border-l-[3px] border-l-red-500 dark:border-l-rose-500 shadow-sm"
-                    : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
-              } ${
-                dragTaskId === task.id ? "opacity-50" : ""
-              } ${
-                dragOverTaskId === task.id && dragTaskId !== task.id
-                  ? "border-t-2 border-t-blue-500"
-                  : ""
-              }`}
-            >
-              {/* Drag handle (desktop) / Move buttons (mobile) */}
-              <div className="flex-shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
-                {/* Desktop: drag handle */}
-                <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
-                  </svg>
-                </div>
-                {/* Mobile: up/down buttons */}
-                {pendingTasks.length > 1 && (
-                  <div className="sm:hidden flex flex-col -my-1">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); moveTask(task.id, "up"); }}
-                      disabled={pendingTasks[0]?.id === task.id}
-                      className="p-0.5 text-slate-400 dark:text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all"
-                      aria-label="Move up"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); moveTask(task.id, "down"); }}
-                      disabled={pendingTasks[pendingTasks.length - 1]?.id === task.id}
-                      className="p-0.5 text-slate-400 dark:text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all"
-                      aria-label="Move down"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
-              </div>
-              {/* Checkbox */}
-              <button
-                onClick={(e) => { e.stopPropagation(); toggleComplete(task.id); }}
-                className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
-                aria-label={`Mark "${task.title}" complete`}
-              />
-
-              {/* Task content */}
-              <div className="flex-1 min-w-0">
-                <div
-                  className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-slate-800 dark:text-slate-50 break-words leading-normal"
-                >
-                  {editingId === task.id ? (
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      onBlur={() => saveEdit(task.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") saveEdit(task.id);
-                        if (e.key === "Escape") setEditingId(null);
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
-                      autoFocus
-                    />
-                  ) : (
-                    <span
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(task);
-                      }}
-                      className="cursor-text"
-                      title="Double-click to edit title"
-                    >
-                      {task.title}
-                    </span>
-                  )}
-                  {activeTaskId === task.id && isTimerRunning && (
-                    <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
-                  )}
-                  {/* Priority badge */}
-                  {task.priority && (
-                    <span className={`inline-flex items-center px-2 py-0.5 text-xs sm:text-sm font-semibold uppercase rounded ${
-                      task.priority === 1 
-                        ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
-                        : task.priority === 2
-                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50"
-                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50"
-                    }`}>
-                      {task.priority === 1 ? "HIGH" : task.priority === 2 ? "MED" : "LOW"}
-                    </span>
-                  )}
-                  {(isAllProjects || isTimeFilter) && (
-                    <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300">
-                      {getProjectName(task.projectId)}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
-                  {/* Due date — always visible when set */}
-                  {task.dueDate && (
-                    <div
-                      className={`relative inline-flex items-center gap-1.5 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
-                        !task.completed && isDueDateOverdue(task.dueDate)
-                          ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
-                          : !task.completed && task.dueDate === getToday()
-                            ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                            : "text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                      }`}
-                      title={`Due: ${formatDueDate(task.dueDate)}`}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {formatDueDate(task.dueDate)}
-                      {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                      <input
-                        type="date"
-                        value={task.dueDate}
-                        onChange={(e) => setDueDate(task.id, e.target.value || undefined)}
-                        onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
-                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                      />
-                    </div>
-                  )}
-                  {(task.description || task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
-                  )}
-                  {task.description && (
-                    <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" />
-                      </svg>
-                    </span>
-                  )}
-                  {task.description && (task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
-                  )}
-                  {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                    <span className="app-text-meta text-slate-500 dark:text-slate-300">
-                      {task.sessions > 0 && (
-                        <>{task.sessions} total session{task.sessions !== 1 ? "s" : ""}</>
-                      )}
-                      {task.sessions > 0 && (task.timeSpent || 0) > 0 && " · "}
-                      {(task.timeSpent || 0) > 0 && formatDuration(task.timeSpent)}
-                    </span>
-                  )}
-                  {task.recurrence && (
-                    <>
-                      <span className="text-xs text-slate-400 dark:text-slate-300">·</span>
-                      <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        {task.recurrence}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Details chevron — expand task metadata & first subtask form */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleTaskDetail(task.id);
-                }}
-                className={`flex-shrink-0 min-w-[28px] sm:min-w-[36px] min-h-[28px] sm:min-h-[36px] rounded-md flex items-center justify-center transition-colors hover:bg-slate-100 dark:hover:bg-[#1a2d4a] ${
-                  isExpanded
-                    ? "text-violet-500 dark:text-violet-400"
-                    : "text-slate-300 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-300"
-                }`}
-                title={isExpanded ? "Close details" : "Task details"}
-                aria-label={isExpanded ? "Close task details" : "Open task details"}
-                aria-expanded={isExpanded}
-              >
-                <svg className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-
-              {activeTaskId === task.id && !isTimerRunning && (
-                <span className="lg:hidden flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-xs font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                  Timer
-                </span>
-              )}
-
-              {/* Start / Select / In-progress button — hidden on mobile */}
-              {activeTaskId === task.id && isTimerRunning ? (
-                <span className="flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded bg-blue-600 text-white hidden sm:flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <span className="hidden sm:inline">In progress</span>
-                </span>
-              ) : activeTaskId === task.id ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectTask(null);
-                    }}
-                    className="flex-shrink-0 hidden sm:flex px-2.5 py-1.5 text-xs sm:text-sm font-medium rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 touch-target-sm"
-                    title="Deselect task"
-                  >
-                    Deselect
-                  </button>
-              ) : !isOverdue ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onStartTask(task.id);
-                    }}
-                    className="flex-shrink-0 flex items-center justify-center px-2.5 py-1.5 text-xs sm:text-sm font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 touch-target-sm"
-                    title={
-                      isTimerRunning
-                        ? "Switch focus to this task"
-                        : "Focus on this task and start the timer"
-                    }
-                  >
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                      <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                    </svg>
-                    <span className="ml-1">{isTimerRunning ? "Switch" : "Focus"}</span>
-                  </button>
-              ) : null}
-
-              {/* Delete — visible on hover (desktop), hidden on mobile to save space */}
-              {!(isTimerRunning && activeTaskId === task.id) && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                  className="flex-shrink-0 p-2 rounded-md text-slate-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:flex hover-reveal-desktop transition-all"
-                  aria-label={`Delete "${task.title}"`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {isOverdue && !task.completed && (
-              <div
-                className="flex flex-wrap items-center gap-1.5 mt-1.5 mb-0.5 px-1 sm:px-2"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  type="button"
-                  onClick={() => snoozeToToday(task.id)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
-                >
-                  Move to today
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggleComplete(task.id)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
-                >
-                  Done
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onStartTask(task.id)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  Focus
-                </button>
-              </div>
-            )}
-            {renderTaskInlineExpansion(task)}
-            </div>
-            );
-          })}
-        </div>
+        <OpenTaskList
+          tasks={pendingTasks}
+          activeTaskId={activeTaskId}
+          isTimerRunning={isTimerRunning}
+          expandedTaskId={expandedTaskId}
+          editingId={editingId}
+          editTitle={editTitle}
+          dragTaskId={dragTaskId}
+          dragOverTaskId={dragOverTaskId}
+          showProjectBadge
+          isTimeFilter={isTimeFilter}
+          isAllProjects={isAllProjects}
+          getProjectName={getProjectName}
+          noDueDateExpanded={noDueDateExpanded}
+          onToggleNoDueDateExpanded={() => setNoDueDateExpanded((open) => !open)}
+          scopedUndatedOpenCount={scopedUndatedOpenCount}
+          onToggleComplete={toggleComplete}
+          onSaveEdit={saveEdit}
+          onStartEdit={startEditing}
+          onEditTitleChange={setEditTitle}
+          onCancelEdit={() => setEditingId(null)}
+          onToggleTaskDetail={toggleTaskDetail}
+          onStartTask={onStartTask}
+          onSelectTask={onSelectTask}
+          onDeleteTask={deleteTask}
+          onSetDueDate={setDueDate}
+          onSnoozeToToday={snoozeToToday}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          renderBelowTask={renderTaskInlineExpansion}
+          {...createTaskListDnD(pendingTasks)}
+        />
 
         {/* Completed tasks */}
         {completedTasks.length > 0 && (

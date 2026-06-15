@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
 import TaskList from "@/components/TaskList";
@@ -309,20 +309,22 @@ export default function AppPage() {
 
         {/* Tasks — full width */}
         <div id="tasks-section" className="w-full">
-          <TaskList
-            key={taskListKey}
-            activeTaskId={activeTaskId}
-            onSelectTask={setActiveTaskId}
-            onStartTask={handleStartTask}
-            onCompleteTask={handleCompleteTask}
-            isTimerRunning={isRunning}
-            focusProjectId={focusProjectId}
-            onFocusProject={handleFocusProject}
-            isFullscreen={tasksFullscreen}
-            onToggleFullscreen={() => setTasksFullscreen(f => !f)}
-            focusMode={focusMode}
-            onOpenSettings={() => setShowSettings(true)}
-          />
+          <Suspense fallback={null}>
+            <TaskList
+              key={taskListKey}
+              activeTaskId={activeTaskId}
+              onSelectTask={setActiveTaskId}
+              onStartTask={handleStartTask}
+              onCompleteTask={handleCompleteTask}
+              isTimerRunning={isRunning}
+              focusProjectId={focusProjectId}
+              onFocusProject={handleFocusProject}
+              isFullscreen={tasksFullscreen}
+              onToggleFullscreen={() => setTasksFullscreen(f => !f)}
+              focusMode={focusMode}
+              onOpenSettings={() => setShowSettings(true)}
+            />
+          </Suspense>
         </div>
 
         <div className="sr-only" aria-live="polite" aria-atomic="true">

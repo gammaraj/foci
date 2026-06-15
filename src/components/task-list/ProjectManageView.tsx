@@ -41,9 +41,7 @@ export interface ProjectManageViewProps {
   onSelectSharedProject: (sp: SharedProject) => void;
   onLeaveShared: (sp: SharedProject) => void;
   onAddProject: () => void;
-  onToggleComplete: (taskId: string) => void;
-  onStartTask: (taskId: string) => void;
-  onSelectTask: (taskId: string | null) => void;
+  renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }
 
 function sortOpenTasks(projectTasks: Task[], activeTaskId: string | null): Task[] {
@@ -221,8 +219,6 @@ function ProjectRow({
   editingProjectId,
   editProjectName,
   setEditProjectName,
-  activeTaskId,
-  isTimerRunning,
   user,
   onToggleFavorite,
   onOpenProject,
@@ -235,9 +231,7 @@ function ProjectRow({
   onArchive,
   onDelete,
   onFocusProject,
-  onToggleComplete,
-  onStartTask,
-  onSelectTask,
+  renderOpenTasks,
 }: {
   project: Project;
   openTasks: Task[];
@@ -247,8 +241,6 @@ function ProjectRow({
   editingProjectId: string | null;
   editProjectName: string;
   setEditProjectName: (v: string) => void;
-  activeTaskId: string | null;
-  isTimerRunning: boolean;
   user: { id: string } | null;
   onToggleFavorite: (id: string) => void;
   onOpenProject: (id: string) => void;
@@ -261,9 +253,7 @@ function ProjectRow({
   onArchive: (id: string) => void;
   onDelete: (id: string) => void;
   onFocusProject?: (id: string) => void;
-  onToggleComplete: (taskId: string) => void;
-  onStartTask: (taskId: string) => void;
-  onSelectTask: (taskId: string | null) => void;
+  renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }) {
   const canManage = project.id !== DEFAULT_PROJECT_ID;
 
@@ -360,53 +350,7 @@ function ProjectRow({
 
       {expanded && (
         <div className="border-t border-slate-100 dark:border-[#243350] overflow-hidden rounded-b-xl">
-          {openTasks.length === 0 ? (
-            <p className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500">No open tasks</p>
-          ) : (
-            <ul className="divide-y divide-slate-100 dark:divide-[#243350]">
-              {openTasks.map((task) => {
-                const overdue = task.dueDate && isDueDateOverdue(task.dueDate);
-                return (
-                  <li
-                    key={task.id}
-                    className={`flex items-center gap-2 px-3 py-2.5 ${
-                      activeTaskId === task.id
-                        ? "bg-blue-50/80 dark:bg-blue-900/20"
-                        : "hover:bg-slate-50/80 dark:hover:bg-[#1a2d4a]/50"
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => onToggleComplete(task.id)}
-                      className="flex-shrink-0 w-5 h-5 rounded-md border-2 border-slate-300 dark:border-slate-600 hover:border-blue-400 transition-colors"
-                      aria-label={`Complete "${task.title}"`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => onSelectTask(activeTaskId === task.id ? null : task.id)}
-                      className="flex-1 min-w-0 text-left"
-                    >
-                      <span className="text-sm text-slate-700 dark:text-slate-200 truncate block">
-                        {task.title}
-                      </span>
-                      {task.dueDate && (
-                        <span className={`text-xs ${overdue ? "text-red-500" : "text-slate-400"}`}>
-                          {formatDueDate(task.dueDate)}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onStartTask(task.id)}
-                      className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded-md border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-                    >
-                      {activeTaskId === task.id ? "Linked" : isTimerRunning ? "Switch" : "Focus"}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          {renderOpenTasks(openTasks, { className: "space-y-2 px-1 sm:px-2 py-2" })}
 
           <div className="flex flex-wrap items-center gap-1 px-3 py-2 border-t border-slate-100 dark:border-[#243350] bg-slate-50/50 dark:bg-[#0f172a]/40">
             <button
@@ -502,9 +446,7 @@ export default function ProjectManageView({
   onSelectSharedProject,
   onLeaveShared,
   onAddProject,
-  onToggleComplete,
-  onStartTask,
-  onSelectTask,
+  renderOpenTasks,
 }: ProjectManageViewProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
   const [showArchived, setShowArchived] = useState(false);
@@ -547,7 +489,8 @@ export default function ProjectManageView({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 space-y-2 min-h-0 max-h-[min(70vh,720px)]">
+      <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(70vh,720px)]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
         {sortedProjects.map((project) => {
           const openTasks = sortOpenTasks(
             tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),
@@ -556,20 +499,22 @@ export default function ProjectManageView({
           const completedCount = tasks.filter(
             (t) => t.projectId === project.id && t.completed && !t.archivedAt
           ).length;
+          const isExpanded = expandedIds.has(project.id);
 
           return (
-            <ProjectRow
+            <div
               key={project.id}
+              className={isExpanded ? "md:col-span-2" : "min-w-0"}
+            >
+            <ProjectRow
               project={project}
               openTasks={openTasks}
               completedCount={completedCount}
-              expanded={expandedIds.has(project.id)}
+              expanded={isExpanded}
               onToggleExpanded={() => toggleExpanded(project.id)}
               editingProjectId={editingProjectId}
               editProjectName={editProjectName}
               setEditProjectName={setEditProjectName}
-              activeTaskId={activeTaskId}
-              isTimerRunning={isTimerRunning}
               user={user}
               onToggleFavorite={onToggleFavorite}
               onOpenProject={onOpenProject}
@@ -582,15 +527,14 @@ export default function ProjectManageView({
               onArchive={onArchive}
               onDelete={onDelete}
               onFocusProject={onFocusProject}
-              onToggleComplete={onToggleComplete}
-              onStartTask={onStartTask}
-              onSelectTask={onSelectTask}
+              renderOpenTasks={renderOpenTasks}
             />
+            </div>
           );
         })}
 
         {archivedProjects.length > 0 && (
-          <div className="pt-2">
+          <div className="pt-2 md:col-span-2">
             <button
               type="button"
               onClick={() => setShowArchived((v) => !v)}
@@ -644,7 +588,7 @@ export default function ProjectManageView({
         )}
 
         {user && sharedProjects.length > 0 && (
-          <div className="pt-3 border-t border-slate-100 dark:border-[#243350]">
+          <div className="pt-3 border-t border-slate-100 dark:border-[#243350] md:col-span-2">
             <p className="app-section-label text-slate-400 mb-2">
               Shared with me
             </p>
@@ -682,6 +626,7 @@ export default function ProjectManageView({
             </div>
           </div>
         )}
+        </div>
       </div>
 
       <form
