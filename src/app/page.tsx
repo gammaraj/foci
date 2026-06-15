@@ -196,7 +196,7 @@ export default function LandingPage() {
           <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.12]">
             {FOCI_TAGLINE_CALM}
           </h1>
-          <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+          <p className="mt-5 text-lg text-slate-700 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
             Free Pomodoro timer, tasks, session tracking, and ambient sound — the focus app at usefoci.com, no signup required.
           </p>
 
@@ -209,7 +209,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-700 dark:text-slate-400 font-medium text-base hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               Sign in to sync
             </Link>

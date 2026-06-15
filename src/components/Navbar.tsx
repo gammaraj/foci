@@ -147,7 +147,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
               idPrefix="nav"
               className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${FOCI_LOGO_SHADOW}`}
             />
-            <FociWordmark className="text-lg sm:text-xl font-bold" />
+            <FociWordmark className="text-lg sm:text-xl font-bold" tone="dark" />
           </Link>
 
           <div className="hidden sm:flex items-center gap-6">

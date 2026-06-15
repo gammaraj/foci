@@ -11,11 +11,18 @@ export const FOCI_RING_COLORS = {
 
 export const FOCI_LOGO_DOT = "#fb923c";
 
-export const FOCI_WORDMARK_GRADIENT_CSS =
+export const FOCI_WORDMARK_GRADIENT_DARK_BG_CSS =
   "linear-gradient(90deg, #fde68a 0%, #fdba74 30%, #fb923c 65%, #f97316 100%)";
 
-/** @deprecated Use FOCI_WORDMARK_GRADIENT_CSS — kept for OG exports */
-export const FOCI_LOGO_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_CSS;
+/** Wordmark on white/light pages — no pale yellow stops */
+export const FOCI_WORDMARK_GRADIENT_LIGHT_BG_CSS =
+  "linear-gradient(90deg, #fb923c 0%, #f97316 42%, #ea580c 88%, #c2410c 100%)";
+
+/** @deprecated Use FOCI_WORDMARK_GRADIENT_DARK_BG_CSS — kept for OG exports */
+export const FOCI_WORDMARK_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
+
+/** @deprecated Use FOCI_WORDMARK_GRADIENT_DARK_BG_CSS — kept for OG exports */
+export const FOCI_LOGO_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
 
 export const FOCI_LOGO_SVG_STOPS = FOCI_RING_COLORS;
 

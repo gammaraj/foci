@@ -21,7 +21,7 @@ export default function HomeAppMockup() {
 
       <div className="bg-[#e8edf2] dark:bg-[#0b1121] rounded-b-2xl p-3 sm:p-5 border border-slate-200 dark:border-[#1e3355] border-t-0 overflow-hidden shadow-2xl shadow-slate-900/10 dark:shadow-black/40">
         {/* Top stats bar */}
-        <div className="mb-3 rounded-xl bg-white dark:bg-[#111827]/90 border border-slate-200 dark:border-[#243350] px-3 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <div className="mb-3 rounded-xl bg-white dark:bg-[#111827]/90 border border-slate-200 dark:border-[#243350] px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
           <span className="font-semibold text-slate-800 dark:text-slate-100">Today </span>
           <span className="text-blue-600 dark:text-blue-400 font-semibold">2/3</span> sessions
           <span className="text-slate-300 dark:text-slate-600 mx-2">·</span>
@@ -36,7 +36,7 @@ export default function HomeAppMockup() {
                 <span className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white">Tasks</span>
                 <div className="flex gap-1">
                   <span className="text-xs font-medium px-2 py-1 rounded-md bg-white text-slate-800 ring-1 ring-slate-300 shadow-sm">Today</span>
-                  <span className="text-xs font-medium px-2 py-1 rounded-md text-slate-500">Week</span>
+                  <span className="text-xs font-medium px-2 py-1 rounded-md text-slate-600">Week</span>
                 </div>
               </div>
             </div>
@@ -48,7 +48,7 @@ export default function HomeAppMockup() {
             </div>
 
             <div className="px-3 flex gap-1.5">
-              <div className="flex-1 px-2.5 py-2 text-xs text-slate-400 bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg">
+              <div className="flex-1 px-2.5 py-2 text-xs text-slate-500 bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg">
                 Add a task to General…
               </div>
               <div className="px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg">Add</div>
@@ -75,7 +75,7 @@ export default function HomeAppMockup() {
                       task.done ? "border-green-500 bg-green-500" : task.active ? "border-blue-500" : "border-slate-300 dark:border-slate-600"
                     }`}
                   />
-                  <span className={`flex-1 truncate ${task.done ? "line-through text-slate-400" : "text-slate-800 dark:text-slate-100 font-medium"}`}>
+                  <span className={`flex-1 truncate ${task.done ? "line-through text-slate-500" : "text-slate-800 dark:text-slate-100 font-medium"}`}>
                     {task.title}
                   </span>
                   {task.active && (
@@ -116,7 +116,7 @@ export default function HomeAppMockup() {
                   <span
                     key={p}
                     className={`flex-1 text-center text-[10px] sm:text-xs py-1 rounded-md font-semibold ${
-                      i === 2 ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300 shadow-sm" : "text-slate-500"
+                      i === 2 ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300 shadow-sm" : "text-slate-600"
                     }`}
                   >
                     {p}
@@ -126,13 +126,13 @@ export default function HomeAppMockup() {
             </div>
 
             <div className="mx-3 mb-3 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50 dark:bg-[#131d30] px-2.5 py-2">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Now playing</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">Now playing</p>
               <p className="text-xs font-medium text-slate-800 dark:text-slate-100 truncate">Peaceful Meditation</p>
               <div className="flex gap-1 mt-1.5">
                 {["Rain", "Café", "Brown"].map((label, i) => (
                   <span
                     key={label}
-                    className={`text-[10px] px-2 py-1 rounded-md font-medium ${i === 0 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-white dark:bg-[#1a2d4a] text-slate-500"}`}
+                    className={`text-[10px] px-2 py-1 rounded-md font-medium ${i === 0 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-white dark:bg-[#1a2d4a] text-slate-600"}`}
                   >
                     {label}
                   </span>

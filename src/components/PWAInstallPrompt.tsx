@@ -55,7 +55,7 @@ export default function PWAInstallPrompt() {
         />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
-            Install <FociWordmark className="text-sm font-semibold" />
+            Install <FociWordmark className="text-sm font-semibold" tone="light" />
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-300 mt-0.5">
             Add to your home screen for quick access and offline use.

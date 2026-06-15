@@ -5,7 +5,8 @@ import {
   FOCI_RING,
   FOCI_RING_COLORS,
   FOCI_TAGLINE_FOCUS,
-  FOCI_WORDMARK_GRADIENT_CSS,
+  FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
+  FOCI_WORDMARK_GRADIENT_LIGHT_BG_CSS,
 } from "@/lib/logo-brand";
 
 /** Shared Foci ring-and-dot mark — keep in sync with public/favicon.svg */
@@ -58,12 +59,22 @@ export function FociLogoMark({
   );
 }
 
-/** Lowercase wordmark — pair with FociLogoMark */
-export function FociWordmark({ className = "" }: { className?: string }) {
+/** Lowercase wordmark — use tone="light" on pale backgrounds */
+export function FociWordmark({
+  className = "",
+  tone = "dark",
+}: {
+  className?: string;
+  /** "dark" = on nav/dark chrome; "light" = on white/light pages */
+  tone?: "dark" | "light";
+}) {
+  const gradient =
+    tone === "light" ? FOCI_WORDMARK_GRADIENT_LIGHT_BG_CSS : FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
+
   return (
     <span
       className={`font-semibold tracking-tight lowercase bg-clip-text text-transparent ${className}`}
-      style={{ backgroundImage: FOCI_WORDMARK_GRADIENT_CSS }}
+      style={{ backgroundImage: gradient }}
     >
       foci
     </span>
@@ -76,11 +87,13 @@ export function FociBrandLockup({
   showTagline = false,
   idPrefix = "lockup",
   className = "",
+  tone = "light",
 }: {
   markSize?: number;
   showTagline?: boolean;
   idPrefix?: string;
   className?: string;
+  tone?: "dark" | "light";
 }) {
   return (
     <div className={`flex items-center gap-3 sm:gap-3.5 ${className}`}>
@@ -90,9 +103,13 @@ export function FociBrandLockup({
         className={`flex-shrink-0 rounded-xl sm:rounded-2xl ${FOCI_LOGO_SHADOW}`}
       />
       <div className="flex flex-col items-start gap-0.5 min-w-0">
-        <FociWordmark className="text-2xl sm:text-3xl font-bold leading-none" />
+        <FociWordmark className="text-2xl sm:text-3xl font-bold leading-none" tone={tone} />
         {showTagline && (
-          <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.18em] uppercase text-orange-400/90">
+          <p
+            className={`text-[10px] sm:text-[11px] font-semibold tracking-[0.18em] uppercase ${
+              tone === "light" ? "text-orange-700" : "text-orange-300"
+            }`}
+          >
             {FOCI_TAGLINE_FOCUS}
           </p>
         )}
