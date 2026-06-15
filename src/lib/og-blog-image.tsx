@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { OgLogoMark } from "@/lib/og-logo-mark";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
@@ -34,19 +35,7 @@ export function renderBlogOgImage({ title, description, tag, date }: BlogOgImage
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: "linear-gradient(135deg, #d97706 0%, #c2410c 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div style={{ width: 14, height: 14, borderRadius: "50%", background: "white" }} />
-          </div>
+          <OgLogoMark size={48} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontSize: 22, fontWeight: 700, color: "white", letterSpacing: -0.5 }}>
               Foci Blog

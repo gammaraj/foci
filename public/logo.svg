@@ -1,31 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" shape-rendering="geometricPrecision">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1a1a36"/>
-      <stop offset="100%" stop-color="#0c0c18"/>
+    <linearGradient id="bg" x1="48" y1="32" x2="464" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="30%" stop-color="#fbbf24"/>
+      <stop offset="65%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ea580c"/>
     </linearGradient>
-    <radialGradient id="glow" cx="256" cy="256" r="140" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="rgba(217,119,6,0.15)"/>
-      <stop offset="100%" stop-color="rgba(217,119,6,0)"/>
-    </radialGradient>
-    <linearGradient id="arcOuter" x1="76" y1="76" x2="436" y2="436" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#d97706"/>
-      <stop offset="50%" stop-color="#c2410c"/>
-      <stop offset="100%" stop-color="#d97706"/>
+    <linearGradient id="shine" x1="256" y1="48" x2="256" y2="272" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
-    <linearGradient id="arcInner" x1="146" y1="146" x2="366" y2="366" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="rgba(217,119,6,0.65)"/>
-      <stop offset="50%" stop-color="rgba(194,65,12,0.65)"/>
-      <stop offset="100%" stop-color="rgba(217,119,6,0.65)"/>
-    </linearGradient>
-    <radialGradient id="core" cx="0.4" cy="0.35" r="0.6">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#fde68a"/>
-    </radialGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <circle cx="256" cy="256" r="140" fill="url(#glow)"/>
-  <circle cx="256" cy="256" r="180" stroke="url(#arcOuter)" stroke-width="18" fill="none" stroke-linecap="round" stroke-dasharray="282.74 94.25" transform="rotate(-90 256 256)"/>
-  <circle cx="256" cy="256" r="110" stroke="url(#arcInner)" stroke-width="13" fill="none" stroke-linecap="round" stroke-dasharray="172.79 57.60" transform="rotate(-30 256 256)"/>
-  <circle cx="256" cy="256" r="40" fill="url(#core)"/>
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="120" fill="url(#shine)"/>
+  <circle cx="256" cy="256" r="179" stroke="#ffffff" stroke-width="35" fill="none" stroke-linecap="round" stroke-dasharray="316 104" transform="rotate(-90 256 256)"/>
+  <circle cx="256" cy="256" r="112" stroke="#ffffff" stroke-width="30" fill="none" stroke-linecap="round" stroke-dasharray="198 66" stroke-opacity="0.92" transform="rotate(15 256 256)"/>
+  <circle cx="256" cy="256" r="45" fill="#ffffff"/>
 </svg>

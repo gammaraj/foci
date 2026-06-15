@@ -64,6 +64,9 @@ interface TaskBucketViewProps {
   onBucketDrop?: (draggedTaskId: string, target: BucketDropTarget) => void;
   onBucketMove?: (taskId: string, direction: "up" | "down") => void;
   renderBelowTask?: (task: Task, compact?: boolean) => React.ReactNode;
+  /** When set, scroll the matching column into view (use scrollToProjectToken to re-trigger). */
+  scrollToProjectId?: string | null;
+  scrollToProjectToken?: number;
 }
 
 const LANE_COLLAPSE_THRESHOLD = 4;
@@ -524,9 +527,22 @@ function BucketColumn({
 }) {
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
+  const topAddInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
   const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(() => new Set());
+
+  const submitQuickAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    const title = draft.trim();
+    if (!title) return;
+    onQuickAdd(title, project.id);
+    setDraft("");
+  };
+
+  const focusAddInput = () => {
+    (tasks.length > 0 ? topAddInputRef : addInputRef).current?.focus();
+  };
 
   const toggleLane = (laneId: BucketSwimlaneId) => {
     setCollapsedLanes((prev) => {
@@ -543,6 +559,7 @@ function BucketColumn({
 
   return (
     <div
+      data-bucket-project={project.id}
       className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm ${
         isPersonal
           ? "bg-slate-50/95 dark:bg-[#151c2c]/95 border border-slate-200/90 dark:border-slate-600/40 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.05)] dark:shadow-none"
@@ -624,6 +641,16 @@ function BucketColumn({
         />
       </div>
 
+      {tasks.length > 0 && (
+        <BucketQuickAddForm
+          draft={draft}
+          onDraftChange={setDraft}
+          onSubmit={submitQuickAdd}
+          inputRef={topAddInputRef}
+          className="px-3 pt-2 pb-2 shrink-0 border-b border-slate-200/60 dark:border-[#243350]/50"
+        />
+      )}
+
       <div
         className="flex-1 overflow-y-auto px-2 pb-2 pt-0.5 min-h-[80px]"
         onDragOver={(e) => {
@@ -646,7 +673,7 @@ function BucketColumn({
                 No tasks ·{" "}
                 <button
                   type="button"
-                  onClick={() => addInputRef.current?.focus()}
+                  onClick={focusAddInput}
                   className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   + Add
@@ -770,38 +797,52 @@ function BucketColumn({
         )}
       </div>
 
-      <form
-        className="px-3 py-2.5 shrink-0"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const title = draft.trim();
-          if (!title) return;
-          onQuickAdd(title, project.id);
-          setDraft("");
-        }}
-      >
-        <div className="flex items-center gap-2 rounded-xl bg-slate-100/70 dark:bg-white/5 px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500/15 dark:focus-within:ring-blue-400/20 transition-shadow">
-          <input
-            ref={addInputRef}
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Add a task…"
-            maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
-          />
-          <button
-            type="submit"
-            disabled={!draft.trim()}
-            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            aria-label="Add task"
-            title="Add task"
-          >
-            Add
-          </button>
-        </div>
-      </form>
+      <BucketQuickAddForm
+        draft={draft}
+        onDraftChange={setDraft}
+        onSubmit={submitQuickAdd}
+        inputRef={addInputRef}
+      />
     </div>
+  );
+}
+
+function BucketQuickAddForm({
+  draft,
+  onDraftChange,
+  onSubmit,
+  inputRef,
+  className = "px-3 py-2.5 shrink-0",
+}: {
+  draft: string;
+  onDraftChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
+  className?: string;
+}) {
+  return (
+    <form className={className} onSubmit={onSubmit}>
+      <div className="flex items-center gap-2 rounded-xl bg-slate-100/70 dark:bg-white/5 px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500/15 dark:focus-within:ring-blue-400/20 transition-shadow">
+        <input
+          ref={inputRef}
+          type="text"
+          value={draft}
+          onChange={(e) => onDraftChange(e.target.value)}
+          placeholder="Add a task…"
+          maxLength={MAX_TASK_TITLE}
+          className="flex-1 min-w-0 text-sm bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+        />
+        <button
+          type="submit"
+          disabled={!draft.trim()}
+          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          aria-label="Add task"
+          title="Add task"
+        >
+          Add
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -829,9 +870,12 @@ export default function TaskBucketView({
   onBucketDrop,
   onBucketMove,
   renderBelowTask,
+  scrollToProjectId = null,
+  scrollToProjectToken = 0,
 }: TaskBucketViewProps) {
   // Keep column order stable (favorites → manual order → name) regardless of active time filter.
   const orderedColumns = projects;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollHint, setShowScrollHint] = useState(false);
   const [dragTaskId, setDragTaskId] = useState<string | null>(null);
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
@@ -867,10 +911,21 @@ export default function TaskBucketView({
     setShowScrollHint(false);
   };
 
+  useEffect(() => {
+    if (!scrollToProjectId || !scrollContainerRef.current) return;
+    const column = scrollContainerRef.current.querySelector(
+      `[data-bucket-project="${scrollToProjectId}"]`
+    );
+    if (column instanceof HTMLElement) {
+      column.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+    }
+  }, [scrollToProjectId, scrollToProjectToken]);
+
   return (
     <div className="px-3 sm:px-4 pb-3 pt-1 min-h-0">
       <div className="relative">
         <div
+          ref={scrollContainerRef}
           className="w-full flex gap-4 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
           onScroll={showScrollHint ? dismissScrollHint : undefined}
         >

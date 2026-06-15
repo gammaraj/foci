@@ -114,7 +114,9 @@ function ProjectRowMenu({
   onDelete: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -125,13 +127,22 @@ function ProjectRowMenu({
     return () => document.removeEventListener("mousedown", close);
   }, [open]);
 
+  const toggleOpen = () => {
+    if (!open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setOpenUp(window.innerHeight - rect.bottom < 200);
+    }
+    setOpen((v) => !v);
+  };
+
   return (
     <div className="relative shrink-0" ref={menuRef}>
       <button
+        ref={buttonRef}
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          setOpen((v) => !v);
+          toggleOpen();
         }}
         className="p-2 rounded-lg text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-800 dark:hover:text-white transition-colors"
         aria-label={`Manage ${project.name}`}
@@ -144,7 +155,9 @@ function ProjectRowMenu({
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full z-20 mt-1 min-w-[9.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-lg"
+          className={`absolute right-0 z-30 min-w-[9.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-lg ${
+            openUp ? "bottom-full mb-1" : "top-full mt-1"
+          }`}
           role="menu"
         >
           <button
@@ -255,7 +268,7 @@ function ProjectRow({
   const canManage = project.id !== DEFAULT_PROJECT_ID;
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/50 overflow-hidden">
+    <div className="relative rounded-xl border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/50 hover:z-10 focus-within:z-20">
       <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2">
         {canManage ? (
           <FavoriteButton
@@ -346,7 +359,7 @@ function ProjectRow({
       </div>
 
       {expanded && (
-        <div className="border-t border-slate-100 dark:border-[#243350]">
+        <div className="border-t border-slate-100 dark:border-[#243350] overflow-hidden rounded-b-xl">
           {openTasks.length === 0 ? (
             <p className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500">No open tasks</p>
           ) : (
@@ -534,7 +547,7 @@ export default function ProjectManageView({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 min-h-0 max-h-[min(70vh,720px)]">
+      <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 space-y-2 min-h-0 max-h-[min(70vh,720px)]">
         {sortedProjects.map((project) => {
           const openTasks = sortOpenTasks(
             tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),

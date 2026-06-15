@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import UserMenu from "@/components/UserMenu";
+import { FociLogoMark, FOCI_LOGO_SHADOW } from "@/components/FociLogoMark";
 
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
@@ -64,13 +65,11 @@ export default function Navbar({ onOpenSettings, toolbarSlot }: NavbarProps) {
     <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 max-w-[1280px] mx-auto w-full safe-top">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl shadow-sm" style={{ background: "linear-gradient(135deg, #d97706, #c2410c)", boxShadow: "0 1px 3px rgba(217,119,6,0.3)" }}>
-            <svg width="18" height="18" viewBox="0 0 32 32" fill="none" className="sm:w-5 sm:h-5">
-              <circle cx="16" cy="16" r="12" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeDasharray="18.85 6.28" transform="rotate(-90 16 16)"/>
-              <circle cx="16" cy="16" r="7" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeDasharray="11 3.67" transform="rotate(-30 16 16)" opacity="0.6"/>
-              <circle cx="16" cy="16" r="2.5" fill="white"/>
-            </svg>
-          </div>
+          <FociLogoMark
+            size={36}
+            idPrefix="nav"
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${FOCI_LOGO_SHADOW}`}
+          />
           <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Foci</span>
         </Link>
 

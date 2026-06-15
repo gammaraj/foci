@@ -77,6 +77,8 @@ export default function TaskList({
   /** When viewing Today/Week/Month/Year, filters tasks within that scope (All projects or one project). */
   const [projectFilterId, setProjectFilterId] = useState<string>(ALL_PROJECTS_ID);
   const [projectManageOpen, setProjectManageOpen] = useState(false);
+  const [bucketJumpProjectId, setBucketJumpProjectId] = useState("");
+  const [bucketScrollToken, setBucketScrollToken] = useState(0);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [showAddProject, setShowAddProject] = useState(false);
@@ -1586,17 +1588,47 @@ export default function TaskList({
               Drag to reorder · pin columns · scroll for more
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-200 rounded-lg border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 shadow-sm transition-colors shrink-0"
-            title="Create a new project bucket"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New project
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {sortedProjects.length > 1 && (
+              <>
+                <label htmlFor="bucket-project-jump" className="sr-only">
+                  Go to project
+                </label>
+                <select
+                  id="bucket-project-jump"
+                  value={bucketJumpProjectId}
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    setBucketJumpProjectId(id);
+                    if (id) setBucketScrollToken((n) => n + 1);
+                  }}
+                  className="max-w-[11rem] sm:max-w-[14rem] px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8 truncate"
+                  title="Jump to a project column"
+                >
+                  <option value="">Go to project…</option>
+                  {sortedProjects.map((p) => {
+                    const count = bucketTasksByProject.get(p.id)?.length ?? 0;
+                    return (
+                      <option key={p.id} value={p.id} title={projectTabTooltip(p)}>
+                        {projectTabLabel(p)} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => { setNewProjectName(""); openProjectManage(); }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-200 rounded-lg border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 shadow-sm transition-colors shrink-0"
+              title="Create a new project bucket"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New project
+            </button>
+          </div>
         </div>
       )}
 
@@ -1639,6 +1671,8 @@ export default function TaskList({
           onToggleTaskDetail={toggleTaskDetail}
           onBucketDrop={handleBucketDrop}
           onBucketMove={handleBucketMove}
+          scrollToProjectId={bucketJumpProjectId || null}
+          scrollToProjectToken={bucketScrollToken}
           renderBelowTask={renderTaskInlineExpansion}
         />
       )}
