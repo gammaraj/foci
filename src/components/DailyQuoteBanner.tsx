@@ -23,7 +23,7 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
       role="status"
       aria-label="Weather and focus timer"
     >
-      <div className="max-w-[1280px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 space-y-1.5">
+      <div className="app-container py-1.5 sm:py-2 space-y-1.5">
         {threeColumnStrip ? (
           <div
             className="grid min-w-0 grid-cols-1 sm:grid-cols-[2.5fr_3.5fr_4fr] sm:items-start rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"

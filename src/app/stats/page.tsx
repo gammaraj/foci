@@ -498,7 +498,7 @@ export default function StatsPage() {
     return (
       <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
         <AppNavbar />
-        <div className="max-w-[1280px] mx-auto px-4 py-12 text-center text-slate-500 dark:text-slate-400">
+        <div className="app-container py-12 text-center text-slate-500 dark:text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
         </div>
       </div>
@@ -509,7 +509,7 @@ export default function StatsPage() {
     <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
       <AppNavbar />
 
-      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="app-container py-6 sm:py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 sm:mb-8">
           <div className="min-w-0">

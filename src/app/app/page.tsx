@@ -274,8 +274,8 @@ export default function AppPage() {
       <AppMessageQueue user={user} focusMode={focusMode} />
       {focusMode && (
         <>
-          <div className="px-2 sm:px-4 pt-2">
-            <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
+          <div className="app-container py-2">
+            <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
               <span className="text-blue-800 dark:text-blue-200 font-medium">Focus mode — fewer distractions</span>
               <button
                 type="button"
@@ -293,8 +293,8 @@ export default function AppPage() {
         </>
       )}
       <DueDateReminders />
-      <div className="flex items-start justify-center flex-1 px-2 pt-2 pb-3 sm:p-4 sm:pt-3">
-      <div className={`w-full ${tasksFullscreen ? "" : "max-w-[1280px]"}`}>
+      <div className="flex-1 py-2 sm:py-3">
+      <div className={tasksFullscreen ? "w-full px-2 sm:px-4" : "app-container"}>
 
         {/* Tasks — full width */}
         <div id="tasks-section" className="w-full">

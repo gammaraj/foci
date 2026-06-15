@@ -40,16 +40,15 @@ type NavLink = {
 function navLinkClass(active: boolean, mobile = false) {
   if (mobile) {
     return active
-      ? "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-white bg-white/10"
-      : "px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full text-slate-400 hover:bg-white/5 hover:text-white";
+      ? "nav-chrome-link-active px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full bg-white/10"
+      : "nav-chrome-link px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full hover:bg-white/5";
   }
   return active
-    ? "text-base font-medium transition-colors text-white"
-    : "text-base font-medium transition-colors text-slate-400 hover:text-white";
+    ? "nav-chrome-link-active text-base font-medium transition-colors"
+    : "nav-chrome-link text-base font-medium transition-colors";
 }
 
-const chromeBtn =
-  "rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors";
+const chromeBtn = "nav-chrome-btn rounded-lg";
 const chromeBtnPad = `${chromeBtn} p-2`;
 const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 border border-transparent hover:border-white/10`;
 
@@ -140,7 +139,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
 
   return (
     <header className="nav-chrome sticky top-0 z-30">
-      <nav className="relative px-4 sm:px-6 pb-3 sm:pb-3.5 max-w-[1280px] mx-auto w-full">
+      <nav className="relative app-container pb-3 sm:pb-3.5">
         <div className="flex items-center justify-between">
           <Link href={logoHref} className="flex items-center gap-2.5">
             <FociLogoMark
@@ -240,7 +239,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
                     onOpenSettings();
                     setMenuOpen(false);
                   }}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-colors text-left w-full`}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium nav-chrome-link hover:bg-white/5 transition-colors text-left w-full"
                 >
                   <SettingsIcon className="w-4 h-4" />
                   Settings
@@ -272,7 +271,7 @@ export default function Navbar(props: NavbarProps) {
     <Suspense
       fallback={
         <header className="nav-chrome sticky top-0 z-30" aria-hidden>
-          <nav className="px-4 sm:px-6 pb-3 max-w-[1280px] mx-auto w-full h-14" />
+          <nav className="app-container pb-3 h-14" />
         </header>
       }
     >
