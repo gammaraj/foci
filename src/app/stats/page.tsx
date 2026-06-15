@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 import {
   loadStreakHistory,
   loadTasks,
@@ -497,7 +497,7 @@ export default function StatsPage() {
   if (!loaded) {
     return (
       <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
-        <Navbar />
+        <AppNavbar />
         <div className="max-w-[1280px] mx-auto px-4 py-12 text-center text-slate-500 dark:text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
         </div>
@@ -507,7 +507,7 @@ export default function StatsPage() {
 
   return (
     <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
-      <Navbar />
+      <AppNavbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}

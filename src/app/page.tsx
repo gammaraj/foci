@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 import { getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import GuideLinkHub from "@/components/GuideLinkHub";
@@ -185,7 +185,7 @@ export default function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
-      <Navbar />
+      <AppNavbar />
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center px-4 sm:px-6">

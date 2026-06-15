@@ -4,7 +4,7 @@ import React from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import AuthForm from "@/components/AuthForm";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
-      <Navbar />
+      <AppNavbar />
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-[360px]">
           <div className="text-center mb-8">

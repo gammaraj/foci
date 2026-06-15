@@ -8,7 +8,7 @@ import { absolutePageTitle } from "@/lib/site-metadata";
 import { SAT_TUTORING_BLOG_SLUGS } from "@/lib/partner-promos";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 
 /** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
 function safeJsonLd(obj: unknown): string {
@@ -144,7 +144,7 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
         />
       )}
-      <Navbar />
+      <AppNavbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 flex-1">
         <div className="max-w-3xl mx-auto">

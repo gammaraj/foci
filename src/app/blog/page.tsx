@@ -4,7 +4,7 @@ import { getAllPosts, getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import GuideLinkHub from "@/components/GuideLinkHub";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 
 const title = "Blog | Flowtime, Pomodoro, Study Music & Focus Guides";
 const description =
@@ -95,7 +95,7 @@ export default function BlogIndexPage() {
           __html: JSON.stringify(itemListJsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <Navbar />
+      <AppNavbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">

@@ -4,21 +4,17 @@ import React, { useState, useEffect, useCallback, useRef, Suspense } from "react
 import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
 import TaskList from "@/components/TaskList";
-import Navbar from "@/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 import DailyQuoteBanner from "@/components/DailyQuoteBanner";
 import FocusDockPanel, { FocusDockToolbar } from "@/components/FocusDock";
 import AmbientSounds from "@/components/AmbientSounds";
-import NotificationBell from "@/components/NotificationBell";
-import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import AppMessageQueue from "@/components/AppMessageQueue";
 import KeyboardShortcutsModal from "@/components/KeyboardShortcutsModal";
 import SessionCelebration from "@/components/SessionCelebration";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
-const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
-const WhatsNewBanner = dynamic(() => import("@/components/WhatsNewBanner"));
 const FeatureTour = dynamic(() => import("@/components/FeatureTour"));
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
 function formatTime(ms: number): string {
@@ -31,7 +27,6 @@ function formatTime(ms: number): string {
 export default function AppPage() {
   const { user, loading } = useAuth();
   const timer = useTimer({ authLoading: loading, user });
-  const [showSettings, setShowSettings] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const activeTaskIdRef = useRef<string | null>(null);
   const [taskListKey, setTaskListKey] = useState(0);
@@ -174,7 +169,7 @@ export default function AppPage() {
         setFocusMode((f) => !f);
       } else if (e.key === "Escape") {
         setShowShortcuts(false);
-        setShowSettings(false);
+        window.dispatchEvent(new CustomEvent("foci-close-settings"));
       }
     };
     window.addEventListener("keydown", onKey);
@@ -214,17 +209,11 @@ export default function AppPage() {
     <div className="app-shell min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#0b1121]">
       <a href="#tasks-section" className="skip-link">Skip to tasks</a>
       <a href="#focus-dock" className="skip-link">Skip to timer</a>
-      <Navbar
-        onOpenSettings={() => setShowSettings(true)}
-        toolbarSlot={
-          user ? (
-            <div className="flex items-center gap-0.5">
-              <CollaborationInvitesButton />
-              <WhatsNewBanner focusMode={focusMode} />
-              <NotificationBell />
-            </div>
-          ) : undefined
-        }
+      <AppNavbar
+        focusMode={focusMode}
+        settings={timer.settings}
+        onSaveSettings={timer.saveSettings}
+        onTasksImported={() => setTaskListKey((k) => k + 1)}
       />
       {!focusMode && (
         <div id="focus-dock">
@@ -322,7 +311,7 @@ export default function AppPage() {
               isFullscreen={tasksFullscreen}
               onToggleFullscreen={() => setTasksFullscreen(f => !f)}
               focusMode={focusMode}
-              onOpenSettings={() => setShowSettings(true)}
+              onOpenSettings={() => window.dispatchEvent(new CustomEvent("foci-open-settings"))}
             />
           </Suspense>
         </div>
@@ -332,15 +321,6 @@ export default function AppPage() {
         </div>
       </div>
       </div>
-
-      {showSettings && (
-        <SettingsPanel
-          settings={timer.settings}
-          onSave={timer.saveSettings}
-          onClose={() => setShowSettings(false)}
-          onTasksImported={() => setTaskListKey((k) => k + 1)}
-        />
-      )}
 
       <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
