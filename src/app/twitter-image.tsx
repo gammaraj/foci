@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { OgLogoMark } from "@/lib/og-logo-mark";
-import { FOCI_TAGLINE_CALM, FOCI_TAGLINE_FOCUS } from "@/lib/logo-brand";
+import { FOCI_TAGLINE_CALM, FOCI_TAGLINE_FOCUS, FOCI_WORDMARK_GRADIENT_CSS } from "@/lib/logo-brand";
 
 export const alt = "Foci – Free Pomodoro Timer, Tasks & Focus App";
 export const size = { width: 1200, height: 630 };
@@ -34,7 +34,7 @@ function OgBrandImage() {
               fontSize: 72,
               fontWeight: 700,
               letterSpacing: -2,
-              background: "linear-gradient(90deg, #fb923c 0%, #f97316 45%, #ea580c 100%)",
+              background: FOCI_WORDMARK_GRADIENT_CSS,
               backgroundClip: "text",
               color: "transparent",
             }}

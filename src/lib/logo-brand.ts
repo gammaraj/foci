@@ -3,16 +3,16 @@
 export const FOCI_LOGO_BG = "#0b1121";
 
 export const FOCI_RING_COLORS = {
-  dim: "#7c2d12",
-  mid: "#ea580c",
-  bright: "#fb923c",
-  glow: "#fdba74",
+  dim: "#ea580c",
+  mid: "#f97316",
+  bright: "#fdba74",
+  glow: "#fde68a",
 } as const;
 
-export const FOCI_LOGO_DOT = "#f97316";
+export const FOCI_LOGO_DOT = "#fb923c";
 
 export const FOCI_WORDMARK_GRADIENT_CSS =
-  "linear-gradient(90deg, #fb923c 0%, #f97316 45%, #ea580c 100%)";
+  "linear-gradient(90deg, #fde68a 0%, #fdba74 30%, #fb923c 65%, #f97316 100%)";
 
 /** @deprecated Use FOCI_WORDMARK_GRADIENT_CSS — kept for OG exports */
 export const FOCI_LOGO_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_CSS;
@@ -20,7 +20,7 @@ export const FOCI_LOGO_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_CSS;
 export const FOCI_LOGO_SVG_STOPS = FOCI_RING_COLORS;
 
 export const FOCI_LOGO_SHADOW =
-  "shadow-[0_2px_10px_rgba(0,0,0,0.35),0_0_18px_rgba(249,115,22,0.22)] ring-1 ring-orange-500/25";
+  "shadow-[0_2px_10px_rgba(0,0,0,0.35),0_0_22px_rgba(251,146,60,0.38)] ring-1 ring-orange-400/40";
 
 export const FOCI_TAGLINE_FOCUS = "FOCUS · FLOW · FINISH";
 export const FOCI_TAGLINE_CALM = "deep work, one calm window";

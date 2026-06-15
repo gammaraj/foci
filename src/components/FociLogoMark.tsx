@@ -92,7 +92,7 @@ export function FociBrandLockup({
       <div className="flex flex-col items-start gap-0.5 min-w-0">
         <FociWordmark className="text-2xl sm:text-3xl font-bold leading-none" />
         {showTagline && (
-          <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.18em] uppercase text-orange-500/85 dark:text-orange-400/85">
+          <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.18em] uppercase text-orange-400/90">
             {FOCI_TAGLINE_FOCUS}
           </p>
         )}
