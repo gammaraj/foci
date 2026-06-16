@@ -55,6 +55,8 @@ interface TaskBucketViewProps {
   onSelectTask: (taskId: string | null) => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  /** Focus on a single project in the full-screen list view. */
+  onExpandProject?: (projectId: string) => void;
   editingTaskId?: string | null;
   editTitle?: string;
   onStartEdit?: (task: Task) => void;
@@ -380,7 +382,7 @@ function BucketTaskCard({
         )}
         {!isEditing && !task.dueDate && onSetDueDate && (
           <label
-            className="relative inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-600/60 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 cursor-pointer transition-colors mt-[3px]"
+            className="relative inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 cursor-pointer transition-colors mt-[3px]"
             title="Set a due date to schedule this task"
           >
             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -521,6 +523,7 @@ function BucketColumn({
   onSelectTask,
   onQuickAdd,
   onToggleProjectFavorite,
+  onExpandProject,
   editingTaskId,
   editTitle = "",
   onStartEdit,
@@ -554,6 +557,7 @@ function BucketColumn({
   onSelectTask: (taskId: string | null) => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  onExpandProject?: (projectId: string) => void;
   editingTaskId?: string | null;
   editTitle?: string;
   onStartEdit?: (task: Task) => void;
@@ -686,6 +690,19 @@ function BucketColumn({
           completed={completedCount}
           overdue={tasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length}
         />
+        {onExpandProject && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onExpandProject(project.id); }}
+            className="flex-shrink-0 p-1 rounded-md text-slate-400 dark:text-slate-500 opacity-0 group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-all"
+            title={`View ${project.name} full screen`}
+            aria-label={`Expand ${project.name} to full view`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {tasks.length > 0 && (
@@ -776,7 +793,7 @@ function BucketColumn({
                       </svg>
                       <span className="truncate">
                         {lane.label}
-                        <span className="ml-1 tabular-nums font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal">
+                        <span className="ml-1 tabular-nums font-medium text-slate-500 dark:text-slate-300 normal-case tracking-normal">
                           ({lane.tasks.length})
                         </span>
                       </span>
@@ -788,7 +805,7 @@ function BucketColumn({
                       }`}
                     >
                       {lane.label}
-                      <span className="ml-1 tabular-nums font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal">
+                      <span className="ml-1 tabular-nums font-medium text-slate-500 dark:text-slate-300 normal-case tracking-normal">
                         ({lane.tasks.length})
                       </span>
                     </p>
@@ -903,6 +920,7 @@ export default function TaskBucketView({
   onSelectTask,
   onQuickAdd,
   onToggleProjectFavorite,
+  onExpandProject,
   editingTaskId = null,
   editTitle = "",
   onStartEdit,
@@ -992,6 +1010,7 @@ export default function TaskBucketView({
             onSelectTask={onSelectTask}
             onQuickAdd={onQuickAdd}
             onToggleProjectFavorite={onToggleProjectFavorite}
+            onExpandProject={onExpandProject}
             editingTaskId={editingTaskId}
             editTitle={editTitle}
             onStartEdit={onStartEdit}

@@ -54,7 +54,7 @@ export function TaskSubtaskSection({
       onClick={(e) => e.stopPropagation()}
     >
       {hasSubtasks && (
-        <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1">
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 tracking-wide">
           Subtasks · {completedSubtasks}/{subtasks.length}
         </p>
       )}

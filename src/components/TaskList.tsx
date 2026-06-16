@@ -140,6 +140,12 @@ export default function TaskList({
     syncProjectsUrl(false);
   }, [syncProjectsUrl]);
 
+  const expandProjectFromBucket = useCallback((projectId: string) => {
+    selectProject(projectId);
+    setViewMode("list");
+    localStorage.setItem("foci_task_view_mode", "list");
+  }, []);
+
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
     setExpandedTaskId(null);
@@ -1742,6 +1748,7 @@ export default function TaskList({
           onSelectTask={onSelectTask}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleProjectFavorite={toggleProjectFavorite}
+          onExpandProject={expandProjectFromBucket}
           editingTaskId={editingId}
           editTitle={editTitle}
           onStartEdit={startEditing}

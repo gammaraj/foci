@@ -503,8 +503,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
           {stripEmbedded ? (
-            <span className="flex flex-col min-w-0 gap-0.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none">
+            <span className="flex items-baseline gap-1.5 min-w-0 overflow-hidden">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none shrink-0">
                 Music
               </span>
               <span className={`${FOCUS_STRIP_VALUE} truncate`}>{nowPlayingLabel}</span>
