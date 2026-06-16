@@ -984,7 +984,7 @@ export default function TaskBucketView({
   }, [scrollToProjectId, scrollToProjectToken]);
 
   return (
-    <div className="px-3 sm:px-4 pb-3 pt-1 min-h-0">
+    <div className="px-1 sm:px-2 pb-3 pt-1 min-h-0">
       <div className="relative">
         <div
           ref={scrollContainerRef}

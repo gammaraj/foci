@@ -76,13 +76,18 @@ body {
 /* Shared content width — navbar, status strip, tasks, stats */
 .app-container {
   width: 100%;
-  max-width: 80rem;
+  max-width: 1400px;
   margin-inline: auto;
   padding-inline: 1rem;
 }
 @media (min-width: 640px) {
   .app-container {
     padding-inline: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .app-container {
+    padding-inline: 2rem;
   }
 }
 
