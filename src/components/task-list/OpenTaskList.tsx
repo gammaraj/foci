@@ -152,8 +152,8 @@ export default function OpenTaskList({
               </div>
             )}
             {showUpcomingHeader && (
-              <div className="mb-2 mt-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30]/80 app-section-label text-slate-600 dark:text-slate-300">
-                Upcoming
+              <div className="mb-2 mt-1 pl-3 py-1 border-l-[3px] border-l-slate-400 dark:border-l-slate-500">
+                <span className="app-section-label text-slate-600 dark:text-slate-400">Upcoming</span>
               </div>
             )}
             <div
@@ -254,7 +254,7 @@ export default function OpenTaskList({
                   )}
                   {task.priority && (
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 text-xs sm:text-sm font-semibold uppercase rounded ${
+                      className={`inline-flex items-center px-2 py-0.5 text-xs font-semibold uppercase rounded ${
                         task.priority === 1
                           ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
                           : task.priority === 2

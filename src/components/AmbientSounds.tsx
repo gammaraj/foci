@@ -504,7 +504,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         >
           {stripEmbedded ? (
             <span className="flex flex-col min-w-0 gap-0.5">
-              <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none">
                 Music
               </span>
               <span className={`${FOCUS_STRIP_VALUE} truncate`}>{nowPlayingLabel}</span>
@@ -623,7 +623,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 setShowYt(false);
               },
               label: "Sounds",
-              icon: <span className="text-[13px] leading-none shrink-0" aria-hidden>🎧</span>,
+              icon: <span className="text-sm leading-none shrink-0" aria-hidden>🎧</span>,
             },
             {
               id: "spotify" as const,
@@ -640,13 +640,13 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               onClick: () => setMode("soundcloud"),
               label: "Cloud",
               labelWide: "SoundCloud",
-              icon: <span className="text-[13px] leading-none shrink-0" aria-hidden>☁️</span>,
+              icon: <span className="text-sm leading-none shrink-0" aria-hidden>☁️</span>,
             },
             {
               id: "lofi" as const,
               onClick: () => setMode("lofi"),
               label: "Lo-fi",
-              icon: <span className="text-[13px] leading-none shrink-0" aria-hidden>📺</span>,
+              icon: <span className="text-sm leading-none shrink-0" aria-hidden>📺</span>,
             },
           ] as const
         ).map((tab) => {
@@ -697,7 +697,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 key={s.id}
                 onClick={() => playSound(s.id)}
                 className={`flex flex-col items-center gap-0.5 rounded-lg font-medium transition-all ${
-                  stripEmbedded ? "py-1.5 px-1 text-[11px] sm:text-xs" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
+                  stripEmbedded ? "py-1.5 px-1 text-xs" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
                 } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"

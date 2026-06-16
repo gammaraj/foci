@@ -105,7 +105,7 @@ export function FocusDockToolbar({
           <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
             {sessions.count}/{sessions.goal}
           </span>
-          <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
             sessions
           </span>
           {sessions.streak > 0 && (
@@ -132,7 +132,7 @@ export function FocusDockToolbar({
               </span>
             )}
           </span>
-          <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 leading-none">
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-none">
             focus sessions
           </span>
           <span
@@ -153,7 +153,7 @@ export function FocusDockToolbar({
     <button
       type="button"
       onClick={onToggleExpanded}
-      className={`flex items-center gap-1.5 min-w-0 text-left ${embedded ? "" : "flex-1 sm:flex-initial"}`}
+      className={`flex items-center gap-1.5 min-w-0 text-left rounded-lg px-1 -mx-1 transition-colors hover:bg-slate-100/80 dark:hover:bg-white/5 ${embedded ? "" : "flex-1 sm:flex-initial"}`}
       aria-expanded={expanded}
       aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
       title={
@@ -185,7 +185,7 @@ export function FocusDockToolbar({
         {displayTime}
       </span>
       {activeTaskTitle && (
-        <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[5rem] lg:max-w-[7rem]">
+        <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[9rem] lg:max-w-[13rem]">
           {activeTaskTitle}
         </span>
       )}

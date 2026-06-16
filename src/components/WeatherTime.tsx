@@ -100,7 +100,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
     return (
       <div className={`flex items-center justify-between gap-1.5 ${chrome}`}>
         <span className="flex items-center gap-1 shrink-0 min-w-0 self-center">
-          <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">
             Time
           </span>
           <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
@@ -130,7 +130,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
               )}
             </span>
             {weather.low != null && weather.high != null && (
-              <span className="text-[10px] sm:text-xs tabular-nums font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 whitespace-nowrap">
+              <span className="text-xs tabular-nums font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 whitespace-nowrap">
                 L {weather.low}° · H {weather.high}°
               </span>
             )}

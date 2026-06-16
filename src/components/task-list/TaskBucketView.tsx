@@ -260,7 +260,7 @@ function BucketTaskCard({
           : ""
       }`}
     >
-      <div className="flex items-center gap-1 min-h-[1.5rem]">
+      <div className="flex items-start gap-1 min-h-[1.5rem]">
         {onMoveUp && onMoveDown && (
           <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
             <button
@@ -306,7 +306,7 @@ function BucketTaskCard({
         <button
           type="button"
           onClick={() => onToggleComplete(task.id)}
-          className={`w-4 h-4 rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-colors ${
+          className={`w-4 h-4 mt-[3px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-colors ${
             task.completed
               ? "bg-emerald-500 border-emerald-500 text-white"
               : "border-slate-300/90 dark:border-slate-600 hover:border-emerald-400 dark:hover:border-emerald-500"
@@ -357,7 +357,7 @@ function BucketTaskCard({
         )}
         {!isEditing && (
           <div
-            className={`flex items-center gap-0.5 shrink-0 transition-opacity ${
+            className={`flex items-center gap-0.5 shrink-0 mt-[3px] transition-opacity ${
               isDetailOpen
                 ? "opacity-100"
                 : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
@@ -416,7 +416,7 @@ function BucketTaskCard({
         )}
         {!isEditing && (
           <div
-            className={`shrink-0 transition-opacity duration-150 ${
+            className={`shrink-0 mt-[3px] transition-opacity duration-150 ${
               playVisible ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             }`}
           >
@@ -741,7 +741,7 @@ function BucketColumn({
                       }`}
                     >
                       {lane.label}
-                      <span className="ml-1 tabular-nums font-normal normal-case tracking-normal">
+                      <span className="ml-1 tabular-nums font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal">
                         ({lane.tasks.length})
                       </span>
                     </p>

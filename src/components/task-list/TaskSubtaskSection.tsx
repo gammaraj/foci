@@ -96,7 +96,7 @@ export function TaskSubtaskSection({
             <button
               type="button"
               onClick={() => onStartEditSubtask(sub)}
-              className={`flex-1 min-w-0 text-left text-sm truncate ${
+              className={`flex-1 min-w-0 text-left text-sm font-medium truncate ${
                 sub.completed
                   ? "text-slate-400 dark:text-slate-500 line-through"
                   : "text-slate-700 dark:text-slate-200"

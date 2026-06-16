@@ -2304,7 +2304,7 @@ export default function TaskList({
                       },
                     });
                   }}
-                  className="text-sm text-slate-400 hover:text-red-500 transition-colors"
+                  className="text-sm text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                 >
                   Clear
                 </button>
@@ -2359,7 +2359,7 @@ export default function TaskList({
           <div className="pt-2 border-t border-slate-100 dark:border-[#1e3050]">
             <button
               onClick={() => setShowArchived(!showArchived)}
-              className="flex items-center gap-1.5 text-sm font-medium text-slate-400 dark:text-slate-400 uppercase tracking-wide hover:text-slate-600 dark:hover:text-slate-200 transition-colors w-full"
+              className="flex items-center gap-1.5 app-section-label text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors w-full"
             >
               <svg className={`w-3 h-3 transition-transform ${showArchived ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

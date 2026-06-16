@@ -101,14 +101,14 @@ export function TaskDetailPanel({
             placeholder="Add a description..."
             maxLength={2000}
             rows={3}
-            className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none resize-y"
+            className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y"
             autoFocus
           />
         ) : (
           <button
             type="button"
             onClick={onStartEditDesc}
-            className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:outline-none"
           >
             {task.description ? (
               <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.description}</span>
@@ -166,7 +166,7 @@ export function TaskDetailPanel({
               const value = e.target.value;
               onSetPriority(value ? (parseInt(value, 10) as TaskPriority) : undefined);
             }}
-            className="text-xs bg-transparent dark:text-white outline-none cursor-pointer max-w-[6.5rem]"
+            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer max-w-[6.5rem]"
             aria-label="Priority"
           >
             <option value="">No priority</option>
@@ -183,7 +183,7 @@ export function TaskDetailPanel({
           <select
             value={task.recurrence ?? ""}
             onChange={(e) => onSetRecurrence((e.target.value || undefined) as RecurrenceType | undefined)}
-            className="text-xs bg-transparent dark:text-white outline-none cursor-pointer"
+            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer"
             aria-label="Recurrence"
           >
             <option value="">No repeat</option>
@@ -202,7 +202,7 @@ export function TaskDetailPanel({
             <select
               value={task.projectId}
               onChange={(e) => onMoveToProject(e.target.value)}
-              className="text-xs bg-transparent dark:text-white outline-none cursor-pointer min-w-0 max-w-[8rem] truncate"
+              className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer min-w-0 max-w-[8rem] truncate"
               aria-label="Move to project"
             >
               {activeProjects.map((p) => (
@@ -252,7 +252,7 @@ export function TaskDetailPanel({
               }}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
                 activeTaskId === task.id
-                  ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                  ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
                   : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             >

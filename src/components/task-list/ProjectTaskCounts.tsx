@@ -46,7 +46,7 @@ export function ProjectTaskCounts({
 
   if (variant === "inline") {
     return (
-      <span className="text-[0.8125rem] sm:text-sm tabular-nums leading-snug" title={title}>
+      <span className="text-xs app-text-meta tabular-nums leading-snug" title={title}>
         {content}
       </span>
     );
@@ -55,7 +55,7 @@ export function ProjectTaskCounts({
   return (
     <span
       title={title}
-      className="inline-flex items-center text-[0.8125rem] sm:text-sm tabular-nums leading-snug rounded-full px-2.5 py-1 shrink-0 max-w-full overflow-hidden bg-slate-100/95 dark:bg-[#1e3050]/90 border border-slate-200/90 dark:border-[#3a5070]/70 text-slate-800 dark:text-slate-100"
+      className="inline-flex items-center text-xs app-text-meta tabular-nums leading-snug rounded-full px-2.5 py-1 shrink-0 max-w-full overflow-hidden bg-slate-100/95 dark:bg-[#1e3050]/90 border border-slate-200/90 dark:border-[#3a5070]/70 text-slate-800 dark:text-slate-100"
     >
       {content}
     </span>
