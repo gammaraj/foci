@@ -230,6 +230,8 @@ export default function AppPage() {
                 onStartPause={handleStartPause}
                 onReset={handleReset}
                 emphasizeStart={readyToFocus}
+                remainingTime={timer.remainingTime}
+                workDurationMs={timer.settings.workDuration}
                 sessions={{
                   count: timer.dailyGoalData.sessionCount,
                   goal: timer.settings.dailyGoal,

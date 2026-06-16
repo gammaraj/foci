@@ -561,14 +561,21 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className={`flex-shrink-0 touch-target-sm ${
+          className={`flex-shrink-0 touch-target-sm flex items-center gap-0.5 ${
             stripEmbedded ? FOCUS_STRIP_ICON_BTN : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
           }`}
-          aria-label={collapsed ? "Expand music and sounds" : "Collapse music and sounds"}
+          aria-label={collapsed ? "Expand music library" : "Collapse music library"}
           aria-expanded={!collapsed}
+          title={collapsed ? "Expand music library" : "Collapse music library"}
         >
+          {stripEmbedded && (
+            <svg className="w-3 h-3 opacity-60" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9 3v10.55A4 4 0 1 0 11 17V7h4V3H9z"/>
+            </svg>
+          )}
           <svg
-            className={`${stripEmbedded ? "w-4 h-4" : "w-4 h-4"} transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`}
+            className="w-4 h-4 transition-transform duration-200"
+            style={{ transform: collapsed ? "rotate(0deg)" : "rotate(180deg)" }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

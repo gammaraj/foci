@@ -35,7 +35,7 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
               <div className="flex items-center min-h-[3.5rem] w-full shrink-0">{timerToolbar}</div>
               {timerPanel}
             </div>
-            <div className="min-w-0 flex items-stretch px-3 sm:px-4 overflow-x-auto">
+            <div className="min-w-0 flex items-stretch px-3 sm:px-4 overflow-x-auto bg-slate-50/50 dark:bg-white/[0.018] rounded-br-xl">
               {musicToolbar}
             </div>
           </div>

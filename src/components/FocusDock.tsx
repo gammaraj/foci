@@ -49,6 +49,8 @@ export function FocusDockToolbar({
   embedded = false,
   sessions,
   onShowShortcuts,
+  remainingTime,
+  workDurationMs,
 }: Pick<
   FocusDockProps,
   | "expanded"
@@ -64,6 +66,8 @@ export function FocusDockToolbar({
   embedded?: boolean;
   sessions?: { count: number; goal: number; streak: number };
   onShowShortcuts?: () => void;
+  remainingTime?: number;
+  workDurationMs?: number;
 }) {
   const [showShortcutHint, setShowShortcutHint] = useState(false);
 
@@ -82,6 +86,14 @@ export function FocusDockToolbar({
       ? Math.min(100, Math.round((sessions.count / sessions.goal) * 100))
       : 0;
 
+  const timerProgress =
+    workDurationMs && workDurationMs > 0 && remainingTime !== undefined
+      ? Math.max(0, Math.min(1, (workDurationMs - remainingTime) / workDurationMs))
+      : 0;
+  const arcR = 8;
+  const arcCircumference = 2 * Math.PI * arcR;
+  const arcOffset = arcCircumference * (1 - timerProgress);
+
   const embeddedChrome =
     isBreak
       ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
@@ -94,26 +106,39 @@ export function FocusDockToolbar({
       href="/stats"
       className={
         embedded
-          ? "shrink-0 group min-w-0"
+          ? "shrink-0 group/sess min-w-0"
           : "flex flex-col items-center gap-0.5 shrink-0 group min-w-0 px-0.5"
       }
       title={`${sessions.count} of ${sessions.goal} focus sessions today — view stats`}
       aria-label={`${sessions.count} of ${sessions.goal} focus sessions today`}
     >
       {embedded ? (
-        <span className="flex items-baseline gap-1 tabular-nums leading-none whitespace-nowrap min-w-0">
-          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline">
-            {sessions.count}/{sessions.goal}
-          </span>
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
-            sessions
-          </span>
+        <span className="flex items-center gap-1.5 leading-none whitespace-nowrap min-w-0">
+          {sessions.goal <= 8 ? (
+            /* Pip dots for visual session progress */
+            <span className="flex items-center gap-[3px]" aria-hidden>
+              {Array.from({ length: sessions.goal }, (_, i) => (
+                <span
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                    i < sessions.count
+                      ? "bg-blue-500 dark:bg-blue-400"
+                      : "bg-slate-300 dark:bg-slate-600"
+                  }`}
+                />
+              ))}
+            </span>
+          ) : (
+            <span className="text-sm font-semibold tabular-nums text-blue-600 dark:text-blue-400 group-hover/sess:underline">
+              {sessions.count}/{sessions.goal}
+            </span>
+          )}
           {sessions.streak > 0 && (
             <span
               className="text-xs font-medium text-orange-600 dark:text-orange-400 shrink-0"
               title={`${sessions.streak}-day streak`}
             >
-              🔥{sessions.streak}d
+              🔥
             </span>
           )}
         </span>
@@ -164,15 +189,33 @@ export function FocusDockToolbar({
             : "Expand timer"
       }
     >
-      <span
-        className={`app-section-label shrink-0 ${
-          isBreak
-            ? "text-green-600 dark:text-green-400"
-            : "text-slate-500 dark:text-slate-400"
-        }`}
-      >
-        {isBreak ? "Break" : "Timer"}
-      </span>
+      {embedded && workDurationMs ? (
+        /* Mini progress arc replaces "Timer/Break" label when in strip */
+        <span className="relative shrink-0 w-[1.125rem] h-[1.125rem]" aria-hidden>
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 20 20" style={{ transform: "rotate(-90deg)" }}>
+            <circle cx="10" cy="10" r={arcR} fill="none" strokeWidth="2.5" className="stroke-slate-200 dark:stroke-slate-600" />
+            <circle
+              cx="10" cy="10" r={arcR} fill="none"
+              stroke={isBreak ? "var(--success-green)" : isRunning ? "var(--primary-blue)" : "#94a3b8"}
+              strokeWidth="2.5"
+              strokeDasharray={arcCircumference}
+              strokeDashoffset={arcOffset}
+              strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s" }}
+            />
+          </svg>
+        </span>
+      ) : (
+        <span
+          className={`app-section-label shrink-0 ${
+            isBreak
+              ? "text-green-600 dark:text-green-400"
+              : "text-slate-500 dark:text-slate-400"
+          }`}
+        >
+          {isBreak ? "Break" : "Timer"}
+        </span>
+      )}
       <span
         className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none ${
           isBreak
@@ -211,10 +254,10 @@ export function FocusDockToolbar({
           dismissShortcutHint();
           onShowShortcuts();
         }}
-        className={`relative hidden sm:flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-colors ${
+        className={`relative hidden sm:flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-all ${
           showShortcutHint
-            ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
-            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
+            ? "opacity-100 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
+            : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
         }`}
         aria-label="Keyboard shortcuts"
         title={showShortcutHint ? "Keyboard shortcuts (press ?)" : "Keyboard shortcuts (?)"}
@@ -254,7 +297,7 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`flex items-center justify-between gap-2 min-w-0 w-full h-full min-h-[3.5rem] px-0 transition-colors ${embeddedChrome}`}
+        className={`group flex items-center justify-between gap-2 min-w-0 w-full h-full min-h-[3.5rem] px-0 transition-colors ${embeddedChrome}`}
       >
         <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
           {sessionsLink}
