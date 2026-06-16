@@ -58,6 +58,15 @@ export function isDueDateOverdue(iso: string): boolean {
   return iso < getToday();
 }
 
+/** Returns the number of calendar days a task is overdue (0 if not overdue). */
+export function getDaysOverdue(iso: string): number {
+  const today = getToday();
+  if (iso >= today) return 0;
+  const due = new Date(iso + "T00:00:00");
+  const now = new Date(today + "T00:00:00");
+  return Math.round((now.getTime() - due.getTime()) / 86_400_000);
+}
+
 export function openDatePicker(input: HTMLInputElement | null) {
   if (!input) return;
   input.focus({ preventScroll: true });

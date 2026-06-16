@@ -1338,7 +1338,7 @@ export default function TaskList({
               </span>
             </h2>
             {!focusMode && (viewMode === "list" || viewMode === "bucket") && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
                 {viewMode === "bucket"
                   ? isTimeFilter
                     ? [

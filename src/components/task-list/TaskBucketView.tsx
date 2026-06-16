@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
+import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
@@ -18,7 +18,10 @@ function BucketColumnTitle({ project }: { project: Project }) {
 
   return (
     <div className="min-w-0 flex-1 lg:min-h-[2.75rem] flex flex-col justify-center">
-      <h3 className="truncate text-sm sm:text-base font-semibold tracking-tight text-slate-900 dark:text-white leading-tight">
+      <h3
+        className="truncate text-sm sm:text-base font-semibold tracking-tight text-slate-900 dark:text-white leading-tight"
+        title={project.name}
+      >
         {project.name}
       </h3>
       <p
@@ -108,6 +111,8 @@ function DueBadge({
   const today = getToday();
   const overdue = isDueDateOverdue(dueDate);
   const isToday = dueDate === today;
+  const daysLate = overdue ? getDaysOverdue(dueDate) : 0;
+  const criticalOverdue = daysLate >= 7;
   const label = isToday ? "Today" : formatDueDate(dueDate);
   const interactive = !!(taskId && onSetDueDate);
 
@@ -117,18 +122,20 @@ function DueBadge({
         compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
       } ${
         overdue
-          ? "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
+          ? criticalOverdue
+            ? "text-red-800 dark:text-red-200 bg-red-200/90 dark:bg-red-900/60 border border-red-400/80 dark:border-red-700/70"
+            : "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
           : isToday
             ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
             : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
       } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`}
       title={
-        interactive
-          ? "Change due date"
-          : overdue
-            ? "Overdue"
-            : isToday
-              ? "Due today"
+        overdue
+          ? `${daysLate}d overdue${interactive ? " — click to change" : ""}`
+          : isToday
+            ? "Due today"
+            : interactive
+              ? "Change due date"
               : undefined
       }
     >
@@ -138,6 +145,9 @@ function DueBadge({
         </svg>
       )}
       {label}
+      {overdue && daysLate > 1 && (
+        <span className="opacity-75 font-medium">{daysLate}d</span>
+      )}
       {interactive && (
         <input
           type="date"
@@ -319,6 +329,19 @@ function BucketTaskCard({
             </svg>
           )}
         </button>
+        {!isEditing && task.priority != null && (
+          <span
+            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] ${
+              task.priority === 1
+                ? "bg-orange-500 dark:bg-orange-400"
+                : task.priority === 2
+                  ? "bg-yellow-400 dark:bg-yellow-300"
+                  : "bg-blue-400 dark:bg-blue-300"
+            }`}
+            title={task.priority === 1 ? "High priority" : task.priority === 2 ? "Medium priority" : "Low priority"}
+            aria-hidden
+          />
+        )}
         {isEditing ? (
           <input
             type="text"
@@ -354,6 +377,30 @@ function BucketTaskCard({
         )}
         {!isEditing && task.dueDate && (
           <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact />
+        )}
+        {!isEditing && !task.dueDate && onSetDueDate && (
+          <label
+            className="relative inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-600/60 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 cursor-pointer transition-colors mt-[3px]"
+            title="Set a due date to schedule this task"
+          >
+            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="hidden sm:inline">Set date</span>
+            <input
+              type="date"
+              value=""
+              onChange={(e) => {
+                if (e.target.value) onSetDueDate(task.id, e.target.value);
+              }}
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => {
+                try { (e.target as HTMLInputElement).showPicker(); } catch {}
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              aria-label="Set due date"
+            />
+          </label>
         )}
         {!isEditing && (
           <div

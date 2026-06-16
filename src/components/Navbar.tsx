@@ -112,7 +112,6 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
           active: projectsOpen,
           onClick: openProjects,
         },
-        { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
       ]
     : [
         { key: "try", href: "/app", label: "Try Foci", active: pathname === "/app" },
