@@ -271,7 +271,7 @@ function BucketTaskCard({
           : ""
       }`}
     >
-      <div className="flex items-start gap-1 min-h-[1.5rem]">
+      <div className="flex items-start gap-2 min-h-[1.5rem]">
         {onMoveUp && onMoveDown && (
           <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
             <button
