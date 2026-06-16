@@ -142,12 +142,12 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
         <div className="flex items-center justify-between">
           <Link href={logoHref} className="flex items-center gap-2.5">
             <FociLogoMark
-              size={36}
+              size={40}
               idPrefix="nav"
               surface="dark"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
             />
-            <FociWordmark className="text-lg sm:text-xl font-bold" tone="dark" />
+            <FociWordmark className="text-xl sm:text-2xl font-bold" tone="dark" />
           </Link>
 
           <div className="hidden sm:flex items-center gap-6">
