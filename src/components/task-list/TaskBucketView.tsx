@@ -17,22 +17,21 @@ function BucketColumnTitle({ project }: { project: Project }) {
   const showSubtitle = !!subtitle && subtitle !== project.name;
 
   return (
-    <div className="min-w-0 flex-1 lg:min-h-[2.75rem] flex flex-col justify-center">
+    <div className="min-w-0 flex-1">
       <h3
         className="truncate text-sm sm:text-base font-semibold tracking-tight text-slate-900 dark:text-white leading-tight"
         title={project.name}
       >
         {project.name}
       </h3>
-      <p
-        className={`hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5 min-h-[1.125rem] text-slate-500 dark:text-slate-400 ${
-          showSubtitle ? "" : "invisible select-none"
-        }`}
-        title={showSubtitle ? subtitle : undefined}
-        aria-hidden={!showSubtitle}
-      >
-        {showSubtitle ? subtitle : "\u00a0"}
-      </p>
+      {showSubtitle && (
+        <p
+          className="hidden lg:block truncate text-xs app-text-meta font-normal leading-tight mt-0.5 text-slate-500 dark:text-slate-400"
+          title={subtitle}
+        >
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }
@@ -307,7 +306,7 @@ function BucketTaskCard({
         )}
         {dragEnabled && (
           <div
-            className="hidden sm:flex flex-shrink-0 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="hidden sm:flex flex-shrink-0 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity mt-[3px]"
             aria-hidden
           >
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
