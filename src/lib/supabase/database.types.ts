@@ -14,6 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_collaborators: {
+        Row: {
+          id: string
+          owner_id: string
+          collaborator_id: string
+          role: "viewer" | "editor"
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          collaborator_id: string
+          role?: "viewer" | "editor"
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          collaborator_id?: string
+          role?: "viewer" | "editor"
+          created_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "account_collaborators_owner_id_fkey"; columns: ["owner_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+          { foreignKeyName: "account_collaborators_collaborator_id_fkey"; columns: ["collaborator_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      account_invites: {
+        Row: {
+          id: string
+          owner_id: string
+          invitee_email: string
+          invitee_id: string | null
+          role: "viewer" | "editor"
+          status: "pending" | "accepted" | "declined" | "expired"
+          created_at: string
+          expires_at: string
+          accepted_at: string | null
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          invitee_email: string
+          invitee_id?: string | null
+          role?: "viewer" | "editor"
+          status?: "pending" | "accepted" | "declined" | "expired"
+          created_at?: string
+          expires_at?: string
+          accepted_at?: string | null
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          invitee_email?: string
+          invitee_id?: string | null
+          role?: "viewer" | "editor"
+          status?: "pending" | "accepted" | "declined" | "expired"
+          created_at?: string
+          expires_at?: string
+          accepted_at?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "account_invites_owner_id_fkey"; columns: ["owner_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+          { foreignKeyName: "account_invites_invitee_id_fkey"; columns: ["invitee_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      collaboration_invites: {
+        Row: {
+          id: string
+          project_id: string
+          owner_id: string
+          invitee_email: string
+          invitee_id: string | null
+          role: "viewer" | "editor"
+          status: "pending" | "accepted" | "declined" | "expired"
+          created_at: string
+          expires_at: string
+          accepted_at: string | null
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          owner_id: string
+          invitee_email: string
+          invitee_id?: string | null
+          role?: "viewer" | "editor"
+          status?: "pending" | "accepted" | "declined" | "expired"
+          created_at?: string
+          expires_at?: string
+          accepted_at?: string | null
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          owner_id?: string
+          invitee_email?: string
+          invitee_id?: string | null
+          role?: "viewer" | "editor"
+          status?: "pending" | "accepted" | "declined" | "expired"
+          created_at?: string
+          expires_at?: string
+          accepted_at?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "collaboration_invites_owner_id_fkey"; columns: ["owner_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+          { foreignKeyName: "collaboration_invites_invitee_id_fkey"; columns: ["invitee_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
       daily_goal_data: {
         Row: {
           date: string
@@ -185,6 +293,36 @@ export type Database = {
         }
         Relationships: []
       }
+      project_collaborators: {
+        Row: {
+          id: string
+          project_id: string
+          owner_id: string
+          collaborator_id: string
+          role: "viewer" | "editor"
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          owner_id: string
+          collaborator_id: string
+          role?: "viewer" | "editor"
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          owner_id?: string
+          collaborator_id?: string
+          role?: "viewer" | "editor"
+          created_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "project_collaborators_owner_id_fkey"; columns: ["owner_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+          { foreignKeyName: "project_collaborators_collaborator_id_fkey"; columns: ["collaborator_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
       user_preferences: {
         Row: {
           selected_project_id: string
@@ -199,6 +337,32 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          user_id: string
+          display_name: string | null
+          avatar_url: string | null
+          email: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          display_name?: string | null
+          avatar_url?: string | null
+          email: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          display_name?: string | null
+          avatar_url?: string | null
+          email?: string
+          updated_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "user_profiles_user_id_fkey"; columns: ["user_id"]; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
       }
     }
     Views: {
