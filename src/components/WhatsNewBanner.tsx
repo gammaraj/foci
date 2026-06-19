@@ -12,10 +12,12 @@ import {
 
 interface WhatsNewBannerProps {
   focusMode?: boolean;
+  /** When true, renders no trigger button — only handles the WHATS_NEW_SHOW_EVENT and renders the panel. */
+  headless?: boolean;
 }
 
 /** Navbar sparkle — badge when unseen; opens a drawer instead of blocking the task workflow. */
-export default function WhatsNewBanner({ focusMode }: WhatsNewBannerProps) {
+export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerProps) {
   const [open, setOpen] = useState(false);
   const [unseen, setUnseen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -58,26 +60,28 @@ export default function WhatsNewBanner({ focusMode }: WhatsNewBannerProps) {
 
   return (
     <div className="relative" ref={panelRef}>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="relative nav-icon-btn p-2 rounded-full hover:!text-violet-300"
-        aria-label={unseen ? "What's new — unread updates" : "What's new"}
-        aria-expanded={open}
-        title="What's new"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-          />
-        </svg>
-        {unseen && (
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-violet-500 ring-2 ring-white dark:ring-[#0b1121]" />
-        )}
-      </button>
+      {!headless && (
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="relative nav-icon-btn p-2 rounded-full hover:!text-violet-300"
+          aria-label={unseen ? "What's new — unread updates" : "What's new"}
+          aria-expanded={open}
+          title="What's new"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+            />
+          </svg>
+          {unseen && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-violet-500 ring-2 ring-white dark:ring-[#0b1121]" />
+          )}
+        </button>
+      )}
 
       {open && (
         <div

@@ -4,7 +4,6 @@ import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
-import { useTheme } from "@/components/ThemeProvider";
 import UserMenu from "@/components/UserMenu";
 import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
 
@@ -54,32 +53,11 @@ const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 bo
 
 function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   const { user } = useAuth();
-  const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const projectsOpen = pathname === "/app" && searchParams.get("projects") === "1";
-
-  const cycleTheme = () => {
-    const next = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
-    setTheme(next);
-  };
-
-  const themeIcon =
-    theme === "light" ? (
-      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    ) : theme === "dark" ? (
-      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    ) : (
-      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    );
 
   const openProjects = (e: React.MouseEvent) => {
     if (pathname === "/app") {
@@ -152,27 +130,24 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
 
           <div className="hidden sm:flex items-center gap-6">
             {navLinks.map((link) => renderNavLink(link))}
-            {toolbarSlot}
-            {onOpenSettings && (
-              <button
-                type="button"
-                onClick={onOpenSettings}
-                className={chromeBtnSettings}
-                aria-label="Open settings"
-                title="Timer and app settings"
-              >
-                <SettingsIcon className="w-[18px] h-[18px]" />
-                <span className="hidden md:inline text-sm font-medium">Settings</span>
-              </button>
+            {(toolbarSlot || onOpenSettings) && (
+              <span className="w-px h-5 bg-white/15 rounded-full self-center" aria-hidden />
             )}
-            <button
-              onClick={cycleTheme}
-              className={chromeBtnPad}
-              aria-label={`Theme: ${theme}. Click to change.`}
-              title={`Theme: ${theme}`}
-            >
-              {themeIcon}
-            </button>
+            <div className="flex items-center gap-0.5">
+              {toolbarSlot}
+              {onOpenSettings && (
+                <button
+                  type="button"
+                  onClick={onOpenSettings}
+                  className={chromeBtnSettings}
+                  aria-label="Open settings"
+                  title="Timer and app settings"
+                >
+                  <SettingsIcon className="w-[18px] h-[18px]" />
+                  <span className="text-sm font-medium">Settings</span>
+                </button>
+              )}
+            </div>
             {user ? (
               <UserMenu />
             ) : (
@@ -197,13 +172,6 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
                 <SettingsIcon className="w-5 h-5" />
               </button>
             )}
-            <button
-              onClick={cycleTheme}
-              className={`${chromeBtnPad} touch-target-sm`}
-              aria-label={`Theme: ${theme}. Click to change.`}
-            >
-              {themeIcon}
-            </button>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className={`${chromeBtnPad} touch-target-sm`}

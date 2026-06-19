@@ -87,13 +87,22 @@ function buildSwimlanes(
   datedLaneLabel: string
 ): BucketSwimlane[] {
   const sorted = sortBucketTasks(tasks, activeTaskId);
+  const today = getToday();
   const overdue = sorted.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate));
   const dated = sorted.filter((t) => t.dueDate && !isDueDateOverdue(t.dueDate));
   const undated = sorted.filter((t) => !t.dueDate);
 
+  let datedLabel = datedLaneLabel;
+  if (dated.length > 0) {
+    const allToday = dated.every((t) => t.dueDate === today);
+    const someToday = dated.some((t) => t.dueDate === today);
+    if (allToday) datedLabel = "Due today";
+    else if (someToday) datedLabel = "Due today & upcoming";
+  }
+
   const lanes: BucketSwimlane[] = [];
   if (overdue.length > 0) lanes.push({ id: "overdue", label: "Overdue", tasks: overdue });
-  if (dated.length > 0) lanes.push({ id: "dated", label: datedLaneLabel, tasks: dated });
+  if (dated.length > 0) lanes.push({ id: "dated", label: datedLabel, tasks: dated });
   if (undated.length > 0) lanes.push({ id: "undated", label: "No date", tasks: undated });
   return lanes;
 }
@@ -363,14 +372,14 @@ function BucketTaskCard({
           <button
             type="button"
             onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:truncate-none group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10 group-hover:rounded group-hover:bg-inherit hover:text-slate-900 dark:hover:text-white transition-colors"
             title={task.title}
           >
             {task.title}
           </button>
         ) : (
           <p
-            className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:truncate-none group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10"
+            className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10 group-hover:rounded group-hover:bg-inherit"
             title={task.title}
           >
             {task.title}
@@ -777,7 +786,9 @@ function BucketColumn({
                       className={`w-full flex items-center gap-1.5 bucket-lane-label px-1 mb-1.5 text-left ${
                         lane.id === "overdue"
                           ? "text-red-600 dark:text-red-400"
-                          : ""
+                          : lane.label.startsWith("Due today")
+                            ? "text-amber-700 dark:text-amber-400"
+                            : ""
                       } hover:text-slate-800 dark:hover:text-slate-200 transition-colors`}
                       aria-expanded={!isCollapsed}
                     >
@@ -800,7 +811,11 @@ function BucketColumn({
                   ) : (
                     <p
                       className={`bucket-lane-label px-1 mb-1.5 ${
-                        lane.id === "overdue" ? "text-red-600 dark:text-red-400" : ""
+                        lane.id === "overdue"
+                          ? "text-red-600 dark:text-red-400"
+                          : lane.label.startsWith("Due today")
+                            ? "text-amber-700 dark:text-amber-400"
+                            : ""
                       }`}
                     >
                       {lane.label}

@@ -46,7 +46,8 @@ export function TaskSubtaskSection({
   if (!hasSubtasks && !showAddForm) return null;
 
   const pad = compact ? "px-2" : "px-3 sm:px-4";
-  const indent = compact ? "pl-3 ml-1" : "pl-6 ml-4";
+  const indent = compact ? "pl-4 ml-2" : "pl-6 ml-4";
+  const borderColor = "border-l-2 border-cyan-200/70 dark:border-cyan-800/50";
 
   return (
     <div
@@ -54,14 +55,14 @@ export function TaskSubtaskSection({
       onClick={(e) => e.stopPropagation()}
     >
       {hasSubtasks && (
-        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 tracking-wide">
+        <p className={`text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 tracking-wide ${compact ? "pl-2" : ""}`}>
           Subtasks · {completedSubtasks}/{subtasks.length}
         </p>
       )}
       {subtasks.map((sub) => (
         <div
           key={sub.id}
-          className={`group/sub flex items-center gap-2 py-1 ${indent} border-l border-slate-200 dark:border-[#243350]`}
+          className={`group/sub flex items-center gap-2 py-1 ${indent} ${borderColor}`}
         >
           <button
             type="button"
@@ -155,7 +156,7 @@ export function TaskSubtaskSection({
             e.preventDefault();
             onAddSubtask();
           }}
-          className={`flex items-center gap-2 pt-1 ${indent} border-l border-slate-200 dark:border-[#243350]`}
+          className={`flex items-center gap-2 pt-1 ${indent} ${borderColor}`}
         >
           <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-slate-400">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

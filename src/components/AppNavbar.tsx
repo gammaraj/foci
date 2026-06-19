@@ -81,13 +81,14 @@ export default function AppNavbar({
 
   return (
     <>
+      {/* HeadlessWhatsNewBanner listens for WHATS_NEW_SHOW_EVENT dispatched from UserMenu */}
+      <WhatsNewBanner focusMode={focusMode} headless />
       <Navbar
         onOpenSettings={() => setShowSettings(true)}
         toolbarSlot={
           user ? (
             <div className="flex items-center gap-0.5">
               <CollaborationInvitesButton />
-              <WhatsNewBanner focusMode={focusMode} />
               <NotificationBell />
             </div>
           ) : undefined
