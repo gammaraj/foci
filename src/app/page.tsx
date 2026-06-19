@@ -207,7 +207,7 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
               href="/app"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-600/25 dark:shadow-cyan-500/20"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-700/25 dark:shadow-cyan-600/20"
             >
               Open Foci — free
             </Link>
@@ -439,7 +439,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/app"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-600/25 dark:shadow-cyan-500/20"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-700/25 dark:shadow-cyan-600/20"
           >
             Open Foci — free
           </Link>
