@@ -6,7 +6,6 @@ import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import HomeAppMockup from "@/components/HomeAppMockup";
-import { FociBrandLockup } from "@/components/FociLogoMark";
 import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
 
 const siteUrl = "https://usefoci.com";
@@ -190,10 +189,6 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center px-4 sm:px-6">
         <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-2xl mx-auto">
-          <div className="flex justify-center mb-8 sm:mb-10">
-            <FociBrandLockup markSize={52} showTagline idPrefix="hero" />
-          </div>
-
           {/* Proof badge */}
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200/70 dark:border-cyan-700/40 text-xs font-semibold text-cyan-700 dark:text-cyan-300 tracking-wide uppercase">
