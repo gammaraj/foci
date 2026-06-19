@@ -46,7 +46,7 @@ function OgBrandImage() {
               fontSize: 14,
               fontWeight: 600,
               letterSpacing: 5,
-              color: "rgba(251, 146, 60, 0.75)",
+              color: "rgba(6, 182, 212, 0.75)",
             }}
           >
             {FOCI_TAGLINE_FOCUS}
