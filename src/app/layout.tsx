@@ -241,8 +241,8 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={fontSans.variable}>
       <head>
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: swRegisterScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} suppressHydrationWarning />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: swRegisterScript }} suppressHydrationWarning />
         <link rel="help" href="/llms.txt" type="text/plain" />
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
       </head>

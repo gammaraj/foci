@@ -124,7 +124,7 @@ export function FociBrandLockup({
         {showTagline && (
           <p
             className={`text-[10px] sm:text-[11px] font-semibold tracking-[0.18em] uppercase ${
-              tone === "light" ? "text-orange-600" : "text-orange-400"
+              tone === "light" ? "text-cyan-700" : "text-cyan-400"
             }`}
           >
             {FOCI_TAGLINE_FOCUS}
