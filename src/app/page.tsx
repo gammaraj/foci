@@ -164,7 +164,7 @@ const faqJsonLd = {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a] hero-gradient-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(webSiteJsonLd) }}
@@ -193,25 +193,34 @@ export default function LandingPage() {
           <div className="flex justify-center mb-8 sm:mb-10">
             <FociBrandLockup markSize={52} showTagline idPrefix="hero" />
           </div>
+
+          {/* Proof badge */}
+          <div className="flex justify-center mb-5">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200/70 dark:border-orange-700/40 text-xs font-semibold text-orange-700 dark:text-orange-300 tracking-wide uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" aria-hidden />
+              Free · No signup · Works instantly
+            </span>
+          </div>
+
           <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.12]">
             {FOCI_TAGLINE_CALM}
           </h1>
-          <p className="mt-5 text-lg text-slate-700 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+          <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
             Free Pomodoro timer, tasks, session tracking, and ambient sound — the focus app at usefoci.com, no signup required.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
               href="/app"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-base hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-lg shadow-slate-900/10 dark:shadow-none"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-semibold text-base transition-colors shadow-lg shadow-orange-600/25 dark:shadow-orange-500/20"
             >
               Open Foci — free
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-700 dark:text-slate-400 font-medium text-base hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
             >
-              Sign in to sync
+              Sign in to sync →
             </Link>
           </div>
         </section>
@@ -435,7 +444,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/app"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-base hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-lg shadow-slate-900/10 dark:shadow-none"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-semibold text-base transition-colors shadow-lg shadow-orange-600/25 dark:shadow-orange-500/20"
           >
             Open Foci — free
           </Link>
