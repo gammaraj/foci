@@ -196,8 +196,8 @@ export default function LandingPage() {
 
           {/* Proof badge */}
           <div className="flex justify-center mb-5">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200/70 dark:border-indigo-700/40 text-xs font-semibold text-indigo-700 dark:text-indigo-300 tracking-wide uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" aria-hidden />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200/70 dark:border-cyan-700/40 text-xs font-semibold text-cyan-700 dark:text-cyan-300 tracking-wide uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" aria-hidden />
               Free · No signup · Works instantly
             </span>
           </div>
@@ -212,13 +212,13 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
               href="/app"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold text-base transition-colors shadow-lg shadow-indigo-600/25 dark:shadow-indigo-500/20"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-600/25 dark:shadow-cyan-500/20"
             >
               Open Foci — free
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
             >
               Sign in to sync →
             </Link>
@@ -444,7 +444,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/app"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold text-base transition-colors shadow-lg shadow-indigo-600/25 dark:shadow-indigo-500/20"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-600/25 dark:shadow-cyan-500/20"
           >
             Open Foci — free
           </Link>
