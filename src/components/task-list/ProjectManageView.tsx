@@ -296,7 +296,7 @@ function ProjectRow({
                   if (e.key === "Escape") onCancelRename();
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                className="w-full px-2 py-1 text-sm border border-cyan-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
                 autoFocus
               />
             ) : (
@@ -355,7 +355,7 @@ function ProjectRow({
             <button
               type="button"
               onClick={() => onOpenProject(project.id)}
-              className="px-2.5 py-1.5 text-xs font-medium rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              className="px-2.5 py-1.5 text-xs font-medium rounded-lg text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 transition-colors"
             >
               Open in tasks
             </button>
@@ -613,12 +613,12 @@ export default function ProjectManageView({
           onChange={(e) => setNewProjectName(e.target.value)}
           placeholder="New project name..."
           maxLength={MAX_PROJECT_NAME}
-          className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+          className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-cyan-400"
         />
         <button
           type="submit"
           disabled={!newProjectName.trim()}
-          className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 text-sm font-semibold bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           Add
         </button>

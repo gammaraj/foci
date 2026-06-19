@@ -47,7 +47,7 @@ const FILTER_TAB_INACTIVE =
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
-  "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/50 dark:ring-blue-500/45 font-semibold";
+  "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-cyan-400/50 dark:ring-cyan-500/45 font-semibold";
 const PROJECT_TAB_INACTIVE =
   "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]";
 
@@ -1310,7 +1310,7 @@ export default function TaskList({
                 <button
                   type="button"
                   onClick={closeProjectManage}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1.5 transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 mb-1.5 transition-colors"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1335,7 +1335,7 @@ export default function TaskList({
               <button
                 type="button"
                 onClick={backToBuckets}
-                className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1.5 transition-colors"
+                className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 mb-1.5 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1713,7 +1713,7 @@ export default function TaskList({
                     setBucketJumpProjectId(id);
                     if (id) setBucketScrollToken((n) => n + 1);
                   }}
-                  className="max-w-[11rem] sm:max-w-[14rem] px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8 truncate"
+                  className="max-w-[11rem] sm:max-w-[14rem] px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-[#243350] outline-none focus:border-cyan-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8 truncate"
                   title="Jump to a project column"
                 >
                   <option value="">Go to project…</option>
@@ -1731,7 +1731,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={() => { setNewProjectName(""); openProjectManage(); }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-200 rounded-lg border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 shadow-sm transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-cyan-700 dark:text-cyan-200 rounded-lg border border-cyan-200/90 dark:border-cyan-700/60 bg-cyan-50/90 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 shadow-sm transition-colors shrink-0"
               title="Create a new project bucket"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -1814,7 +1814,7 @@ export default function TaskList({
           <select
             value={isTimeFilter ? projectFilterId : selectedProjectId}
             onChange={(e) => selectProjectScope(e.target.value)}
-            className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8"
+            className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] outline-none focus:border-cyan-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8"
           >
             <option value={ALL_PROJECTS_ID}>
               All projects ({isTimeFilter ? timeScopedTasks.filter((t) => !t.completed).length : tasks.filter((t) => !t.completed && !t.archivedAt).length})
@@ -1850,7 +1850,7 @@ export default function TaskList({
             onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
             className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
               showAddProject
-                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
             title="Add project"
@@ -1895,7 +1895,7 @@ export default function TaskList({
             </span>
             <span
               className={`text-xs tabular-nums shrink-0 ${
-                isAllProjectsScopeActive ? "text-blue-600 dark:text-blue-300" : "text-slate-500 dark:text-slate-500"
+                isAllProjectsScopeActive ? "text-cyan-600 dark:text-cyan-300" : "text-slate-500 dark:text-slate-500"
               }`}
               title={`${allOpenCount} open · ${todayOpenCount} due today`}
             >
@@ -1937,7 +1937,7 @@ export default function TaskList({
                 <>
                   <span
                     className={`shrink-0 select-none ${
-                      tabActive ? "text-blue-500/80 dark:text-blue-400/80" : "text-slate-400/80 dark:text-slate-500/80"
+                      tabActive ? "text-cyan-500/80 dark:text-cyan-400/80" : "text-slate-400/80 dark:text-slate-500/80"
                     }`}
                     aria-hidden
                   >
@@ -1945,7 +1945,7 @@ export default function TaskList({
                   </span>
                   <span
                     className={`text-xs tabular-nums shrink-0 ${
-                      tabActive ? "text-blue-600 dark:text-blue-300" : "text-slate-500 dark:text-slate-500"
+                      tabActive ? "text-cyan-600 dark:text-cyan-300" : "text-slate-500 dark:text-slate-500"
                     }`}
                   >
                     {count}
@@ -1982,7 +1982,7 @@ export default function TaskList({
             onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
             className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
               showAddProject
-                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
             title="Add project"
@@ -2021,7 +2021,7 @@ export default function TaskList({
                       onClick={() => selectProjectScope(p.id)}
                       className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
                         (isTimeFilter ? projectFilterId : selectedProjectId) === p.id
-                          ? "bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200"
+                          ? "bg-cyan-50 dark:bg-cyan-900/25 text-cyan-700 dark:text-cyan-200"
                           : "text-slate-700 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
                       }`}
                       title={projectTabTooltip(p)}
@@ -2057,14 +2057,14 @@ export default function TaskList({
               onChange={(e) => setNewProjectName(e.target.value)}
               placeholder="Project name..."
               maxLength={MAX_PROJECT_NAME}
-              className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+              className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-cyan-400"
               autoFocus
               onKeyDown={(e) => { if (e.key === "Escape") setShowAddProject(false); }}
             />
             <button
               type="submit"
               disabled={!newProjectName.trim()}
-              className="px-2.5 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-2.5 py-1.5 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Add
             </button>
@@ -2101,7 +2101,7 @@ export default function TaskList({
                   placeholder="Add a project description..."
                   maxLength={500}
                   rows={2}
-                  className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none resize-y"
+                  className="w-full px-3 py-2 text-sm border border-cyan-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none resize-y"
                   autoFocus
                 />
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 px-1">Auto-saves when you click outside · ⌘Enter to save</p>
@@ -2112,7 +2112,7 @@ export default function TaskList({
                   setEditingProjectDescId(currentProject.id);
                   setEditProjectDesc(currentProject.description ?? "");
                 }}
-                className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
+                className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
               >
                 {currentProject.description ? (
                   <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{currentProject.description}</span>
@@ -2148,7 +2148,7 @@ export default function TaskList({
                   : (currentProject?.name ?? "General")
             }...`}
             maxLength={MAX_TASK_TITLE}
-            className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+            className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 outline-none"
           />
           <div className="flex gap-2 min-w-0 sm:contents">
           <div className="relative flex-1 min-w-0 sm:flex-shrink-0">
@@ -2167,7 +2167,7 @@ export default function TaskList({
               onClick={() => openDatePicker(newTaskDueDateInputRef.current)}
               className={`flex items-center gap-1 min-w-0 w-full h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
                 newTaskDueDate
-                  ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                  ? "border-cyan-300 dark:border-cyan-700 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400"
                   : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070]"
               }`}
               aria-label={newTaskDueDate ? `Due date: ${formatDueDate(newTaskDueDate)}. Click to change.` : "Set due date"}
@@ -2193,7 +2193,7 @@ export default function TaskList({
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm touch-target-sm"
+            className="flex-shrink-0 px-4 py-2 bg-cyan-600 text-white text-sm font-semibold rounded-lg hover:bg-cyan-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm touch-target-sm"
           >
             Add
           </button>
@@ -2208,7 +2208,7 @@ export default function TaskList({
                 key={tpl.label}
                 type="button"
                 onClick={() => applyTemplate(tpl)}
-                className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors touch-target-sm"
+                className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:border-cyan-400 dark:hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 transition-colors touch-target-sm"
               >
                 {tpl.emoji} {tpl.label}
               </button>
@@ -2424,7 +2424,7 @@ export default function TaskList({
                     </span>
                     <button
                       onClick={() => unarchiveTask(task.id)}
-                      className="ml-auto flex-shrink-0 text-xs text-slate-400 hover:text-blue-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                      className="ml-auto flex-shrink-0 text-xs text-slate-400 hover:text-cyan-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                       title="Unarchive"
                     >
                       Restore

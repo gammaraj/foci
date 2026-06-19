@@ -69,7 +69,7 @@ export default function DailyProgress({
                 >
                   Today:
                 </h2>
-                <div className="text-base sm:text-lg font-bold text-blue-600 dark:text-blue-300" title={`${dailyGoalData.sessionCount} sessions completed / daily goal: ${dailyGoal}`}>
+                <div className="text-base sm:text-lg font-bold text-cyan-600 dark:text-cyan-300" title={`${dailyGoalData.sessionCount} sessions completed / daily goal: ${dailyGoal}`}>
                   {dailyGoalData.sessionCount}<span className="text-slate-400 dark:text-slate-300 text-sm">/</span>{dailyGoal}
                 </div>
                 <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 truncate max-sm:max-w-[120px]">
@@ -105,7 +105,7 @@ export default function DailyProgress({
         >
           <div
             className={`h-full rounded-full transition-all duration-500 ${
-              goalMet ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-blue-400 to-blue-600"
+              goalMet ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-cyan-400 to-cyan-600"
             }`}
             style={{ width: `${progressPercent}%` }}
           />

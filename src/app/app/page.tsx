@@ -277,12 +277,12 @@ export default function AppPage() {
       {focusMode && (
         <>
           <div className="app-container py-2">
-            <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
-              <span className="text-blue-800 dark:text-blue-200 font-medium">Focus mode — fewer distractions</span>
+            <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 text-sm">
+              <span className="text-cyan-800 dark:text-cyan-200 font-medium">Focus mode — fewer distractions</span>
               <button
                 type="button"
                 onClick={() => setFocusMode(false)}
-                className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
+                className="text-sm font-semibold text-cyan-600 dark:text-cyan-400 hover:underline touch-target-sm px-2"
               >
                 Exit (F)
               </button>

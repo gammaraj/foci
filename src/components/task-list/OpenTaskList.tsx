@@ -166,7 +166,7 @@ export default function OpenTaskList({
               onDragEnd={onDragEnd}
               className={`group flex items-start gap-1.5 sm:gap-3 p-2 sm:p-3.5 rounded-xl border transition-colors ${
                 activeTaskId === task.id
-                  ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-blue-400/30 dark:ring-blue-500/25"
+                  ? "task-timer-linked border-cyan-400 dark:border-cyan-500 bg-cyan-50 dark:bg-cyan-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-cyan-400/30 dark:ring-cyan-500/25"
                   : isExpanded
                     ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
                     : isOverdue
@@ -218,7 +218,7 @@ export default function OpenTaskList({
                   e.stopPropagation();
                   onToggleComplete(task.id);
                 }}
-                className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
+                className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
                 aria-label={`Mark "${task.title}" complete`}
               />
               <div className="flex-1 min-w-0">
@@ -234,7 +234,7 @@ export default function OpenTaskList({
                         if (e.key === "Escape") onCancelEdit();
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                      className="w-full px-1 py-0.5 text-sm font-medium border border-cyan-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
                       autoFocus
                     />
                   ) : (
@@ -250,7 +250,7 @@ export default function OpenTaskList({
                     </span>
                   )}
                   {activeTaskId === task.id && isTimerRunning && (
-                    <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
+                    <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse align-middle" />
                   )}
                   {task.priority && (
                     <span
@@ -259,7 +259,7 @@ export default function OpenTaskList({
                           ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50"
                           : task.priority === 2
                             ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50"
-                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50"
+                            : "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-900/50"
                       }`}
                     >
                       {task.priority === 1 ? "HIGH" : task.priority === 2 ? "MED" : "LOW"}
@@ -279,7 +279,7 @@ export default function OpenTaskList({
                           ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
                           : !task.completed && task.dueDate === getToday()
                             ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                            : "text-slate-700 dark:text-slate-200 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                            : "text-slate-700 dark:text-slate-200 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
                       }`}
                       title={`Due: ${formatDueDate(task.dueDate)}`}
                     >
@@ -378,7 +378,7 @@ export default function OpenTaskList({
                 </svg>
               </button>
               {activeTaskId === task.id && !isTimerRunning && (
-                <span className="lg:hidden flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-xs font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50">
+                <span className="lg:hidden flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/40 text-xs font-semibold text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
@@ -386,7 +386,7 @@ export default function OpenTaskList({
                 </span>
               )}
               {activeTaskId === task.id && isTimerRunning ? (
-                <span className="flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded bg-blue-600 text-white hidden sm:flex items-center gap-1">
+                <span className="flex-shrink-0 px-2 py-1 text-xs sm:text-sm font-medium rounded bg-cyan-600 text-white hidden sm:flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                   <span className="hidden sm:inline">In progress</span>
                 </span>
@@ -407,7 +407,7 @@ export default function OpenTaskList({
                     e.stopPropagation();
                     onStartTask(task.id);
                   }}
-                  className="flex-shrink-0 flex items-center justify-center px-2.5 py-1.5 text-xs sm:text-sm font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 touch-target-sm"
+                  className="flex-shrink-0 flex items-center justify-center px-2.5 py-1.5 text-xs sm:text-sm font-semibold rounded text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 bg-cyan-50 dark:bg-cyan-900/25 hover:bg-cyan-100 dark:hover:bg-cyan-900/40 touch-target-sm"
                   title={
                     isTimerRunning ? "Switch focus to this task" : "Focus on this task and start the timer"
                   }
@@ -441,7 +441,7 @@ export default function OpenTaskList({
                 <button
                   type="button"
                   onClick={() => onSnoozeToToday(task.id)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors"
                 >
                   Move to today
                 </button>
@@ -455,7 +455,7 @@ export default function OpenTaskList({
                 <button
                   type="button"
                   onClick={() => onStartTask(task.id)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"
                 >
                   Focus
                 </button>

@@ -23,7 +23,7 @@ export default function HomeAppMockup() {
         {/* Top stats bar */}
         <div className="mb-3 rounded-xl bg-white dark:bg-[#111827]/90 border border-slate-200 dark:border-[#243350] px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
           <span className="font-semibold text-slate-800 dark:text-slate-100">Today </span>
-          <span className="text-blue-600 dark:text-blue-400 font-semibold">2/3</span> sessions
+          <span className="text-cyan-600 dark:text-cyan-400 font-semibold">2/3</span> sessions
           <span className="text-slate-300 dark:text-slate-600 mx-2">·</span>
           <span>3-day streak</span>
         </div>
@@ -42,7 +42,7 @@ export default function HomeAppMockup() {
             </div>
 
             <div className="px-3 py-2 flex gap-1.5 overflow-hidden">
-              <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white text-slate-800 ring-1 ring-blue-400/50 shadow-sm shrink-0">All projects</span>
+              <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white text-slate-800 ring-1 ring-cyan-400/50 shadow-sm shrink-0">All projects</span>
               <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 shrink-0">General 3</span>
               <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 shrink-0">Work 2</span>
             </div>
@@ -51,7 +51,7 @@ export default function HomeAppMockup() {
               <div className="flex-1 px-2.5 py-2 text-xs text-slate-500 bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg">
                 Add a task to General…
               </div>
-              <div className="px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg">Add</div>
+              <div className="px-3 py-2 bg-cyan-600 text-white text-xs font-semibold rounded-lg">Add</div>
             </div>
 
             <div className="px-3 pb-3 space-y-1.5">
@@ -64,7 +64,7 @@ export default function HomeAppMockup() {
                   key={task.title}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm ${
                     task.active
-                      ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-600 ring-1 ring-blue-400/20"
+                      ? "bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-300 dark:border-cyan-600 ring-1 ring-cyan-400/20"
                       : task.done
                         ? "opacity-60"
                         : "bg-slate-50 dark:bg-[#131d30]/80 border border-slate-100 dark:border-[#243350]"
@@ -72,14 +72,14 @@ export default function HomeAppMockup() {
                 >
                   <div
                     className={`w-4 h-4 rounded-md border-2 flex-shrink-0 ${
-                      task.done ? "border-green-500 bg-green-500" : task.active ? "border-blue-500" : "border-slate-300 dark:border-slate-600"
+                      task.done ? "border-green-500 bg-green-500" : task.active ? "border-cyan-500" : "border-slate-300 dark:border-slate-600"
                     }`}
                   />
                   <span className={`flex-1 truncate ${task.done ? "line-through text-slate-500" : "text-slate-800 dark:text-slate-100 font-medium"}`}>
                     {task.title}
                   </span>
                   {task.active && (
-                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400 hidden sm:inline">→ Timer</span>
+                    <span className="text-xs font-medium text-cyan-600 dark:text-cyan-400 hidden sm:inline">→ Timer</span>
                   )}
                 </div>
               ))}
@@ -93,9 +93,9 @@ export default function HomeAppMockup() {
             </div>
 
             <div className="px-3 py-1">
-              <div className="rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50/80 dark:bg-blue-900/20 px-2.5 py-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500 dark:text-blue-400">Linked from tasks</p>
-                <p className="text-xs font-semibold text-blue-800 dark:text-blue-100 truncate">Research API integration</p>
+              <div className="rounded-lg border border-cyan-200 dark:border-cyan-700 bg-cyan-50/80 dark:bg-cyan-900/20 px-2.5 py-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-cyan-500 dark:text-cyan-400">Linked from tasks</p>
+                <p className="text-xs font-semibold text-cyan-800 dark:text-cyan-100 truncate">Research API integration</p>
               </div>
             </div>
 
@@ -116,7 +116,7 @@ export default function HomeAppMockup() {
                   <span
                     key={p}
                     className={`flex-1 text-center text-[10px] sm:text-xs py-1 rounded-md font-semibold ${
-                      i === 2 ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300 shadow-sm" : "text-slate-600"
+                      i === 2 ? "bg-white dark:bg-[#1a2d4a] text-cyan-700 dark:text-cyan-300 shadow-sm" : "text-slate-600"
                     }`}
                   >
                     {p}
@@ -132,7 +132,7 @@ export default function HomeAppMockup() {
                 {["Rain", "Café", "Brown"].map((label, i) => (
                   <span
                     key={label}
-                    className={`text-[10px] px-2 py-1 rounded-md font-medium ${i === 0 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-white dark:bg-[#1a2d4a] text-slate-600"}`}
+                    className={`text-[10px] px-2 py-1 rounded-md font-medium ${i === 0 ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300" : "bg-white dark:bg-[#1a2d4a] text-slate-600"}`}
                   >
                     {label}
                   </span>
@@ -143,7 +143,7 @@ export default function HomeAppMockup() {
         </div>
       </div>
 
-      <div className="absolute -inset-6 bg-gradient-to-b from-blue-500/[0.06] via-transparent to-indigo-500/[0.04] rounded-3xl -z-10 blur-2xl pointer-events-none" />
+      <div className="absolute -inset-6 bg-gradient-to-b from-cyan-500/[0.06] via-transparent to-indigo-500/[0.04] rounded-3xl -z-10 blur-2xl pointer-events-none" />
     </div>
   );
 }

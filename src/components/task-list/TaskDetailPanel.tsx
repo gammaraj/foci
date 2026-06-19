@@ -81,7 +81,7 @@ export function TaskDetailPanel({
     variant === "inline"
       ? `border border-t-0 rounded-b-xl py-3 space-y-2 ${
           isLinked
-            ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
+            ? "border-cyan-300 dark:border-cyan-600 bg-cyan-50/50 dark:bg-cyan-900/10"
             : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
         }`
       : "py-2 space-y-2";
@@ -101,14 +101,14 @@ export function TaskDetailPanel({
             placeholder="Add a description..."
             maxLength={2000}
             rows={3}
-            className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y"
+            className="w-full px-3 py-2 text-sm border border-cyan-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 resize-y"
             autoFocus
           />
         ) : (
           <button
             type="button"
             onClick={onStartEditDesc}
-            className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:outline-none"
+            className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:outline-none"
           >
             {task.description ? (
               <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.description}</span>
@@ -128,7 +128,7 @@ export function TaskDetailPanel({
                 ? "border-orange-200 dark:border-orange-800 text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
                 : task.dueDate
                   ? "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 bg-white dark:bg-[#131d30]"
-                  : "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500"
+                  : "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:text-cyan-500"
           }`}
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -166,7 +166,7 @@ export function TaskDetailPanel({
               const value = e.target.value;
               onSetPriority(value ? (parseInt(value, 10) as TaskPriority) : undefined);
             }}
-            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer max-w-[6.5rem]"
+            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer max-w-[6.5rem]"
             aria-label="Priority"
           >
             <option value="">No priority</option>
@@ -183,7 +183,7 @@ export function TaskDetailPanel({
           <select
             value={task.recurrence ?? ""}
             onChange={(e) => onSetRecurrence((e.target.value || undefined) as RecurrenceType | undefined)}
-            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer"
+            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer"
             aria-label="Recurrence"
           >
             <option value="">No repeat</option>
@@ -202,7 +202,7 @@ export function TaskDetailPanel({
             <select
               value={task.projectId}
               onChange={(e) => onMoveToProject(e.target.value)}
-              className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer min-w-0 max-w-[8rem] truncate"
+              className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer min-w-0 max-w-[8rem] truncate"
               aria-label="Move to project"
             >
               {activeProjects.map((p) => (
@@ -239,7 +239,7 @@ export function TaskDetailPanel({
           className={`flex items-center gap-2 ${pad} pt-3 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2`}
         >
           {activeTaskId === task.id && isTimerRunning ? (
-            <span className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 text-white flex items-center gap-1.5">
+            <span className="px-3 py-1.5 text-xs font-medium rounded-md bg-cyan-600 text-white flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               In progress
             </span>
@@ -253,7 +253,7 @@ export function TaskDetailPanel({
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
                 activeTaskId === task.id
                   ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-cyan-600 text-white hover:bg-cyan-700"
               }`}
             >
               {activeTaskId === task.id ? "Deselect" : isTimerRunning ? "Switch focus" : "Focus"}

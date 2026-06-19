@@ -53,7 +53,7 @@ export default function FirstSessionNudge() {
   if (!show) return null;
 
   return (
-    <div className="mb-3 p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
+    <div className="mb-3 p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-cyan-50 to-indigo-50 dark:from-cyan-900/20 dark:to-indigo-900/20 border border-cyan-200 dark:border-cyan-800">
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white mb-0.5">

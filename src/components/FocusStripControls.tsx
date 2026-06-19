@@ -18,14 +18,14 @@ export function MiniPlayPauseIcon({ playing, size = "md" }: { playing: boolean; 
 }
 
 export function miniPlayButtonClass(playing: boolean, _dock = false, emphasizeStart = false) {
-  const base = "w-8 h-8 rounded-full flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60";
+  const base = "w-8 h-8 rounded-full flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/60";
   if (playing) {
-    return `${base} border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700`;
+    return `${base} border border-cyan-500/70 bg-cyan-600 text-white shadow-sm hover:bg-cyan-700`;
   }
   if (emphasizeStart) {
-    return `${base} border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700 ring-2 ring-blue-400/35`;
+    return `${base} border border-cyan-500/70 bg-cyan-600 text-white shadow-sm hover:bg-cyan-700 ring-2 ring-cyan-400/35`;
   }
-  return `${base} border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25 hover:border-blue-400/60`;
+  return `${base} border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50/80 dark:hover:bg-cyan-900/25 hover:border-cyan-400/60`;
 }
 
 export function MiniResetIcon({ size = "md" }: { size?: "sm" | "md" }) {

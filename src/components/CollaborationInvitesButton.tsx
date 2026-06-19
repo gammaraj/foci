@@ -167,7 +167,7 @@ export default function CollaborationInvitesButton() {
 
         {/* Badge for pending invites */}
         {inviteCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-blue-500 rounded-full px-1">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-cyan-500 rounded-full px-1">
             {inviteCount > 9 ? "9+" : inviteCount}
           </span>
         )}
@@ -196,7 +196,7 @@ export default function CollaborationInvitesButton() {
           <div className="max-h-80 overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
               </div>
             ) : inviteCount === 0 ? (
               <div className="py-8 text-center text-slate-500 dark:text-slate-400">
@@ -251,8 +251,8 @@ export default function CollaborationInvitesButton() {
                 {projectInvites.map((invite) => (
                   <li key={invite.id} className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-900 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-medium text-cyan-600 dark:text-cyan-400">
                           {(invite.ownerName || invite.ownerEmail)[0].toUpperCase()}
                         </span>
                       </div>
@@ -274,7 +274,7 @@ export default function CollaborationInvitesButton() {
                           <button
                             onClick={() => handleAccept(invite.id)}
                             disabled={processingId === invite.id}
-                            className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg transition-colors"
+                            className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 rounded-lg transition-colors"
                           >
                             {processingId === invite.id ? "..." : "Accept"}
                           </button>

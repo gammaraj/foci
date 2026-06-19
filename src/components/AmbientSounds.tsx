@@ -449,7 +449,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           stripEmbedded
             ? ""
             : activeSound || (mode === "soundcloud") || showYt
-              ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
+              ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-cyan-400/20 dark:ring-cyan-500/25"
               : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
       >
@@ -707,7 +707,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                   stripEmbedded ? "py-1.5 px-1 text-xs" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
                 } ${
                   activeSound === s.id
-                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
+                    ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-300 dark:ring-cyan-700"
                     : "bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
                 }`}
                 aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
@@ -806,7 +806,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             href={ytStream.watchUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block px-3 pb-2 text-xs text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="block px-3 pb-2 text-xs text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
           >
             Open on YouTube if the player shows an error
           </a>
@@ -908,7 +908,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               }}
               className={`p-2 transition-colors ${
                 scShuffle
-                  ? "text-blue-500 dark:text-blue-400"
+                  ? "text-cyan-500 dark:text-cyan-400"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
               aria-label="Shuffle"

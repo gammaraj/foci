@@ -35,7 +35,7 @@ export default function SessionCelebration({
 
   return (
     <div className="fixed bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
-      <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-blue-300 dark:border-blue-600 p-4 shadow-2xl">
+      <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-cyan-300 dark:border-cyan-600 p-4 shadow-2xl">
         <div className="flex items-start gap-3">
           <span className="text-2xl" aria-hidden="true">{goalMet ? "🎉" : "✅"}</span>
           <div className="flex-1 min-w-0">
@@ -56,7 +56,7 @@ export default function SessionCelebration({
                     key={id}
                     type="button"
                     onClick={() => { onFeedback(id); onDismiss(); }}
-                    className="px-2.5 py-1 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                    className="px-2.5 py-1 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:bg-cyan-50 dark:hover:bg-cyan-900/30"
                   >
                     {label}
                   </button>

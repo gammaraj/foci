@@ -88,8 +88,8 @@ export default function TaskCalendarView({
             onClick={() => setProjectFilter(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-full border transition-colors ${
               projectFilter === ALL_PROJECTS_ID
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+                ? "bg-cyan-600 border-cyan-600 text-white"
+                : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-cyan-400 dark:hover:border-cyan-500"
             }`}
           >
             All
@@ -101,7 +101,7 @@ export default function TaskCalendarView({
               className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
                 projectFilter === p.id
                   ? "border-transparent text-white"
-                  : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+                  : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-cyan-400 dark:hover:border-cyan-500"
               }`}
               style={projectFilter === p.id && p.color ? { backgroundColor: p.color, borderColor: p.color } : {}}
             >
@@ -132,7 +132,7 @@ export default function TaskCalendarView({
           </h3>
           <button
             onClick={goToday}
-            className="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            className="text-xs px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"
           >
             Today
           </button>
@@ -173,9 +173,9 @@ export default function TaskCalendarView({
               onClick={() => onSelectDay(isSelected ? null : dateStr)}
               className={`min-h-[68px] rounded-lg flex flex-col p-1 text-xs transition-all w-full text-left ${
                 isSelected
-                  ? "bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#111827]"
+                  ? "bg-cyan-600 text-white ring-2 ring-cyan-400 ring-offset-1 dark:ring-offset-[#111827]"
                   : isToday
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
+                    ? "bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-300 dark:ring-cyan-700"
                     : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
               }`}
             >
@@ -188,7 +188,7 @@ export default function TaskCalendarView({
                       ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                       : hasOverdue && !t.completed
                         ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
+                        : "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400";
                   return (
                     <div
                       key={t.id}
@@ -210,7 +210,7 @@ export default function TaskCalendarView({
       </div>
 
       <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-400 dark:text-slate-300">
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Pending</div>
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-400" /> Pending</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> Done</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> Overdue</div>
       </div>
@@ -242,11 +242,11 @@ export default function TaskCalendarView({
                     value={quickAddTitle}
                     onChange={(e) => setQuickAddTitle(e.target.value)}
                     placeholder="Add a task for this day..."
-                    className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 outline-none"
+                    className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 outline-none"
                   />
                   <button
                     type="submit"
-                    className="px-3 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                    className="px-3 py-2 text-sm font-semibold rounded-lg bg-cyan-600 text-white hover:bg-cyan-700"
                   >
                     Add
                   </button>
@@ -279,14 +279,14 @@ export default function TaskCalendarView({
                       : task.completed
                         ? "border-slate-100 dark:border-[#1e3050] opacity-60"
                         : activeTaskId === task.id
-                          ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                          ? "border-cyan-300 dark:border-cyan-600 bg-cyan-50 dark:bg-cyan-900/20"
                           : selectedDay < todayStr
                             ? "border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-900/10"
                             : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                   }`}
                 >
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-red-400" : "bg-blue-400"
+                    task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-red-400" : "bg-cyan-400"
                   }`} />
                   <span className={`text-sm flex-1 truncate ${
                     task.completed
@@ -301,7 +301,7 @@ export default function TaskCalendarView({
                         e.stopPropagation();
                         onStartTask(task.id);
                       }}
-                      className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1"
+                      className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-cyan-600 text-white hover:bg-cyan-700 transition-colors flex items-center gap-1"
                     >
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
@@ -362,7 +362,7 @@ export default function TaskCalendarView({
               >
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
                 <div
-                  className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                  className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
                   title="Set due date"
                   onClick={(e) => e.stopPropagation()}
                 >

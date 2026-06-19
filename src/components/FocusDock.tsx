@@ -98,7 +98,7 @@ export function FocusDockToolbar({
     isBreak
       ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
       : isRunning
-        ? "border border-blue-300/50 dark:border-blue-600/40 bg-blue-50/60 dark:bg-blue-900/15"
+        ? "border border-cyan-300/50 dark:border-cyan-600/40 bg-cyan-50/60 dark:bg-cyan-900/15"
         : "";
 
   const sessionsLink = sessions ? (
@@ -122,14 +122,14 @@ export function FocusDockToolbar({
                   key={i}
                   className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                     i < sessions.count
-                      ? "bg-blue-500 dark:bg-blue-400"
+                      ? "bg-cyan-500 dark:bg-cyan-400"
                       : "bg-slate-300 dark:bg-slate-600"
                   }`}
                 />
               ))}
             </span>
           ) : (
-            <span className="text-sm font-semibold tabular-nums text-blue-600 dark:text-blue-400 group-hover/sess:underline">
+            <span className="text-sm font-semibold tabular-nums text-cyan-600 dark:text-cyan-400 group-hover/sess:underline">
               {sessions.count}/{sessions.goal}
             </span>
           )}
@@ -145,7 +145,7 @@ export function FocusDockToolbar({
       ) : (
         <>
           <span className="flex items-center gap-1 tabular-nums text-xs sm:text-sm font-semibold leading-none whitespace-nowrap">
-            <span className="text-blue-600 dark:text-blue-400 group-hover:underline">
+            <span className="text-cyan-600 dark:text-cyan-400 group-hover:underline">
               {sessions.count}/{sessions.goal}
             </span>
             {sessions.streak > 0 && (
@@ -165,7 +165,7 @@ export function FocusDockToolbar({
             aria-hidden
           >
             <span
-              className="block h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300"
+              className="block h-full bg-cyan-500 dark:bg-cyan-400 rounded-full transition-all duration-300"
               style={{ width: `${sessionProgress}%` }}
             />
           </span>
@@ -221,7 +221,7 @@ export function FocusDockToolbar({
           isBreak
             ? "text-green-700 dark:text-green-300"
             : isRunning
-              ? "text-blue-600 dark:text-blue-400"
+              ? "text-cyan-600 dark:text-cyan-400"
               : "text-slate-800 dark:text-slate-100"
         }`}
       >
@@ -256,7 +256,7 @@ export function FocusDockToolbar({
         }}
         className={`relative hidden sm:flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-all ${
           showShortcutHint
-            ? "opacity-100 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-300/60"
+            ? "opacity-100 text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 ring-1 ring-cyan-300/60"
             : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
         }`}
         aria-label="Keyboard shortcuts"
@@ -264,7 +264,7 @@ export function FocusDockToolbar({
       >
         ?
         {showShortcutHint && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-hidden />
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-cyan-500 animate-pulse" aria-hidden />
         )}
       </button>
     ) : null;
@@ -318,7 +318,7 @@ export function FocusDockToolbar({
         isBreak
           ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
           : isRunning
-            ? "border-blue-300/60 dark:border-blue-600/50 bg-blue-50/80 dark:bg-blue-900/25"
+            ? "border-cyan-300/60 dark:border-cyan-600/50 bg-cyan-50/80 dark:bg-cyan-900/25"
             : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
       }`}
     >
@@ -377,7 +377,7 @@ export default function FocusDockPanel({
         } ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >
         {activeTaskId && activeTaskTitle && (
-          <p className="text-xs text-blue-600 dark:text-blue-400 truncate mb-1.5">{activeTaskTitle}</p>
+          <p className="text-xs text-cyan-600 dark:text-cyan-400 truncate mb-1.5">{activeTaskTitle}</p>
         )}
         <div className="text-center space-y-0.5 pb-2">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
@@ -386,7 +386,7 @@ export default function FocusDockPanel({
               isBreak
                 ? "text-green-700 dark:text-green-300"
                 : isRunning
-                  ? "text-blue-600 dark:text-blue-400"
+                  ? "text-cyan-600 dark:text-cyan-400"
                   : "text-slate-900 dark:text-white"
             }`}
           >
@@ -405,7 +405,7 @@ export default function FocusDockPanel({
                 disabled={timerStatus === "running" || timerStatus === "break"}
                 className={`flex-1 px-2 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
                   active
-                    ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                    ? "bg-white dark:bg-[#1a2d4a] text-cyan-700 dark:text-cyan-300"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
               >
@@ -437,14 +437,14 @@ export default function FocusDockPanel({
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Pick a task below</p>
             )}
             {activeTaskId && activeTaskTitle && (
-              <p className="text-xs text-blue-600 dark:text-blue-400 truncate">{activeTaskTitle}</p>
+              <p className="text-xs text-cyan-600 dark:text-cyan-400 truncate">{activeTaskTitle}</p>
             )}
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0">
             <button
               type="button"
               onClick={onToggleFocusMode}
-              className={`p-2 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"}`}
+              className={`p-2 rounded-lg transition-colors ${focusMode ? "bg-cyan-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"}`}
               aria-label="Toggle focus mode (F)"
               title="Focus mode (F)"
             >
@@ -515,7 +515,7 @@ export default function FocusDockPanel({
                     disabled={timerStatus === "running" || timerStatus === "break"}
                     className={`px-2.5 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
                       active
-                        ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                        ? "bg-white dark:bg-[#1a2d4a] text-cyan-700 dark:text-cyan-300"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     } disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
@@ -527,7 +527,7 @@ export default function FocusDockPanel({
           </div>
 
           {readyToFocus && timerStatus === "idle" && !isBreak && (
-            <p className="text-center text-xs text-blue-700/90 dark:text-blue-300/90 mb-2">
+            <p className="text-center text-xs text-cyan-700/90 dark:text-cyan-300/90 mb-2">
               Press Play or Space to start
             </p>
           )}

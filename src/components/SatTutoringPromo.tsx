@@ -41,7 +41,7 @@ export default function SatTutoringPromo({
           href={SAT_TUTORING_URL}
           target="_blank"
           rel="noopener noreferrer sponsored"
-          className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 underline-offset-2 hover:underline"
+          className="text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 underline-offset-2 hover:underline"
         >
           Digital SAT tutoring from a 1590 scorer
         </a>

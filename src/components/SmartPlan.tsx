@@ -76,7 +76,7 @@ function TaskRow({
       {/* Start button — always visible on mobile */}
       <button
         onClick={(e) => { e.stopPropagation(); onStartTask(t.id); }}
-        className="flex-shrink-0 p-2.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all sm:opacity-0 sm:group-hover:opacity-100"
+        className="flex-shrink-0 p-2.5 text-cyan-500 hover:text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 rounded-lg transition-all sm:opacity-0 sm:group-hover:opacity-100"
         title="Start this task"
         aria-label={`Start task: ${t.title}`}
       >
@@ -104,7 +104,7 @@ function DaySection({
     <div className="mb-3 sm:mb-4">
       <div className="flex items-center justify-between mb-1.5 px-1 gap-2">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <h3 className={`text-sm font-semibold flex-shrink-0 ${isToday ? "text-blue-600 dark:text-blue-400" : "text-slate-700 dark:text-slate-200"}`}>
+          <h3 className={`text-sm font-semibold flex-shrink-0 ${isToday ? "text-cyan-600 dark:text-cyan-400" : "text-slate-700 dark:text-slate-200"}`}>
             {day.label}
           </h3>
           <span className="text-xs text-slate-400 dark:text-slate-300 truncate">

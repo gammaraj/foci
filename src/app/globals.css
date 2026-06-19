@@ -4,9 +4,9 @@
 
 /* ===== Custom Properties ===== */
 :root {
-  --primary-blue: #3b82f6;
-  --primary-blue-dark: #2563eb;
-  --accent-indigo: #6366f1;
+  --primary-blue: #0891b2;
+  --primary-blue-dark: #0e7490;
+  --accent-indigo: #06b6d4;
   --success-green: #10b981;
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);

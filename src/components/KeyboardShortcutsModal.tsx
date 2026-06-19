@@ -53,7 +53,7 @@ export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortc
         <button
           type="button"
           onClick={onClose}
-          className="w-full py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+          className="w-full py-2 text-sm font-medium rounded-lg bg-cyan-600 text-white hover:bg-cyan-700"
         >
           Close
         </button>
