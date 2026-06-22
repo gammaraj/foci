@@ -118,25 +118,23 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   return (
     <header className="nav-chrome sticky top-0 z-30">
       <nav className="relative app-container pb-3 sm:pb-3.5">
-        <div className="relative flex items-center justify-between">
-          <Link href={logoHref} className="flex items-center gap-2.5">
+        <div className="relative flex items-center justify-between gap-3">
+          <Link href={logoHref} className="flex items-center gap-2.5 min-w-0">
             <FociLogoMark
               size={40}
               idPrefix="nav"
               surface="dark"
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex-shrink-0"
             />
-            <FociWordmark className="text-xl sm:text-2xl font-bold" tone="dark" />
+            <div className="flex flex-col items-start gap-0.5 min-w-0">
+              <FociWordmark className="text-xl sm:text-2xl font-bold leading-none" tone="dark" />
+              <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.16em] sm:tracking-[0.18em] uppercase text-cyan-400/85 whitespace-nowrap">
+                {FOCI_TAGLINE_FOCUS}
+              </p>
+            </div>
           </Link>
 
-          <p
-            className="hidden md:block absolute left-1/2 -translate-x-1/2 pointer-events-none select-none text-[10px] lg:text-[11px] font-semibold tracking-[0.18em] uppercase text-cyan-400/85 whitespace-nowrap"
-            aria-hidden
-          >
-            {FOCI_TAGLINE_FOCUS}
-          </p>
-
-          <div className="hidden sm:flex items-center gap-6">
+          <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
             {navLinks.map((link) => renderNavLink(link))}
             {(toolbarSlot || onOpenSettings) && (
               <span className="w-px h-5 bg-white/15 rounded-full self-center" aria-hidden />
