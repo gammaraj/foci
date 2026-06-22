@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import UserMenu from "@/components/UserMenu";
 import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
+import { FOCI_TAGLINE_FOCUS } from "@/lib/logo-brand";
 
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
@@ -117,7 +118,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   return (
     <header className="nav-chrome sticky top-0 z-30">
       <nav className="relative app-container pb-3 sm:pb-3.5">
-        <div className="flex items-center justify-between">
+        <div className="relative flex items-center justify-between">
           <Link href={logoHref} className="flex items-center gap-2.5">
             <FociLogoMark
               size={40}
@@ -127,6 +128,13 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
             />
             <FociWordmark className="text-xl sm:text-2xl font-bold" tone="dark" />
           </Link>
+
+          <p
+            className="hidden md:block absolute left-1/2 -translate-x-1/2 pointer-events-none select-none text-[10px] lg:text-[11px] font-semibold tracking-[0.18em] uppercase text-cyan-400/85 whitespace-nowrap"
+            aria-hidden
+          >
+            {FOCI_TAGLINE_FOCUS}
+          </p>
 
           <div className="hidden sm:flex items-center gap-6">
             {navLinks.map((link) => renderNavLink(link))}
