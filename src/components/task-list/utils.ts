@@ -3,7 +3,7 @@ import { getToday, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
-export const MAX_VISIBLE_PROJECT_TABS = 3;
+export const MAX_VISIBLE_PROJECT_TABS = 3; // initial floor before width measurement
 
 /** Favorites first, then manual order, then name. */
 export function sortProjectsForDisplay(projects: Project[]): Project[] {

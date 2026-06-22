@@ -32,10 +32,10 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
       role="complementary"
       aria-label="Quote of the day"
     >
-      <p className="text-xs font-light italic text-slate-400/90 dark:text-slate-500/75 leading-relaxed line-clamp-2 max-w-xl mx-auto">
+      <p className="text-sm italic text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 max-w-xl mx-auto">
         &ldquo;{text}&rdquo;
         {author ? (
-          <span className="font-normal not-italic text-slate-400/70 dark:text-slate-500/60"> — {author}</span>
+          <span className="font-normal not-italic text-slate-500 dark:text-slate-400"> — {author}</span>
         ) : null}
       </p>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
@@ -196,6 +196,11 @@ export default function TaskList({
   const [selectedSharedProject, setSelectedSharedProject] = useState<SharedProject | null>(null);
   
   const projectMenuRef = useRef<HTMLDivElement>(null);
+  const projectTabsContainerRef = useRef<HTMLDivElement>(null);
+  const allProjectsTabRef = useRef<HTMLButtonElement>(null);
+  const projectTabsToolbarRef = useRef<HTMLDivElement>(null);
+  const projectTabMeasureRef = useRef<HTMLDivElement>(null);
+  const [maxVisibleProjectTabs, setMaxVisibleProjectTabs] = useState(MAX_VISIBLE_PROJECT_TABS);
 
   useEffect(() => {
     const open = () => openProjectManage();
@@ -1018,19 +1023,6 @@ export default function TaskList({
     : isAllProjects
       ? null
       : selectedProjectId;
-  const visibleProjectTabs = (() => {
-    const tabs = sortedProjects.slice(0, MAX_VISIBLE_PROJECT_TABS);
-    if (!activeProjectTabId || activeProjectTabId === ALL_PROJECTS_ID) return tabs;
-    if (!sortedProjects.some((p) => p.id === activeProjectTabId)) return tabs;
-    if (tabs.some((p) => p.id === activeProjectTabId)) return tabs;
-    return [
-      ...tabs.slice(0, Math.max(0, MAX_VISIBLE_PROJECT_TABS - 1)),
-      sortedProjects.find((p) => p.id === activeProjectTabId)!,
-    ];
-  })();
-  const visibleProjectTabIds = new Set(visibleProjectTabs.map((p) => p.id));
-  const overflowProjectTabs = sortedProjects.filter((p) => !visibleProjectTabIds.has(p.id));
-
   const applyTemplate = useCallback(
     (tpl: (typeof TASK_TEMPLATES)[number]) => {
       const templateProjectId = isTimeFilter
@@ -1087,6 +1079,55 @@ export default function TaskList({
   const isAllProjectsScopeActive = isTimeFilter
     ? projectFilterId === ALL_PROJECTS_ID
     : isAllProjects;
+
+  useLayoutEffect(() => {
+    const container = projectTabsContainerRef.current;
+    const measure = projectTabMeasureRef.current;
+    const allTab = allProjectsTabRef.current;
+    const toolbar = projectTabsToolbarRef.current;
+    if (!container || !measure || !allTab || !toolbar) return;
+
+    const compute = () => {
+      const available = container.clientWidth;
+      const tabEls = Array.from(measure.querySelectorAll<HTMLElement>("[data-measure-tab]"));
+      const moreEl = measure.querySelector<HTMLElement>("[data-measure-more]");
+      const moreWidth = moreEl?.offsetWidth ?? 96;
+      const gap = 8;
+
+      let used = allTab.offsetWidth + toolbar.offsetWidth + gap * 2;
+      let count = 0;
+
+      for (let i = 0; i < tabEls.length; i++) {
+        const tabWidth = tabEls[i].offsetWidth + gap;
+        const hiddenAfterThis = tabEls.length - i - 1;
+        const reserve = hiddenAfterThis > 0 ? moreWidth + gap : 0;
+        if (used + tabWidth + reserve > available) break;
+        used += tabWidth;
+        count++;
+      }
+
+      setMaxVisibleProjectTabs(Math.max(1, count));
+    };
+
+    compute();
+    const observer = new ResizeObserver(compute);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [projects, tasks, isTimeFilter]);
+
+  const visibleProjectTabs = (() => {
+    const tabs = sortedProjects.slice(0, maxVisibleProjectTabs);
+    if (!activeProjectTabId || activeProjectTabId === ALL_PROJECTS_ID) return tabs;
+    if (!sortedProjects.some((p) => p.id === activeProjectTabId)) return tabs;
+    if (tabs.some((p) => p.id === activeProjectTabId)) return tabs;
+    return [
+      ...tabs.slice(0, Math.max(0, maxVisibleProjectTabs - 1)),
+      sortedProjects.find((p) => p.id === activeProjectTabId)!,
+    ];
+  })();
+  const visibleProjectTabIds = new Set(visibleProjectTabs.map((p) => p.id));
+  const overflowProjectTabs = sortedProjects.filter((p) => !visibleProjectTabIds.has(p.id));
+
   const pendingTasks = projectTasks
     .filter((t) => !t.completed)
     .sort((a, b) => {
@@ -1343,7 +1384,7 @@ export default function TaskList({
                 Back to Buckets
               </button>
             )}
-            <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+            <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2 flex-wrap">
               <svg
                 className="w-5 h-5 flex-shrink-0"
                 fill="none"
@@ -1365,6 +1406,23 @@ export default function TaskList({
                   </span>
                 )}
               </span>
+              {!focusMode && viewMode === "list" && isAllProjects && !isTimeFilter && (
+                <button
+                  type="button"
+                  onClick={() => selectProject(TODAY_FILTER_ID)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs sm:text-sm font-medium border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors shadow-sm"
+                >
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Due today
+                  {todayOpenCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums">
+                      {todayOpenCount}
+                    </span>
+                  )}
+                </button>
+              )}
             </h2>
             {!focusMode && (viewMode === "list" || viewMode === "bucket") && (
               <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
@@ -1792,23 +1850,6 @@ export default function TaskList({
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
       <div className="px-3 sm:px-4 pt-1.5 pb-1 relative" ref={projectMenuRef}>
-        {isAllProjects && !isTimeFilter && (
-          <button
-            type="button"
-            onClick={() => selectProject(TODAY_FILTER_ID)}
-            className="mb-2 w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors shadow-sm"
-          >
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Due today
-            {todayOpenCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums">
-                {todayOpenCount}
-              </span>
-            )}
-          </button>
-        )}
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -1877,9 +1918,59 @@ export default function TaskList({
         </div>
 
         {/* Desktop: horizontal scrolling project tabs */}
-        <div className="hidden sm:block relative">
+        <div className="hidden sm:block relative" ref={projectTabsContainerRef}>
+          <div
+            ref={projectTabMeasureRef}
+            className="absolute left-0 top-0 -z-10 opacity-0 pointer-events-none flex items-center gap-2"
+            aria-hidden
+          >
+            {sortedProjects.map((p) => {
+              const count = isTimeFilter
+                ? timeScopedTasks.filter((t) => t.projectId === p.id && !t.completed).length
+                : tasks.filter((t) => t.projectId === p.id && !t.completed).length;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  tabIndex={-1}
+                  data-measure-tab
+                  className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg ${PROJECT_TAB_INACTIVE}`}
+                >
+                  {p.favorite && (
+                    <svg className="w-3 h-3 text-amber-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  )}
+                  {p.color && (
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                  )}
+                  <span className="min-w-0 max-w-[10rem] sm:max-w-[14rem]">
+                    <ProjectTabName project={p} />
+                  </span>
+                  {count > 0 && (
+                    <>
+                      <span className="shrink-0 text-slate-400/80 dark:text-slate-500/80" aria-hidden>·</span>
+                      <span className="text-xs tabular-nums shrink-0 text-slate-500 dark:text-slate-500">{count}</span>
+                    </>
+                  )}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              tabIndex={-1}
+              data-measure-more
+              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30]"
+            >
+              +99 more
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
           <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-8">
           <button
+            ref={allProjectsTabRef}
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
             className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
               isAllProjectsScopeActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
@@ -1977,6 +2068,7 @@ export default function TaskList({
             </button>
           )}
 
+          <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
           {/* Add project button */}
           <button
             onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
@@ -2006,6 +2098,7 @@ export default function TaskList({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
             </svg>
           </button>
+          </div>
           </div>
           {/* Fade hint for scrollable overflow */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-[#111827] to-transparent" />
