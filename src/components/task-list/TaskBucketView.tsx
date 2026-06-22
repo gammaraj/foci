@@ -417,12 +417,13 @@ function BucketTaskCard({
             className={`flex items-center gap-0.5 shrink-0 mt-[3px] transition-opacity ${
               isDetailOpen
                 ? "opacity-100"
-                : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                : "sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             }`}
           >
+            {/* Date picker icon: hidden on mobile (inline "Set date" label handles it) */}
             {!task.dueDate && onSetDueDate && (
               <label
-                className={`${compactIconBtn} relative text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] cursor-pointer`}
+                className={`${compactIconBtn} hidden sm:flex relative text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] cursor-pointer`}
                 title="Add due date"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -474,7 +475,9 @@ function BucketTaskCard({
         {!isEditing && (
           <div
             className={`shrink-0 mt-[3px] transition-opacity duration-150 ${
-              playVisible ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+              isActive
+                ? "opacity-100"
+                : "hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             }`}
           >
             {isActive && isTimerRunning ? (
