@@ -103,7 +103,7 @@ const howToJsonLd = {
   name: "How to Use Foci to Stay Focused and Productive",
   description: "A step-by-step guide to using Foci — a free all-in-one focus system with a Pomodoro timer, task tracking, ambient music, daily goals, and streak stats.",
   step: [
-    { "@type": "HowToStep", name: "Open Foci", text: "Visit usefoci.com and click 'Try without account' or sign up for free to sync across devices." },
+    { "@type": "HowToStep", name: "Try Foci", text: "Visit usefoci.com and click \"Try Foci — free\" to start instantly, or sign up for free to sync across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
     { "@type": "HowToStep", name: "Set your preferences", text: "Open Settings to configure work duration (default 25 min), break duration (default 5 min), daily session goal, and notification preferences." },
     { "@type": "HowToStep", name: "Pick a task and start", text: "Select a task from Today or a project tab. Start highlights when a task is selected. Turn on ambient music or lo-fi if you like, then press Start. The circular timer counts down your work session." },
@@ -123,7 +123,7 @@ const faqJsonLd = {
     { "@type": "Question", name: "What is the 52/17 rule?", acceptedAnswer: { "@type": "Answer", text: "The 52/17 rule is a focus technique where you work for 52 minutes followed by a 17-minute break. It's based on a 2014 Draugiem Group study that found top performers worked in ~52-minute bursts. Compared to Pomodoro (25/5), 52/17 allows deeper immersion but requires more sustained focus. Foci includes 52/17 as a built-in timer preset." } },
     { "@type": "Question", name: "Flowtime vs Pomodoro: which is better?", acceptedAnswer: { "@type": "Answer", text: "Pomodoro is better for procrastination-prone tasks, studying, and when you need external structure. Flowtime is better for creative work, programming, or when you regularly enter flow states. Comparison guide: https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17" } },
     { "@type": "Question", name: "Is Foci free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices." } },
-    { "@type": "Question", name: "Can I use Foci without creating an account?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Click 'Try without account' on the homepage and start using Foci immediately. Your settings, tasks, and progress are saved locally in your browser." } },
+    { "@type": "Question", name: "Can I use Foci without creating an account?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Click \"Try Foci — free\" on the homepage and start using Foci immediately. Your settings, tasks, and progress are saved locally in your browser." } },
     { "@type": "Question", name: "Does Foci have ambient music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes built-in ambient sounds like rain, café, white noise, and brown noise that work offline, plus live lo-fi and synthwave via YouTube channel embeds (so streams stay online when individual videos rotate), SoundCloud Indian classical, and curated Spotify playlists." } },
     { "@type": "Question", name: "Where is Foci available?", acceptedAnswer: { "@type": "Answer", text: "Foci is a free web app available worldwide in English. Open usefoci.com/app in Chrome, Firefox, Safari, or Edge on desktop or mobile — no geographic restrictions. Install as a PWA for offline tasks and built-in ambient sounds." } },
     { "@type": "Question", name: "Can I customize the timer durations?", acceptedAnswer: { "@type": "Answer", text: "Yes. Open the Settings panel to customize your work duration, break duration, and daily session goal to match your preferred workflow." } },
@@ -209,7 +209,7 @@ export default function LandingPage() {
               href="/app"
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-700/25 dark:shadow-cyan-600/20"
             >
-              Open Foci — free
+              Try Foci — free
             </Link>
             <Link
               href="/login"
@@ -441,7 +441,7 @@ export default function LandingPage() {
             href="/app"
             className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-700/25 dark:shadow-cyan-600/20"
           >
-            Open Foci — free
+            Try Foci — free
           </Link>
         </section>
       </main>

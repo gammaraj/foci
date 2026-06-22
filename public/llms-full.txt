@@ -59,7 +59,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 
 ## How to Use Foci
 
-1. Visit https://usefoci.com and click "Try without account" or sign up for free.
+1. Visit https://usefoci.com and click "Try Foci — free" or sign up for free.
 2. Add tasks and organize them into projects.
 3. Open Settings to configure work duration, break duration, and daily session goal.
 4. Select a task, turn on ambient music if you like, and press Start.

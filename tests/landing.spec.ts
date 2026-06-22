@@ -6,29 +6,25 @@ test.describe("Landing Page", () => {
   });
 
   test("renders hero headline and subtitle", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText("Focus timer, tasks & ambient music");
-    await expect(page.locator("h1")).toContainText("finally in one place");
-    await expect(page.getByText("Manage tasks, run focused sprints")).toBeVisible();
+    await expect(page.locator("h1")).toContainText("deep work, one calm window");
+    await expect(page.getByText("Free Pomodoro timer, tasks, session tracking")).toBeVisible();
   });
 
   test("renders primary and secondary CTA buttons", async ({ page }) => {
-    const primaryCTA = page.getByRole("link", { name: "Start focusing — free" });
+    const primaryCTA = page.getByRole("link", { name: "Try Foci — free" }).first();
     await expect(primaryCTA).toBeVisible();
-    await expect(primaryCTA).toHaveAttribute("href", "/login");
+    await expect(primaryCTA).toHaveAttribute("href", "/app");
 
-    const secondaryCTA = page.getByRole("link", { name: "Try without an account" });
+    const secondaryCTA = page.getByRole("link", { name: "Sign in to sync →" });
     await expect(secondaryCTA).toBeVisible();
-    await expect(secondaryCTA).toHaveAttribute("href", "/app");
+    await expect(secondaryCTA).toHaveAttribute("href", "/login");
   });
 
   test("renders app mockup with timer and tasks", async ({ page }) => {
-    // Timer display
     await expect(page.getByText("22:30")).toBeVisible();
-    await expect(page.getByText("FOCUS", { exact: true })).toBeVisible();
-
-    // Mock task items
+    await expect(page.getByText("FOCUS · FLOW · FINISH")).toBeVisible();
     await expect(page.getByText("Research API integration")).toBeVisible();
-    await expect(page.getByText("Write documentation")).toBeVisible();
+    await expect(page.getByText("Draft design mockups")).toBeVisible();
   });
 
   test("renders social proof section", async ({ page }) => {
@@ -58,23 +54,23 @@ test.describe("Landing Page", () => {
 
   test("renders final CTA section", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Ready to focus?" })).toBeVisible();
-    const finalCTA = page.getByRole("link", { name: "Get started — it's free" });
+    const finalCTA = page.getByRole("link", { name: "Try Foci — free" }).last();
     await expect(finalCTA).toBeVisible();
-    await expect(finalCTA).toHaveAttribute("href", "/login");
+    await expect(finalCTA).toHaveAttribute("href", "/app");
   });
 
   test("renders footer", async ({ page }) => {
     await expect(page.getByText("Built for focus.")).toBeVisible();
   });
 
-  test("primary CTA navigates to login", async ({ page }) => {
-    await page.getByRole("link", { name: "Start focusing — free" }).click();
-    await expect(page).toHaveURL(/\/login/);
+  test("primary CTA navigates to app", async ({ page }) => {
+    await page.getByRole("link", { name: "Try Foci — free" }).first().click();
+    await expect(page).toHaveURL(/\/app/);
   });
 
-  test("secondary CTA navigates to app", async ({ page }) => {
-    await page.getByRole("link", { name: "Try without an account" }).click();
-    await expect(page).toHaveURL(/\/app/);
+  test("secondary CTA navigates to login", async ({ page }) => {
+    await page.getByRole("link", { name: "Sign in to sync →" }).click();
+    await expect(page).toHaveURL(/\/login/);
   });
 
   test("has structured data scripts", async ({ page }) => {
