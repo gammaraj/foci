@@ -6,7 +6,8 @@ import { loadTasks } from "@/lib/storage";
 
 type MessageId = "signup" | "first-session" | "notification" | "pwa";
 
-const PRIORITY: MessageId[] = ["signup", "first-session", "notification", "pwa"];
+// "notification" hidden until invite push reminders are implemented (due-date only is partial)
+const PRIORITY: MessageId[] = ["signup", "first-session", "pwa"];
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
