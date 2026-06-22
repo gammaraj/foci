@@ -2286,6 +2286,7 @@ export default function TaskList({
           noDueDateExpanded={noDueDateExpanded}
           onToggleNoDueDateExpanded={() => setNoDueDateExpanded((open) => !open)}
           scopedUndatedOpenCount={scopedUndatedOpenCount}
+          twoColumn={viewMode === "list"}
           onToggleComplete={toggleComplete}
           onSaveEdit={saveEdit}
           onStartEdit={startEditing}
