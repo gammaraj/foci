@@ -1252,13 +1252,19 @@ export default function TaskList({
     const subtasks = task.subtasks || [];
     const hasSubtasks = subtasks.length > 0;
     const isExpanded = expandedTaskId === task.id;
-    if (!hasSubtasks && !isExpanded) return null;
+    const collapseSubtasksInGrid = viewMode === "list";
+
+    if (collapseSubtasksInGrid) {
+      if (!isExpanded) return null;
+    } else if (!hasSubtasks && !isExpanded) {
+      return null;
+    }
 
     return (
       <div className="overflow-hidden">
         <TaskSubtaskSection
           {...taskSubtaskSectionProps(task)}
-          showAddForm={isExpanded || hasSubtasks}
+          showAddForm={isExpanded || (hasSubtasks && !collapseSubtasksInGrid)}
           compact={compact}
         />
         {isExpanded && (
@@ -1410,14 +1416,14 @@ export default function TaskList({
                 <button
                   type="button"
                   onClick={() => selectProject(TODAY_FILTER_ID)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs sm:text-sm font-medium border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors shadow-sm"
                 >
                   <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  Due today
+                  <span className="leading-none">Due today</span>
                   {todayOpenCount > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums">
+                    <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none">
                       {todayOpenCount}
                     </span>
                   )}

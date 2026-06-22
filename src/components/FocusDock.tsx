@@ -275,7 +275,7 @@ export function FocusDockToolbar({
       onClick={onToggleExpanded}
       className={`flex-shrink-0 touch-target-sm ${
         embedded
-          ? "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+          ? "hidden sm:flex p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
           : "p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
       }`}
       aria-expanded={expanded}

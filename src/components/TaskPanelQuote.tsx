@@ -12,7 +12,7 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
 
   if (variant === "hero") {
     return (
-      <div className="text-center px-4 py-6 mb-4 rounded-xl bg-slate-50/80 dark:bg-[#131d30]/50 border border-slate-100 dark:border-[#1e3050]">
+      <div className="hidden sm:block text-center px-4 py-6 mb-4 rounded-xl bg-slate-50/80 dark:bg-[#131d30]/50 border border-slate-100 dark:border-[#1e3050]">
         <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
           Quote of the day
         </p>
@@ -28,7 +28,7 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
 
   return (
     <div
-      className="px-3 sm:px-5 py-2 text-center"
+      className="hidden sm:block px-3 sm:px-5 py-2 text-center"
       role="complementary"
       aria-label="Quote of the day"
     >

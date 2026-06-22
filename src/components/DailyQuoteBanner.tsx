@@ -10,10 +10,20 @@ interface AppStatusBarProps {
   musicToolbar?: React.ReactNode;
   /** Expandable focus timer panel below the focus strip. */
   timerPanel?: React.ReactNode;
+  /** Whether the timer detail panel is expanded below the toolbar row. */
+  timerPanelExpanded?: boolean;
+  /** Collapse timer panel + other expanded status UI (mobile). */
+  onCollapseAll?: () => void;
 }
 
 /** Utility strip: clock, weather, and focus timer + music controls. */
-export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPanel }: AppStatusBarProps) {
+export default function DailyQuoteBanner({
+  timerToolbar,
+  musicToolbar,
+  timerPanel,
+  timerPanelExpanded = false,
+  onCollapseAll,
+}: AppStatusBarProps) {
   const hasFocusStrip = timerToolbar || musicToolbar;
   const threeColumnStrip = hasFocusStrip && timerToolbar && musicToolbar;
 
@@ -26,13 +36,26 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
     if (saved === "1") setMobileExpanded(true);
   }, []);
 
-  const toggleMobile = () => {
-    const next = !mobileExpanded;
-    setMobileExpanded(next);
+  const collapseAllMobile = () => {
+    setMobileExpanded(false);
+    onCollapseAll?.();
     if (typeof window !== "undefined") {
-      localStorage.setItem("foci-status-expanded", next ? "1" : "0");
+      localStorage.setItem("foci-status-expanded", "0");
     }
   };
+
+  const toggleMobile = () => {
+    if (mobileExpanded || timerPanelExpanded) {
+      collapseAllMobile();
+      return;
+    }
+    setMobileExpanded(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("foci-status-expanded", "1");
+    }
+  };
+
+  const showMobileCollapseBar = mobileExpanded || timerPanelExpanded;
 
   // Chevron toggle button rendered inside the strip
   const CollapseToggle = ({ className = "" }: { className?: string }) => (
@@ -40,11 +63,11 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
       type="button"
       onClick={toggleMobile}
       className={`sm:hidden flex-shrink-0 p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/8 transition-all ${className}`}
-      aria-label={mobileExpanded ? "Collapse status bar" : "Expand status bar"}
-      title={mobileExpanded ? "Collapse" : "Show weather & music"}
+      aria-label={showMobileCollapseBar ? "Collapse status bar" : "Expand status bar"}
+      title={showMobileCollapseBar ? "Collapse" : "Show weather & music"}
     >
       <svg
-        className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileExpanded ? "rotate-180" : ""}`}
+        className={`w-3.5 h-3.5 transition-transform duration-200 ${showMobileCollapseBar ? "rotate-180" : ""}`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -82,6 +105,18 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
             <div className={`min-w-0 flex flex-col px-3 sm:px-4 overflow-x-auto bg-slate-50/50 dark:bg-white/[0.018] rounded-br-xl ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               {musicToolbar}
             </div>
+            {showMobileCollapseBar && (
+              <button
+                type="button"
+                onClick={collapseAllMobile}
+                className="sm:hidden col-span-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-t border-slate-100/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7-7" />
+                </svg>
+                Hide weather &amp; timer
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col sm:grid sm:grid-cols-[minmax(0,11.5rem)_minmax(0,1fr)] sm:items-stretch gap-y-1.5 gap-x-2.5 min-w-0">
@@ -101,7 +136,7 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
                     <div className={`min-w-0 flex flex-col px-2.5 sm:px-3 ${musicToolbar ? "border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80" : ""}`}>
                       <div className="flex items-center min-h-[3.5rem] w-full gap-1">
                         <div className="flex-1 min-w-0">{timerToolbar}</div>
-                        {musicToolbar && <CollapseToggle />}
+                        <CollapseToggle />
                       </div>
                       {timerPanel}
                     </div>
@@ -112,6 +147,18 @@ export default function DailyQuoteBanner({ timerToolbar, musicToolbar, timerPane
                     </div>
                   )}
                 </div>
+                {showMobileCollapseBar && (
+                  <button
+                    type="button"
+                    onClick={collapseAllMobile}
+                    className="sm:hidden flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-t border-slate-100/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7-7" />
+                    </svg>
+                    Hide weather &amp; timer
+                  </button>
+                )}
               </div>
             )}
           </div>

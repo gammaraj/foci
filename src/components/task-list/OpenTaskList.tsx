@@ -155,8 +155,15 @@ export default function OpenTaskList({
     }
 
     // ── Task card ────────────────────────────────────────────────────────────
+    const subtaskCount = task.subtasks?.length ?? 0;
+    const completedSubtaskCount = task.subtasks?.filter((s) => s.completed).length ?? 0;
+    const spansFullWidth = twoColumn && isExpanded;
+
     items.push(
-      <div key={task.id} className="group/task flex flex-col">
+      <div
+        key={task.id}
+        className={`group/task flex flex-col min-w-0${spansFullWidth ? " col-span-full" : ""}`}
+      >
         <div
           draggable
           aria-current={activeTaskId === task.id ? "true" : undefined}
@@ -165,7 +172,7 @@ export default function OpenTaskList({
           onDragOver={(e) => onDragOver(e, task.id)}
           onDrop={() => onDrop(task.id)}
           onDragEnd={onDragEnd}
-          className={`group flex items-start gap-1.5 sm:gap-2.5 p-2 sm:p-2.5 rounded-xl border transition-colors ${
+          className={`group flex flex-col overflow-hidden rounded-xl border transition-colors ${
             activeTaskId === task.id
               ? "task-timer-linked border-cyan-400 dark:border-cyan-500 bg-cyan-50 dark:bg-cyan-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-cyan-400/30 dark:ring-cyan-500/25"
               : isExpanded
@@ -177,6 +184,7 @@ export default function OpenTaskList({
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
           }`}
         >
+        <div className="flex items-start gap-1.5 sm:gap-2.5 p-2 sm:p-2.5">
           <div className="flex-shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
             <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -269,6 +277,11 @@ export default function OpenTaskList({
                   {task.recurrence}
                 </span>
               )}
+              {twoColumn && subtaskCount > 0 && !isExpanded && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50">
+                  {completedSubtaskCount}/{subtaskCount} subtasks
+                </span>
+              )}
             </div>
           </div>
           <button
@@ -314,7 +327,7 @@ export default function OpenTaskList({
         {/* Overdue quick-actions — hover-reveal only (saves ~40px per overdue task) */}
         {isOverdue && !task.completed && (
           <div
-            className="hidden group-hover/task:flex flex-wrap items-center gap-1.5 pt-1 pb-1.5 px-1 sm:px-2"
+            className="hidden group-hover/task:flex flex-wrap items-center gap-1.5 pt-0 pb-1.5 px-2 sm:px-2.5"
             onClick={(e) => e.stopPropagation()}
           >
             <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors">
@@ -330,6 +343,7 @@ export default function OpenTaskList({
         )}
 
         {renderBelowTask(task)}
+        </div>
       </div>
     );
   });

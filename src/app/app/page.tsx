@@ -218,6 +218,8 @@ export default function AppPage() {
       {!focusMode && (
         <div id="focus-dock">
           <DailyQuoteBanner
+            timerPanelExpanded={!timerCollapsed}
+            onCollapseAll={() => setTimerCollapsed(true)}
             timerToolbar={
               <FocusDockToolbar
                 embedded
