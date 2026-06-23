@@ -242,45 +242,63 @@ export default function OpenTaskList({
                 </span>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
-              {task.dueDate && (
+            <div className="flex items-center gap-x-2 mt-1 min-h-[26px]">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 flex-1 min-w-0">
+                {task.dueDate && (
+                  <div
+                    className={`relative inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
+                      !task.completed && isDueDateOverdue(task.dueDate)
+                        ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        : !task.completed && task.dueDate === getToday()
+                          ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                          : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400"
+                    }`}
+                    title={`Due: ${formatDueDate(task.dueDate)}`}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    {formatDueDate(task.dueDate)}
+                    {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                    <input type="date" value={task.dueDate} onChange={(e) => onSetDueDate(task.id, e.target.value || undefined)} onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }} />
+                  </div>
+                )}
+                {task.description && (
+                  <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" /></svg>
+                  </span>
+                )}
+                {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
+                  <span className="app-text-meta text-slate-500 dark:text-slate-300">
+                    {task.sessions > 0 && <>{task.sessions}× </>}
+                    {(task.timeSpent || 0) > 0 && formatDuration(task.timeSpent)}
+                  </span>
+                )}
+                {task.recurrence && (
+                  <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    {task.recurrence}
+                  </span>
+                )}
+                {twoColumn && subtaskCount > 0 && !isExpanded && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50">
+                    {completedSubtaskCount}/{subtaskCount} subtasks
+                  </span>
+                )}
+              </div>
+              {isOverdue && !task.completed && (
                 <div
-                  className={`relative inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
-                    !task.completed && isDueDateOverdue(task.dueDate)
-                      ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
-                      : !task.completed && task.dueDate === getToday()
-                        ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                        : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400"
-                  }`}
-                  title={`Due: ${formatDueDate(task.dueDate)}`}
+                  className="flex shrink-0 items-center gap-1 opacity-0 pointer-events-none group-hover/task:opacity-100 group-hover/task:pointer-events-auto transition-opacity"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                  {formatDueDate(task.dueDate)}
-                  {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                  <input type="date" value={task.dueDate} onChange={(e) => onSetDueDate(task.id, e.target.value || undefined)} onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }} />
+                  <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors whitespace-nowrap">
+                    Move to today
+                  </button>
+                  <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
+                    Done
+                  </button>
+                  <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors whitespace-nowrap">
+                    Focus
+                  </button>
                 </div>
-              )}
-              {task.description && (
-                <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" /></svg>
-                </span>
-              )}
-              {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                <span className="app-text-meta text-slate-500 dark:text-slate-300">
-                  {task.sessions > 0 && <>{task.sessions}× </>}
-                  {(task.timeSpent || 0) > 0 && formatDuration(task.timeSpent)}
-                </span>
-              )}
-              {task.recurrence && (
-                <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                  {task.recurrence}
-                </span>
-              )}
-              {twoColumn && subtaskCount > 0 && !isExpanded && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50">
-                  {completedSubtaskCount}/{subtaskCount} subtasks
-                </span>
               )}
             </div>
           </div>
@@ -323,24 +341,6 @@ export default function OpenTaskList({
             </button>
           )}
         </div>
-
-        {/* Overdue quick-actions — hover-reveal only (saves ~40px per overdue task) */}
-        {isOverdue && !task.completed && (
-          <div
-            className="hidden group-hover/task:flex flex-wrap items-center gap-1.5 pt-0 pb-1.5 px-2 sm:px-2.5"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors">
-              Move to today
-            </button>
-            <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors">
-              Done
-            </button>
-            <button type="button" onClick={() => onStartTask(task.id)} className="px-2.5 py-1 text-xs font-semibold rounded-md bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors">
-              Focus
-            </button>
-          </div>
-        )}
 
         {renderBelowTask(task)}
         </div>
