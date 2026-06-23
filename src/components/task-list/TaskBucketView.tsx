@@ -76,6 +76,11 @@ interface TaskBucketViewProps {
 
 const LANE_COLLAPSE_THRESHOLD = 4;
 
+/** Low-urgency lanes — collapsed by default so overdue/dated stay above the fold. */
+const DEFAULT_COLLAPSED_LANES: BucketSwimlaneId[] = ["undated", "someday", "blocked"];
+
+const ALWAYS_COLLAPSIBLE_LANES = new Set<BucketSwimlaneId>(DEFAULT_COLLAPSED_LANES);
+
 interface BucketSwimlane {
   id: string;
   label: string;
@@ -606,7 +611,9 @@ function BucketColumn({
   const topAddInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
-  const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(() => new Set());
+  const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(
+    () => new Set(DEFAULT_COLLAPSED_LANES)
+  );
 
   const submitQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -776,7 +783,9 @@ function BucketColumn({
               const swimlaneId = lane.id as BucketSwimlaneId;
               const laneHighlighted =
                 dragOverColumn?.projectId === project.id && dragOverColumn.swimlaneId === swimlaneId;
-              const isCollapsible = lane.tasks.length >= LANE_COLLAPSE_THRESHOLD;
+              const isCollapsible =
+                ALWAYS_COLLAPSIBLE_LANES.has(swimlaneId) ||
+                lane.tasks.length >= LANE_COLLAPSE_THRESHOLD;
               const isCollapsed = collapsedLanes.has(swimlaneId);
               return (
               <div
@@ -807,9 +816,11 @@ function BucketColumn({
                             ? "text-amber-700 dark:text-amber-400"
                             : lane.id === "someday"
                               ? "text-violet-600 dark:text-violet-400"
-                              : lane.label.startsWith("Due today")
-                                ? "text-amber-700 dark:text-amber-400"
-                                : ""
+                              : lane.id === "undated"
+                                ? "text-slate-500 dark:text-slate-400"
+                                : lane.label.startsWith("Due today")
+                                  ? "text-amber-700 dark:text-amber-400"
+                                  : ""
                       } hover:text-slate-800 dark:hover:text-slate-200 transition-colors`}
                       aria-expanded={!isCollapsed}
                     >
@@ -838,9 +849,11 @@ function BucketColumn({
                             ? "text-amber-700 dark:text-amber-400"
                             : lane.id === "someday"
                               ? "text-violet-600 dark:text-violet-400"
-                              : lane.label.startsWith("Due today")
-                                ? "text-amber-700 dark:text-amber-400"
-                                : ""
+                              : lane.id === "undated"
+                                ? "text-slate-500 dark:text-slate-400"
+                                : lane.label.startsWith("Due today")
+                                  ? "text-amber-700 dark:text-amber-400"
+                                  : ""
                       }`}
                     >
                       {lane.label}
