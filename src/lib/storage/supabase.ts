@@ -6,6 +6,7 @@ import {
   StreakHistory,
   Task,
   Project,
+  TaskPriority,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
   ALL_PROJECTS_ID,
@@ -20,6 +21,68 @@ function migrateDate(dateStr: string): string {
   const parsed = new Date(dateStr);
   if (!isNaN(parsed.getTime())) return formatDateLocal(parsed);
   return getToday();
+}
+
+type TaskRow = {
+  id: string;
+  title: string;
+  completed: boolean;
+  sessions: number;
+  time_spent: number;
+  created_at: number;
+  project_id: string;
+  subtasks: Task["subtasks"];
+  description?: string | null;
+  due_date?: string | null;
+  order?: number | null;
+  archived_at?: number | null;
+  recurrence?: Task["recurrence"] | null;
+  priority?: number | null;
+  blocked?: boolean | null;
+  someday?: boolean | null;
+};
+
+function mapTaskRow(row: TaskRow): Task {
+  return {
+    id: row.id,
+    title: row.title,
+    completed: row.completed,
+    sessions: row.sessions,
+    timeSpent: row.time_spent,
+    createdAt: row.created_at,
+    projectId: row.project_id,
+    subtasks: row.subtasks ?? [],
+    ...(row.description ? { description: row.description } : {}),
+    ...(row.due_date ? { dueDate: row.due_date } : {}),
+    ...(row.order !== null && row.order !== undefined ? { order: row.order } : {}),
+    ...(row.archived_at ? { archivedAt: row.archived_at } : {}),
+    ...(row.recurrence ? { recurrence: row.recurrence } : {}),
+    ...(row.priority != null ? { priority: row.priority as TaskPriority } : {}),
+    ...(row.blocked ? { blocked: true } : {}),
+    ...(row.someday ? { someday: true } : {}),
+  };
+}
+
+function taskToRow(task: Task, userId: string) {
+  return {
+    id: task.id,
+    user_id: userId,
+    title: task.title,
+    completed: task.completed,
+    sessions: task.sessions,
+    time_spent: task.timeSpent,
+    created_at: task.createdAt,
+    project_id: task.projectId,
+    subtasks: task.subtasks ?? [],
+    description: task.description ?? null,
+    due_date: task.dueDate ?? null,
+    "order": task.order ?? null,
+    archived_at: task.archivedAt ?? null,
+    recurrence: task.recurrence ?? null,
+    priority: task.priority ?? null,
+    blocked: task.blocked ?? false,
+    someday: task.someday ?? false,
+  };
 }
 
 function isTransientSyncError(message: string): boolean {
@@ -256,43 +319,14 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
     if (!data) return [];
 
-    return data.map((row) => ({
-      id: row.id,
-      title: row.title,
-      completed: row.completed,
-      sessions: row.sessions,
-      timeSpent: row.time_spent,
-      createdAt: row.created_at,
-      projectId: row.project_id,
-      subtasks: row.subtasks ?? [],
-      ...(row.description ? { description: row.description } : {}),
-      ...(row.due_date ? { dueDate: row.due_date } : {}),
-      ...(row.order !== null && row.order !== undefined ? { order: row.order } : {}),
-      ...(row.archived_at ? { archivedAt: row.archived_at } : {}),
-      ...(row.recurrence ? { recurrence: row.recurrence } : {}),
-    }));
+    return data.map((row) => mapTaskRow(row));
   }
 
   async saveTasks(tasks: Task[]): Promise<void> {
     if (tasks.length === 0) return;
     const userId = await this.getUserId();
 
-    const rows = tasks.map((t) => ({
-      id: t.id,
-      user_id: userId,
-      title: t.title,
-      completed: t.completed,
-      sessions: t.sessions,
-      time_spent: t.timeSpent,
-      created_at: t.createdAt,
-      project_id: t.projectId,
-      subtasks: t.subtasks ?? [],
-      description: t.description ?? null,
-      due_date: t.dueDate ?? null,
-      "order": t.order ?? null,
-      archived_at: t.archivedAt ?? null,
-      recurrence: t.recurrence ?? null,
-    }));
+    const rows = tasks.map((t) => taskToRow(t, userId));
 
     const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
     if (result.error) {
@@ -303,22 +337,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async saveTask(task: Task): Promise<void> {
     const userId = await this.getUserId();
-    const row = {
-      id: task.id,
-      user_id: userId,
-      title: task.title,
-      completed: task.completed,
-      sessions: task.sessions,
-      time_spent: task.timeSpent,
-      created_at: task.createdAt,
-      project_id: task.projectId,
-      subtasks: task.subtasks ?? [],
-      description: task.description ?? null,
-      due_date: task.dueDate ?? null,
-      "order": task.order ?? null,
-      archived_at: task.archivedAt ?? null,
-      recurrence: task.recurrence ?? null,
-    };
+    const row = taskToRow(task, userId);
     const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
     if (result.error) {
       console.error("[Foci] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
@@ -866,40 +885,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     
     if (!data) return [];
     
-    return data.map((row) => ({
-      id: row.id,
-      title: row.title,
-      completed: row.completed,
-      sessions: row.sessions,
-      timeSpent: row.time_spent,
-      createdAt: row.created_at,
-      projectId: row.project_id,
-      subtasks: row.subtasks ?? [],
-      ...(row.description ? { description: row.description } : {}),
-      ...(row.due_date ? { dueDate: row.due_date } : {}),
-      ...(row.order !== null && row.order !== undefined ? { order: row.order } : {}),
-      ...(row.archived_at ? { archivedAt: row.archived_at } : {}),
-      ...(row.recurrence ? { recurrence: row.recurrence } : {}),
-    }));
+    return data.map((row) => mapTaskRow(row));
   }
 
   async updateSharedTask(task: Task, ownerId: string): Promise<void> {
-    const row = {
-      id: task.id,
-      user_id: ownerId,
-      title: task.title,
-      completed: task.completed,
-      sessions: task.sessions,
-      time_spent: task.timeSpent,
-      created_at: task.createdAt,
-      project_id: task.projectId,
-      subtasks: task.subtasks ?? [],
-      description: task.description ?? null,
-      due_date: task.dueDate ?? null,
-      "order": task.order ?? null,
-      archived_at: task.archivedAt ?? null,
-      recurrence: task.recurrence ?? null,
-    };
+    const row = taskToRow(task, ownerId);
     
     const { error } = await this.supabase
       .from("tasks")

@@ -1,11 +1,13 @@
 import type { Task } from "@/lib/types";
 import { isDueDateOverdue } from "@/components/task-list/utils";
 
-export type BucketSwimlaneId = "overdue" | "dated" | "undated";
+export type BucketSwimlaneId = "overdue" | "dated" | "blocked" | "undated" | "someday";
 
-const SWIMLANE_ORDER: BucketSwimlaneId[] = ["overdue", "dated", "undated"];
+const SWIMLANE_ORDER: BucketSwimlaneId[] = ["overdue", "dated", "blocked", "undated", "someday"];
 
 export function getBucketSwimlaneId(task: Task): BucketSwimlaneId {
+  if (task.someday) return "someday";
+  if (task.blocked) return "blocked";
   if (!task.dueDate) return "undated";
   if (isDueDateOverdue(task.dueDate)) return "overdue";
   return "dated";
@@ -17,8 +19,8 @@ export function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Tas
     if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
     if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
 
-    const aOverdue = a.dueDate && isDueDateOverdue(a.dueDate);
-    const bOverdue = b.dueDate && isDueDateOverdue(b.dueDate);
+    const aOverdue = a.dueDate && !a.blocked && !a.someday && isDueDateOverdue(a.dueDate);
+    const bOverdue = b.dueDate && !b.blocked && !b.someday && isDueDateOverdue(b.dueDate);
     if (aOverdue && !bOverdue) return -1;
     if (!aOverdue && bOverdue) return 1;
 

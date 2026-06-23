@@ -92,6 +92,10 @@ export interface Task {
   dueDate?: string; // ISO date string (YYYY-MM-DD), undefined = no due date
   recurrence?: RecurrenceType; // if set, task repeats on this schedule
   priority?: TaskPriority; // 1=High, 2=Medium, 3=Low, undefined=None
+  /** Waiting on an external blocker — shown separately from overdue. */
+  blocked?: boolean;
+  /** Intentionally undated / deferred — someday-maybe pile. */
+  someday?: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {

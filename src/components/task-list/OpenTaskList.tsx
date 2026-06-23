@@ -4,6 +4,11 @@ import React from "react";
 import type { Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, formatDuration, isDueDateOverdue } from "@/components/task-list/utils";
+import {
+  getTaskListSection,
+  isActionableOverdue,
+  type TaskListSection,
+} from "@/lib/task-status";
 
 export interface OpenTaskListProps {
   tasks: Task[];
@@ -21,6 +26,9 @@ export interface OpenTaskListProps {
   noDueDateExpanded?: boolean;
   onToggleNoDueDateExpanded?: () => void;
   scopedUndatedOpenCount?: number;
+  somedayExpanded?: boolean;
+  onToggleSomedayExpanded?: () => void;
+  scopedSomedayOpenCount?: number;
   /** Render tasks in a 2-column grid on sm+ screens for denser list views. */
   twoColumn?: boolean;
   onToggleComplete: (id: string) => void;
@@ -60,6 +68,9 @@ export default function OpenTaskList({
   noDueDateExpanded = true,
   onToggleNoDueDateExpanded,
   scopedUndatedOpenCount = 0,
+  somedayExpanded = false,
+  onToggleSomedayExpanded,
+  scopedSomedayOpenCount = 0,
   twoColumn = false,
   onToggleComplete,
   onSaveEdit,
@@ -88,70 +99,102 @@ export default function OpenTaskList({
   // Build a flat list of renderable items so section headers can span both grid columns.
   const items: React.ReactNode[] = [];
 
+  const sectionMeta: Record<
+    TaskListSection,
+    { label: string; borderClass: string; collapsible?: boolean; count?: number }
+  > = {
+    overdue: { label: "Overdue", borderClass: "border-l-red-500 dark:border-l-rose-500" },
+    upcoming: { label: "Upcoming", borderClass: "border-l-slate-400 dark:border-l-slate-500" },
+    blocked: { label: "Blocked / Waiting", borderClass: "border-l-amber-500 dark:border-l-amber-400" },
+    inbox: {
+      label: "No due date",
+      borderClass: "border-l-slate-300 dark:border-l-slate-600",
+      collapsible: true,
+      count: scopedUndatedOpenCount,
+    },
+    someday: {
+      label: "Someday / Maybe",
+      borderClass: "border-l-violet-400 dark:border-l-violet-500",
+      collapsible: true,
+      count: scopedSomedayOpenCount,
+    },
+  };
+
   tasks.forEach((task, index) => {
     const isExpanded = expandedTaskId === task.id;
-    const isOverdue = !!(task.dueDate && isDueDateOverdue(task.dueDate));
-    const prevTask = index > 0 ? tasks[index - 1] : null;
-    const prevIsOverdue = !!(prevTask?.dueDate && isDueDateOverdue(prevTask.dueDate));
-    const showOverdueHeader = isOverdue && !prevIsOverdue;
-    const showUpcomingHeader = !isOverdue && prevIsOverdue;
-    const showNoDueDateHeader = isTimeFilter && !task.dueDate && (index === 0 || !!prevTask?.dueDate);
-    const isUndatedInTimeFilter = isTimeFilter && !task.dueDate;
+    const section = getTaskListSection(task);
+    const prevSection = index > 0 ? getTaskListSection(tasks[index - 1]) : null;
+    const showSectionHeader = section !== prevSection;
+    const isOverdue = isActionableOverdue(task);
+    const isBlocked = !!task.blocked;
+    const isCollapsibleInbox = isTimeFilter && section === "inbox";
+    const isCollapsibleSomeday = section === "someday";
+    const isCollapsed =
+      (isCollapsibleInbox && !noDueDateExpanded) || (isCollapsibleSomeday && !somedayExpanded);
 
     const spanClass = twoColumn ? "col-span-full" : "";
 
-    // ── Section headers (always span full width in 2-col mode) ──────────────
-    if (isUndatedInTimeFilter && !noDueDateExpanded) {
-      if (showNoDueDateHeader) {
+    if (isCollapsed) {
+      if (showSectionHeader) {
+        const meta = sectionMeta[section];
+        const onToggle =
+          section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded;
+        const expanded = section === "inbox" ? noDueDateExpanded : somedayExpanded;
         items.push(
           <button
-            key="no-due-date-section"
+            key={`${section}-section`}
             type="button"
-            onClick={onToggleNoDueDateExpanded}
-            className={`${spanClass} mb-2 mt-3 pl-3 py-1.5 border-l-[3px] border-l-slate-300 dark:border-l-slate-600 w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors`}
-            aria-expanded={false}
+            onClick={onToggle}
+            className={`${spanClass} mb-2 mt-3 pl-3 py-1.5 border-l-[3px] ${meta.borderClass} w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors`}
+            aria-expanded={!!expanded}
           >
             <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
-            <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">({scopedUndatedOpenCount})</span>
+            <span className="app-section-label text-slate-600 dark:text-slate-400">{meta.label}</span>
+            {meta.count != null && meta.count > 0 && (
+              <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">({meta.count})</span>
+            )}
           </button>
         );
       }
-      return; // skip rendering the task card itself
+      return;
     }
 
-    if (showNoDueDateHeader && onToggleNoDueDateExpanded) {
-      items.push(
-        <button
-          key={`nodate-hdr-${task.id}`}
-          type="button"
-          onClick={onToggleNoDueDateExpanded}
-          className={`${spanClass} mb-2 mt-3 pl-3 py-1.5 border-l-[3px] border-l-slate-300 dark:border-l-slate-600 w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors`}
-          aria-expanded={noDueDateExpanded}
-        >
-          <svg className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${noDueDateExpanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="app-section-label text-slate-600 dark:text-slate-400">No due date</span>
-          <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">({scopedUndatedOpenCount})</span>
-        </button>
-      );
-    }
-    if (showOverdueHeader) {
-      items.push(
-        <div key={`overdue-hdr-${task.id}`} className={`${spanClass} mb-1.5 mt-1 pl-3 py-1 border-l-[3px] border-l-red-500 dark:border-l-rose-500`}>
-          <span className="app-section-label text-red-700 dark:text-red-300">Overdue</span>
-        </div>
-      );
-    }
-    if (showUpcomingHeader) {
-      items.push(
-        <div key={`upcoming-hdr-${task.id}`} className={`${spanClass} mb-1.5 mt-1 pl-3 py-1 border-l-[3px] border-l-slate-400 dark:border-l-slate-500`}>
-          <span className="app-section-label text-slate-600 dark:text-slate-400">Upcoming</span>
-        </div>
-      );
+    if (showSectionHeader) {
+      const meta = sectionMeta[section];
+      if (meta.collapsible && (section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded)) {
+        const onToggle =
+          section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded;
+        const expanded = section === "inbox" ? noDueDateExpanded : somedayExpanded;
+        items.push(
+          <button
+            key={`${section}-hdr-${task.id}`}
+            type="button"
+            onClick={onToggle}
+            className={`${spanClass} mb-2 mt-3 pl-3 py-1.5 border-l-[3px] ${meta.borderClass} w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors`}
+            aria-expanded={!!expanded}
+          >
+            <svg className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span className={`app-section-label ${section === "overdue" ? "text-red-700 dark:text-red-300" : section === "blocked" ? "text-amber-700 dark:text-amber-300" : section === "someday" ? "text-violet-700 dark:text-violet-300" : "text-slate-600 dark:text-slate-400"}`}>
+              {meta.label}
+            </span>
+            {meta.count != null && meta.count > 0 && (
+              <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">({meta.count})</span>
+            )}
+          </button>
+        );
+      } else {
+        items.push(
+          <div key={`${section}-hdr-${task.id}`} className={`${spanClass} mb-1.5 mt-1 pl-3 py-1 border-l-[3px] ${meta.borderClass}`}>
+            <span className={`app-section-label ${section === "overdue" ? "text-red-700 dark:text-red-300" : section === "blocked" ? "text-amber-700 dark:text-amber-300" : "text-slate-600 dark:text-slate-400"}`}>
+              {meta.label}
+            </span>
+          </div>
+        );
+      }
     }
 
     // ── Task card ────────────────────────────────────────────────────────────
@@ -177,7 +220,9 @@ export default function OpenTaskList({
               ? "task-timer-linked border-cyan-400 dark:border-cyan-500 bg-cyan-50 dark:bg-cyan-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-cyan-400/30 dark:ring-cyan-500/25"
               : isExpanded
                 ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
-                : isOverdue
+                : isBlocked
+                  ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 shadow-sm"
+                  : isOverdue
                   ? "border-slate-300 dark:border-[#1e3050] hover:bg-red-50/40 dark:hover:bg-red-950/15 border-l-[3px] border-l-red-500 dark:border-l-rose-500 shadow-sm"
                   : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
           } ${dragTaskId === task.id ? "opacity-50" : ""} ${
@@ -231,6 +276,16 @@ export default function OpenTaskList({
               {activeTaskId === task.id && isTimerRunning && (
                 <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse align-middle" />
               )}
+              {task.blocked && (
+                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
+                  WAITING
+                </span>
+              )}
+              {task.someday && (
+                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800/50">
+                  SOMEDAY
+                </span>
+              )}
               {task.priority && (
                 <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded ${task.priority === 1 ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50" : task.priority === 2 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50" : "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-900/50"}`}>
                   {task.priority === 1 ? "HIGH" : task.priority === 2 ? "MED" : "LOW"}
@@ -247,17 +302,20 @@ export default function OpenTaskList({
                 {task.dueDate && (
                   <div
                     className={`relative inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
-                      !task.completed && isDueDateOverdue(task.dueDate)
-                        ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
-                        : !task.completed && task.dueDate === getToday()
-                          ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                          : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400"
+                      isBlocked
+                        ? "text-amber-700 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50"
+                        : !task.completed && isDueDateOverdue(task.dueDate)
+                          ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          : !task.completed && task.dueDate === getToday()
+                            ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                            : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400"
                     }`}
-                    title={`Due: ${formatDueDate(task.dueDate)}`}
+                    title={isBlocked ? `Waiting — due ${formatDueDate(task.dueDate)}` : `Due: ${formatDueDate(task.dueDate)}`}
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     {formatDueDate(task.dueDate)}
-                    {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                    {!task.completed && !isBlocked && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                    {isBlocked && " (waiting)"}
                     <input type="date" value={task.dueDate} onChange={(e) => onSetDueDate(task.id, e.target.value || undefined)} onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }} />
                   </div>
                 )}

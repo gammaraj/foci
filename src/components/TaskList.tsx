@@ -36,6 +36,7 @@ import {
   projectTabLabel,
   sortProjectsForDisplay,
 } from "@/components/task-list/utils";
+import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 import TaskPanelQuote from "@/components/TaskPanelQuote";
 
@@ -90,6 +91,7 @@ export default function TaskList({
   const [editProjectDesc, setEditProjectDesc] = useState("");
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [noDueDateExpanded, setNoDueDateExpanded] = useState(false);
+  const [somedayExpanded, setSomedayExpanded] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
   const [editSubtaskTitle, setEditSubtaskTitle] = useState("");
@@ -965,6 +967,26 @@ export default function TaskList({
     persist(updated);
   };
 
+  const setTaskBlocked = (taskId: string, blocked: boolean) => {
+    const updated = tasks.map((t) => {
+      if (t.id !== taskId) return t;
+      if (blocked) return { ...t, blocked: true, someday: false };
+      return { ...t, blocked: false };
+    });
+    persist(updated);
+    if (blocked) showToast("Marked as waiting");
+  };
+
+  const setTaskSomeday = (taskId: string, someday: boolean) => {
+    const updated = tasks.map((t) => {
+      if (t.id !== taskId) return t;
+      if (someday) return { ...t, someday: true, blocked: false, dueDate: undefined };
+      return { ...t, someday: false };
+    });
+    persist(updated);
+    if (someday) showToast("Moved to Someday");
+  };
+
   const taskDetailPanelProps = (task: Task) => ({
     isLinked: activeTaskId === task.id,
     activeTaskId,
@@ -978,6 +1000,8 @@ export default function TaskList({
     onCancelEditDesc: () => setEditingDescId(null),
     onSetDueDate: (date: string | undefined) => setDueDate(task.id, date),
     onSetPriority: (priority: TaskPriority | undefined) => setTaskPriority(task.id, priority),
+    onSetBlocked: (blocked: boolean) => setTaskBlocked(task.id, blocked),
+    onSetSomeday: (someday: boolean) => setTaskSomeday(task.id, someday),
     onSetRecurrence: (recurrence: RecurrenceType | undefined) => setTaskRecurrence(task.id, recurrence),
     onMoveToProject: (projectId: string) => moveTaskToProject(task.id, projectId),
     newSubtaskTitle,
@@ -1053,11 +1077,12 @@ export default function TaskList({
   const todayTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= today));
   const todayOpenCount = todayTasks.length;
   const allOpenCount = tasks.filter((t) => !t.completed && !t.archivedAt).length;
-  const overdueTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && isDueDateOverdue(t.dueDate));
+  const overdueTasks = tasks.filter((t) => !t.archivedAt && !t.completed && isActionableOverdue(t));
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
   const thisMonthTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfMonth));
   const thisYearTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfYear));
-  const undatedOpenTasks = tasks.filter((t) => !t.archivedAt && !t.completed && !t.dueDate);
+  const undatedOpenTasks = tasks.filter((t) => !t.archivedAt && !t.completed && !t.dueDate && !t.someday);
+  const somedayOpenTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.someday);
   const timeScopedDatedTasks = isTodayFilter
     ? todayTasks
     : isThisWeekFilter
@@ -1068,7 +1093,7 @@ export default function TaskList({
           ? thisYearTasks
           : [];
   const timeScopedTasks = isTimeFilter
-    ? [...timeScopedDatedTasks, ...undatedOpenTasks]
+    ? [...timeScopedDatedTasks, ...undatedOpenTasks, ...somedayOpenTasks]
     : isAllProjects
       ? tasks.filter((t) => !t.archivedAt)
       : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
@@ -1131,13 +1156,17 @@ export default function TaskList({
   const pendingTasks = projectTasks
     .filter((t) => !t.completed)
     .sort((a, b) => {
+      const secA = getTaskListSectionOrder(getTaskListSection(a));
+      const secB = getTaskListSectionOrder(getTaskListSection(b));
+      if (secA !== secB) return secA - secB;
+
       // Pin the active task to the top
       if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
       if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
       
-      // Overdue tasks come first (before today)
-      const aOverdue = a.dueDate && isDueDateOverdue(a.dueDate);
-      const bOverdue = b.dueDate && isDueDateOverdue(b.dueDate);
+      // Overdue tasks come first (before today) — within overdue section only
+      const aOverdue = isActionableOverdue(a);
+      const bOverdue = isActionableOverdue(b);
       if (aOverdue && !bOverdue) return -1;
       if (!aOverdue && bOverdue) return 1;
 
@@ -1176,8 +1205,9 @@ export default function TaskList({
     ? projectTasks.filter((t) => !t.completed && t.dueDate).length
     : 0;
   const scopedUndatedOpenCount = isTimeFilter
-    ? projectTasks.filter((t) => !t.completed && !t.dueDate).length
+    ? projectTasks.filter((t) => !t.completed && getTaskListSection(t) === "inbox").length
     : 0;
+  const scopedSomedayOpenCount = projectTasks.filter((t) => !t.completed && t.someday).length;
   const timeScopeDescription = isTodayFilter
     ? "Due today or earlier"
     : isThisWeekFilter
@@ -2385,6 +2415,9 @@ export default function TaskList({
           noDueDateExpanded={noDueDateExpanded}
           onToggleNoDueDateExpanded={() => setNoDueDateExpanded((open) => !open)}
           scopedUndatedOpenCount={scopedUndatedOpenCount}
+          somedayExpanded={somedayExpanded}
+          onToggleSomedayExpanded={() => setSomedayExpanded((open) => !open)}
+          scopedSomedayOpenCount={scopedSomedayOpenCount}
           twoColumn={viewMode === "list"}
           onToggleComplete={toggleComplete}
           onSaveEdit={saveEdit}

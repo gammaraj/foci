@@ -54,6 +54,13 @@ export function getFociLogoShadow(surface: "dark" | "light"): string {
 export const FOCI_TAGLINE_FOCUS = "FOCUS · FLOW · FINISH";
 export const FOCI_TAGLINE_CALM = "deep work, one calm window";
 
+/** Wordmark typography — +10% vs standard Tailwind text steps (nav, lockup, mockup, inline). */
+export const FOCI_WORDMARK_NAV = "text-[1.375rem] sm:text-[1.65rem] font-bold leading-none";
+export const FOCI_WORDMARK_LOCKUP = "text-[1.65rem] sm:text-[2.0625rem] font-bold leading-none";
+export const FOCI_WORDMARK_MOCKUP = "text-[1.2375rem] sm:text-[1.375rem] font-bold leading-none";
+export const FOCI_WORDMARK_INLINE = "text-[0.9625rem] font-semibold";
+export const FOCI_WORDMARK_OG_PX = 79;
+
 /** Ring geometry for 32×32 viewBox */
 export const FOCI_RING = {
   r: 10,

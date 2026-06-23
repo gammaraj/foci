@@ -251,45 +251,60 @@ export type Database = {
       tasks: {
         Row: {
           archived_at: number | null
+          blocked: boolean
           completed: boolean
           created_at: number
           due_date: string | null
           id: string
           order: number | null
+          priority: number | null
           project_id: string
+          recurrence: string | null
           sessions: number
+          someday: boolean
           subtasks: Json
           time_spent: number
           title: string
           user_id: string
+          description: string | null
         }
         Insert: {
           archived_at?: number | null
+          blocked?: boolean
           completed?: boolean
           created_at: number
           due_date?: string | null
           id: string
           order?: number | null
+          priority?: number | null
           project_id?: string
+          recurrence?: string | null
           sessions?: number
+          someday?: boolean
           subtasks?: Json
           time_spent?: number
           title: string
           user_id: string
+          description?: string | null
         }
         Update: {
           archived_at?: number | null
+          blocked?: boolean
           completed?: boolean
           created_at?: number
           due_date?: string | null
           id?: string
           order?: number | null
+          priority?: number | null
           project_id?: string
+          recurrence?: string | null
           sessions?: number
+          someday?: boolean
           subtasks?: Json
           time_spent?: number
           title?: string
           user_id?: string
+          description?: string | null
         }
         Relationships: []
       }

@@ -21,6 +21,8 @@ export interface TaskDetailPanelProps {
   onCancelEditDesc: () => void;
   onSetDueDate: (date: string | undefined) => void;
   onSetPriority: (priority: TaskPriority | undefined) => void;
+  onSetBlocked: (blocked: boolean) => void;
+  onSetSomeday: (someday: boolean) => void;
   onSetRecurrence: (recurrence: RecurrenceType | undefined) => void;
   onMoveToProject: (projectId: string) => void;
   newSubtaskTitle: string;
@@ -57,6 +59,8 @@ export function TaskDetailPanel({
   onCancelEditDesc,
   onSetDueDate,
   onSetPriority,
+  onSetBlocked,
+  onSetSomeday,
   onSetRecurrence,
   onMoveToProject,
   newSubtaskTitle,
@@ -175,6 +179,40 @@ export function TaskDetailPanel({
             <option value="3">Low</option>
           </select>
         </div>
+
+        <button
+          type="button"
+          onClick={() => onSetBlocked(!task.blocked)}
+          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+            task.blocked
+              ? "border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40"
+              : "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30] hover:border-amber-300 dark:hover:border-amber-700 hover:text-amber-700 dark:hover:text-amber-300"
+          }`}
+          aria-pressed={!!task.blocked}
+          title={task.blocked ? "Clear waiting status" : "Mark as waiting on something external"}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {task.blocked ? "Waiting" : "Mark waiting"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onSetSomeday(!task.someday)}
+          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+            task.someday
+              ? "border-violet-300 dark:border-violet-700 text-violet-800 dark:text-violet-200 bg-violet-50 dark:bg-violet-950/40"
+              : "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30] hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-300"
+          }`}
+          aria-pressed={!!task.someday}
+          title={task.someday ? "Return to active inbox" : "Defer to someday/maybe — clears due date"}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+          </svg>
+          {task.someday ? "Someday" : "Mark someday"}
+        </button>
 
         <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
           <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

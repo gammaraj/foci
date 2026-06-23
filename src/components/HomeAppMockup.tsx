@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
+import { FOCI_WORDMARK_MOCKUP } from "@/lib/logo-brand";
 import { FOCI_TAGLINE_FOCUS } from "@/lib/logo-brand";
 
 type MockDueVariant = "today" | "overdue" | "future";
@@ -161,7 +162,7 @@ export default function HomeAppMockup() {
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex-shrink-0"
             />
             <div className="flex flex-col items-start gap-0.5 min-w-0">
-              <FociWordmark className="text-lg sm:text-xl font-bold leading-none" tone="dark" />
+              <FociWordmark className={FOCI_WORDMARK_MOCKUP} tone="dark" />
               <p className="text-[8px] sm:text-[9px] font-semibold tracking-[0.16em] uppercase text-cyan-400/85 whitespace-nowrap">
                 {FOCI_TAGLINE_FOCUS}
               </p>

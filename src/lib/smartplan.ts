@@ -120,8 +120,8 @@ export function generateSmartPlan(
   const today = getToday();
   const projectMap = new Map(projects.map((p) => [p.id, p]));
 
-  // Filter to incomplete, non-archived tasks
-  const activeTasks = tasks.filter((t) => !t.completed && !t.archivedAt);
+  // Filter to incomplete, non-archived, actionable tasks
+  const activeTasks = tasks.filter((t) => !t.completed && !t.archivedAt && !t.blocked && !t.someday);
 
   // Score all tasks
   const scored = activeTasks

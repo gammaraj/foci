@@ -4,6 +4,7 @@ import {
   FOCI_RING,
   FOCI_RING_COLORS,
   FOCI_TAGLINE_FOCUS,
+  FOCI_WORDMARK_LOCKUP,
   FOCI_WORDMARK_ON_DARK,
   FOCI_WORDMARK_ON_LIGHT,
   getFociLogoShadow,
@@ -120,7 +121,7 @@ export function FociBrandLockup({
         className="flex-shrink-0 rounded-xl sm:rounded-2xl"
       />
       <div className="flex flex-col items-start gap-0.5 min-w-0">
-        <FociWordmark className="text-2xl sm:text-3xl font-bold leading-none" tone={tone} />
+        <FociWordmark className={FOCI_WORDMARK_LOCKUP} tone={tone} />
         {showTagline && (
           <p
             className={`text-[10px] sm:text-[11px] font-semibold tracking-[0.18em] uppercase ${

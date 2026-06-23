@@ -35,7 +35,7 @@ export default function DueDateReminders() {
       return;
     }
 
-    const pending = tasks.filter((t) => t.dueDate && !t.completed && !t.archivedAt);
+    const pending = tasks.filter((t) => t.dueDate && !t.completed && !t.archivedAt && !t.blocked && !t.someday);
 
     const notificationLines: string[] = [];
 

@@ -7,10 +7,11 @@ import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE } from 
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
-  sortBucketTasks,
+  tasksInSwimlane,
   type BucketDropTarget,
   type BucketSwimlaneId,
 } from "@/components/task-list/bucket-order";
+import { isActionableOverdue } from "@/lib/task-status";
 
 function BucketColumnTitle({ project }: { project: Project }) {
   const subtitle = project.description?.trim();
@@ -86,25 +87,29 @@ function buildSwimlanes(
   activeTaskId: string | null,
   datedLaneLabel: string
 ): BucketSwimlane[] {
-  const sorted = sortBucketTasks(tasks, activeTaskId);
   const today = getToday();
-  const overdue = sorted.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate));
-  const dated = sorted.filter((t) => t.dueDate && !isDueDateOverdue(t.dueDate));
-  const undated = sorted.filter((t) => !t.dueDate);
+  const datedTasks = tasksInSwimlane(tasks, "dated", activeTaskId);
 
   let datedLabel = datedLaneLabel;
-  if (dated.length > 0) {
-    const allToday = dated.every((t) => t.dueDate === today);
-    const someToday = dated.some((t) => t.dueDate === today);
+  if (datedTasks.length > 0) {
+    const allToday = datedTasks.every((t) => t.dueDate === today);
+    const someToday = datedTasks.some((t) => t.dueDate === today);
     if (allToday) datedLabel = "Due today";
     else if (someToday) datedLabel = "Due today & upcoming";
   }
 
-  const lanes: BucketSwimlane[] = [];
-  if (overdue.length > 0) lanes.push({ id: "overdue", label: "Overdue", tasks: overdue });
-  if (dated.length > 0) lanes.push({ id: "dated", label: datedLabel, tasks: dated });
-  if (undated.length > 0) lanes.push({ id: "undated", label: "No date", tasks: undated });
-  return lanes;
+  const laneDefs: { id: BucketSwimlaneId; label: string }[] = [
+    { id: "overdue", label: "Overdue" },
+    { id: "dated", label: datedLabel },
+    { id: "blocked", label: "Waiting" },
+    { id: "undated", label: "No date" },
+    { id: "someday", label: "Someday" },
+  ];
+
+  return laneDefs.flatMap(({ id, label }) => {
+    const laneTasks = tasksInSwimlane(tasks, id, activeTaskId);
+    return laneTasks.length > 0 ? [{ id, label, tasks: laneTasks }] : [];
+  });
 }
 
 function DueBadge({
@@ -112,14 +117,16 @@ function DueBadge({
   taskId,
   onSetDueDate,
   compact = false,
+  blocked = false,
 }: {
   dueDate: string;
   taskId?: string;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   compact?: boolean;
+  blocked?: boolean;
 }) {
   const today = getToday();
-  const overdue = isDueDateOverdue(dueDate);
+  const overdue = !blocked && isDueDateOverdue(dueDate);
   const isToday = dueDate === today;
   const daysLate = overdue ? getDaysOverdue(dueDate) : 0;
   const criticalOverdue = daysLate >= 7;
@@ -135,18 +142,22 @@ function DueBadge({
           ? criticalOverdue
             ? "text-red-800 dark:text-red-200 bg-red-200/90 dark:bg-red-900/60 border border-red-400/80 dark:border-red-700/70"
             : "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
+          : blocked
+            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
           : isToday
             ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
             : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
       } ${interactive ? "cursor-pointer hover:border-cyan-300 dark:hover:border-cyan-600" : ""}`}
       title={
-        overdue
-          ? `${daysLate}d overdue${interactive ? " — click to change" : ""}`
-          : isToday
-            ? "Due today"
-            : interactive
-              ? "Change due date"
-              : undefined
+        blocked
+          ? "Waiting on external blocker"
+          : overdue
+            ? `${daysLate}d overdue${interactive ? " — click to change" : ""}`
+            : isToday
+              ? "Due today"
+              : interactive
+                ? "Change due date"
+                : undefined
       }
     >
       {!compact && (
@@ -234,7 +245,8 @@ function BucketTaskCard({
 }) {
   const canEdit = !!onStartEdit;
   const canOpenDetail = !!onToggleTaskDetail;
-  const isOverdue = !!(task.dueDate && isDueDateOverdue(task.dueDate));
+  const isBlocked = !!task.blocked;
+  const isOverdue = isActionableOverdue(task);
   const compactIconBtn =
     "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors";
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
@@ -271,7 +283,9 @@ function BucketTaskCard({
           ? "border-violet-200/90 dark:border-violet-500/40 bg-violet-50/80 dark:bg-violet-950/25"
           : isActive
             ? "border-cyan-200/90 dark:border-cyan-500/40 bg-cyan-50/90 dark:bg-cyan-950/30"
-            : isOverdue
+            : isBlocked
+              ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
+              : isOverdue
               ? "border-red-200/80 dark:border-red-800/50 border-l-[3px] border-l-red-500 dark:border-l-red-400 bg-red-50/55 dark:bg-red-950/20 hover:border-red-300/90 dark:hover:border-red-700/60 hover:bg-red-50/80 dark:hover:bg-red-950/30"
               : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.03] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.05]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
@@ -386,7 +400,7 @@ function BucketTaskCard({
           </p>
         )}
         {!isEditing && task.dueDate && (
-          <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact />
+          <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact blocked={isBlocked} />
         )}
         {!isEditing && !task.dueDate && onSetDueDate && (
           <label
@@ -699,7 +713,7 @@ function BucketColumn({
           variant="badge"
           open={tasks.length}
           completed={completedCount}
-          overdue={tasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length}
+          overdue={tasks.filter((t) => isActionableOverdue(t)).length}
         />
         {onExpandProject && (
           <button
@@ -789,9 +803,13 @@ function BucketColumn({
                       className={`w-full flex items-center gap-1.5 bucket-lane-label px-1 mb-1.5 text-left ${
                         lane.id === "overdue"
                           ? "text-red-600 dark:text-red-400"
-                          : lane.label.startsWith("Due today")
+                          : lane.id === "blocked"
                             ? "text-amber-700 dark:text-amber-400"
-                            : ""
+                            : lane.id === "someday"
+                              ? "text-violet-600 dark:text-violet-400"
+                              : lane.label.startsWith("Due today")
+                                ? "text-amber-700 dark:text-amber-400"
+                                : ""
                       } hover:text-slate-800 dark:hover:text-slate-200 transition-colors`}
                       aria-expanded={!isCollapsed}
                     >
@@ -816,9 +834,13 @@ function BucketColumn({
                       className={`bucket-lane-label px-1 mb-1.5 ${
                         lane.id === "overdue"
                           ? "text-red-600 dark:text-red-400"
-                          : lane.label.startsWith("Due today")
+                          : lane.id === "blocked"
                             ? "text-amber-700 dark:text-amber-400"
-                            : ""
+                            : lane.id === "someday"
+                              ? "text-violet-600 dark:text-violet-400"
+                              : lane.label.startsWith("Due today")
+                                ? "text-amber-700 dark:text-amber-400"
+                                : ""
                       }`}
                     >
                       {lane.label}
