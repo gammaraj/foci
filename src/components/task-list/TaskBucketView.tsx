@@ -252,6 +252,8 @@ function BucketTaskCard({
   const canOpenDetail = !!onToggleTaskDetail;
   const isBlocked = !!task.blocked;
   const isOverdue = isActionableOverdue(task);
+  const isDueToday = !isBlocked && !isOverdue && task.dueDate === getToday();
+  const isLowUrgency = !isBlocked && !task.dueDate;
   const compactIconBtn =
     "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors";
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
@@ -291,7 +293,11 @@ function BucketTaskCard({
             : isBlocked
               ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               : isOverdue
-              ? "border-red-200/80 dark:border-red-800/50 border-l-[3px] border-l-red-500 dark:border-l-red-400 bg-red-50/55 dark:bg-red-950/20 hover:border-red-300/90 dark:hover:border-red-700/60 hover:bg-red-50/80 dark:hover:bg-red-950/30"
+              ? "border-red-200/80 dark:border-red-800/50 border-l-[3px] border-l-red-500 dark:border-l-red-400 bg-red-50/75 dark:bg-red-950/45 hover:border-red-300/90 dark:hover:border-red-700/60 hover:bg-red-50/90 dark:hover:bg-red-950/55"
+              : isDueToday
+              ? "border-amber-200/70 dark:border-amber-800/45 bg-amber-50/65 dark:bg-amber-950/38 hover:border-amber-300/85 dark:hover:border-amber-700/55 hover:bg-amber-50/85 dark:hover:bg-amber-950/48"
+              : isLowUrgency
+              ? "border-slate-200/45 dark:border-[#1a2438]/80 bg-slate-50/35 dark:bg-black/25 hover:border-slate-300/60 dark:hover:border-[#223048] hover:bg-slate-50/50 dark:hover:bg-black/20"
               : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.03] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.05]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
         isDragOver
