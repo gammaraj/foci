@@ -61,6 +61,15 @@ export const FOCI_WORDMARK_MOCKUP = "text-[1.2375rem] sm:text-[1.375rem] font-bo
 export const FOCI_WORDMARK_INLINE = "text-[0.9625rem] font-semibold";
 export const FOCI_WORDMARK_OG_PX = 79;
 
+/** Tagline typography — clearly subordinate to wordmark (lighter weight, tighter tracking). */
+export const FOCI_TAGLINE_NAV =
+  "text-[7px] sm:text-[8px] font-medium tracking-[0.14em] sm:tracking-[0.15em] uppercase leading-none";
+export const FOCI_TAGLINE_LOCKUP =
+  "text-[8px] sm:text-[9px] font-medium tracking-[0.14em] sm:tracking-[0.15em] uppercase leading-none";
+export const FOCI_TAGLINE_MOCKUP =
+  "text-[6.5px] sm:text-[7.5px] font-medium tracking-[0.13em] uppercase leading-none";
+export const FOCI_TAGLINE_OG_PX = 11;
+
 /** Ring geometry for 32×32 viewBox */
 export const FOCI_RING = {
   r: 10,
