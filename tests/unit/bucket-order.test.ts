@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { applyBucketDrop, moveBucketTaskInLane } from "@/components/task-list/bucket-order";
+import {
+  applyBucketDrop,
+  moveBucketTaskInLane,
+  sortBucketTasks,
+  tasksInSwimlane,
+} from "@/components/task-list/bucket-order";
 import type { Task } from "@/lib/types";
 
 function task(
@@ -72,5 +77,46 @@ describe("applyBucketDrop", () => {
       null
     );
     expect(result).toBeNull();
+  });
+
+  it("reorders overdue tasks with different due dates", () => {
+    const overdue = [
+      task("older", "p1", { dueDate: "2020-01-01", order: 0 }),
+      task("newer", "p1", { dueDate: "2020-01-05", order: 1 }),
+    ];
+    const result = applyBucketDrop(
+      overdue,
+      "newer",
+      { type: "task", projectId: "p1", taskId: "older", swimlaneId: "overdue" },
+      null
+    );
+    expect(result).not.toBeNull();
+    const laneOrder = tasksInSwimlane(result!, "overdue", null).map((t) => t.id);
+    expect(laneOrder).toEqual(["newer", "older"]);
+  });
+
+  it("moves a task down within its swimlane", () => {
+    const result = applyBucketDrop(
+      tasks,
+      "a",
+      { type: "task", projectId: "p1", taskId: "b", swimlaneId: "undated" },
+      null
+    );
+    expect(result).not.toBeNull();
+    const ordered = result!
+      .filter((t) => t.projectId === "p1")
+      .sort((x, y) => (x.order ?? 0) - (y.order ?? 0))
+      .map((t) => t.id);
+    expect(ordered).toEqual(["b", "a"]);
+  });
+});
+
+describe("sortBucketTasks", () => {
+  it("respects manual order over due dates", () => {
+    const tasks = [
+      task("a", "p1", { dueDate: "2020-01-01", order: 1 }),
+      task("b", "p1", { dueDate: "2020-01-10", order: 0 }),
+    ];
+    expect(sortBucketTasks(tasks, null).map((t) => t.id)).toEqual(["b", "a"]);
   });
 });

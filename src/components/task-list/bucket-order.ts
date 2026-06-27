@@ -13,11 +13,15 @@ export function getBucketSwimlaneId(task: Task): BucketSwimlaneId {
   return "dated";
 }
 
-/** Same sort as bucket columns — active task first, then due grouping, then manual order. */
+/** Same sort as bucket columns — active task first, then manual order, then due grouping. */
 export function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Task[] {
   return [...tasks].sort((a, b) => {
     if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
     if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
+
+    if (a.order != null && b.order != null && a.order !== b.order) return a.order - b.order;
+    if (a.order != null && b.order == null) return -1;
+    if (a.order == null && b.order != null) return 1;
 
     const aOverdue = a.dueDate && !a.blocked && !a.someday && isDueDateOverdue(a.dueDate);
     const bOverdue = b.dueDate && !b.blocked && !b.someday && isDueDateOverdue(b.dueDate);
@@ -30,9 +34,6 @@ export function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Tas
       return a.dueDate < b.dueDate ? -1 : 1;
     }
 
-    if (a.order != null && b.order != null) return a.order - b.order;
-    if (a.order != null) return -1;
-    if (b.order != null) return 1;
     return (b.createdAt || 0) - (a.createdAt || 0);
   });
 }
@@ -97,24 +98,38 @@ export function applyBucketDrop(
   const draggedLaneId = getBucketSwimlaneId(dragged);
   const effectiveLaneId = crossProject ? draggedLaneId : targetSwimlaneId;
 
-  const targetPool = openTasks.filter(
-    (t) => t.projectId === targetProjectId && t.id !== draggedTaskId
-  );
-  const targetLaneIds = tasksInSwimlane(targetPool, effectiveLaneId, activeTaskId).map((t) => t.id);
+  const targetProjectOpen = openTasks.filter((t) => t.projectId === targetProjectId);
+  let nextTargetLaneIds: string[];
 
-  let insertAt = targetLaneIds.length;
   if (target.type === "task") {
-    const dropLaneIds = tasksInSwimlane(targetPool, targetSwimlaneId, activeTaskId).map((t) => t.id);
-    const dropIdx = dropLaneIds.indexOf(target.taskId);
-    if (!crossProject && targetSwimlaneId === effectiveLaneId && dropIdx >= 0) {
-      insertAt = dropIdx;
-    } else if (crossProject && targetSwimlaneId === effectiveLaneId && dropIdx >= 0) {
-      insertAt = dropIdx;
-    }
-  }
+    const fullLaneIds = tasksInSwimlane(targetProjectOpen, effectiveLaneId, activeTaskId).map(
+      (t) => t.id
+    );
 
-  const nextTargetLaneIds = [...targetLaneIds];
-  nextTargetLaneIds.splice(insertAt, 0, draggedTaskId);
+    if (!crossProject) {
+      const fromIdx = fullLaneIds.indexOf(draggedTaskId);
+      const toIdx = fullLaneIds.indexOf(target.taskId);
+      if (fromIdx === -1 || toIdx === -1) return null;
+      nextTargetLaneIds = [...fullLaneIds];
+      nextTargetLaneIds.splice(fromIdx, 1);
+      nextTargetLaneIds.splice(toIdx, 0, draggedTaskId);
+    } else if (targetSwimlaneId === effectiveLaneId) {
+      const withoutDragged = fullLaneIds.filter((id) => id !== draggedTaskId);
+      const insertAt = withoutDragged.indexOf(target.taskId);
+      if (insertAt === -1) return null;
+      nextTargetLaneIds = [...withoutDragged];
+      nextTargetLaneIds.splice(insertAt, 0, draggedTaskId);
+    } else {
+      nextTargetLaneIds = [...fullLaneIds.filter((id) => id !== draggedTaskId), draggedTaskId];
+    }
+  } else {
+    const targetLaneIds = tasksInSwimlane(
+      targetProjectOpen.filter((t) => t.id !== draggedTaskId),
+      effectiveLaneId,
+      activeTaskId
+    ).map((t) => t.id);
+    nextTargetLaneIds = [...targetLaneIds, draggedTaskId];
+  }
 
   let updated = allTasks.map((t) =>
     t.id === draggedTaskId ? { ...t, projectId: targetProjectId } : t

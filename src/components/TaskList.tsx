@@ -941,7 +941,7 @@ export default function TaskList({
     const updated = applyBucketDrop(tasks, draggedTaskId, target, activeTaskId);
     if (!updated) {
       showToast(
-        "Drag within the same due-date group to reorder, or drop on another project column to move.",
+        "Drag within the same section to reorder, or drop on another project column to move.",
         "error"
       );
       return;
