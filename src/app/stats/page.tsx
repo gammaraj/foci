@@ -17,6 +17,7 @@ import type {
 } from "@/lib/types";
 import { PROJECT_COLORS } from "@/lib/types";
 import { formatDateLocal } from "@/lib/dates";
+import { isActionableOverdue } from "@/lib/task-status";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -43,6 +44,37 @@ function getDaysArray(count: number): string[] {
 function dayLabel(key: string): string {
   const d = new Date(key + "T00:00:00");
   return d.toLocaleDateString("en-US", { weekday: "short" });
+}
+
+function CountBar({
+  items,
+}: {
+  items: { label: string; value: number; color: string }[];
+}) {
+  const max = Math.max(...items.map((i) => i.value), 1);
+
+  return (
+    <div className="space-y-3">
+      {items.map((item) => (
+        <div key={item.label}>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="font-medium text-slate-700 dark:text-slate-200">{item.label}</span>
+            <span className="font-semibold tabular-nums text-slate-600 dark:text-slate-300">{item.value}</span>
+          </div>
+          <div className="w-full bg-slate-100 dark:bg-[#1a2744] rounded-full h-2.5 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${(item.value / max) * 100}%`,
+                backgroundColor: item.color,
+                minWidth: item.value > 0 ? 8 : 0,
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 // ── Chart components ─────────────────────────────────────
@@ -492,6 +524,25 @@ export default function StatsPage() {
   const bestDayIndex = dayOfWeekSessions.indexOf(Math.max(...dayOfWeekSessions));
   const bestDayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][bestDayIndex];
 
+  const activeTasks = tasks.filter((t) => !t.archivedAt);
+  const openTasks = activeTasks.filter((t) => !t.completed);
+  const completedTasks = activeTasks.filter((t) => t.completed);
+  const overdueOpen = openTasks.filter((t) => isActionableOverdue(t));
+  const highPriorityOpen = openTasks.filter((t) => t.priority === 1);
+  const blockedOpen = openTasks.filter((t) => t.blocked);
+  const completionRate =
+    activeTasks.length > 0
+      ? Math.round((completedTasks.length / activeTasks.length) * 100)
+      : 0;
+  const rangeSessions = sessionsData.reduce((s, d) => s + d.value, 0);
+  const backlogItems = [
+    { label: "Overdue", value: overdueOpen.length, color: "#ef4444" },
+    { label: "High priority", value: highPriorityOpen.length, color: "#f97316" },
+    { label: "Waiting", value: blockedOpen.length, color: "#f59e0b" },
+    { label: "Open", value: openTasks.length, color: "#3b82f6" },
+    { label: "Completed", value: completedTasks.length, color: "#10b981" },
+  ].filter((item) => item.value > 0);
+
   // ── Render ──────────────────────────────────────────────
 
   if (!loaded) {
@@ -517,7 +568,7 @@ export default function StatsPage() {
               Stats &amp; Analytics
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Track your focus habits and productivity trends
+              Focus habits, session trends, and task backlog health
             </p>
           </div>
           {/* Range toggle */}
@@ -585,6 +636,69 @@ export default function StatsPage() {
               </svg>
             }
           />
+        </div>
+
+        {/* Task backlog health */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+          <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <StatCard
+              label="Overdue"
+              value={String(overdueOpen.length)}
+              accentBg="bg-red-50 dark:bg-red-900/30"
+              accentText="text-red-600 dark:text-red-400"
+              icon={
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            <StatCard
+              label="Open Tasks"
+              value={String(openTasks.length)}
+              accentBg="bg-blue-50 dark:bg-blue-900/30"
+              accentText="text-blue-600 dark:text-blue-400"
+              icon={
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              }
+            />
+            <StatCard
+              label="Completed"
+              value={String(completedTasks.length)}
+              accentBg="bg-emerald-50 dark:bg-emerald-900/30"
+              accentText="text-emerald-600 dark:text-emerald-400"
+              icon={
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            <StatCard
+              label="Completion Rate"
+              value={`${completionRate}%`}
+              accentBg="bg-violet-50 dark:bg-violet-900/30"
+              accentText="text-violet-600 dark:text-violet-400"
+              icon={
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                </svg>
+              }
+            />
+          </div>
+          <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
+              Backlog Snapshot
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+              {rangeSessions} focus session{rangeSessions !== 1 ? "s" : ""} in the last {range} days
+            </p>
+            {backlogItems.length > 0 ? (
+              <CountBar items={backlogItems} />
+            ) : (
+              <p className="text-sm text-slate-400 dark:text-slate-500 py-6 text-center">No tasks yet</p>
+            )}
+          </div>
         </div>
 
         {/* Project breakdown + Today's activity row */}

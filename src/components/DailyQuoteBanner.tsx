@@ -87,22 +87,22 @@ export default function DailyQuoteBanner({
       <div className="app-container py-1.5 sm:py-2 space-y-1.5">
         {threeColumnStrip ? (
           <div
-            className="grid min-w-0 grid-cols-1 sm:grid-cols-[2.5fr_3.5fr_4fr] sm:items-stretch rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
+            className="grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(0,9.5rem)_1fr_minmax(0,10.5rem)] sm:items-stretch rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
           >
-            {/* Weather row — hidden on mobile when collapsed */}
-            <div className={`min-w-0 px-3 sm:px-4 flex items-center min-h-[3.5rem] ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            {/* Weather — secondary context */}
+            <div className={`min-w-0 px-2.5 sm:px-3 flex items-center min-h-[3.25rem] text-slate-500 dark:text-slate-400 ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               <WeatherTime compact embedded />
             </div>
-            {/* Timer row — always visible on mobile; carries the toggle chevron */}
-            <div className="min-w-0 flex flex-col px-3 sm:px-4">
+            {/* Timer — primary focus strip */}
+            <div className="min-w-0 flex flex-col px-3 sm:px-4 sm:bg-cyan-50/35 dark:sm:bg-cyan-950/15 sm:ring-1 sm:ring-inset sm:ring-cyan-200/50 dark:sm:ring-cyan-500/20">
               <div className="flex items-center min-h-[3.5rem] w-full shrink-0 gap-1">
                 <div className="flex-1 min-w-0">{timerToolbar}</div>
                 <CollapseToggle />
               </div>
               {timerPanel}
             </div>
-            {/* Music row — hidden on mobile when collapsed */}
-            <div className={`min-w-0 flex flex-col px-3 sm:px-4 overflow-x-auto bg-slate-50/50 dark:bg-white/[0.018] rounded-br-xl ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            {/* Music — ambient utility */}
+            <div className={`min-w-0 flex flex-col px-2.5 sm:px-3 overflow-x-auto bg-slate-50/40 dark:bg-white/[0.012] sm:opacity-90 rounded-br-xl ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               {musicToolbar}
             </div>
             {showMobileCollapseBar && (

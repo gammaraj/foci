@@ -96,10 +96,10 @@ export function FocusDockToolbar({
 
   const embeddedChrome =
     isBreak
-      ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
+      ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20 sm:rounded-lg sm:px-2"
       : isRunning
-        ? "border border-cyan-300/50 dark:border-cyan-600/40 bg-cyan-50/60 dark:bg-cyan-900/15"
-        : "";
+        ? "border border-cyan-300/60 dark:border-cyan-600/45 bg-cyan-50/70 dark:bg-cyan-900/20 sm:rounded-lg sm:px-2 sm:shadow-sm sm:shadow-cyan-500/10"
+        : "sm:rounded-lg sm:px-1";
 
   const sessionsLink = sessions ? (
     <Link
@@ -227,11 +227,18 @@ export function FocusDockToolbar({
       >
         {displayTime}
       </span>
-      {activeTaskTitle && (
-        <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400 truncate max-w-[9rem] lg:max-w-[13rem]">
-          {activeTaskTitle}
+      {activeTaskTitle ? (
+        <span className="min-w-0 inline-flex items-center gap-1 text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate max-w-[7rem] sm:max-w-[12rem] lg:max-w-[16rem]">
+          <span className="shrink-0 text-cyan-500 dark:text-cyan-400" aria-hidden>
+            ↳
+          </span>
+          <span className="truncate">{activeTaskTitle}</span>
         </span>
-      )}
+      ) : !isRunning ? (
+        <span className="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 italic truncate">
+          Select a task ↓
+        </span>
+      ) : null}
     </button>
   );
 

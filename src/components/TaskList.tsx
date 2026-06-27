@@ -21,6 +21,7 @@ import TaskBucketView from "@/components/task-list/TaskBucketView";
 import { applyBucketDrop, moveBucketTaskInLane, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
+import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import {
@@ -1278,7 +1279,36 @@ export default function TaskList({
     onDeleteSubtask: (subId: string) => deleteSubtask(task.id, subId),
   });
 
+  const renderTaskExpansionContent = (task: Task, compact = false) => {
+    const subtasks = task.subtasks || [];
+    const hasSubtasks = subtasks.length > 0;
+
+    return (
+      <>
+        <TaskSubtaskSection
+          {...taskSubtaskSectionProps(task)}
+          showAddForm={hasSubtasks || compact}
+          compact={compact}
+        />
+        <TaskDetailPanel
+          task={task}
+          variant="inline"
+          hideSubtasks
+          {...taskDetailPanelProps(task)}
+          onDeleteTask={() => {
+            deleteTask(task.id);
+            closeTaskDetail();
+          }}
+          onStartTask={() => onStartTask(task.id)}
+          onDeselectTask={() => onSelectTask(null)}
+        />
+      </>
+    );
+  };
+
   const renderTaskInlineExpansion = (task: Task, compact = false) => {
+    if (compact) return null;
+
     const subtasks = task.subtasks || [];
     const hasSubtasks = subtasks.length > 0;
     const isExpanded = expandedTaskId === task.id;
@@ -2570,6 +2600,17 @@ export default function TaskList({
         )}
       </div>
       </>)}
+
+      {/* Bucket task detail drawer — keeps column layout stable */}
+      {viewMode === "buckets" && expandedTaskId && (() => {
+        const task = tasks.find((t) => t.id === expandedTaskId);
+        if (!task) return null;
+        return (
+          <TaskExpansionDrawer task={task} onClose={closeTaskDetail}>
+            {renderTaskExpansionContent(task, true)}
+          </TaskExpansionDrawer>
+        );
+      })()}
 
       {/* Confirmation Modal */}
       {pendingConfirm && (

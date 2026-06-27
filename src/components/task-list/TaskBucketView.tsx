@@ -12,6 +12,7 @@ import {
   type BucketSwimlaneId,
 } from "@/components/task-list/bucket-order";
 import { isActionableOverdue } from "@/lib/task-status";
+import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 
 function BucketColumnTitle({ project }: { project: Project }) {
   const subtitle = project.description?.trim();
@@ -37,9 +38,9 @@ function BucketColumnTitle({ project }: { project: Project }) {
   );
 }
 
-/** Mobile: one full column with a thin peek of the next; desktop: 3 columns side-by-side. */
+/** Mobile: one full column with peek; desktop: fixed-width columns for readable titles. */
 const BUCKET_COLUMN_CLASS =
-  "flex-[0_0_calc(100%-1.5rem)] sm:flex-[0_0_calc((100%-1.5rem)/3)] min-w-0";
+  "flex-[0_0_calc(100%-1.5rem)] sm:flex-[0_0_min(100%,22rem)] md:flex-[0_0_min(100%,24rem)] lg:flex-[0_0_min(100%,26rem)] min-w-0";
 
 interface TaskBucketViewProps {
   projects: Project[];
@@ -266,6 +267,7 @@ function BucketTaskCard({
 
   return (
     <div
+      data-bucket-task-id={task.id}
       draggable={dragEnabled && !isEditing}
       onDragStart={(e) => {
         if (!dragEnabled || isEditing) return;
@@ -288,8 +290,10 @@ function BucketTaskCard({
       className={`group relative rounded-lg border px-2 py-1.5 transition-all duration-150 ${
         isDetailOpen
           ? "border-violet-200/90 dark:border-violet-500/40 bg-violet-50/80 dark:bg-violet-950/25"
+          : isActive && isTimerRunning
+            ? "border-cyan-300/90 dark:border-cyan-500/50 bg-cyan-50/95 dark:bg-cyan-950/35 ring-2 ring-cyan-500/40 shadow-sm shadow-cyan-500/10"
           : isActive
-            ? "border-cyan-200/90 dark:border-cyan-500/40 bg-cyan-50/90 dark:bg-cyan-950/30"
+            ? "border-cyan-200/90 dark:border-cyan-500/40 bg-cyan-50/90 dark:bg-cyan-950/30 ring-1 ring-cyan-400/30"
             : isBlocked
               ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               : isOverdue
@@ -305,7 +309,7 @@ function BucketTaskCard({
           : ""
       }`}
     >
-      <div className="flex items-start gap-2 min-h-[1.5rem]">
+      <div className="flex items-start gap-1.5 min-h-[1.5rem]">
         {onMoveUp && onMoveDown && (
           <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
             <button
@@ -364,19 +368,6 @@ function BucketTaskCard({
             </svg>
           )}
         </button>
-        {!isEditing && task.priority != null && (
-          <span
-            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] ${
-              task.priority === 1
-                ? "bg-orange-500 dark:bg-orange-400"
-                : task.priority === 2
-                  ? "bg-yellow-400 dark:bg-yellow-300"
-                  : "bg-cyan-400 dark:bg-cyan-300"
-            }`}
-            title={task.priority === 1 ? "High priority" : task.priority === 2 ? "Medium priority" : "Low priority"}
-            aria-hidden
-          />
-        )}
         {isEditing ? (
           <input
             type="text"
@@ -397,109 +388,46 @@ function BucketTaskCard({
           <button
             type="button"
             onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10 group-hover:rounded group-hover:bg-inherit hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2 hover:text-slate-900 dark:hover:text-white transition-colors"
             title={task.title}
           >
             {task.title}
           </button>
         ) : (
           <p
-            className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug truncate group-hover:whitespace-normal group-hover:line-clamp-3 group-hover:relative group-hover:z-10 group-hover:rounded group-hover:bg-inherit"
+            className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
             title={task.title}
           >
             {task.title}
           </p>
         )}
-        {!isEditing && task.dueDate && (
-          <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact blocked={isBlocked} />
-        )}
-        {!isEditing && !task.dueDate && onSetDueDate && (
-          <label
-            className="relative inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 cursor-pointer transition-colors mt-[3px]"
-            title="Set a due date to schedule this task"
-          >
-            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="hidden sm:inline">Set date</span>
-            <input
-              type="date"
-              value=""
-              onChange={(e) => {
-                if (e.target.value) onSetDueDate(task.id, e.target.value);
-              }}
-              onClick={(e) => e.stopPropagation()}
-              onFocus={(e) => {
-                try { (e.target as HTMLInputElement).showPicker(); } catch {}
-              }}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              aria-label="Set due date"
-            />
-          </label>
-        )}
-        {!isEditing && (
-          <div
-            className={`flex items-center gap-0.5 shrink-0 mt-[3px] transition-opacity ${
+        {!isEditing && canOpenDetail && (
+          <button
+            type="button"
+            onClick={() => onToggleTaskDetail!(task.id)}
+            className={`${compactIconBtn} mt-[1px] ${
               isDetailOpen
-                ? "opacity-100"
-                : "sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
+                : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             }`}
+            title={isDetailOpen ? "Close details" : "Task details"}
+            aria-label={isDetailOpen ? `Close details for "${task.title}"` : `Open details for "${task.title}"`}
+            aria-pressed={!!isDetailOpen}
           >
-            {/* Date picker icon: hidden on mobile (inline "Set date" label handles it) */}
-            {!task.dueDate && onSetDueDate && (
-              <label
-                className={`${compactIconBtn} hidden sm:flex relative text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] cursor-pointer`}
-                title="Add due date"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <input
-                  type="date"
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value) onSetDueDate(task.id, e.target.value);
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  onFocus={(e) => {
-                    try {
-                      (e.target as HTMLInputElement).showPicker();
-                    } catch {}
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  aria-label="Add due date"
-                />
-              </label>
-            )}
-            {canOpenDetail && (
-              <button
-                type="button"
-                onClick={() => onToggleTaskDetail!(task.id)}
-                className={`${compactIconBtn} ${
-                  isDetailOpen
-                    ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
-                    : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                }`}
-                title={isDetailOpen ? "Close details" : "Task details"}
-                aria-label={isDetailOpen ? `Close details for "${task.title}"` : `Open details for "${task.title}"`}
-                aria-pressed={!!isDetailOpen}
-              >
-                <svg
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${isDetailOpen ? "rotate-90" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            )}
-          </div>
+            <svg
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${isDetailOpen ? "rotate-90" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         )}
         {!isEditing && (
           <div
-            className={`shrink-0 mt-[3px] transition-opacity duration-150 ${
+            className={`shrink-0 mt-[1px] transition-opacity duration-150 ${
               isActive
                 ? "opacity-100"
                 : "hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
@@ -539,6 +467,54 @@ function BucketTaskCard({
           </div>
         )}
       </div>
+      {!isEditing && (
+        <div className="flex flex-wrap items-center gap-1.5 mt-1 pl-6 sm:pl-7">
+          {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
+          {isActive && isTimerRunning && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded bg-cyan-600 text-white">
+              <span className="w-1 h-1 rounded-full bg-white animate-pulse" aria-hidden />
+              Timing
+            </span>
+          )}
+          {isActive && !isTimerRunning && (
+            <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50">
+              Selected
+            </span>
+          )}
+          {task.dueDate && (
+            <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact blocked={isBlocked} />
+          )}
+          {!task.dueDate && onSetDueDate && (
+            <label
+              className="relative inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 cursor-pointer transition-colors"
+              title="Set a due date to schedule this task"
+            >
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden sm:inline">Set date</span>
+              <input
+                type="date"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) onSetDueDate(task.id, e.target.value);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => {
+                  try { (e.target as HTMLInputElement).showPicker(); } catch {}
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                aria-label="Set due date"
+              />
+            </label>
+          )}
+          {(task.subtasks?.length ?? 0) > 0 && (
+            <span className="text-[10px] font-medium text-violet-600 dark:text-violet-400 tabular-nums">
+              {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length} subtasks
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -905,7 +881,6 @@ function BucketColumn({
                         onBucketMove ? () => onBucketMove(task.id, "down") : undefined
                       }
                     />
-                    {renderBelowTask?.(task, true)}
                     </div>
                   ))}
                 </div>
@@ -1041,6 +1016,16 @@ export default function TaskBucketView({
       column.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
     }
   }, [scrollToProjectId, scrollToProjectToken]);
+
+  useEffect(() => {
+    if (!activeTaskId || !scrollContainerRef.current) return;
+    const el = scrollContainerRef.current.querySelector(
+      `[data-bucket-task-id="${activeTaskId}"]`
+    );
+    if (el instanceof HTMLElement) {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+    }
+  }, [activeTaskId]);
 
   return (
     <div className="px-1 sm:px-2 pb-3 pt-1 min-h-0">
