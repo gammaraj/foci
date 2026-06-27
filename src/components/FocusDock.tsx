@@ -369,24 +369,22 @@ export default function FocusDockPanel({
   compactStrip = false,
 }: FocusDockProps) {
   if (!expanded) {
-    return (
-      <div className="sr-only" aria-hidden>
-        <span>Focus timer collapsed</span>
-      </div>
-    );
+    return null;
   }
 
   if (compactStrip) {
     return (
       <div
-        className={`pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 ${
+        className={`absolute left-1/2 top-[calc(100%+0.25rem)] z-50 w-[22rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-3 shadow-lg shadow-slate-900/10 ${
           isBreak ? "timer-break-mode" : ""
         } ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >
-        {activeTaskId && activeTaskTitle && (
-          <p className="text-xs text-cyan-600 dark:text-cyan-400 truncate mb-1.5">{activeTaskTitle}</p>
+        {activeTaskId && activeTaskTitle ? (
+          <p className="text-xs font-medium text-cyan-600 dark:text-cyan-400 truncate mb-2">{activeTaskTitle}</p>
+        ) : (
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Select a task below to link your session</p>
         )}
-        <div className="text-center space-y-0.5 pb-2">
+        <div className="text-center space-y-0.5 pb-3">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
           <p
             className={`text-2xl sm:text-3xl font-mono font-bold tabular-nums leading-none ${
@@ -400,6 +398,16 @@ export default function FocusDockPanel({
             {displayTime}
           </p>
           <p className="text-sm text-slate-600 dark:text-slate-300">{statusText}</p>
+        </div>
+        <div className="flex items-center justify-center gap-2 pb-3">
+          <TimerControls
+            isRunning={isRunning}
+            onStartPause={onStartPause}
+            onReset={onReset}
+            compact
+            dock
+            emphasizeStart={emphasizeStart}
+          />
         </div>
         <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
           {WORK_DURATION_PRESETS.map((minutes) => {
@@ -420,6 +428,35 @@ export default function FocusDockPanel({
               </button>
             );
           })}
+        </div>
+        <div className="flex items-center justify-center gap-1 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 mt-2">
+          <button
+            type="button"
+            onClick={onToggleFocusMode}
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              focusMode
+                ? "bg-cyan-600 text-white"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+            }`}
+            title="Focus mode (F)"
+          >
+            Focus mode
+          </button>
+          <button
+            type="button"
+            onClick={onShowShortcuts}
+            className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            title="Shortcuts (?)"
+          >
+            Shortcuts
+          </button>
+          <button
+            type="button"
+            onClick={onToggleExpanded}
+            className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+          >
+            Close
+          </button>
         </div>
         {lastQuote && (timerStatus === "break" || timerStatus === "idle") && (
           <p className="text-xs italic text-slate-500 dark:text-slate-400 text-center leading-snug pt-2 line-clamp-2">

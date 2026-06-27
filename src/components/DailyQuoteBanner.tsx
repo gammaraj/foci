@@ -94,7 +94,7 @@ export default function DailyQuoteBanner({
               <WeatherTime compact embedded />
             </div>
             {/* Timer — primary focus strip */}
-            <div className="min-w-0 flex flex-col px-3 sm:px-4 sm:bg-cyan-50/35 dark:sm:bg-cyan-950/15 sm:ring-1 sm:ring-inset sm:ring-cyan-200/50 dark:sm:ring-cyan-500/20">
+            <div className="relative min-w-0 flex flex-col px-3 sm:px-4 overflow-visible sm:bg-cyan-50/35 dark:sm:bg-cyan-950/15 sm:ring-1 sm:ring-inset sm:ring-cyan-200/50 dark:sm:ring-cyan-500/20">
               <div className="flex items-center min-h-[3.5rem] w-full shrink-0 gap-1">
                 <div className="flex-1 min-w-0">{timerToolbar}</div>
                 <CollapseToggle />
