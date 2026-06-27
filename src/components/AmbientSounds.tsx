@@ -431,7 +431,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         stripEmbedded
-          ? "w-full min-w-0 flex flex-col scroll-mt-24"
+          ? "w-full min-w-0 flex flex-col scroll-mt-24 relative"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -503,11 +503,11 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
           {stripEmbedded ? (
-            <span className="flex items-baseline gap-1.5 min-w-0 overflow-hidden">
+            <span className="flex items-baseline gap-1.5 min-w-0">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none shrink-0">
                 Music
               </span>
-              <span className={`${FOCUS_STRIP_VALUE} truncate`}>{nowPlayingLabel}</span>
+              <span className={`${FOCUS_STRIP_VALUE} truncate min-w-0`}>{nowPlayingLabel}</span>
             </span>
           ) : (
             <>
@@ -613,7 +613,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           collapsed
             ? "hidden"
             : stripEmbedded
-              ? "w-full min-w-0 space-y-1.5 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80"
+              ? "absolute right-0 top-[calc(100%+0.25rem)] z-50 w-[22rem] max-w-[calc(100vw-2rem)] space-y-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 shadow-lg shadow-slate-900/10"
               : inline
                 ? "space-y-1.5"
                 : "space-y-2"
@@ -659,7 +659,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         ).map((tab) => {
           const active = mode === tab.id;
           const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 ${
-            stripEmbedded ? "py-1.5" : "py-1.5"
+            stripEmbedded ? "py-2" : "py-1.5"
           } text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
             active
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
@@ -704,7 +704,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 key={s.id}
                 onClick={() => playSound(s.id)}
                 className={`flex flex-col items-center gap-0.5 rounded-lg font-medium transition-all ${
-                  stripEmbedded ? "py-1.5 px-1 text-xs" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
+                  stripEmbedded ? "py-2 px-1.5 text-xs" : inline ? "py-1 px-0.5 text-xs" : "py-2 px-1 text-xs"
                 } ${
                   activeSound === s.id
                     ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-300 dark:ring-cyan-700"
