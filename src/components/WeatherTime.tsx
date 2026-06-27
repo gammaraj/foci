@@ -94,11 +94,19 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
 
   if (compact) {
     const chrome = embedded
-      ? "min-h-[3.5rem] min-w-0 w-full h-full overflow-hidden py-1"
+      ? "min-h-[3.5rem] min-w-0 w-full h-full py-1 overflow-visible"
       : "min-h-[3.5rem] min-w-0 w-full h-full px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden";
 
+    const weatherTitle = weather
+      ? `${weather.description}${weather.city ? ` · ${weather.city}` : ""}${
+          weather.low != null && weather.high != null
+            ? ` · Low ${weather.low}° · High ${weather.high}°`
+            : ""
+        }`
+      : "";
+
     return (
-      <div className={`flex items-center gap-3 ${chrome}`}>
+      <div className={`flex items-center ${embedded ? "gap-2" : "gap-3"} ${chrome}`}>
         {/* Clock */}
         <div className="flex flex-col shrink-0 justify-center">
           <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
@@ -112,28 +120,24 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
         {/* Weather */}
         {weather && (
           <div
-            className="flex flex-col min-w-0 flex-1 justify-center overflow-hidden"
-            title={`${weather.description}${weather.city ? ` · ${weather.city}` : ""}${
-              weather.low != null && weather.high != null
-                ? ` · Low ${weather.low}° · High ${weather.high}°`
-                : ""
-            }`}
+            className="flex flex-col shrink-0 justify-center whitespace-nowrap"
+            title={weatherTitle}
           >
-            <span className="flex items-center gap-1 min-w-0 leading-none">
+            <span className="flex items-center gap-1 leading-none">
               <span className="text-sm leading-none shrink-0" aria-hidden>
                 {weather.icon}
               </span>
-              <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap shrink-0">
+              <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100">
                 {weather.temp}°{unitSuffix}
               </span>
-              {weather.city && (
-                <span className="text-xs font-medium leading-none text-slate-600 dark:text-slate-300 truncate min-w-0" title={weather.city}>
+              {!embedded && weather.city && (
+                <span className="text-xs font-medium leading-none text-slate-600 dark:text-slate-300 truncate max-w-[5.5rem]" title={weather.city}>
                   {weather.city}
                 </span>
               )}
             </span>
             {weather.low != null && weather.high != null && (
-              <span className="text-xs tabular-nums font-medium text-slate-500 dark:text-slate-400 leading-tight mt-1 whitespace-nowrap">
+              <span className="text-[11px] sm:text-xs tabular-nums font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
                 L {weather.low}° · H {weather.high}°
               </span>
             )}

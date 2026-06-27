@@ -87,10 +87,10 @@ export default function DailyQuoteBanner({
       <div className="app-container py-1.5 sm:py-2 space-y-1.5">
         {threeColumnStrip ? (
           <div
-            className="grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(0,9.5rem)_1fr_minmax(0,10.5rem)] sm:items-stretch rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
+            className="grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(12rem,14rem)_1fr_minmax(9rem,11.5rem)] sm:items-stretch rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
           >
             {/* Weather — secondary context */}
-            <div className={`min-w-0 px-2.5 sm:px-3 flex items-center min-h-[3.25rem] text-slate-500 dark:text-slate-400 ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            <div className={`min-w-0 px-2.5 sm:px-3 flex items-center min-h-[3.25rem] shrink-0 text-slate-500 dark:text-slate-400 overflow-visible ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               <WeatherTime compact embedded />
             </div>
             {/* Timer — primary focus strip */}
