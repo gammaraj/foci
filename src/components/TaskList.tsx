@@ -2602,7 +2602,7 @@ export default function TaskList({
       </>)}
 
       {/* Bucket task detail drawer — keeps column layout stable */}
-      {viewMode === "buckets" && expandedTaskId && (() => {
+      {viewMode === "bucket" && expandedTaskId && (() => {
         const task = tasks.find((t) => t.id === expandedTaskId);
         if (!task) return null;
         return (
