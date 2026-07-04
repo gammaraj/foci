@@ -6,6 +6,7 @@ import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import CertStudInboundRedirect from "@/components/CertStudInboundRedirect";
+import BoostLogikInboundRedirect from "@/components/BoostLogikInboundRedirect";
 import HomeAppMockup from "@/components/HomeAppMockup";
 import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
 
@@ -172,6 +173,7 @@ export default function LandingPage() {
   return (
     <>
       <CertStudInboundRedirect />
+      <BoostLogikInboundRedirect />
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a] hero-gradient-bg">
       <script
         type="application/ld+json"
@@ -468,6 +470,15 @@ export default function LandingPage() {
             className="text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline-offset-2 hover:underline"
           >
             Free practice questions on CertStud
+          </a>
+          {" "}· Running SEO for your business?{" "}
+          <a
+            href="https://boostlogik.com/dashboard?ref=foci-footer"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 underline-offset-2 hover:underline"
+          >
+            SEO workspace on BoostLogik
           </a>
           {" "}· Filantus
         </p>

@@ -23,6 +23,7 @@ export interface CertStudContext {
 }
 
 export function isCertStudInboundLink(searchParams: URLSearchParams): boolean {
+  if (searchParams.get("source") === "boostlogik") return false;
   return (
     searchParams.get("source") === "certstud" ||
     !!searchParams.get("cert") ||

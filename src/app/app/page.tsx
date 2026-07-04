@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef, Suspense } from "react
 import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
 import { useCertStudDeepLink } from "@/hooks/useCertStudDeepLink";
+import { useBoostLogikDeepLink } from "@/hooks/useBoostLogikDeepLink";
 import TaskList from "@/components/TaskList";
 import AppNavbar from "@/components/AppNavbar";
 import DailyQuoteBanner from "@/components/DailyQuoteBanner";
@@ -13,6 +14,7 @@ import AppMessageQueue from "@/components/AppMessageQueue";
 import KeyboardShortcutsModal from "@/components/KeyboardShortcutsModal";
 import SessionCelebration from "@/components/SessionCelebration";
 import CertStudStudyPromo from "@/components/CertStudStudyPromo";
+import BoostLogikPromo from "@/components/BoostLogikPromo";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
@@ -214,12 +216,24 @@ function AppPageContent() {
     setTaskListKey((k) => k + 1);
   }, []);
 
+  const handleBoostLogikTasksChanged = useCallback(() => {
+    setTaskListKey((k) => k + 1);
+  }, []);
+
   const { certStudContext } = useCertStudDeepLink({
     authLoading: loading,
     onApplyDuration: handleApplyCertStudDuration,
     onSelectTask: setActiveTaskId,
     onStartTask: handleStartTask,
     onTasksChanged: handleCertStudTasksChanged,
+  });
+
+  const { boostLogikContext } = useBoostLogikDeepLink({
+    authLoading: loading,
+    onApplyDuration: handleApplyCertStudDuration,
+    onSelectTask: setActiveTaskId,
+    onStartTask: handleStartTask,
+    onTasksChanged: handleBoostLogikTasksChanged,
   });
 
   if (loading) {
@@ -332,6 +346,10 @@ function AppPageContent() {
 
         {certStudContext && !focusMode && (
           <CertStudStudyPromo context={certStudContext} variant="inline" className="mb-3" />
+        )}
+
+        {boostLogikContext && !focusMode && (
+          <BoostLogikPromo context={boostLogikContext} variant="inline" className="mb-3" />
         )}
 
         {/* Tasks — full width */}

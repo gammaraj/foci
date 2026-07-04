@@ -96,3 +96,35 @@ export function trackCertStudReturnClick(params: {
     destination: params.destination,
   });
 }
+
+// ── BoostLogik integration ───────────────────────────────────────────────────
+
+export function trackBoostLogikDeepLinkApplied(params: {
+  ref?: string;
+  projectId?: string;
+  projectName?: string;
+  task?: string;
+  durationMinutes?: number;
+}) {
+  track("boostlogik_deep_link_applied", {
+    ref: params.ref ?? "",
+    project_id: params.projectId ?? "",
+    project_name: params.projectName ?? "",
+    task: params.task ?? "",
+    duration_minutes: params.durationMinutes ?? 0,
+  });
+}
+
+export function trackBoostLogikReturnClick(params: {
+  ref?: string;
+  projectId?: string;
+  projectName?: string;
+  destination: string;
+}) {
+  track("boostlogik_return_click", {
+    ref: params.ref ?? "",
+    project_id: params.projectId ?? "",
+    project_name: params.projectName ?? "",
+    destination: params.destination,
+  });
+}
