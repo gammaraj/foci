@@ -7,6 +7,7 @@ import GuideLinkHub from "@/components/GuideLinkHub";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import CertStudInboundRedirect from "@/components/CertStudInboundRedirect";
 import BoostLogikInboundRedirect from "@/components/BoostLogikInboundRedirect";
+import WanderingHermitInboundRedirect from "@/components/WanderingHermitInboundRedirect";
 import HomeAppMockup from "@/components/HomeAppMockup";
 import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
 
@@ -90,7 +91,7 @@ const jsonLd = {
     "Fullscreen task mode for distraction-free task management",
     "Indian classical music playlists via SoundCloud for deep focus",
     "Due date reminder notifications for upcoming and overdue tasks",
-    "Task templates for common workflows: Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review",
+    "Task templates for common workflows: Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning",
     "Timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, Ultra Focus (90/20)",
     "Compact status bar with session progress, local weather, live clock, and streak when active",
     "Curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi",
@@ -151,7 +152,7 @@ const faqJsonLd = {
     { "@type": "Question", name: "Can I move tasks between projects?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can reassign any task to a different project directly from the task's edit menu. There's no need to delete and recreate — just pick the target project and the task moves instantly." } },
     { "@type": "Question", name: "Does Foci have a calendar view?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes a calendar view where clicking a date automatically sets it as the due date for a new or existing task. It gives you a visual overview of deadlines across the month." } },
     { "@type": "Question", name: "Does Foci have Indian classical music?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes curated Indian classical music playlists (sitar, flute, veena) via SoundCloud — ideal for long study sessions or deep work. You can switch between Indian classical, lo-fi, and ambient sounds." } },
-    { "@type": "Question", name: "Does Foci have task templates?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes one-click task templates for Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review. Each creates a set of pre-configured tasks so you can start immediately." } },
+    { "@type": "Question", name: "Does Foci have task templates?", acceptedAnswer: { "@type": "Answer", text: "Yes. Foci includes one-click task templates for Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Each creates a set of pre-configured tasks so you can start immediately." } },
     { "@type": "Question", name: "Does Foci have timer presets?", acceptedAnswer: { "@type": "Answer", text: "Yes. Choose from Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20), or set custom durations." } },
     { "@type": "Question", name: "What are the best ADHD focus tools?", acceptedAnswer: { "@type": "Answer", text: "Foci is designed to work with ADHD brains. Its timer externalizes time perception, task tracking removes the burden on working memory, brown noise provides sensory anchoring, and the daily goal system creates visible momentum." } },
     { "@type": "Question", name: "What is the best music for studying?", acceptedAnswer: { "@type": "Answer", text: "Research shows the best study music is instrumental, predictable, and consistent volume. Brown noise and rain are ideal for deep reading and writing. Lo-fi hip-hop works for routine studying. Full guide: https://usefoci.com/blog/best-music-for-studying-and-focus" } },
@@ -174,6 +175,7 @@ export default function LandingPage() {
     <>
       <CertStudInboundRedirect />
       <BoostLogikInboundRedirect />
+      <WanderingHermitInboundRedirect />
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a] hero-gradient-bg">
       <script
         type="application/ld+json"

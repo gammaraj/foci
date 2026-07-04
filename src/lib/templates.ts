@@ -80,6 +80,22 @@ export const TASK_TEMPLATES: TaskTemplate[] = [
     description: "End-of-week reflection",
     tasks: ["Review completed tasks", "Assess goal progress", "Identify blockers", "Plan next week's priorities"],
   },
+  {
+    label: "Trip Planning",
+    emoji: "✈️",
+    description: "Focused travel prep — pair with Wandering Hermit itineraries",
+    tasks: [
+      "Research visa and entry requirements",
+      "Compare flights and travel dates",
+      "Book accommodation for trip dates",
+      "Set trip budget and daily spending limit",
+      "Review day-by-day itinerary (focus session 1)",
+      "Book trains, tours, or must-reserve restaurants",
+      "Download language cheat sheet for destination",
+      "Confirm travel insurance and emergency contacts",
+      "Final packing list and check-in times",
+    ],
+  },
 ];
 
 /** Convert a task template into Task objects ready to save */

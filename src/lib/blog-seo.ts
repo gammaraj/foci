@@ -147,6 +147,11 @@ export const GUIDE_HUB_LINKS: GuideLink[] = [
     description: "7 evidence-based strategies for longer study sessions.",
   },
   {
+    slug: "plan-trip-with-wandering-hermit",
+    label: "Plan a trip with Wandering Hermit + Foci",
+    description: "Build your itinerary free, then run focused Pomodoro sessions on bookings and prep.",
+  },
+  {
     slug: "deep-work-in-the-age-of-ai",
     label: "Deep work in the age of AI",
     description: "Protect sustained focus when everything is one click away.",

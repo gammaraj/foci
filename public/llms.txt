@@ -45,7 +45,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
 - **Onboarding Tour**: Guided walkthrough for new users covering timer, tasks, daily progress, and settings.
 - **Compact Status Bar**: Session progress (e.g. 0/8), live clock, local weather, and streak indicator when active — minimal chrome above the task list.
-- **Task Templates**: One-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review.
+- **Task Templates**: One-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning.
 - **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
@@ -207,7 +207,7 @@ A: A structured morning routine leverages your peak willpower and the quiet wind
 A: Reducing recreational screen time reclaims attention fragmented by notifications and continuous partial attention. Even having your phone visible on your desk reduces cognitive performance. Practical steps include phone-free mornings, turning off non-essential notifications, and batching screen time. Foci provides a focused alternative — commit to one task with a timer instead of scattered screen use.
 
 **Q: Does Foci have task templates?**
-A: Yes. Foci includes one-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review. Each template creates a set of pre-configured tasks so you can start working immediately.
+A: Yes. Foci includes one-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Each template creates a set of pre-configured tasks so you can start working immediately.
 
 **Q: Does Foci have timer presets?**
 A: Yes. Choose from built-in timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20). You can also set custom durations.
@@ -279,6 +279,7 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - https://usefoci.com/blog/migrate-from-todoist-to-foci — How to Migrate from Todoist to Foci
 - https://usefoci.com/blog/pomodoro-technique-guide — What Is the Pomodoro Technique? A Complete Guide
 - https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17 — Flowtime Technique vs Pomodoro vs 52/17: Which Wins? (2026)
+- https://usefoci.com/blog/plan-trip-with-wandering-hermit — Plan Your Trip in Focused Sessions (With Wandering Hermit + Foci)
 - https://usefoci.com/blog/productive-morning-routine — The Productive Morning Routine: How to Win Your Day Before 9 AM
 - https://usefoci.com/blog/stoicism-and-focus — Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind
 - https://usefoci.com/blog/task-batching-productivity — Task Batching: How to Get More Done by Grouping Similar Work
@@ -350,6 +351,7 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind](https://usefoci.com/blog/stoicism-and-focus) — 2026-03-21
 - [The 2-Minute Rule: The Simplest Productivity Hack That Actually Works](https://usefoci.com/blog/two-minute-rule-productivity) — 2026-03-14
 - [Task Batching: How to Get More Done by Grouping Similar Work](https://usefoci.com/blog/task-batching-productivity) — 2026-03-17
+- [Plan Your Trip in Focused Sessions (With Wandering Hermit + Foci)](https://usefoci.com/blog/plan-trip-with-wandering-hermit) — 2026-07-04
 - [The Productive Morning Routine: How to Win Your Day Before 9 AM](https://usefoci.com/blog/productive-morning-routine) — 2026-03-18
 - [Digital Detox for Productivity: How to Reclaim Your Focus From Screens](https://usefoci.com/blog/digital-detox-for-productivity) — 2026-03-20
 - [Time Blocking: The Scheduling Method Used by the World's Most Productive People](https://usefoci.com/blog/time-blocking-method) — 2026-03-22

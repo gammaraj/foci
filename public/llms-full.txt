@@ -47,7 +47,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
 - **Onboarding Tour**: Guided walkthrough for new users covering timer, tasks, daily progress, and settings.
 - **Compact Status Bar**: Session progress (e.g. 0/8), live clock, local weather, and streak indicator when active — minimal chrome above the task list.
-- **Task Templates**: One-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review.
+- **Task Templates**: One-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning.
 - **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
@@ -206,7 +206,7 @@ A: A structured morning routine leverages your peak willpower and the quiet wind
 A: Reducing recreational screen time reclaims attention fragmented by notifications and continuous partial attention. Even having your phone visible on your desk reduces cognitive performance. Practical steps include phone-free mornings, turning off non-essential notifications, and batching screen time. Foci provides a focused alternative — commit to one task with a timer instead of scattered screen use.
 
 **Q: Does Foci have task templates?**
-A: Yes. Foci includes one-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, and Weekly Review. Each template creates a set of pre-configured tasks so you can start working immediately.
+A: Yes. Foci includes one-click task templates for common workflows — Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Each template creates a set of pre-configured tasks so you can start working immediately.
 
 **Q: Does Foci have timer presets?**
 A: Yes. Choose from built-in timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20). You can also set custom durations.
