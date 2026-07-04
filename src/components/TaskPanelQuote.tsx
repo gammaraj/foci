@@ -3,12 +3,28 @@
 import { getDailyQuote, parseQuote } from "@/lib/quotes";
 
 interface TaskPanelQuoteProps {
-  variant?: "inline" | "hero";
+  variant?: "inline" | "hero" | "navbar";
 }
 
 /** Daily quote — shown in the tasks panel, not mixed with status utilities. */
 export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuoteProps) {
   const { text, author } = parseQuote(getDailyQuote());
+
+  if (variant === "navbar") {
+    return (
+      <p
+        className="text-sm italic text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0"
+        role="complementary"
+        aria-label="Quote of the day"
+        title={author ? `${text} — ${author}` : text}
+      >
+        &ldquo;{text}&rdquo;
+        {author ? (
+          <span className="font-normal not-italic text-slate-400/75"> — {author}</span>
+        ) : null}
+      </p>
+    );
+  }
 
   if (variant === "hero") {
     return (

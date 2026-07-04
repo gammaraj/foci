@@ -11,6 +11,7 @@ import {
   isDueDateOverdue,
 } from "@/components/task-list/utils";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
+import ProjectOrderList from "@/components/task-list/ProjectOrderList";
 
 export interface ProjectManageViewProps {
   sortedProjects: Project[];
@@ -26,6 +27,13 @@ export interface ProjectManageViewProps {
   activeTaskId: string | null;
   isTimerRunning: boolean;
   onToggleFavorite: (id: string) => void;
+  dragProjectId: string | null;
+  dragOverProjectId: string | null;
+  onProjectDragStart: (id: string) => void;
+  onProjectDragOver: (e: React.DragEvent, id: string) => void;
+  onProjectDrop: (targetId: string) => void;
+  onProjectDragEnd: () => void;
+  onMoveProject: (id: string, direction: "up" | "down") => void;
   onOpenProject: (id: string) => void;
   onUpdateColor: (id: string, color: string) => void;
   onUpdateDueDate: (id: string, dueDate: string | undefined) => void;
@@ -430,6 +438,13 @@ export default function ProjectManageView({
   activeTaskId,
   isTimerRunning,
   onToggleFavorite,
+  dragProjectId,
+  dragOverProjectId,
+  onProjectDragStart,
+  onProjectDragOver,
+  onProjectDrop,
+  onProjectDragEnd,
+  onMoveProject,
   onOpenProject,
   onUpdateColor,
   onUpdateDueDate,
@@ -462,6 +477,16 @@ export default function ProjectManageView({
     <div className="flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(70vh,720px)]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
+        <ProjectOrderList
+          projects={sortedProjects}
+          dragProjectId={dragProjectId}
+          dragOverProjectId={dragOverProjectId}
+          onDragStart={onProjectDragStart}
+          onDragOver={onProjectDragOver}
+          onDrop={onProjectDrop}
+          onDragEnd={onProjectDragEnd}
+          onMoveProject={onMoveProject}
+        />
         {sortedProjects.map((project) => {
           const openTasks = sortOpenTasks(
             tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),

@@ -17,6 +17,58 @@ export function sortProjectsForDisplay(projects: Project[]): Project[] {
   });
 }
 
+/** Active (non-archived) projects in tab order. */
+export function getActiveProjectsInDisplayOrder(projects: Project[]): Project[] {
+  return sortProjectsForDisplay(projects.filter((p) => !p.archived));
+}
+
+/**
+ * Reorder projects in the tab bar. Dropping onto a target adopts that project's pin state.
+ * Returns updated projects array, or null when the move is invalid.
+ */
+export function reorderProjects(
+  projects: Project[],
+  draggedId: string,
+  targetId: string,
+): Project[] | null {
+  if (draggedId === targetId) return null;
+
+  const sorted = getActiveProjectsInDisplayOrder(projects);
+  const fromIdx = sorted.findIndex((p) => p.id === draggedId);
+  const toIdx = sorted.findIndex((p) => p.id === targetId);
+  if (fromIdx === -1 || toIdx === -1) return null;
+
+  const reordered = [...sorted];
+  const [moved] = reordered.splice(fromIdx, 1);
+  reordered.splice(toIdx, 0, moved);
+
+  const targetFavorite = !!sorted[toIdx].favorite;
+  const orderMap = new Map(reordered.map((p, i) => [p.id, i]));
+
+  return projects.map((p) => {
+    if (p.archived || !orderMap.has(p.id)) return p;
+    const next: Project = { ...p, order: orderMap.get(p.id)! };
+    if (p.id === draggedId && !!p.favorite !== targetFavorite) {
+      next.favorite = targetFavorite;
+    }
+    return next;
+  });
+}
+
+/** Move a project one step up or down in tab order. */
+export function moveProjectInDisplayOrder(
+  projects: Project[],
+  projectId: string,
+  direction: "up" | "down",
+): Project[] | null {
+  const sorted = getActiveProjectsInDisplayOrder(projects);
+  const idx = sorted.findIndex((p) => p.id === projectId);
+  if (idx === -1) return null;
+  const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+  if (targetIdx < 0 || targetIdx >= sorted.length) return null;
+  return reorderProjects(projects, projectId, sorted[targetIdx].id);
+}
+
 /** Full name for hover / aria */
 export function projectTabTooltip(project: { name: string; description?: string }): string {
   if (project.description?.trim()) {

@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import TaskPanelQuote from "@/components/TaskPanelQuote";
 import { useAuth } from "@/components/AuthProvider";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import NotificationBell from "@/components/NotificationBell";
@@ -28,6 +30,7 @@ export default function AppNavbar({
   onTasksImported,
 }: AppNavbarProps) {
   const { user } = useAuth();
+  const pathname = usePathname();
   const [showSettings, setShowSettings] = useState(false);
   const [internalSettings, setInternalSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
@@ -85,6 +88,7 @@ export default function AppNavbar({
       <WhatsNewBanner focusMode={focusMode} headless />
       <Navbar
         onOpenSettings={() => setShowSettings(true)}
+        centerSlot={pathname === "/app" ? <TaskPanelQuote variant="navbar" /> : undefined}
         toolbarSlot={
           user ? (
             <div className="flex items-center gap-0.5">

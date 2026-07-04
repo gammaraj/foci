@@ -13,6 +13,8 @@ interface NavbarProps {
   onOpenSettings?: () => void;
   /** Extra actions shown before theme toggle (e.g. invites, notifications on /app). */
   toolbarSlot?: ReactNode;
+  /** Center content between logo and nav links (e.g. daily quote on /app). */
+  centerSlot?: ReactNode;
 }
 
 function SettingsIcon({ className }: { className?: string }) {
@@ -52,7 +54,7 @@ const chromeBtn = "nav-chrome-btn rounded-lg";
 const chromeBtnPad = `${chromeBtn} p-2`;
 const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 border border-transparent hover:border-white/10`;
 
-function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
+function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps) {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -118,8 +120,8 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
   return (
     <header className="nav-chrome sticky top-0 z-30">
       <nav className="relative app-container pb-3 sm:pb-3.5">
-        <div className="relative flex items-center justify-between gap-3">
-          <Link href={logoHref} className="flex items-center gap-2.5 min-w-0">
+        <div className="relative flex items-center gap-3 min-h-[2.75rem]">
+          <Link href={logoHref} className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
             <FociLogoMark
               size={40}
               idPrefix="nav"
@@ -134,7 +136,13 @@ function NavbarContent({ onOpenSettings, toolbarSlot }: NavbarProps) {
             </div>
           </Link>
 
-          <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
+          {centerSlot ? (
+            <div className="hidden md:flex flex-1 min-w-0 items-center justify-center px-3 max-w-2xl mx-auto">
+              {centerSlot}
+            </div>
+          ) : null}
+
+          <div className="hidden sm:flex items-center gap-6 flex-shrink-0 ml-auto">
             {navLinks.map((link) => renderNavLink(link))}
             {(toolbarSlot || onOpenSettings) && (
               <span className="w-px h-5 bg-white/15 rounded-full self-center" aria-hidden />

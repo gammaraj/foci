@@ -1,7 +1,7 @@
 {
   "name": "Foci",
   "short_name": "Foci",
-  "description": "Free calm focus workspace: Pomodoro timer with presets, task tracking, Smart Plan, ambient music (brown noise, live lo-fi channels, Indian classical, Spotify), daily goals, streak stats, and productivity analytics.",
+  "description": "Free calm focus workspace: Pomodoro timer with presets, kanban bucket board, drag-to-reorder project tabs, task tracking, Smart Plan, ambient music flyouts, daily goals, streak stats, and backlog analytics.",
   "lang": "en",
   "start_url": "/app",
   "display": "standalone",

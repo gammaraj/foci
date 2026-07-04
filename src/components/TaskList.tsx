@@ -36,10 +36,11 @@ import {
   projectTabTooltip,
   projectTabLabel,
   sortProjectsForDisplay,
+  reorderProjects,
+  moveProjectInDisplayOrder,
 } from "@/components/task-list/utils";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
-import TaskPanelQuote from "@/components/TaskPanelQuote";
 
 /** Neutral active state for time/view filters (not a primary CTA). */
 const FILTER_TAB_ACTIVE =
@@ -101,6 +102,8 @@ export default function TaskList({
   const [showArchived, setShowArchived] = useState(false);
   const [dragTaskId, setDragTaskId] = useState<string | null>(null);
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
+  const [dragProjectId, setDragProjectId] = useState<string | null>(null);
+  const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<TaskViewMode>(() => {
     if (typeof window === "undefined") return "bucket";
     const saved = localStorage.getItem("foci_task_view_mode");
@@ -203,6 +206,7 @@ export default function TaskList({
   const allProjectsTabRef = useRef<HTMLButtonElement>(null);
   const projectTabsToolbarRef = useRef<HTMLDivElement>(null);
   const projectTabMeasureRef = useRef<HTMLDivElement>(null);
+  const projectDidDragRef = useRef(false);
   const [maxVisibleProjectTabs, setMaxVisibleProjectTabs] = useState(MAX_VISIBLE_PROJECT_TABS);
 
   useEffect(() => {
@@ -537,6 +541,42 @@ export default function TaskList({
     persistProjects(
       projects.map((p) => (p.id === id ? { ...p, favorite: !p.favorite } : p))
     );
+  };
+
+  const handleProjectDragStart = (projectId: string) => {
+    projectDidDragRef.current = false;
+    setDragProjectId(projectId);
+  };
+
+  const handleProjectDragOver = (e: React.DragEvent, projectId: string) => {
+    e.preventDefault();
+    projectDidDragRef.current = true;
+    setDragOverProjectId(projectId);
+  };
+
+  const handleProjectDrop = (targetId: string) => {
+    if (!dragProjectId || dragProjectId === targetId) {
+      setDragProjectId(null);
+      setDragOverProjectId(null);
+      return;
+    }
+    const updated = reorderProjects(projects, dragProjectId, targetId);
+    if (updated) persistProjects(updated);
+    setDragProjectId(null);
+    setDragOverProjectId(null);
+  };
+
+  const handleProjectDragEnd = () => {
+    setDragProjectId(null);
+    setDragOverProjectId(null);
+    window.setTimeout(() => {
+      projectDidDragRef.current = false;
+    }, 0);
+  };
+
+  const handleMoveProject = (projectId: string, direction: "up" | "down") => {
+    const updated = moveProjectInDisplayOrder(projects, projectId, direction);
+    if (updated) persistProjects(updated);
   };
 
   const toggleProjectArchived = (id: string) => {
@@ -1725,6 +1765,13 @@ export default function TaskList({
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
           onToggleFavorite={toggleProjectFavorite}
+          dragProjectId={dragProjectId}
+          dragOverProjectId={dragOverProjectId}
+          onProjectDragStart={handleProjectDragStart}
+          onProjectDragOver={handleProjectDragOver}
+          onProjectDrop={handleProjectDrop}
+          onProjectDragEnd={handleProjectDragEnd}
+          onMoveProject={handleMoveProject}
           onOpenProject={(id) => {
             closeProjectManage();
             selectViewMode(viewBeforeManageRef.current);
@@ -2073,11 +2120,26 @@ export default function TaskList({
             return (
             <button
               key={p.id}
-              onClick={() => selectProjectScope(p.id)}
-              className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              draggable
+              onDragStart={() => handleProjectDragStart(p.id)}
+              onDragOver={(e) => handleProjectDragOver(e, p.id)}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleProjectDrop(p.id);
+              }}
+              onDragEnd={handleProjectDragEnd}
+              onClick={() => {
+                if (projectDidDragRef.current) return;
+                selectProjectScope(p.id);
+              }}
+              className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors cursor-grab active:cursor-grabbing ${
                 tabActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
+              } ${dragProjectId === p.id ? "opacity-50" : ""} ${
+                dragOverProjectId === p.id && dragProjectId !== p.id
+                  ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent"
+                  : ""
               }`}
-              title={projectTabTooltip(p)}
+              title={`${projectTabTooltip(p)} — drag to reorder`}
             >
               {p.favorite && (
                 <svg className="w-3 h-3 text-amber-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
@@ -2231,8 +2293,6 @@ export default function TaskList({
         )}
 
       </div>
-
-      {(pendingTasks.length > 0 || completedTasks.length > 0) && <TaskPanelQuote />}
 
       <div className="px-3 sm:p-4 pt-3 pb-2 space-y-2">
         {/* Project description */}
@@ -2394,7 +2454,6 @@ export default function TaskList({
         {/* Empty state with template gallery */}
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
-            <TaskPanelQuote variant="hero" />
             <div className="text-center mb-6 px-4">
               <div className="text-5xl mb-3">📝</div>
               <p className="text-slate-700 dark:text-slate-200 text-lg font-semibold mb-2">
