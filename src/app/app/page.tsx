@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useTimer } from "@/hooks/useTimer";
+import { useCertStudDeepLink } from "@/hooks/useCertStudDeepLink";
 import TaskList from "@/components/TaskList";
 import AppNavbar from "@/components/AppNavbar";
 import DailyQuoteBanner from "@/components/DailyQuoteBanner";
@@ -11,6 +12,7 @@ import AmbientSounds from "@/components/AmbientSounds";
 import AppMessageQueue from "@/components/AppMessageQueue";
 import KeyboardShortcutsModal from "@/components/KeyboardShortcutsModal";
 import SessionCelebration from "@/components/SessionCelebration";
+import CertStudStudyPromo from "@/components/CertStudStudyPromo";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
@@ -25,6 +27,18 @@ function formatTime(ms: number): string {
 }
 
 export default function AppPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+      </div>
+    }>
+      <AppPageContent />
+    </Suspense>
+  );
+}
+
+function AppPageContent() {
   const { user, loading } = useAuth();
   const timer = useTimer({ authLoading: loading, user });
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
@@ -192,6 +206,22 @@ export default function AppPage() {
     timer.saveSettings({ ...timer.settings, workDuration: nextDuration });
   }, [timer]);
 
+  const handleApplyCertStudDuration = useCallback((minutes: number) => {
+    handleSelectWorkPreset(minutes);
+  }, [handleSelectWorkPreset]);
+
+  const handleCertStudTasksChanged = useCallback(() => {
+    setTaskListKey((k) => k + 1);
+  }, []);
+
+  const { certStudContext } = useCertStudDeepLink({
+    authLoading: loading,
+    onApplyDuration: handleApplyCertStudDuration,
+    onSelectTask: setActiveTaskId,
+    onStartTask: handleStartTask,
+    onTasksChanged: handleCertStudTasksChanged,
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -299,6 +329,10 @@ export default function AppPage() {
       <DueDateReminders />
       <div className="flex-1 py-2 sm:py-3">
       <div className={tasksFullscreen ? "w-full px-2 sm:px-4" : "app-container"}>
+
+        {certStudContext && !focusMode && (
+          <CertStudStudyPromo context={certStudContext} variant="inline" className="mb-3" />
+        )}
 
         {/* Tasks — full width */}
         <div id="tasks-section" className="w-full">

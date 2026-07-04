@@ -64,3 +64,35 @@ export function trackSoundPlayed(sound: string) {
 export function trackSoundStopped(sound: string) {
   track("ambient_sound_stopped", { sound });
 }
+
+// ── CertStud integration ─────────────────────────────────────────────────────
+
+export function trackCertStudDeepLinkApplied(params: {
+  ref?: string;
+  certId?: string;
+  certCode?: string;
+  topic?: string;
+  durationMinutes?: number;
+}) {
+  track("certstud_deep_link_applied", {
+    ref: params.ref ?? "",
+    cert_id: params.certId ?? "",
+    cert_code: params.certCode ?? "",
+    topic: params.topic ?? "",
+    duration_minutes: params.durationMinutes ?? 0,
+  });
+}
+
+export function trackCertStudReturnClick(params: {
+  ref?: string;
+  certId?: string;
+  certCode?: string;
+  destination: string;
+}) {
+  track("certstud_return_click", {
+    ref: params.ref ?? "",
+    cert_id: params.certId ?? "",
+    cert_code: params.certCode ?? "",
+    destination: params.destination,
+  });
+}
