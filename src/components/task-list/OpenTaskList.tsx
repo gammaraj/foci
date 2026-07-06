@@ -7,6 +7,7 @@ import { formatDueDate, formatDuration, isDueDateOverdue } from "@/components/ta
 import {
   getTaskListSection,
   isActionableOverdue,
+  TASK_LIST_SECTION_ORDER,
   type TaskListSection,
 } from "@/lib/task-status";
 
@@ -96,116 +97,67 @@ export default function OpenTaskList({
     return <p className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500">{emptyMessage}</p>;
   }
 
-  // Build a flat list of renderable items so section headers can span both grid columns.
-  const items: React.ReactNode[] = [];
-
   const sectionMeta: Record<
     TaskListSection,
-    { label: string; borderClass: string; collapsible?: boolean; count?: number }
+    {
+      label: string;
+      headerModifier: string;
+      labelClass: string;
+      collapsible?: boolean;
+      extraTopSpace?: boolean;
+    }
   > = {
-    overdue: { label: "Overdue", borderClass: "border-l-red-500 dark:border-l-rose-500" },
-    upcoming: { label: "Upcoming", borderClass: "border-l-slate-400 dark:border-l-slate-500" },
-    blocked: { label: "Blocked / Waiting", borderClass: "border-l-amber-500 dark:border-l-amber-400" },
+    overdue: {
+      label: "Overdue",
+      headerModifier: "task-list-section-header--overdue",
+      labelClass: "text-red-700 dark:text-red-300",
+    },
+    upcoming: {
+      label: "Upcoming",
+      headerModifier: "task-list-section-header--upcoming",
+      labelClass: "text-slate-700 dark:text-slate-200",
+    },
+    blocked: {
+      label: "Blocked / Waiting",
+      headerModifier: "task-list-section-header--blocked",
+      labelClass: "text-amber-700 dark:text-amber-300",
+    },
     inbox: {
       label: "No due date",
-      borderClass: "border-l-slate-300 dark:border-l-slate-600",
+      headerModifier: "task-list-section-header--inbox",
+      labelClass: "text-slate-600 dark:text-slate-300",
       collapsible: true,
-      count: scopedUndatedOpenCount,
+      extraTopSpace: true,
     },
     someday: {
       label: "Someday / Maybe",
-      borderClass: "border-l-violet-400 dark:border-l-violet-500",
+      headerModifier: "task-list-section-header--someday",
+      labelClass: "text-violet-700 dark:text-violet-300",
       collapsible: true,
-      count: scopedSomedayOpenCount,
+      extraTopSpace: true,
     },
   };
 
-  tasks.forEach((task, index) => {
-    const isExpanded = expandedTaskId === task.id;
+  const tasksBySection = new Map<TaskListSection, Task[]>();
+  for (const task of tasks) {
     const section = getTaskListSection(task);
-    const prevSection = index > 0 ? getTaskListSection(tasks[index - 1]) : null;
-    const showSectionHeader = section !== prevSection;
+    const list = tasksBySection.get(section) ?? [];
+    list.push(task);
+    tasksBySection.set(section, list);
+  }
+
+  const renderTaskCard = (task: Task) => {
+    const isExpanded = expandedTaskId === task.id;
     const isOverdue = isActionableOverdue(task);
     const isBlocked = !!task.blocked;
-    const isCollapsibleInbox = isTimeFilter && section === "inbox";
-    const isCollapsibleSomeday = section === "someday";
-    const isCollapsed =
-      (isCollapsibleInbox && !noDueDateExpanded) || (isCollapsibleSomeday && !somedayExpanded);
-
-    const spanClass = twoColumn ? "col-span-full" : "";
-
-    if (isCollapsed) {
-      if (showSectionHeader) {
-        const meta = sectionMeta[section];
-        const onToggle =
-          section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded;
-        const expanded = section === "inbox" ? noDueDateExpanded : somedayExpanded;
-        items.push(
-          <button
-            key={`${section}-section`}
-            type="button"
-            onClick={onToggle}
-            className={`${spanClass} mb-2 mt-3 pl-3 py-1.5 border-l-[3px] ${meta.borderClass} w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors`}
-            aria-expanded={!!expanded}
-          >
-            <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <span className="app-section-label text-slate-600 dark:text-slate-400">{meta.label}</span>
-            {meta.count != null && meta.count > 0 && (
-              <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">({meta.count})</span>
-            )}
-          </button>
-        );
-      }
-      return;
-    }
-
-    if (showSectionHeader) {
-      const meta = sectionMeta[section];
-      if (meta.collapsible && (section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded)) {
-        const onToggle =
-          section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded;
-        const expanded = section === "inbox" ? noDueDateExpanded : somedayExpanded;
-        items.push(
-          <button
-            key={`${section}-hdr-${task.id}`}
-            type="button"
-            onClick={onToggle}
-            className={`${spanClass} mb-2 mt-3 pl-3 py-1.5 border-l-[3px] ${meta.borderClass} w-full text-left flex items-center gap-2 hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60 rounded-r-lg transition-colors`}
-            aria-expanded={!!expanded}
-          >
-            <svg className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <span className={`app-section-label ${section === "overdue" ? "text-red-700 dark:text-red-300" : section === "blocked" ? "text-amber-700 dark:text-amber-300" : section === "someday" ? "text-violet-700 dark:text-violet-300" : "text-slate-600 dark:text-slate-400"}`}>
-              {meta.label}
-            </span>
-            {meta.count != null && meta.count > 0 && (
-              <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">({meta.count})</span>
-            )}
-          </button>
-        );
-      } else {
-        items.push(
-          <div key={`${section}-hdr-${task.id}`} className={`${spanClass} mb-1.5 mt-1 pl-3 py-1 border-l-[3px] ${meta.borderClass}`}>
-            <span className={`app-section-label ${section === "overdue" ? "text-red-700 dark:text-red-300" : section === "blocked" ? "text-amber-700 dark:text-amber-300" : "text-slate-600 dark:text-slate-400"}`}>
-              {meta.label}
-            </span>
-          </div>
-        );
-      }
-    }
-
-    // ── Task card ────────────────────────────────────────────────────────────
     const subtaskCount = task.subtasks?.length ?? 0;
     const completedSubtaskCount = task.subtasks?.filter((s) => s.completed).length ?? 0;
     const spansFullWidth = twoColumn && isExpanded;
 
-    items.push(
+    return (
       <div
         key={task.id}
-        className={`group/task flex flex-col min-w-0${spansFullWidth ? " col-span-full" : ""}`}
+        className={`group/task flex flex-col min-w-0${spansFullWidth ? " sm:col-span-2" : ""}`}
       >
         <div
           draggable
@@ -404,11 +356,103 @@ export default function OpenTaskList({
         </div>
       </div>
     );
-  });
+  };
 
-  const containerClass = twoColumn
-    ? "grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1.5"
-    : className;
+  const renderSectionHeader = (
+    section: TaskListSection,
+    meta: (typeof sectionMeta)[TaskListSection],
+    count: number,
+    collapsible: boolean,
+    expanded: boolean,
+    onToggle?: () => void,
+  ) => {
+    const headerContent = (
+      <>
+        {collapsible && (
+          <svg
+            className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        )}
+        <span className={`bucket-lane-label ${meta.labelClass}`}>{meta.label}</span>
+        <span className="task-list-section-count" aria-label={`${count} tasks`}>
+          {count}
+        </span>
+      </>
+    );
 
-  return <div className={containerClass}>{items}</div>;
+    const headerClass = `task-list-section-header ${meta.headerModifier}`;
+
+    if (collapsible && onToggle) {
+      return (
+        <button
+          type="button"
+          onClick={onToggle}
+          className={`${headerClass} hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]/80 transition-colors`}
+          aria-expanded={expanded}
+        >
+          {headerContent}
+        </button>
+      );
+    }
+
+    return <div className={headerClass}>{headerContent}</div>;
+  };
+
+  const sections: React.ReactNode[] = [];
+
+  for (const section of TASK_LIST_SECTION_ORDER) {
+    const meta = sectionMeta[section];
+    const sectionTasks = tasksBySection.get(section) ?? [];
+    const isCollapsibleInbox = isTimeFilter && section === "inbox";
+    const isCollapsibleSomeday = section === "someday";
+    const isCollapsible = !!(meta.collapsible && (isCollapsibleInbox || isCollapsibleSomeday));
+    const expanded = section === "inbox" ? noDueDateExpanded : somedayExpanded;
+    const isCollapsed = isCollapsible && !expanded;
+    const count =
+      section === "inbox" && scopedUndatedOpenCount > 0
+        ? scopedUndatedOpenCount
+        : section === "someday" && scopedSomedayOpenCount > 0
+          ? scopedSomedayOpenCount
+          : sectionTasks.length;
+
+    if (sectionTasks.length === 0 && !isCollapsible) continue;
+    if (sectionTasks.length === 0 && isCollapsible && count === 0) continue;
+
+    const onToggle =
+      section === "inbox" ? onToggleNoDueDateExpanded : onToggleSomedayExpanded;
+
+    sections.push(
+      <section
+        key={section}
+        aria-label={meta.label}
+        className={`task-list-section-panel${meta.extraTopSpace ? " task-list-section-panel--spaced" : ""}`}
+      >
+        {renderSectionHeader(
+          section,
+          meta,
+          count,
+          isCollapsible,
+          !!expanded,
+          isCollapsible ? onToggle : undefined,
+        )}
+        {!isCollapsed && sectionTasks.length > 0 && (
+          <div
+            className={`task-list-section-grid${twoColumn ? " task-list-section-grid--two-col" : ""}`}
+          >
+            {sectionTasks.map((task) => renderTaskCard(task))}
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  const containerClass = twoColumn ? "task-list-sections" : `${className} task-list-sections`;
+
+  return <div className={containerClass}>{sections}</div>;
 }

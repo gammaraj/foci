@@ -1985,7 +1985,7 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
-      <div className="px-3 sm:px-4 pt-1.5 pb-1 relative" ref={projectMenuRef}>
+      <div className="px-3 sm:px-4 pt-1.5 pb-2 relative border-b border-slate-200/90 dark:border-[#243350]/80" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -2317,7 +2317,7 @@ export default function TaskList({
 
       </div>
 
-      <div className="px-3 sm:p-4 pt-3 pb-2 space-y-2">
+      <div className="task-list-composer px-3 sm:px-4 py-3 space-y-2">
         {/* Project description */}
         {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">
@@ -2471,7 +2471,9 @@ export default function TaskList({
           </div>
         )}
         </div>
+      </div>
 
+        <div className="task-list-body px-3 sm:px-4 pt-3 pb-2 space-y-2">
         {/* Loading skeleton */}
         {!tasksReady && (
           <div className="space-y-2 py-2">
