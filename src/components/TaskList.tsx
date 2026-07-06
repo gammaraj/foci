@@ -2453,7 +2453,6 @@ export default function TaskList({
             Add
           </button>
           </div>
-          </div>
         </form>
 
         {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && (
