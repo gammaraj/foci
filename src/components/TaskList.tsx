@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
@@ -73,6 +73,7 @@ export default function TaskList({
   const [tasksReady, setTasksReady] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [newTaskProjectId, setNewTaskProjectId] = useState<string>(DEFAULT_PROJECT_ID);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
@@ -671,7 +672,7 @@ export default function TaskList({
     setExpandedTaskId(task.id);
   };
 
-  const addTask = () => addTaskWithTitle(newTaskTitle);
+  const addTask = () => addTaskWithTitle(newTaskTitle, undefined, newTaskProjectId);
 
   const toggleComplete = (id: string) => {
     const task = tasks.find((t) => t.id === id);
@@ -1083,6 +1084,28 @@ export default function TaskList({
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
   const isThisYearFilter = selectedProjectId === THIS_YEAR_FILTER_ID;
   const isTimeFilter = isTodayFilter || isThisWeekFilter || isThisMonthFilter || isThisYearFilter;
+  const defaultNewTaskProjectId = useMemo(() => {
+    if (isTimeFilter) {
+      return projectFilterId !== ALL_PROJECTS_ID ? projectFilterId : DEFAULT_PROJECT_ID;
+    }
+    if (isAllProjects || selectedProjectId === ALL_PROJECTS_ID) {
+      return DEFAULT_PROJECT_ID;
+    }
+    if (
+      selectedProjectId === TODAY_FILTER_ID ||
+      selectedProjectId === THIS_WEEK_FILTER_ID ||
+      selectedProjectId === THIS_MONTH_FILTER_ID ||
+      selectedProjectId === THIS_YEAR_FILTER_ID
+    ) {
+      return DEFAULT_PROJECT_ID;
+    }
+    return selectedProjectId;
+  }, [isTimeFilter, projectFilterId, isAllProjects, selectedProjectId]);
+
+  useEffect(() => {
+    setNewTaskProjectId(defaultNewTaskProjectId);
+  }, [defaultNewTaskProjectId]);
+
   const activeProjectTabId = isTimeFilter
     ? projectFilterId
     : isAllProjects
@@ -2357,20 +2380,33 @@ export default function TaskList({
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder={`Add a task to ${
-              isTimeFilter
-                ? projectFilterId === ALL_PROJECTS_ID
-                  ? "General"
-                  : (projects.find((p) => p.id === projectFilterId)?.name ?? "General")
-                : isAllProjects
-                  ? "General"
-                  : (currentProject?.name ?? "General")
-            }...`}
+            placeholder="Task name..."
             maxLength={MAX_TASK_TITLE}
             className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 outline-none"
           />
-          <div className="flex gap-2 min-w-0 sm:contents">
-          <div className="relative flex-1 min-w-0 sm:flex-shrink-0">
+          <div className="flex gap-2 min-w-0 w-full sm:w-auto">
+          <label htmlFor="new-task-project" className="sr-only">
+            Project
+          </label>
+          <select
+            id="new-task-project"
+            value={
+              sortedProjects.some((p) => p.id === newTaskProjectId)
+                ? newTaskProjectId
+                : DEFAULT_PROJECT_ID
+            }
+            onChange={(e) => setNewTaskProjectId(e.target.value)}
+            className="app-placeholder flex-1 min-w-0 sm:flex-none sm:max-w-[11rem] px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 outline-none truncate"
+            aria-label="Project"
+            title="Project"
+          >
+            {sortedProjects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <div className="relative flex-1 min-w-0 sm:flex-shrink-0 sm:max-w-[9.5rem]">
             <input
               ref={newTaskDueDateInputRef}
               id="new-task-due-date"
@@ -2416,6 +2452,7 @@ export default function TaskList({
           >
             Add
           </button>
+          </div>
           </div>
         </form>
 
