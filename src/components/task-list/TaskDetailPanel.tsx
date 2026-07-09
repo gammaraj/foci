@@ -4,6 +4,7 @@ import React from "react";
 import type { Project, RecurrenceType, Subtask, Task, TaskPriority } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
+import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 
 export interface TaskDetailPanelProps {
@@ -124,8 +125,12 @@ export function TaskDetailPanel({
       </div>
 
       <div className={`${pad} pb-2 flex flex-wrap items-center gap-2`}>
-        <div
-          className={`relative inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+        <DueDateField
+          value={task.dueDate}
+          onChange={onSetDueDate}
+          requireExplicitPick={!task.dueDate}
+          ariaLabel="Set due date"
+          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
             task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
               ? "border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20"
               : task.dueDate && task.dueDate === getToday()
@@ -146,19 +151,7 @@ export function TaskDetailPanel({
           ) : (
             "Set due date"
           )}
-          <input
-            type="date"
-            value={task.dueDate ?? ""}
-            onChange={(e) => onSetDueDate(e.target.value || undefined)}
-            onFocus={(e) => {
-              try {
-                (e.target as HTMLInputElement).showPicker();
-              } catch {}
-            }}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            aria-label="Set due date"
-          />
-        </div>
+        </DueDateField>
 
         <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
           <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

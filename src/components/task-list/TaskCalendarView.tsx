@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { Task, Project } from "@/lib/types";
 import { ALL_PROJECTS_ID } from "@/lib/types";
 import { formatDueDate } from "./utils";
+import { DueDateField } from "@/components/task-list/DueDateField";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -361,21 +362,19 @@ export default function TaskCalendarView({
                 }`}
               >
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
-                <div
-                  className="relative flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
-                  title="Set due date"
-                  onClick={(e) => e.stopPropagation()}
+                <DueDateField
+                  value={undefined}
+                  onChange={(date) => date && onSetDueDate(task.id, date)}
+                  requireExplicitPick
+                  ariaLabel="Set due date"
+                  className="flex-shrink-0 p-1 text-slate-400 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <input
-                    type="date"
-                    onChange={(e) => { if (e.target.value) onSetDueDate(task.id, e.target.value); }}
-                    onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }}
-                  />
-                </div>
+                  <span title="Set due date" onClick={(e) => e.stopPropagation()}>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </span>
+                </DueDateField>
               </div>
               {renderBelowTask?.(task)}
               </div>

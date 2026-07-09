@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
+import { DueDateField } from "@/components/task-list/DueDateField";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
@@ -140,33 +141,33 @@ function DueBadge({
   const label = isToday ? "Today" : formatDueDate(dueDate);
   const interactive = !!(taskId && onSetDueDate);
 
-  return (
-    <span
-      className={`relative inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
-        compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
-      } ${
-        overdue
-          ? criticalOverdue
-            ? "text-red-800 dark:text-red-200 bg-red-200/90 dark:bg-red-900/60 border border-red-400/80 dark:border-red-700/70"
-            : "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
-          : blocked
-            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-          : isToday
-            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-            : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
-      } ${interactive ? "cursor-pointer hover:border-cyan-300 dark:hover:border-cyan-600" : ""}`}
-      title={
-        blocked
-          ? "Waiting on external blocker"
-          : overdue
-            ? `${daysLate}d overdue${interactive ? " — click to change" : ""}`
-            : isToday
-              ? "Due today"
-              : interactive
-                ? "Change due date"
-                : undefined
-      }
-    >
+  const badgeClass = `inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
+    compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
+  } ${
+    overdue
+      ? criticalOverdue
+        ? "text-red-800 dark:text-red-200 bg-red-200/90 dark:bg-red-900/60 border border-red-400/80 dark:border-red-700/70"
+        : "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
+      : blocked
+        ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
+        : isToday
+          ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
+          : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
+  } ${interactive ? "cursor-pointer hover:border-cyan-300 dark:hover:border-cyan-600" : ""}`;
+
+  const badgeTitle =
+    blocked
+      ? "Waiting on external blocker"
+      : overdue
+        ? `${daysLate}d overdue${interactive ? " — click to change" : ""}`
+        : isToday
+          ? "Due today"
+          : interactive
+            ? "Change due date"
+            : undefined;
+
+  const badgeContent = (
+    <>
       {!compact && (
         <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -176,22 +177,28 @@ function DueBadge({
       {overdue && daysLate > 1 && (
         <span className="opacity-75 font-medium">{daysLate}d</span>
       )}
-      {interactive && (
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => onSetDueDate!(taskId!, e.target.value || undefined)}
-          onClick={(e) => e.stopPropagation()}
-          onFocus={(e) => {
-            try {
-              (e.target as HTMLInputElement).showPicker();
-            } catch {}
-          }}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          aria-label="Change due date"
-        />
-      )}
-    </span>
+    </>
+  );
+
+  if (!interactive) {
+    return (
+      <span className={badgeClass} title={badgeTitle}>
+        {badgeContent}
+      </span>
+    );
+  }
+
+  return (
+    <DueDateField
+      value={dueDate}
+      onChange={(date) => onSetDueDate!(taskId!, date)}
+      ariaLabel="Change due date"
+      className={badgeClass}
+    >
+      <span className="inline-flex items-center gap-0.5" title={badgeTitle}>
+        {badgeContent}
+      </span>
+    </DueDateField>
   );
 }
 
@@ -431,7 +438,7 @@ function BucketTaskCard({
             className={`shrink-0 mt-[1px] transition-opacity duration-150 ${
               isActive
                 ? "opacity-100"
-                : "hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                : "flex sm:block sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             }`}
           >
             {isActive && isTimerRunning ? (
@@ -486,28 +493,18 @@ function BucketTaskCard({
             <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact blocked={isBlocked} />
           )}
           {!task.dueDate && onSetDueDate && (
-            <label
-              className="relative inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 cursor-pointer transition-colors"
-              title="Set a due date to schedule this task"
+            <DueDateField
+              value={undefined}
+              onChange={(date) => date && onSetDueDate(task.id, date)}
+              requireExplicitPick
+              ariaLabel="Set due date"
+              className="inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 cursor-pointer transition-colors"
             >
               <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span className="hidden sm:inline">Set date</span>
-              <input
-                type="date"
-                value=""
-                onChange={(e) => {
-                  if (e.target.value) onSetDueDate(task.id, e.target.value);
-                }}
-                onClick={(e) => e.stopPropagation()}
-                onFocus={(e) => {
-                  try { (e.target as HTMLInputElement).showPicker(); } catch {}
-                }}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                aria-label="Set due date"
-              />
-            </label>
+            </DueDateField>
           )}
           {(task.subtasks?.length ?? 0) > 0 && (
             <span className="text-[10px] font-medium text-violet-600 dark:text-violet-400 tabular-nums">
@@ -653,10 +650,10 @@ function BucketColumn({
           <button
             type="button"
             onClick={() => onToggleProjectFavorite(project.id)}
-            className={`flex-shrink-0 p-0.5 rounded transition-colors ${
+            className={`flex-shrink-0 touch-target-sm p-0.5 rounded transition-colors ${
               project.favorite
                 ? "text-amber-400 hover:text-amber-500"
-                : "text-slate-300 dark:text-slate-600 opacity-0 group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
+                : "text-slate-300 dark:text-slate-600 opacity-100 sm:opacity-0 sm:group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
             }`}
             title={
               project.favorite
@@ -709,7 +706,7 @@ function BucketColumn({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onExpandProject(project.id); }}
-            className="flex-shrink-0 p-1 rounded-md text-slate-400 dark:text-slate-500 opacity-0 group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-all"
+            className="flex-shrink-0 touch-target-sm p-1 rounded-md text-slate-400 dark:text-slate-500 opacity-100 sm:opacity-0 sm:group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-all"
             title={`View ${project.name} full screen`}
             aria-label={`Expand ${project.name} to full view`}
           >

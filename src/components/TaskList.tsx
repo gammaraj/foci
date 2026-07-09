@@ -24,7 +24,7 @@ import {
 } from "@/lib/task-view-preference";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import TaskCardView from "@/components/task-list/TaskCardView";
-import { applyBucketDrop, moveBucketTaskInLane, moveCardTaskInProject, type BucketDropTarget } from "@/components/task-list/bucket-order";
+import { applyBucketDrop, moveBucketTaskInLane, moveCardTaskInProject, moveCardTaskInProjectByDirection, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
@@ -919,6 +919,11 @@ export default function TaskList({
     handleDragEnd();
   };
 
+  const handleCardTaskMove = (projectId: string, taskId: string, direction: "up" | "down") => {
+    const updated = moveCardTaskInProjectByDirection(tasks, projectId, taskId, direction, activeTaskId);
+    if (updated) persist(updated);
+  };
+
   // Subtask helpers
   const addSubtask = (taskId: string) => {
     const title = newSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
@@ -1520,7 +1525,7 @@ export default function TaskList({
                 <button
                   type="button"
                   onClick={closeProjectManage}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 mb-1.5 transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 mb-1.5 transition-colors touch-target-sm -ml-2 px-2 py-1.5 rounded-lg"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1612,6 +1617,13 @@ export default function TaskList({
                   : isTimeFilter
                     ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
                     : "Pick a task, then hit Focus to start your session"}
+              </p>
+            )}
+            {!focusMode && viewMode === "card" && (
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 sm:hidden">
+                {sortedProjects.length >= 2
+                  ? "Top tasks per project · use ▲▼ to reorder · ⋯ to manage"
+                  : "Top tasks per project · ⋯ to manage projects"}
               </p>
             )}
               </>
@@ -1936,7 +1948,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={openProjectManage}
-              className="inline-flex items-center gap-1.5 px-2 py-1 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
               data-tour="manage-projects"
             >
               <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -2038,8 +2050,25 @@ export default function TaskList({
         />
       )}
 
+      {/* Card toolbar — manage projects on mobile */}
+      {!isFocusMode && !projectManageOpen && viewMode === "card" && tasksReady && (
+        <div className="sm:hidden px-3 py-2 flex items-center border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
+          <button
+            type="button"
+            onClick={openProjectManage}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 touch-target-sm"
+            data-tour="manage-projects"
+          >
+            <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+            </svg>
+            Manage projects
+          </button>
+        </div>
+      )}
+
       {!isFocusMode && !projectManageOpen && viewMode === "card" && !tasksReady && (
-        <div className="px-3 sm:px-4 pb-4 pt-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="px-3 sm:px-4 pb-4 pt-1 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
@@ -2079,6 +2108,8 @@ export default function TaskList({
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
           onDeleteTask={deleteTask}
+          onMoveProject={handleMoveProject}
+          onMoveTask={handleCardTaskMove}
           onExpandProject={expandProjectFromBucket}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
         />
@@ -2086,7 +2117,7 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
-      <div className="px-3 sm:px-4 pt-1.5 pb-2 relative border-b border-slate-200/90 dark:border-[#243350]/80" ref={projectMenuRef}>
+      <div className="px-3 sm:px-4 pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -2113,7 +2144,7 @@ export default function TaskList({
           {onFocusProject && !isAllProjects && !isTimeFilter && selectedProjectId !== DEFAULT_PROJECT_ID && (
             <button
               onClick={() => onFocusProject(selectedProjectId)}
-              className="flex-shrink-0 p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+              className="flex-shrink-0 touch-target-sm p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
               title="Focus on this project"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2126,7 +2157,7 @@ export default function TaskList({
           {/* Add project button */}
           <button
             onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
-            className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
+            className={`flex-shrink-0 touch-target-sm p-2 rounded-lg transition-colors ${
               showAddProject
                 ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
@@ -2141,7 +2172,7 @@ export default function TaskList({
           {/* More / manage button */}
           <button
             onClick={openProjectManage}
-            className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
+            className={`flex-shrink-0 touch-target-sm p-2 rounded-lg transition-colors ${
               projectManageOpen
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
@@ -2418,7 +2449,7 @@ export default function TaskList({
 
       </div>
 
-      <div className="task-list-composer px-3 sm:px-4 py-3 space-y-2">
+      <div className="task-list-composer px-3 sm:px-4 py-2 space-y-1.5">
         {/* Project description */}
         {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">
@@ -2468,13 +2499,13 @@ export default function TaskList({
         )}
 
         {/* Add task input */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             addTask();
           }}
-          className="flex flex-col gap-2 sm:flex-row min-w-0 w-full"
+          className="flex flex-col gap-1.5 sm:flex-row min-w-0 w-full"
         >
           <input
             id="new-task-input"
@@ -2574,7 +2605,7 @@ export default function TaskList({
         </div>
       </div>
 
-        <div className="task-list-body px-3 sm:px-4 pt-3 pb-2 space-y-2">
+        <div className="task-list-body px-3 sm:px-4 pt-2 pb-1.5 space-y-1.5">
         {/* Loading skeleton */}
         {!tasksReady && (
           <div className="space-y-2 py-2">

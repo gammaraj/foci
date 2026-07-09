@@ -132,11 +132,15 @@ function ProjectRowMenu({
 
   useEffect(() => {
     if (!open) return;
-    const close = (e: MouseEvent) => {
+    const close = (e: Event) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    document.addEventListener("touchstart", close, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("touchstart", close);
+    };
   }, [open]);
 
   const toggleOpen = () => {
@@ -156,7 +160,7 @@ function ProjectRowMenu({
           e.stopPropagation();
           toggleOpen();
         }}
-        className="p-2 rounded-lg text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-800 dark:hover:text-white transition-colors"
+        className="touch-target-sm p-2 rounded-lg text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-800 dark:hover:text-white transition-colors"
         aria-label={`Manage ${project.name}`}
         aria-expanded={open}
         title="Rename, archive, or delete"
@@ -179,7 +183,7 @@ function ProjectRowMenu({
               setOpen(false);
               onStartRename(project);
             }}
-            className="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
           >
             Rename
           </button>
@@ -191,7 +195,7 @@ function ProjectRowMenu({
                 setOpen(false);
                 onShare(project);
               }}
-              className="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
             >
               Share
             </button>
@@ -315,7 +319,7 @@ function ProjectRow({
             draggable
             onDragStart={() => onProjectDragStart(project.id)}
             onDragEnd={onProjectDragEnd}
-            className="text-slate-300 dark:text-slate-600 flex-shrink-0 cursor-grab active:cursor-grabbing p-1 -ml-1 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+            className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 flex-shrink-0 cursor-grab active:cursor-grabbing p-1 -ml-1 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
             title="Drag to reorder tabs"
             aria-label={`Drag ${project.name} to reorder`}
           >
@@ -340,7 +344,7 @@ function ProjectRow({
           value={project.color || PROJECT_COLORS[0]}
           onChange={(e) => onUpdateColor(project.id, e.target.value)}
           onClick={(e) => e.stopPropagation()}
-          className="w-4 h-4 rounded-full border-0 cursor-pointer p-0 appearance-none bg-transparent flex-shrink-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
+          className="w-8 h-8 sm:w-4 sm:h-4 rounded-full border-0 cursor-pointer p-0 appearance-none bg-transparent flex-shrink-0 touch-target-sm [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
           title="Change color"
         />
 
@@ -410,7 +414,7 @@ function ProjectRow({
                 onMoveProject(project.id, "up");
               }}
               disabled={projectIndex === 0}
-              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="touch-target-sm !min-h-8 !min-w-8 p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] disabled:opacity-30 disabled:pointer-events-none transition-colors"
               aria-label={`Move ${project.name} up`}
               title="Move up"
             >
@@ -425,7 +429,7 @@ function ProjectRow({
                 onMoveProject(project.id, "down");
               }}
               disabled={projectIndex === projectCount - 1}
-              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="touch-target-sm !min-h-8 !min-w-8 p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] disabled:opacity-30 disabled:pointer-events-none transition-colors"
               aria-label={`Move ${project.name} down`}
               title="Move down"
             >
@@ -568,11 +572,16 @@ export default function ProjectManageView({
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(70vh,720px)]">
+      <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)]">
         {sortedProjects.length >= 2 && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-            Drag ⋮⋮ to reorder tabs. Drop on a pinned project to pin, or on an unpinned one to unpin.
-          </p>
+          <>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 hidden sm:block">
+              Drag ⋮⋮ to reorder tabs. Drop on a pinned project to pin, or on an unpinned one to unpin.
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 sm:hidden">
+              Use ▲▼ to reorder. Tap ★ to pin · ⋯ for rename, archive, or delete.
+            </p>
+          </>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
         {sortedProjects.map((project, index) => {
@@ -662,14 +671,14 @@ export default function ProjectManageView({
                     <button
                       type="button"
                       onClick={() => onUnarchive(p.id)}
-                      className="text-xs text-green-600 dark:text-green-400 hover:underline"
+                      className="touch-target-sm px-2 py-1 text-xs font-medium text-green-600 dark:text-green-400 hover:underline"
                     >
                       Restore
                     </button>
                     <button
                       type="button"
                       onClick={() => onDelete(p.id)}
-                      className="text-xs text-red-500 hover:underline"
+                      className="touch-target-sm px-2 py-1 text-xs font-medium text-red-500 hover:underline"
                     >
                       Delete
                     </button>

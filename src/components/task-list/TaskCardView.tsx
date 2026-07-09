@@ -40,6 +40,8 @@ interface TaskCardViewProps {
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
+  onMoveProject?: (projectId: string, direction: "up" | "down") => void;
+  onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
   onExpandProject?: (projectId: string) => void;
 }
 
@@ -150,6 +152,9 @@ function CardTaskRow({
   onSaveEdit,
   onCancelEdit,
   onDeleteTask,
+  onMoveTask,
+  taskIndex,
+  taskCount,
 }: {
   task: Task;
   projectId: string;
@@ -168,11 +173,23 @@ function CardTaskRow({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
+  onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
+  taskIndex: number;
+  taskCount: number;
 }) {
+  const [allowDrag, setAllowDrag] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px) and (pointer: fine)");
+    const update = () => setAllowDrag(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
   const someday = !!task.someday;
-  const dragEnabled = !!onTaskDragStart && !isEditing;
+  const dragEnabled = !!onTaskDragStart && !isEditing && allowDrag;
   const isDragging = dragTaskId === task.id;
   const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
 
@@ -219,6 +236,38 @@ function CardTaskRow({
       } ${isDragOver ? "ring-1 ring-inset ring-cyan-400/60 dark:ring-cyan-500/50" : ""}`}
     >
       <div className="flex items-center gap-1 min-h-[1.25rem]">
+        {onMoveTask && taskCount > 1 && (
+          <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveTask(projectId, task.id, "up");
+              }}
+              disabled={taskIndex === 0}
+              className="touch-target-sm !min-h-0 !min-w-0 p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0"
+              aria-label="Move task up"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveTask(projectId, task.id, "down");
+              }}
+              disabled={taskIndex >= taskCount - 1}
+              className="touch-target-sm !min-h-0 !min-w-0 p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0"
+              aria-label="Move task down"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
         {isEditing ? (
           <input
             type="text"
@@ -244,12 +293,12 @@ function CardTaskRow({
           </span>
         )}
         {!isEditing && (
-          <div className="shrink-0 flex items-center opacity-0 group-hover/row:opacity-100 focus-within:opacity-100">
+          <div className="shrink-0 flex items-center hover-reveal-desktop focus-within:opacity-100">
             {onStartEdit && (
               <button
                 type="button"
                 onClick={() => onStartEdit(task)}
-                className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+                className="touch-target-sm !min-h-8 !min-w-8 p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
                 title={`Edit "${task.title}"`}
                 aria-label={`Edit task ${task.title}`}
               >
@@ -270,7 +319,7 @@ function CardTaskRow({
                   e.stopPropagation();
                   onDeleteTask(task.id);
                 }}
-                className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                className="touch-target-sm !min-h-8 !min-w-8 p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 title={`Delete "${task.title}"`}
                 aria-label={`Delete task ${task.title}`}
               >
@@ -288,6 +337,7 @@ function CardTaskRow({
 
 function ProjectCard({
   project,
+  projectIndex,
   projectCount,
   tasks,
   completedCount,
@@ -301,12 +351,14 @@ function ProjectCard({
   onProjectDragOver,
   onProjectDrop,
   onProjectDragEnd,
+  onMoveProject,
   dragTaskId,
   dragOverTaskId,
   onTaskDragStart,
   onTaskDragOver,
   onTaskDrop,
   onTaskDragEnd,
+  onMoveTask,
   onStartEdit,
   onEditTitleChange,
   onSaveEdit,
@@ -316,6 +368,7 @@ function ProjectCard({
   onQuickAdd,
 }: {
   project: Project;
+  projectIndex: number;
   projectCount: number;
   tasks: Task[];
   completedCount: number;
@@ -329,12 +382,14 @@ function ProjectCard({
   onProjectDragOver?: (e: React.DragEvent, id: string) => void;
   onProjectDrop?: (targetId: string) => void;
   onProjectDragEnd?: () => void;
+  onMoveProject?: (projectId: string, direction: "up" | "down") => void;
   dragTaskId?: string | null;
   dragOverTaskId?: string | null;
   onTaskDragStart?: (taskId: string) => void;
   onTaskDragOver?: (e: React.DragEvent, taskId: string) => void;
   onTaskDrop?: (projectId: string, targetTaskId: string) => void;
   onTaskDragEnd?: () => void;
+  onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
@@ -413,12 +468,38 @@ function ProjectCard({
                 e.stopPropagation();
               }}
               onDragEnd={onProjectDragEnd}
-              className="text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing p-0.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing p-0.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
             >
               <GripIcon />
             </span>
+          ) : null}
+          {canReorder && onMoveProject ? (
+            <div className="sm:hidden flex items-center gap-0.5 shrink-0 -ml-0.5">
+              <button
+                type="button"
+                onClick={() => onMoveProject(project.id, "up")}
+                disabled={projectIndex === 0}
+                className="touch-target-sm !min-h-8 !min-w-8 p-0.5 rounded text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                aria-label={`Move ${project.name} up`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => onMoveProject(project.id, "down")}
+                disabled={projectIndex >= projectCount - 1}
+                className="touch-target-sm !min-h-8 !min-w-8 p-0.5 rounded text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                aria-label={`Move ${project.name} down`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
           ) : null}
           {project.color && (
             <span
@@ -448,7 +529,7 @@ function ProjectCard({
             No tasks
           </p>
         ) : (
-          topTasks.map((task) => (
+          topTasks.map((task, taskIndex) => (
             <CardTaskRow
               key={task.id}
               task={task}
@@ -468,6 +549,9 @@ function ProjectCard({
               onSaveEdit={onSaveEdit}
               onCancelEdit={onCancelEdit}
               onDeleteTask={onDeleteTask}
+              onMoveTask={onMoveTask}
+              taskIndex={taskIndex}
+              taskCount={topTasks.length}
             />
           ))
         )}
@@ -533,6 +617,8 @@ export default function TaskCardView({
   onSaveEdit,
   onCancelEdit,
   onDeleteTask,
+  onMoveProject,
+  onMoveTask,
   onExpandProject,
   onQuickAdd,
 }: TaskCardViewProps) {
@@ -548,8 +634,8 @@ export default function TaskCardView({
 
   return (
     <div className="px-3 sm:px-4 pb-4 pt-1">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {previewProjects.map((project) => {
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (
               <ProjectDragPlaceholder
@@ -564,6 +650,7 @@ export default function TaskCardView({
           <ProjectCard
             key={project.id}
             project={project}
+            projectIndex={projectIndex}
             projectCount={projects.length}
             tasks={tasksByProject.get(project.id) ?? []}
             completedCount={completedCountByProject?.get(project.id) ?? 0}
@@ -577,12 +664,14 @@ export default function TaskCardView({
             onProjectDragOver={onProjectDragOver}
             onProjectDrop={onProjectDrop}
             onProjectDragEnd={onProjectDragEnd}
+            onMoveProject={onMoveProject}
             dragTaskId={dragTaskId}
             dragOverTaskId={dragOverTaskId}
             onTaskDragStart={onTaskDragStart}
             onTaskDragOver={onTaskDragOver}
             onTaskDrop={onTaskDrop}
             onTaskDragEnd={onTaskDragEnd}
+            onMoveTask={onMoveTask}
             onStartEdit={onStartEdit}
             onEditTitleChange={onEditTitleChange}
             onSaveEdit={onSaveEdit}

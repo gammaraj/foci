@@ -140,16 +140,15 @@ export function getDaysOverdue(iso: string): number {
 
 export function openDatePicker(input: HTMLInputElement | null) {
   if (!input) return;
-  input.focus({ preventScroll: true });
   try {
     if (typeof input.showPicker === "function") {
       input.showPicker();
-    } else {
-      input.click();
+      return;
     }
   } catch {
-    input.click();
+    // showPicker blocked or unsupported
   }
+  input.click();
 }
 
 export function getNextDueDate(currentDue: string | undefined, recurrence: RecurrenceType): string {

@@ -86,6 +86,25 @@ export function moveCardTaskInProject(
   return applyOrderToProject(allTasks, projectId, reordered.map((t) => t.id));
 }
 
+/** Move a task up/down within a project card list (touch fallback). */
+export function moveCardTaskInProjectByDirection(
+  allTasks: Task[],
+  projectId: string,
+  taskId: string,
+  direction: "up" | "down",
+  activeTaskId: string | null
+): Task[] | null {
+  const pool = allTasks.filter(
+    (t) => t.projectId === projectId && !t.completed && !t.archivedAt
+  );
+  const sorted = sortCardTasks(pool, activeTaskId);
+  const idx = sorted.findIndex((t) => t.id === taskId);
+  if (idx === -1) return null;
+  const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+  if (targetIdx < 0 || targetIdx >= sorted.length) return null;
+  return moveCardTaskInProject(allTasks, projectId, taskId, sorted[targetIdx].id, activeTaskId);
+}
+
 export type BucketDropTarget =
   | { type: "task"; projectId: string; taskId: string; swimlaneId: BucketSwimlaneId }
   | { type: "column"; projectId: string; swimlaneId: BucketSwimlaneId };

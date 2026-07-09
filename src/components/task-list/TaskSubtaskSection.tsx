@@ -2,6 +2,7 @@
 
 import type { Subtask, Task } from "@/lib/types";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
+import { DueDateField } from "@/components/task-list/DueDateField";
 
 export interface TaskSubtaskSectionProps {
   task: Task;
@@ -106,7 +107,11 @@ export function TaskSubtaskSection({
               {sub.title}
             </button>
           )}
-          <div
+          <DueDateField
+            value={sub.dueDate}
+            onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
+            requireExplicitPick={!sub.dueDate}
+            ariaLabel="Subtask due date"
             className={`relative flex-shrink-0 p-0.5 transition-colors ${
               sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
                 ? "text-red-500 dark:text-red-400"
@@ -114,28 +119,17 @@ export function TaskSubtaskSection({
                   ? "text-slate-500 dark:text-slate-400"
                   : "text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100"
             }`}
-            title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}
           >
-            {sub.dueDate ? (
-              <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
-            ) : (
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            )}
-            <input
-              type="date"
-              value={sub.dueDate ?? ""}
-              onChange={(e) => onSetSubtaskDueDate(sub.id, e.target.value || undefined)}
-              onFocus={(e) => {
-                try {
-                  (e.target as HTMLInputElement).showPicker();
-                } catch {}
-              }}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              aria-label="Subtask due date"
-            />
-          </div>
+            <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
+              {sub.dueDate ? (
+                <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
+              ) : (
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              )}
+            </span>
+          </DueDateField>
           <button
             type="button"
             onClick={() => onDeleteSubtask(sub.id)}

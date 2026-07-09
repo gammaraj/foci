@@ -4,6 +4,7 @@ import React from "react";
 import type { Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, formatDuration, isDueDateOverdue } from "@/components/task-list/utils";
+import { DueDateField } from "@/components/task-list/DueDateField";
 import {
   getTaskListSection,
   isActionableOverdue,
@@ -167,7 +168,7 @@ export default function OpenTaskList({
           onDragOver={(e) => onDragOver(e, task.id)}
           onDrop={() => onDrop(task.id)}
           onDragEnd={onDragEnd}
-          className={`group flex flex-col overflow-hidden rounded-xl border transition-colors ${
+          className={`group flex flex-col overflow-hidden rounded-lg border transition-colors ${
             activeTaskId === task.id
               ? "task-timer-linked border-cyan-400 dark:border-cyan-500 bg-cyan-50 dark:bg-cyan-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-cyan-400/30 dark:ring-cyan-500/25"
               : isExpanded
@@ -181,7 +182,7 @@ export default function OpenTaskList({
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
           }`}
         >
-        <div className="flex items-start gap-1.5 sm:gap-2.5 p-2 sm:p-2.5">
+        <div className="flex items-start gap-1.5 sm:gap-2 p-1.5 sm:p-2">
           <div className="flex-shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
             <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -249,11 +250,14 @@ export default function OpenTaskList({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-x-2 mt-1 min-h-[26px]">
+            <div className="flex items-center gap-x-2 mt-0.5 min-h-[22px]">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 flex-1 min-w-0">
                 {task.dueDate && (
-                  <div
-                    className={`relative inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
+                  <DueDateField
+                    value={task.dueDate}
+                    onChange={(date) => onSetDueDate(task.id, date)}
+                    ariaLabel="Change due date"
+                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
                       isBlocked
                         ? "text-amber-700 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50"
                         : !task.completed && isDueDateOverdue(task.dueDate)
@@ -262,14 +266,17 @@ export default function OpenTaskList({
                             ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400"
                     }`}
-                    title={isBlocked ? `Waiting — due ${formatDueDate(task.dueDate)}` : `Due: ${formatDueDate(task.dueDate)}`}
                   >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    {formatDueDate(task.dueDate)}
-                    {!task.completed && !isBlocked && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                    {isBlocked && " (waiting)"}
-                    <input type="date" value={task.dueDate} onChange={(e) => onSetDueDate(task.id, e.target.value || undefined)} onFocus={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }} />
-                  </div>
+                    <span
+                      className="inline-flex items-center gap-1"
+                      title={isBlocked ? `Waiting — due ${formatDueDate(task.dueDate)}` : `Due: ${formatDueDate(task.dueDate)}`}
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      {formatDueDate(task.dueDate)}
+                      {!task.completed && !isBlocked && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                      {isBlocked && " (waiting)"}
+                    </span>
+                  </DueDateField>
                 )}
                 {task.description && (
                   <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
