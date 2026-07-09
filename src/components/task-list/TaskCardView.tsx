@@ -204,7 +204,7 @@ function ProjectCard({
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const addInputRef = useRef<HTMLInputElement>(null);
-  const topTasks = sortCardTasks(tasks, activeTaskId).slice(0, 3);
+  const topTasks = sortCardTasks(tasks, activeTaskId).slice(0, 5);
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
   const isPersonal = project.id === DEFAULT_PROJECT_ID;

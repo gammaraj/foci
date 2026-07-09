@@ -107,17 +107,17 @@ export default function TaskList({
   const [dragProjectId, setDragProjectId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<TaskViewMode>(() => {
-    if (typeof window === "undefined") return "bucket";
+    if (typeof window === "undefined") return "card";
     const saved = localStorage.getItem("foci_task_view_mode");
     const explicit = localStorage.getItem("foci_task_view_explicit") === "1";
     const valid =
       saved === "bucket" || saved === "list" || saved === "calendar" || saved === "card" || saved === "plan";
     if (explicit && valid) return saved;
-    return "bucket";
+    return "card";
   });
 
-  const viewBeforePlanRef = useRef<TaskViewMode>("bucket");
-  const viewBeforeManageRef = useRef<TaskViewMode>("bucket");
+  const viewBeforePlanRef = useRef<TaskViewMode>("card");
+  const viewBeforeManageRef = useRef<TaskViewMode>("card");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -137,7 +137,7 @@ export default function TaskList({
     viewBeforeManageRef.current =
       viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
         ? viewMode
-        : "bucket";
+        : "card";
     setProjectManageOpen(true);
     syncProjectsUrl(true);
   }, [viewMode, syncProjectsUrl]);
@@ -230,7 +230,7 @@ export default function TaskList({
         viewBeforeManageRef.current =
           viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
             ? viewMode
-            : "bucket";
+            : "card";
       }
       return shouldOpen;
     });
@@ -1703,7 +1703,7 @@ export default function TaskList({
                     viewBeforePlanRef.current =
                       viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
                         ? viewMode
-                        : "bucket";
+                        : "card";
                     setViewMode("plan");
                   }
                   loadSettings().then(setPlanSettings);
