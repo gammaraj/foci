@@ -752,9 +752,16 @@ input:focus-visible {
 @media (hover: hover) and (pointer: fine) {
   .hover-reveal-desktop {
     opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    pointer-events: none;
   }
-  .group:hover .hover-reveal-desktop {
+  .group:hover .hover-reveal-desktop,
+  .group\/row:hover .hover-reveal-desktop,
+  .hover-reveal-desktop:focus-within {
     opacity: 1;
+    max-width: 4rem;
+    pointer-events: auto;
   }
 }
 

@@ -5,6 +5,7 @@ import type { Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, formatDuration, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
+import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import {
   getTaskListSection,
   isActionableOverdue,
@@ -319,18 +320,14 @@ export default function OpenTaskList({
               )}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onToggleTaskDetail(task.id); }}
-            className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-md flex items-center justify-center transition-colors hover:bg-slate-100 dark:hover:bg-[#1a2d4a] ${isExpanded ? "text-violet-500 dark:text-violet-400" : "text-slate-300 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-300"}`}
-            title={isExpanded ? "Close details" : "Task details"}
-            aria-label={isExpanded ? "Close task details" : "Open task details"}
-            aria-expanded={isExpanded}
-          >
-            <svg className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          <TaskEditButton
+            isOpen={isExpanded}
+            taskTitle={task.title}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleTaskDetail(task.id);
+            }}
+          />
           {activeTaskId === task.id && isTimerRunning ? (
             <span className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-cyan-600 text-white hidden sm:flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />

@@ -28,6 +28,7 @@ import { applyBucketDrop, moveBucketTaskInLane, moveCardTaskInProject, moveCardT
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
+import { dismissDatePicker } from "@/components/task-list/dismiss-overlays";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
@@ -1149,6 +1150,7 @@ export default function TaskList({
   };
 
   const closeTaskDetail = () => {
+    dismissDatePicker();
     setExpandedTaskId(null);
     setNewSubtaskTitle("");
   };

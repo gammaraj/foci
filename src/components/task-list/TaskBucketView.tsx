@@ -5,6 +5,7 @@ import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
+import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
@@ -263,8 +264,6 @@ function BucketTaskCard({
   const isOverdue = isActionableOverdue(task);
   const isDueToday = !isBlocked && !isOverdue && task.dueDate === getToday();
   const isLowUrgency = !isBlocked && !task.dueDate;
-  const compactIconBtn =
-    "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors";
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
     `w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ${
       playing || filled
@@ -410,28 +409,15 @@ function BucketTaskCard({
           </p>
         )}
         {!isEditing && canOpenDetail && (
-          <button
-            type="button"
-            onClick={() => onToggleTaskDetail!(task.id)}
-            className={`${compactIconBtn} mt-[1px] ${
-              isDetailOpen
-                ? "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30"
-                : "text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-            }`}
-            title={isDetailOpen ? "Close details" : "Task details"}
-            aria-label={isDetailOpen ? `Close details for "${task.title}"` : `Open details for "${task.title}"`}
-            aria-pressed={!!isDetailOpen}
-          >
-            <svg
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${isDetailOpen ? "rotate-90" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          <TaskEditButton
+            isOpen={isDetailOpen}
+            taskTitle={task.title}
+            className="mt-[1px]"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleTaskDetail!(task.id);
+            }}
+          />
         )}
         {!isEditing && (
           <div

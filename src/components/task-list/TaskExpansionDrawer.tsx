@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import type { Task } from "@/lib/types";
+import { handleOverlayDismiss } from "@/components/task-list/dismiss-overlays";
 
 export function TaskExpansionDrawer({
   task,
@@ -28,7 +29,7 @@ export function TaskExpansionDrawer({
       <button
         type="button"
         className="fixed inset-0 z-40 bg-slate-900/25 dark:bg-black/50 backdrop-blur-[1px] cursor-default"
-        onClick={onClose}
+        onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
         aria-label="Close task details"
       />
       <aside
@@ -48,7 +49,7 @@ export function TaskExpansionDrawer({
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
             className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
             aria-label="Close task details"
           >

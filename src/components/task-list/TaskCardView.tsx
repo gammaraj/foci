@@ -13,6 +13,7 @@ import {
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
+import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 
 interface TaskCardViewProps {
   projects: Project[];
@@ -238,7 +239,7 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row rounded-md border-l-[3px] pl-1 pr-0.5 py-0.5 transition-colors ${
+      className={`group/row rounded-md border-l-[3px] pl-1 pr-0.5 py-0.5 min-w-0 transition-colors ${
         isActive
           ? "bg-cyan-50/80 dark:bg-cyan-900/20 ring-1 ring-cyan-400/40"
           : isExpanded
@@ -260,7 +261,7 @@ function CardTaskRow({
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-cyan-400/60 dark:ring-cyan-500/50" : ""}`}
     >
-      <div className="flex items-center gap-1 min-h-[1.5rem]">
+      <div className="flex items-center gap-0.5 sm:gap-1 min-h-[1.5rem] w-full min-w-0">
         {onToggleComplete && (
           <button
             type="button"
@@ -326,15 +327,17 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className="flex-1 min-w-0 flex items-baseline gap-1 text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+            className="flex-1 min-w-0 basis-0 overflow-hidden text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
             title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
           >
-            {task.dueDate && <CardDuePrefix task={task} />}
-            <span className="min-w-0 truncate">{task.title}</span>
+            <span className="flex items-baseline gap-1 min-w-0">
+              {task.dueDate && <CardDuePrefix task={task} />}
+              <span className="min-w-0 line-clamp-2 break-words">{task.title}</span>
+            </span>
           </button>
         )}
         {!isEditing && (
-          <div className="shrink-0 flex items-center gap-0.5">
+          <div className="shrink-0 flex items-center gap-0 self-start mt-0.5">
             {onStartTask && !overdue && (
               <button
                 type="button"
@@ -342,40 +345,24 @@ function CardTaskRow({
                   e.stopPropagation();
                   onStartTask(task.id);
                 }}
-                className="touch-target-sm !min-h-7 !min-w-7 p-0.5 rounded text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
+                className="p-0.5 rounded text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
                 title={isTimerRunning && isActive ? "Switch focus" : "Focus on this task"}
                 aria-label={`Focus on ${task.title}`}
               >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                   <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
                 </svg>
               </button>
             )}
             {onToggleTaskDetail && (
-              <button
-                type="button"
+              <TaskEditButton
+                isOpen={isExpanded}
+                taskTitle={task.title}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleTaskDetail(task.id);
                 }}
-                className={`touch-target-sm !min-h-7 !min-w-7 p-0.5 rounded transition-colors ${
-                  isExpanded
-                    ? "text-violet-500 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30"
-                    : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                }`}
-                aria-expanded={isExpanded}
-                aria-label={isExpanded ? "Close task details" : "Open task details"}
-              >
-                <svg
-                  className={`w-3 h-3 transition-transform ${isExpanded ? "rotate-90" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              />
             )}
             <div className="hidden sm:flex items-center hover-reveal-desktop focus-within:opacity-100">
               {onStartEdit && (
@@ -385,11 +372,11 @@ function CardTaskRow({
                     e.stopPropagation();
                     onStartEdit(task);
                   }}
-                  className="touch-target-sm !min-h-7 !min-w-7 p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+                  className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
                   title={`Edit "${task.title}"`}
                   aria-label={`Edit task ${task.title}`}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -406,11 +393,11 @@ function CardTaskRow({
                     e.stopPropagation();
                     onDeleteTask(task.id);
                   }}
-                  className="touch-target-sm !min-h-7 !min-w-7 p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   title={`Delete "${task.title}"`}
                   aria-label={`Delete task ${task.title}`}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -531,7 +518,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`rounded-lg border px-2.5 py-2 flex flex-col gap-1 transition-colors ${
+      className={`rounded-lg border px-2.5 py-2 min-w-0 flex flex-col gap-1 transition-colors ${
         isPersonal
           ? "border-slate-200/90 dark:border-slate-600/40 bg-slate-50/90 dark:bg-[#151c2c]/80"
           : "border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80"

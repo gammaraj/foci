@@ -5,6 +5,7 @@ import type { Task, Project } from "@/lib/types";
 import { ALL_PROJECTS_ID } from "@/lib/types";
 import { formatDueDate } from "./utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
+import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -259,22 +260,7 @@ export default function TaskCalendarView({
               {selectedTasks.map((task) => (
                 <div key={task.id}>
                 <div
-                  role={onToggleTaskDetail ? "button" : undefined}
-                  tabIndex={onToggleTaskDetail ? 0 : undefined}
-                  onClick={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
-                  onKeyDown={
-                    onToggleTaskDetail
-                      ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            onToggleTaskDetail(task.id);
-                          }
-                        }
-                      : undefined
-                  }
                   className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-colors ${
-                    onToggleTaskDetail ? "cursor-pointer" : ""
-                  } ${
                     expandedTaskId === task.id
                       ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
                       : task.completed
@@ -310,6 +296,16 @@ export default function TaskCalendarView({
                       {isTimerRunning ? "Switch" : "Start"}
                     </button>
                   )}
+                  {onToggleTaskDetail && (
+                    <TaskEditButton
+                      isOpen={expandedTaskId === task.id}
+                      taskTitle={task.title}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleTaskDetail(task.id);
+                      }}
+                    />
+                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -340,28 +336,23 @@ export default function TaskCalendarView({
             {unscheduledTasks.slice(0, 8).map((task) => (
               <div key={task.id}>
               <div
-                role={onToggleTaskDetail ? "button" : undefined}
-                tabIndex={onToggleTaskDetail ? 0 : undefined}
-                onClick={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
-                onKeyDown={
-                  onToggleTaskDetail
-                    ? (e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          onToggleTaskDetail(task.id);
-                        }
-                      }
-                    : undefined
-                }
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
-                  onToggleTaskDetail ? "cursor-pointer" : "border-transparent"
-                } ${
                   expandedTaskId === task.id
                     ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15"
                     : "border-transparent hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                 }`}
               >
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1">{task.title}</span>
+                {onToggleTaskDetail && (
+                  <TaskEditButton
+                    isOpen={expandedTaskId === task.id}
+                    taskTitle={task.title}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleTaskDetail(task.id);
+                    }}
+                  />
+                )}
                 <DueDateField
                   value={undefined}
                   onChange={(date) => date && onSetDueDate(task.id, date)}

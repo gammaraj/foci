@@ -6,6 +6,7 @@ import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
+import { handleOverlayDismiss } from "@/components/task-list/dismiss-overlays";
 
 export interface TaskDetailPanelProps {
   task: Task;
@@ -320,7 +321,7 @@ export function TaskDetailDrawer({ task, onClose, children }: TaskDetailDrawerPr
       <button
         type="button"
         className="absolute inset-0 bg-black/40"
-        onClick={onClose}
+        onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
         aria-label="Close task details"
       />
       <aside className="relative w-full max-w-md h-full bg-white dark:bg-[#111827] shadow-2xl border-l border-slate-200 dark:border-[#243350] flex flex-col">
@@ -333,7 +334,7 @@ export function TaskDetailDrawer({ task, onClose, children }: TaskDetailDrawerPr
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] shrink-0 touch-target-sm"
             aria-label="Close"
           >

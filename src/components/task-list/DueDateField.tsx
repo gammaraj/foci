@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { openDatePicker } from "@/components/task-list/utils";
 
 interface DueDateFieldProps {
@@ -8,36 +8,50 @@ interface DueDateFieldProps {
   onChange: (date: string | undefined) => void;
   children: ReactNode;
   className?: string;
-  inputClassName?: string;
   ariaLabel?: string;
   /** When the task has no due date yet, ignore stray change events until the user opens the picker. */
   requireExplicitPick?: boolean;
 }
 
+function blurDateInput(input: HTMLInputElement | null) {
+  input?.blur();
+  if (document.activeElement instanceof HTMLInputElement && document.activeElement.type === "date") {
+    document.activeElement.blur();
+  }
+}
+
 /**
- * Invisible date input over a visible label. Opens the picker on click (not focus)
- * so empty inputs do not auto-commit today's date.
+ * Due date control: visible label opens the picker on click. The native input stays
+ * screen-reader only so it cannot steal clicks from overlays (e.g. drawer close).
  */
 export function DueDateField({
   value,
   onChange,
   children,
   className = "",
-  inputClassName = "absolute inset-0 w-full h-full opacity-0 cursor-pointer",
   ariaLabel = "Due date",
   requireExplicitPick = false,
 }: DueDateFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const pickerOpenedRef = useRef(false);
 
-  const handleOpenPicker = (e: React.MouseEvent<HTMLInputElement>) => {
+  const handleOpenPicker = (e: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    e.preventDefault();
     pickerOpenedRef.current = true;
-    openDatePicker(e.currentTarget);
+    openDatePicker(inputRef.current);
   };
 
   return (
-    <div className={className || "relative"}>
+    <button
+      type="button"
+      onClick={handleOpenPicker}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") handleOpenPicker(e);
+      }}
+      className={className || "relative inline-flex items-center"}
+      aria-label={ariaLabel}
+    >
       {children}
       <input
         ref={inputRef}
@@ -49,20 +63,20 @@ export function DueDateField({
           if (next === (value ?? "")) return;
           if (requireExplicitPick && !pickerOpenedRef.current) return;
           pickerOpenedRef.current = false;
+          blurDateInput(inputRef.current);
           if (!next) {
             if (value) onChange(undefined);
             return;
           }
           onChange(next);
         }}
-        onClick={handleOpenPicker}
         onBlur={() => {
           pickerOpenedRef.current = false;
         }}
-        className={inputClassName}
-        aria-label={ariaLabel}
+        className="sr-only"
         tabIndex={-1}
+        aria-hidden
       />
-    </div>
+    </button>
   );
 }
