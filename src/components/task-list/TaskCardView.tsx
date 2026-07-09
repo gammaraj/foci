@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { sortCardTasks } from "@/components/task-list/bucket-order";
@@ -12,7 +12,6 @@ import {
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
-import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 
 interface TaskCardViewProps {
   projects: Project[];
@@ -64,6 +63,32 @@ function CardDuePrefix({ task }: { task: Task }) {
   );
 }
 
+function CardHeaderCounts({
+  open,
+  completed,
+  overdue,
+}: {
+  open: number;
+  completed: number;
+  overdue: number;
+}) {
+  if (open === 0 && completed === 0) return null;
+
+  const title = `${open} open · ${completed} completed${overdue > 0 ? ` · ${overdue} overdue` : ""}`;
+
+  return (
+    <span className="text-[10px] tabular-nums leading-none pl-0.5" title={title}>
+      <span className="text-slate-500 dark:text-slate-400">{open} open</span>
+      {overdue > 0 && (
+        <>
+          <span className="text-slate-400 dark:text-slate-500"> · </span>
+          <span className="text-red-600 dark:text-red-300 font-medium">{overdue} late</span>
+        </>
+      )}
+    </span>
+  );
+}
+
 function CardTaskRow({
   task,
   isEditing,
@@ -87,18 +112,18 @@ function CardTaskRow({
 
   return (
     <div
-      className={`group/row rounded-md border-l-[3px] px-1.5 py-1 -mx-0.5 ${
+      className={`group/row rounded-md border-l-[3px] pl-1.5 pr-0.5 py-0.5 ${
         overdue
-          ? "border-l-red-500 dark:border-l-red-400 bg-red-50/80 dark:bg-red-950/30"
+          ? "border-l-red-500 dark:border-l-red-400"
           : blocked
-            ? "border-l-amber-500 dark:border-l-amber-400 bg-amber-50/60 dark:bg-amber-950/20"
+            ? "border-l-amber-500 dark:border-l-amber-400"
             : someday
-              ? "border-l-violet-400 dark:border-l-violet-500 bg-violet-50/40 dark:bg-violet-950/20"
+              ? "border-l-violet-400 dark:border-l-violet-500"
               : task.dueDate
                 ? task.dueDate === getToday()
-                  ? "border-l-amber-400 dark:border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/25"
+                  ? "border-l-amber-400 dark:border-l-amber-500"
                   : "border-l-cyan-500 dark:border-l-cyan-400"
-                : "border-l-slate-300/80 dark:border-l-slate-600"
+                : "border-l-slate-300/60 dark:border-l-slate-600"
       }`}
     >
       <div className="flex items-center gap-1 min-h-[1.25rem]">
@@ -119,7 +144,7 @@ function CardTaskRow({
           />
         ) : (
           <span
-            className="flex-1 min-w-0 flex items-baseline gap-1 text-xs font-medium text-slate-800 dark:text-slate-100 leading-snug"
+            className="flex-1 min-w-0 flex items-baseline gap-1 text-xs font-normal text-slate-700 dark:text-slate-200 leading-snug"
             title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
           >
             {task.dueDate && <CardDuePrefix task={task} />}
@@ -177,11 +202,16 @@ function ProjectCard({
   onExpandProject?: (projectId: string) => void;
 }) {
   const [draft, setDraft] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
   const addInputRef = useRef<HTMLInputElement>(null);
   const topTasks = sortCardTasks(tasks, activeTaskId).slice(0, 3);
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
   const isPersonal = project.id === DEFAULT_PROJECT_ID;
+
+  useEffect(() => {
+    if (showAdd) addInputRef.current?.focus();
+  }, [showAdd]);
 
   const submitQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,13 +219,12 @@ function ProjectCard({
     if (!title) return;
     onQuickAdd(title, project.id);
     setDraft("");
+    setShowAdd(false);
   };
-
-  const focusAddInput = () => addInputRef.current?.focus();
 
   return (
     <article
-      className={`rounded-lg border px-2.5 py-2 flex flex-col gap-1.5 min-h-[7.5rem] ${
+      className={`rounded-lg border px-2.5 py-2 flex flex-col gap-1 ${
         isPersonal
           ? "border-slate-200/90 dark:border-slate-600/40 bg-slate-50/90 dark:bg-[#151c2c]/80"
           : "border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80"
@@ -209,48 +238,43 @@ function ProjectCard({
           : undefined
       }
     >
-      <header className="flex flex-col gap-0.5 min-w-0">
+      <header
+        className="flex flex-col gap-0.5 min-w-0 pb-1.5 mb-0.5 border-b border-slate-200/70 dark:border-[#243350]/80"
+        style={
+          project.color
+            ? {
+                borderBottomColor: `color-mix(in srgb, ${project.color} 25%, transparent)`,
+              }
+            : undefined
+        }
+      >
         <div className="flex items-center gap-1.5 min-w-0">
           {project.color && (
             <span
-              className="w-2 h-2 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
+              className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
               style={{ backgroundColor: project.color }}
               aria-hidden
             />
           )}
           <h3
-            className="flex-1 min-w-0 truncate text-xs font-semibold text-slate-900 dark:text-white leading-tight"
+            className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight"
             title={project.name}
           >
             {project.name}
           </h3>
           {isPersonal && (
-            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 shrink-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">
               Personal
             </span>
           )}
         </div>
-        {(tasks.length > 0 || completedCount > 0) && (
-          <ProjectTaskCounts
-            variant="inline"
-            open={tasks.length}
-            completed={completedCount}
-            overdue={overdueCount}
-          />
-        )}
+        <CardHeaderCounts open={tasks.length} completed={completedCount} overdue={overdueCount} />
       </header>
 
-      <div className="flex-1 flex flex-col gap-1 justify-start">
+      <div className="flex flex-col gap-0.5">
         {topTasks.length === 0 ? (
-          <p className="text-[11px] app-text-meta text-slate-400 dark:text-slate-500 py-1">
-            No tasks ·{" "}
-            <button
-              type="button"
-              onClick={focusAddInput}
-              className="font-semibold text-cyan-600 dark:text-cyan-400 hover:underline"
-            >
-              + Add
-            </button>
+          <p className="text-[11px] app-text-meta text-slate-400 dark:text-slate-500 py-0.5">
+            No tasks
           </p>
         ) : (
           topTasks.map((task) => (
@@ -268,24 +292,37 @@ function ProjectCard({
         )}
       </div>
 
-      {remaining > 0 && onExpandProject && (
-        <button
-          type="button"
-          onClick={() => onExpandProject(project.id)}
-          className="text-[10px] font-medium text-cyan-600 dark:text-cyan-400 hover:underline text-left shrink-0"
-        >
-          +{remaining} more
-        </button>
-      )}
+      <div className="flex items-center gap-2 pt-0.5">
+        {remaining > 0 && onExpandProject && (
+          <button
+            type="button"
+            onClick={() => onExpandProject(project.id)}
+            className="text-[10px] font-medium text-cyan-600 dark:text-cyan-400 hover:underline shrink-0"
+          >
+            +{remaining} more
+          </button>
+        )}
+        {!showAdd && (
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            className="text-[10px] font-medium text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+          >
+            + Add
+          </button>
+        )}
+      </div>
 
-      <QuickAddForm
-        draft={draft}
-        onDraftChange={setDraft}
-        onSubmit={submitQuickAdd}
-        inputRef={addInputRef}
-        compact
-        className="pt-1 shrink-0"
-      />
+      {showAdd && (
+        <QuickAddForm
+          draft={draft}
+          onDraftChange={setDraft}
+          onSubmit={submitQuickAdd}
+          inputRef={addInputRef}
+          compact
+          className="shrink-0"
+        />
+      )}
     </article>
   );
 }
@@ -306,7 +343,7 @@ export default function TaskCardView({
 }: TaskCardViewProps) {
   return (
     <div className="px-3 sm:px-4 pb-4 pt-1">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {projects.map((project) => (
           <ProjectCard
             key={project.id}

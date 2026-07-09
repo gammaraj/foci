@@ -11,7 +11,14 @@ import {
   isDueDateOverdue,
 } from "@/components/task-list/utils";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
-import ProjectOrderList from "@/components/task-list/ProjectOrderList";
+
+function GripIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+      <path d="M7 4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 13a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
+    </svg>
+  );
+}
 
 export interface ProjectManageViewProps {
   sortedProjects: Project[];
@@ -219,9 +226,18 @@ function ProjectRowMenu({
 
 function ProjectRow({
   project,
+  projectIndex,
+  projectCount,
   openTasks,
   completedCount,
   expanded,
+  dragProjectId,
+  dragOverProjectId,
+  onProjectDragStart,
+  onProjectDragOver,
+  onProjectDrop,
+  onProjectDragEnd,
+  onMoveProject,
   onToggleExpanded,
   editingProjectId,
   editProjectName,
@@ -241,9 +257,18 @@ function ProjectRow({
   renderOpenTasks,
 }: {
   project: Project;
+  projectIndex: number;
+  projectCount: number;
   openTasks: Task[];
   completedCount: number;
   expanded: boolean;
+  dragProjectId: string | null;
+  dragOverProjectId: string | null;
+  onProjectDragStart: (id: string) => void;
+  onProjectDragOver: (e: React.DragEvent, id: string) => void;
+  onProjectDrop: (targetId: string) => void;
+  onProjectDragEnd: () => void;
+  onMoveProject: (id: string, direction: "up" | "down") => void;
   onToggleExpanded: () => void;
   editingProjectId: string | null;
   editProjectName: string;
@@ -263,10 +288,43 @@ function ProjectRow({
   renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }) {
   const canManage = project.id !== DEFAULT_PROJECT_ID;
+  const canReorder = projectCount >= 2;
+  const isDragging = dragProjectId === project.id;
+  const isDropTarget = dragOverProjectId === project.id && dragProjectId !== project.id;
 
   return (
-    <div className="relative rounded-xl border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/50 hover:z-10 focus-within:z-20">
+    <div
+      onDragOver={(e) => {
+        if (!canReorder) return;
+        onProjectDragOver(e, project.id);
+      }}
+      onDrop={(e) => {
+        if (!canReorder) return;
+        e.preventDefault();
+        onProjectDrop(project.id);
+      }}
+      className={`relative rounded-xl border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/50 hover:z-10 focus-within:z-20 transition-colors ${
+        isDragging ? "opacity-50" : ""
+      } ${
+        isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent bg-cyan-50/50 dark:bg-cyan-900/10" : ""
+      }`}
+    >
       <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2">
+        {canReorder ? (
+          <span
+            draggable
+            onDragStart={() => onProjectDragStart(project.id)}
+            onDragEnd={onProjectDragEnd}
+            className="text-slate-300 dark:text-slate-600 flex-shrink-0 cursor-grab active:cursor-grabbing p-1 -ml-1 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+            title="Drag to reorder tabs"
+            aria-label={`Drag ${project.name} to reorder`}
+          >
+            <GripIcon />
+          </span>
+        ) : (
+          <div className="w-6 flex-shrink-0" aria-hidden />
+        )}
+
         {canManage ? (
           <FavoriteButton
             active={!!project.favorite}
@@ -342,6 +400,41 @@ function ProjectRow({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
+
+        {canReorder && (
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveProject(project.id, "up");
+              }}
+              disabled={projectIndex === 0}
+              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              aria-label={`Move ${project.name} up`}
+              title="Move up"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveProject(project.id, "down");
+              }}
+              disabled={projectIndex === projectCount - 1}
+              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              aria-label={`Move ${project.name} down`}
+              title="Move down"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {canManage && (
           <ProjectRowMenu
@@ -476,18 +569,13 @@ export default function ProjectManageView({
   return (
     <div className="flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(70vh,720px)]">
+        {sortedProjects.length >= 2 && (
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+            Drag ⋮⋮ to reorder tabs. Drop on a pinned project to pin, or on an unpinned one to unpin.
+          </p>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
-        <ProjectOrderList
-          projects={sortedProjects}
-          dragProjectId={dragProjectId}
-          dragOverProjectId={dragOverProjectId}
-          onDragStart={onProjectDragStart}
-          onDragOver={onProjectDragOver}
-          onDrop={onProjectDrop}
-          onDragEnd={onProjectDragEnd}
-          onMoveProject={onMoveProject}
-        />
-        {sortedProjects.map((project) => {
+        {sortedProjects.map((project, index) => {
           const openTasks = sortOpenTasks(
             tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),
             activeTaskId
@@ -504,9 +592,18 @@ export default function ProjectManageView({
             >
             <ProjectRow
               project={project}
+              projectIndex={index}
+              projectCount={sortedProjects.length}
               openTasks={openTasks}
               completedCount={completedCount}
               expanded={isExpanded}
+              dragProjectId={dragProjectId}
+              dragOverProjectId={dragOverProjectId}
+              onProjectDragStart={onProjectDragStart}
+              onProjectDragOver={onProjectDragOver}
+              onProjectDrop={onProjectDrop}
+              onProjectDragEnd={onProjectDragEnd}
+              onMoveProject={onMoveProject}
               onToggleExpanded={() => toggleExpanded(project.id)}
               editingProjectId={editingProjectId}
               editProjectName={editProjectName}
