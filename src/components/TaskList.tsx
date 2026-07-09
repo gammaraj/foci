@@ -2024,6 +2024,7 @@ export default function TaskList({
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
           onExpandProject={expandProjectFromBucket}
+          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
         />
       )}
 

@@ -13,6 +13,7 @@ import {
 } from "@/components/task-list/bucket-order";
 import { isActionableOverdue } from "@/lib/task-status";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
+import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 
 function BucketColumnTitle({ project }: { project: Project }) {
   const subtitle = project.description?.trim();
@@ -720,7 +721,7 @@ function BucketColumn({
       </div>
 
       {tasks.length > 0 && (
-        <BucketQuickAddForm
+        <QuickAddForm
           draft={draft}
           onDraftChange={setDraft}
           onSubmit={submitQuickAdd}
@@ -892,52 +893,13 @@ function BucketColumn({
         )}
       </div>
 
-      <BucketQuickAddForm
+      <QuickAddForm
         draft={draft}
         onDraftChange={setDraft}
         onSubmit={submitQuickAdd}
         inputRef={addInputRef}
       />
     </div>
-  );
-}
-
-function BucketQuickAddForm({
-  draft,
-  onDraftChange,
-  onSubmit,
-  inputRef,
-  className = "px-3 py-2.5 shrink-0",
-}: {
-  draft: string;
-  onDraftChange: (value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  inputRef?: React.RefObject<HTMLInputElement | null>;
-  className?: string;
-}) {
-  return (
-    <form className={className} onSubmit={onSubmit}>
-      <div className="flex items-center gap-2 rounded-xl bg-slate-100/70 dark:bg-white/5 px-3 py-2 focus-within:ring-2 focus-within:ring-cyan-500/15 dark:focus-within:ring-cyan-400/20 transition-shadow">
-        <input
-          ref={inputRef}
-          type="text"
-          value={draft}
-          onChange={(e) => onDraftChange(e.target.value)}
-          placeholder="Add a task…"
-          maxLength={MAX_TASK_TITLE}
-          className="app-placeholder flex-1 min-w-0 text-sm bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200"
-        />
-        <button
-          type="submit"
-          disabled={!draft.trim()}
-          className="text-sm font-medium text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          aria-label="Add task"
-          title="Add task"
-        >
-          Add
-        </button>
-      </div>
-    </form>
   );
 }
 

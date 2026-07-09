@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { sortBucketTasks } from "@/components/task-list/bucket-order";
 import { MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
+import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 
 interface TaskCardViewProps {
   projects: Project[];
@@ -12,6 +13,7 @@ interface TaskCardViewProps {
   activeTaskId: string | null;
   editingTaskId?: string | null;
   editTitle?: string;
+  onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
@@ -41,7 +43,7 @@ function CardTaskRow({
 
   return (
     <div
-      className={`flex items-center gap-1 min-h-[1.625rem] rounded-md px-1 -mx-1 ${
+      className={`flex items-start gap-1 min-h-[1.625rem] rounded-md px-1 -mx-1 ${
         overdue
           ? "bg-red-50/80 dark:bg-red-950/30"
           : blocked
@@ -50,7 +52,7 @@ function CardTaskRow({
       }`}
     >
       <span
-        className={`w-1 h-1 rounded-full shrink-0 ${
+        className={`w-1 h-1 rounded-full shrink-0 mt-1.5 ${
           overdue
             ? "bg-red-500"
             : blocked
@@ -78,7 +80,7 @@ function CardTaskRow({
         />
       ) : (
         <span
-          className="flex-1 min-w-0 text-xs font-medium text-slate-800 dark:text-slate-100 truncate leading-tight"
+          className="flex-1 min-w-0 text-xs font-medium text-slate-800 dark:text-slate-100 leading-snug break-words"
           title={task.title}
         >
           {task.title}
@@ -117,21 +119,35 @@ function ProjectCard({
   onSaveEdit,
   onCancelEdit,
   onExpandProject,
+  onQuickAdd,
 }: {
   project: Project;
   tasks: Task[];
   activeTaskId: string | null;
   editingTaskId?: string | null;
   editTitle?: string;
+  onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onExpandProject?: (projectId: string) => void;
 }) {
+  const [draft, setDraft] = useState("");
+  const addInputRef = useRef<HTMLInputElement>(null);
   const topTasks = sortBucketTasks(tasks, activeTaskId).slice(0, 3);
   const remaining = tasks.length - topTasks.length;
   const isPersonal = project.id === DEFAULT_PROJECT_ID;
+
+  const submitQuickAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    const title = draft.trim();
+    if (!title) return;
+    onQuickAdd(title, project.id);
+    setDraft("");
+  };
+
+  const focusAddInput = () => addInputRef.current?.focus();
 
   return (
     <article
@@ -161,7 +177,14 @@ function ProjectCard({
       <div className="flex-1 flex flex-col gap-0.5 justify-start">
         {topTasks.length === 0 ? (
           <p className="text-[11px] app-text-meta text-slate-400 dark:text-slate-500 py-1">
-            No open tasks
+            No tasks ·{" "}
+            <button
+              type="button"
+              onClick={focusAddInput}
+              className="font-semibold text-cyan-600 dark:text-cyan-400 hover:underline"
+            >
+              + Add
+            </button>
           </p>
         ) : (
           topTasks.map((task) => (
@@ -188,6 +211,15 @@ function ProjectCard({
           +{remaining} more
         </button>
       )}
+
+      <QuickAddForm
+        draft={draft}
+        onDraftChange={setDraft}
+        onSubmit={submitQuickAdd}
+        inputRef={addInputRef}
+        compact
+        className="pt-1 shrink-0"
+      />
     </article>
   );
 }
@@ -203,10 +235,11 @@ export default function TaskCardView({
   onSaveEdit,
   onCancelEdit,
   onExpandProject,
+  onQuickAdd,
 }: TaskCardViewProps) {
   return (
     <div className="px-3 sm:px-4 pb-4 pt-1">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
         {projects.map((project) => (
           <ProjectCard
             key={project.id}
@@ -220,6 +253,7 @@ export default function TaskCardView({
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
             onExpandProject={onExpandProject}
+            onQuickAdd={onQuickAdd}
           />
         ))}
       </div>
