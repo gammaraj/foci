@@ -29,28 +29,25 @@ interface TaskCardViewProps {
   onExpandProject?: (projectId: string) => void;
 }
 
-function CardDueLabel({ task }: { task: Task }) {
+function CardDuePrefix({ task }: { task: Task }) {
   if (!task.dueDate) return null;
 
   const blocked = !!task.blocked;
   const overdue = !blocked && !task.someday && isDueDateOverdue(task.dueDate);
   const isToday = task.dueDate === getToday();
   const daysLate = overdue ? getDaysOverdue(task.dueDate) : 0;
-  const criticalOverdue = daysLate >= 7;
   const label = formatDueDate(task.dueDate);
 
   return (
     <span
-      className={`inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none text-[10px] px-1.5 py-0.5 rounded-md ${
+      className={`shrink-0 font-semibold tabular-nums ${
         overdue
-          ? criticalOverdue
-            ? "text-red-800 dark:text-red-200 bg-red-200/90 dark:bg-red-900/60 border border-red-400/80 dark:border-red-700/70"
-            : "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
+          ? "text-red-600 dark:text-red-300"
           : blocked
-            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
+            ? "text-amber-700 dark:text-amber-300"
             : isToday
-              ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-              : "text-slate-600 dark:text-slate-300 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
+              ? "text-amber-700 dark:text-amber-300"
+              : "text-slate-500 dark:text-slate-400"
       }`}
       title={
         blocked
@@ -62,8 +59,7 @@ function CardDueLabel({ task }: { task: Task }) {
               : `Due ${label}`
       }
     >
-      {label}
-      {overdue && daysLate > 1 && <span className="opacity-75 font-medium">{daysLate}d</span>}
+      [{label}]
     </span>
   );
 }
@@ -105,7 +101,7 @@ function CardTaskRow({
                 : "border-l-slate-300/80 dark:border-l-slate-600"
       }`}
     >
-      <div className="flex items-start gap-1 min-h-[1.25rem]">
+      <div className="flex items-center gap-1 min-h-[1.25rem]">
         {isEditing ? (
           <input
             type="text"
@@ -123,10 +119,11 @@ function CardTaskRow({
           />
         ) : (
           <span
-            className="flex-1 min-w-0 text-xs font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
-            title={task.title}
+            className="flex-1 min-w-0 flex items-baseline gap-1 text-xs font-medium text-slate-800 dark:text-slate-100 leading-snug"
+            title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
           >
-            {task.title}
+            {task.dueDate && <CardDuePrefix task={task} />}
+            <span className="min-w-0 truncate">{task.title}</span>
           </span>
         )}
         {onStartEdit && !isEditing && (
@@ -148,11 +145,6 @@ function CardTaskRow({
           </button>
         )}
       </div>
-      {!isEditing && task.dueDate && (
-        <div className="mt-0.5 pl-0.5">
-          <CardDueLabel task={task} />
-        </div>
-      )}
     </div>
   );
 }
