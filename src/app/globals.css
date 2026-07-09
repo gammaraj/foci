@@ -924,9 +924,12 @@ input:focus-visible {
   #tasks-section button[aria-label^="Focus"],
   #tasks-section button[aria-label="Move up"],
   #tasks-section button[aria-label="Move down"],
+  #tasks-section button[aria-label="Move task up"],
+  #tasks-section button[aria-label="Move task down"],
   #tasks-section button[title="Deselect task"],
+  #tasks-section [draggable][aria-label*="Drag"],
+  #tasks-section [title="Drag to reorder projects"],
   #tasks-section .hover-reveal-desktop,
-  #tasks-section .cursor-grab,
   #tasks-section form,
   #tasks-section select,
   #tasks-section input[type="text"],
@@ -934,6 +937,36 @@ input:focus-visible {
   #tasks-section textarea,
   #tasks-section .animate-pulse {
     display: none !important;
+  }
+
+  /* Task rows use cursor-grab for drag — do not hide those containers */
+  #tasks-section .group\/row,
+  #tasks-section .group\/task {
+    display: block !important;
+    cursor: default !important;
+  }
+
+  #tasks-section .group\/row button:not([aria-label^="Mark"]):not([aria-label^="Edit"]):not([aria-label^="Delete"]),
+  #tasks-section .group\/task span {
+    color: #1e293b !important;
+  }
+
+  #tasks-section .dark\:text-white,
+  #tasks-section .dark\:text-slate-50,
+  #tasks-section .dark\:text-slate-100,
+  #tasks-section .dark\:text-slate-200,
+  #tasks-section .dark\:text-slate-300 {
+    color: #1e293b !important;
+  }
+
+  #tasks-section .dark\:text-red-300,
+  #tasks-section .text-red-600 {
+    color: #dc2626 !important;
+  }
+
+  #tasks-section .dark\:text-amber-300,
+  #tasks-section .text-amber-700 {
+    color: #b45309 !important;
   }
 
   #tasks-section button[aria-label*="Due"] {

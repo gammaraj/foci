@@ -622,7 +622,7 @@ function ProjectCard({
         )}
       </div>
 
-      <div className="flex items-center gap-2 pt-0.5">
+      <div className="no-print flex items-center gap-2 pt-0.5">
         {remaining > 0 && onExpandProject && (
           <button
             type="button"
@@ -644,6 +644,7 @@ function ProjectCard({
       </div>
 
       {showAdd && (
+        <div className="no-print">
         <QuickAddForm
           draft={draft}
           onDraftChange={setDraft}
@@ -652,6 +653,7 @@ function ProjectCard({
           compact
           className="shrink-0"
         />
+        </div>
       )}
     </article>
   );
