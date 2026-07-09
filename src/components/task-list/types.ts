@@ -1,4 +1,4 @@
-export type TaskViewMode = "bucket" | "list" | "calendar" | "plan";
+export type TaskViewMode = "bucket" | "list" | "calendar" | "card" | "plan";
 
 export interface TaskListProps {
   activeTaskId: string | null;

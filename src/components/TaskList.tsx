@@ -18,6 +18,7 @@ const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
+import TaskCardView from "@/components/task-list/TaskCardView";
 import { applyBucketDrop, moveBucketTaskInLane, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
@@ -110,7 +111,7 @@ export default function TaskList({
     const saved = localStorage.getItem("foci_task_view_mode");
     const explicit = localStorage.getItem("foci_task_view_explicit") === "1";
     const valid =
-      saved === "bucket" || saved === "list" || saved === "calendar" || saved === "plan";
+      saved === "bucket" || saved === "list" || saved === "calendar" || saved === "card" || saved === "plan";
     if (explicit && valid) return saved;
     return "bucket";
   });
@@ -134,7 +135,7 @@ export default function TaskList({
 
   const openProjectManage = useCallback(() => {
     viewBeforeManageRef.current =
-      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket"
+      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
         ? viewMode
         : "bucket";
     setProjectManageOpen(true);
@@ -227,7 +228,7 @@ export default function TaskList({
       if (wasOpen === shouldOpen) return wasOpen;
       if (shouldOpen) {
         viewBeforeManageRef.current =
-          viewMode === "calendar" || viewMode === "list" || viewMode === "bucket"
+          viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
             ? viewMode
             : "bucket";
       }
@@ -1553,9 +1554,11 @@ export default function TaskList({
                 </button>
               )}
             </h2>
-            {!focusMode && (viewMode === "list" || viewMode === "bucket") && (
+            {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
               <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
-                {viewMode === "bucket"
+                {viewMode === "card"
+                  ? "Top priorities per project at a glance"
+                  : viewMode === "bucket"
                   ? isTimeFilter
                     ? [
                         timeScopeDescription,
@@ -1634,6 +1637,7 @@ export default function TaskList({
               data-tour="view-modes"
             >
               <option value="bucket">Buckets</option>
+              <option value="card">Cards</option>
               <option value="list">List</option>
               <option value="calendar">Calendar</option>
               <option value="plan">Smart Plan</option>
@@ -1650,6 +1654,16 @@ export default function TaskList({
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => selectViewMode("card")}
+                className={`p-2.5 rounded-md transition-colors ${viewMode === "card" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                title="Card view — top tasks per project"
+                aria-label="Card view"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                 </svg>
               </button>
               <button
@@ -1687,7 +1701,7 @@ export default function TaskList({
                     selectViewMode(viewBeforePlanRef.current);
                   } else {
                     viewBeforePlanRef.current =
-                      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket"
+                      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
                         ? viewMode
                         : "bucket";
                     setViewMode("plan");
@@ -1980,6 +1994,36 @@ export default function TaskList({
           scrollToProjectId={bucketJumpProjectId || null}
           scrollToProjectToken={bucketScrollToken}
           renderBelowTask={renderTaskInlineExpansion}
+        />
+      )}
+
+      {!isFocusMode && !projectManageOpen && viewMode === "card" && !tasksReady && (
+        <div className="px-3 sm:px-4 pb-4 pt-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="rounded-lg border border-slate-200 dark:border-[#243350] p-2.5 space-y-1.5 animate-pulse min-h-[7.5rem]"
+            >
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+              <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-full" />
+              <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-full" />
+              <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-4/5" />
+            </div>
+          ))}
+        </div>
+      )}
+      {!isFocusMode && !projectManageOpen && viewMode === "card" && tasksReady && (
+        <TaskCardView
+          projects={sortedProjects}
+          tasksByProject={bucketTasksByProject}
+          activeTaskId={activeTaskId}
+          editingTaskId={editingId}
+          editTitle={editTitle}
+          onStartEdit={startEditing}
+          onEditTitleChange={setEditTitle}
+          onSaveEdit={saveEdit}
+          onCancelEdit={() => setEditingId(null)}
+          onExpandProject={expandProjectFromBucket}
         />
       )}
 
