@@ -2170,7 +2170,6 @@ export default function TaskList({
           onOpenProject={expandProjectToList}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleComplete={toggleComplete}
-          onStartTask={onStartTask}
           onToggleTaskDetail={toggleTaskDetail}
           hideEmptyProjects={hideEmptyCardProjects}
           onToggleHideEmptyProjects={toggleHideEmptyCardProjects}

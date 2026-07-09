@@ -38,7 +38,6 @@ interface TaskCardViewProps {
   onTaskDragEnd?: () => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleComplete?: (taskId: string) => void;
-  onStartTask?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
@@ -160,7 +159,6 @@ function CardTaskRow({
   onTaskDrop,
   onTaskDragEnd,
   onToggleComplete,
-  onStartTask,
   onToggleTaskDetail,
   onStartEdit,
   onEditTitleChange,
@@ -185,7 +183,6 @@ function CardTaskRow({
   onTaskDrop?: (projectId: string, targetTaskId: string) => void;
   onTaskDragEnd?: () => void;
   onToggleComplete?: (taskId: string) => void;
-  onStartTask?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
@@ -327,33 +324,15 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className="flex-1 min-w-0 basis-0 overflow-hidden text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+            className="flex-1 min-w-0 basis-0 overflow-hidden flex items-center gap-1 text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
             title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
           >
-            <span className="flex items-baseline gap-1 min-w-0">
-              {task.dueDate && <CardDuePrefix task={task} />}
-              <span className="min-w-0 line-clamp-2 break-words">{task.title}</span>
-            </span>
+            {task.dueDate && <CardDuePrefix task={task} />}
+            <span className="min-w-0 truncate">{task.title}</span>
           </button>
         )}
         {!isEditing && (
-          <div className="shrink-0 flex items-center gap-0 self-start mt-0.5">
-            {onStartTask && !overdue && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStartTask(task.id);
-                }}
-                className="p-0.5 rounded text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
-                title={isTimerRunning && isActive ? "Switch focus" : "Focus on this task"}
-                aria-label={`Focus on ${task.title}`}
-              >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                  <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
-              </button>
-            )}
+          <div className="shrink-0 flex items-center gap-0.5">
             {onToggleTaskDetail && (
               <TaskEditButton
                 isOpen={isExpanded}
@@ -436,7 +415,6 @@ function ProjectCard({
   onTaskDragEnd,
   onMoveTask,
   onToggleComplete,
-  onStartTask,
   onToggleTaskDetail,
   onStartEdit,
   onEditTitleChange,
@@ -472,7 +450,6 @@ function ProjectCard({
   onTaskDragEnd?: () => void;
   onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
   onToggleComplete?: (taskId: string) => void;
-  onStartTask?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
@@ -631,7 +608,6 @@ function ProjectCard({
               onTaskDrop={onTaskDrop}
               onTaskDragEnd={onTaskDragEnd}
               onToggleComplete={onToggleComplete}
-              onStartTask={onStartTask}
               onToggleTaskDetail={onToggleTaskDetail}
               onStartEdit={onStartEdit}
               onEditTitleChange={onEditTitleChange}
@@ -713,7 +689,6 @@ export default function TaskCardView({
   onOpenProject,
   onQuickAdd,
   onToggleComplete,
-  onStartTask,
   onToggleTaskDetail,
   hideEmptyProjects = true,
   onToggleHideEmptyProjects,
@@ -806,7 +781,6 @@ export default function TaskCardView({
               onTaskDragEnd={onTaskDragEnd}
               onMoveTask={onMoveTask}
               onToggleComplete={onToggleComplete}
-              onStartTask={onStartTask}
               onToggleTaskDetail={onToggleTaskDetail}
               onStartEdit={onStartEdit}
               onEditTitleChange={onEditTitleChange}
