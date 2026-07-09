@@ -86,10 +86,14 @@ body {
   background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(6,182,212,0.10) 0%, transparent 60%), #0a0f1a;
 }
 
-/* Shared content width — navbar, status strip, tasks, stats */
+/* Shared content width — navbar, status strip, tasks, stats, blog */
+:root {
+  --app-max-width: 1600px;
+}
+
 .app-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: var(--app-max-width);
   margin-inline: auto;
   padding-inline: 1rem;
 }

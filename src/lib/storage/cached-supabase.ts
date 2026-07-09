@@ -11,6 +11,10 @@
 
 import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
 import {
+  DEFAULT_TASK_VIEW_PREFERENCES,
+  type TaskViewPreferences,
+} from "../task-view-preference";
+import {
   Settings,
   DailyGoalData,
   StreakHistory,
@@ -32,6 +36,7 @@ const CACHE_KEYS = {
   tasks: `${CACHE_PREFIX}tasks`,
   projects: `${CACHE_PREFIX}projects`,
   selectedProject: `${CACHE_PREFIX}selected_project`,
+  taskViewPrefs: `${CACHE_PREFIX}task_view_prefs`,
 } as const;
 
 function isBrowser(): boolean {
@@ -236,6 +241,23 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   async saveSelectedProjectId(id: string): Promise<void> {
     cacheSet(CACHE_KEYS.selectedProject, id);
     await this.remote.saveSelectedProjectId(id);
+  }
+
+  async loadTaskViewPreferences(): Promise<TaskViewPreferences> {
+    try {
+      const result = await this.remote.loadTaskViewPreferences();
+      cacheSet(CACHE_KEYS.taskViewPrefs, result);
+      return result;
+    } catch {
+      return cacheGet<TaskViewPreferences>(CACHE_KEYS.taskViewPrefs) ?? { ...DEFAULT_TASK_VIEW_PREFERENCES };
+    }
+  }
+
+  async saveTaskViewPreferences(prefs: Partial<TaskViewPreferences>): Promise<void> {
+    const current = cacheGet<TaskViewPreferences>(CACHE_KEYS.taskViewPrefs) ?? { ...DEFAULT_TASK_VIEW_PREFERENCES };
+    const merged = { ...current, ...prefs };
+    cacheSet(CACHE_KEYS.taskViewPrefs, merged);
+    await this.remote.saveTaskViewPreferences(prefs);
   }
 
   // ── Collaboration (delegate to remote, no caching) ────────

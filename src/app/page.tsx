@@ -200,8 +200,8 @@ export default function LandingPage() {
       <AppNavbar />
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center px-4 sm:px-6">
-        <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-2xl mx-auto">
+      <main className="flex-1 flex flex-col items-center app-container">
+        <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-3xl mx-auto w-full">
           {/* Proof badge */}
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200/70 dark:border-cyan-700/40 text-xs font-semibold text-cyan-700 dark:text-cyan-300 tracking-wide uppercase">
@@ -234,12 +234,12 @@ export default function LandingPage() {
         </section>
 
         {/* App screenshot / mockup */}
-        <section className="w-full max-w-4xl mx-auto pt-4 sm:pt-8 pb-12 sm:pb-20">
+        <section className="w-full max-w-5xl mx-auto pt-4 sm:pt-8 pb-12 sm:pb-20">
           <HomeAppMockup />
         </section>
 
         {/* Social proof bar */}
-        <section className="w-full max-w-3xl mx-auto pb-10 sm:pb-14">
+        <section className="w-full max-w-4xl mx-auto pb-10 sm:pb-14">
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-sm sm:text-base text-slate-500 dark:text-slate-400">
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -275,7 +275,7 @@ export default function LandingPage() {
         </section>
 
         {/* How it works — replaces flat feature icons */}
-        <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
+        <section className="w-full max-w-5xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-10">
             How Foci works
           </h2>
@@ -332,7 +332,7 @@ export default function LandingPage() {
         </section>
 
         {/* Why Foci vs. others */}
-        <section className="w-full max-w-3xl mx-auto pb-12 sm:pb-20">
+        <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             More than just a countdown timer
           </h2>
@@ -391,12 +391,12 @@ export default function LandingPage() {
         </section>
 
         {/* Focus guides hub — internal links for SEO */}
-        <section className="w-full max-w-5xl mx-auto pb-12 sm:pb-16 px-0">
+        <section className="w-full max-w-6xl mx-auto pb-12 sm:pb-16 px-0">
           <GuideLinkHub />
         </section>
 
         {/* From the blog */}
-        <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
+        <section className="w-full max-w-5xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-3">
             From the blog
           </h2>
@@ -443,7 +443,7 @@ export default function LandingPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="w-full max-w-2xl mx-auto text-center pb-16 sm:pb-24">
+        <section className="w-full max-w-3xl mx-auto text-center pb-16 sm:pb-24">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-3">
             Ready to focus?
           </h2>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -17,6 +17,11 @@ import TaskPanelMenu from "@/components/TaskPanelMenu";
 const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
+import {
+  DEFAULT_VIEW_CHANGED_EVENT,
+  resolveInitialTaskView,
+  type DefaultTaskView,
+} from "@/lib/task-view-preference";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import TaskCardView from "@/components/task-list/TaskCardView";
 import { applyBucketDrop, moveBucketTaskInLane, moveCardTaskInProject, type BucketDropTarget } from "@/components/task-list/bucket-order";
@@ -106,15 +111,24 @@ export default function TaskList({
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [dragProjectId, setDragProjectId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<TaskViewMode>(() => {
-    if (typeof window === "undefined") return "card";
-    const saved = localStorage.getItem("foci_task_view_mode");
-    const explicit = localStorage.getItem("foci_task_view_explicit") === "1";
-    const valid =
-      saved === "bucket" || saved === "list" || saved === "calendar" || saved === "card" || saved === "plan";
-    if (explicit && valid) return saved;
-    return "card";
-  });
+  const [viewMode, setViewMode] = useState<TaskViewMode>("card");
+
+  useEffect(() => {
+    const onDefaultViewChanged = (e: Event) => {
+      const mode = (e as CustomEvent<DefaultTaskView>).detail;
+      setViewMode(mode);
+    };
+    window.addEventListener(DEFAULT_VIEW_CHANGED_EVENT, onDefaultViewChanged);
+    return () => window.removeEventListener(DEFAULT_VIEW_CHANGED_EVENT, onDefaultViewChanged);
+  }, []);
+
+  const persistTaskView = useCallback((mode: TaskViewMode, explicit = true) => {
+    if (mode === "plan") return;
+    saveTaskViewPreferences({
+      lastTaskView: mode,
+      taskViewExplicit: explicit,
+    }).catch((err) => console.error("[Foci] Failed to save task view preference:", err));
+  }, []);
 
   const viewBeforePlanRef = useRef<TaskViewMode>("card");
   const viewBeforeManageRef = useRef<TaskViewMode>("card");
@@ -154,15 +168,15 @@ export default function TaskList({
     selectProject(projectId);
     setViewMode("list");
     setCameFromBucket(true);
-    localStorage.setItem("foci_task_view_mode", "list");
-  }, []);
+    persistTaskView("list");
+  }, [persistTaskView]);
 
   const backToBuckets = useCallback(() => {
     selectProject(ALL_PROJECTS_ID);
     setViewMode("bucket");
     setCameFromBucket(false);
-    localStorage.setItem("foci_task_view_mode", "bucket");
-  }, []);
+    persistTaskView("bucket");
+  }, [persistTaskView]);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
@@ -171,10 +185,9 @@ export default function TaskList({
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
     if (mode !== "plan") {
-      localStorage.setItem("foci_task_view_mode", mode);
-      localStorage.setItem("foci_task_view_explicit", "1");
+      persistTaskView(mode);
     }
-  }, []);
+  }, [persistTaskView]);
 
   // Default due date when adding from Today / Week / Month / Year views
   useEffect(() => {
@@ -267,8 +280,13 @@ export default function TaskList({
     // Load projects (and shared projects for logged-in users)
     const loadData = async () => {
       try {
-        const [existingProjects, existing] = await Promise.all([loadProjects(), loadTasks()]);
+        const [existingProjects, existing, taskViewPrefs] = await Promise.all([
+          loadProjects(),
+          loadTasks(),
+          loadTaskViewPreferences(),
+        ]);
         setProjects(existingProjects);
+        setViewMode(resolveInitialTaskView(taskViewPrefs));
 
         // Seed sample tasks only for logged-out users with no tasks
         if (existing.length === 0 && !user) {
@@ -2041,6 +2059,7 @@ export default function TaskList({
           tasksByProject={bucketTasksByProject}
           completedCountByProject={bucketCompletedCountByProject}
           activeTaskId={activeTaskId}
+          isTimerRunning={isTimerRunning}
           dragProjectId={dragProjectId}
           dragOverProjectId={dragOverProjectId}
           onProjectDragStart={handleProjectDragStart}
@@ -2059,6 +2078,7 @@ export default function TaskList({
           onEditTitleChange={setEditTitle}
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
+          onDeleteTask={deleteTask}
           onExpandProject={expandProjectFromBucket}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
         />

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { sortCardTasks } from "@/components/task-list/bucket-order";
+import { getProjectsDragPreview } from "@/components/task-list/utils";
 import {
   formatDueDate,
   getDaysOverdue,
@@ -18,6 +19,7 @@ interface TaskCardViewProps {
   tasksByProject: Map<string, Task[]>;
   completedCountByProject?: Map<string, number>;
   activeTaskId: string | null;
+  isTimerRunning?: boolean;
   editingTaskId?: string | null;
   editTitle?: string;
   dragProjectId?: string | null;
@@ -37,6 +39,7 @@ interface TaskCardViewProps {
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
+  onDeleteTask?: (taskId: string) => void;
   onExpandProject?: (projectId: string) => void;
 }
 
@@ -45,6 +48,26 @@ function GripIcon() {
     <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
       <path d="M7 4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 13a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
     </svg>
+  );
+}
+
+function ProjectDragPlaceholder({
+  onProjectDrop,
+  dragOverProjectId,
+}: {
+  onProjectDrop?: (targetId: string) => void;
+  dragOverProjectId?: string | null;
+}) {
+  return (
+    <div
+      aria-hidden
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        if (dragOverProjectId) onProjectDrop?.(dragOverProjectId);
+      }}
+      className="rounded-lg border-2 border-dashed border-cyan-400/60 dark:border-cyan-500/50 bg-cyan-50/30 dark:bg-cyan-900/10 min-h-[8rem] transition-[opacity,transform] duration-150 ease-out"
+    />
   );
 }
 
@@ -112,6 +135,8 @@ function CardHeaderCounts({
 function CardTaskRow({
   task,
   projectId,
+  activeTaskId,
+  isTimerRunning,
   isEditing,
   editTitle,
   dragTaskId,
@@ -124,9 +149,12 @@ function CardTaskRow({
   onEditTitleChange,
   onSaveEdit,
   onCancelEdit,
+  onDeleteTask,
 }: {
   task: Task;
   projectId: string;
+  activeTaskId: string | null;
+  isTimerRunning?: boolean;
   isEditing: boolean;
   editTitle: string;
   dragTaskId?: string | null;
@@ -139,6 +167,7 @@ function CardTaskRow({
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
+  onDeleteTask?: (taskId: string) => void;
 }) {
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
@@ -214,23 +243,43 @@ function CardTaskRow({
             <span className="min-w-0 truncate">{task.title}</span>
           </span>
         )}
-        {onStartEdit && !isEditing && (
-          <button
-            type="button"
-            onClick={() => onStartEdit(task)}
-            className="shrink-0 p-0.5 rounded text-slate-400 dark:text-slate-500 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-            title={`Edit "${task.title}"`}
-            aria-label={`Edit task ${task.title}`}
-          >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-          </button>
+        {!isEditing && (
+          <div className="shrink-0 flex items-center opacity-0 group-hover/row:opacity-100 focus-within:opacity-100">
+            {onStartEdit && (
+              <button
+                type="button"
+                onClick={() => onStartEdit(task)}
+                className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+                title={`Edit "${task.title}"`}
+                aria-label={`Edit task ${task.title}`}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+            )}
+            {onDeleteTask && !(isTimerRunning && activeTaskId === task.id) && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteTask(task.id);
+                }}
+                className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                title={`Delete "${task.title}"`}
+                aria-label={`Delete task ${task.title}`}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
@@ -243,6 +292,7 @@ function ProjectCard({
   tasks,
   completedCount,
   activeTaskId,
+  isTimerRunning,
   editingTaskId,
   editTitle,
   dragProjectId,
@@ -261,6 +311,7 @@ function ProjectCard({
   onEditTitleChange,
   onSaveEdit,
   onCancelEdit,
+  onDeleteTask,
   onExpandProject,
   onQuickAdd,
 }: {
@@ -269,6 +320,7 @@ function ProjectCard({
   tasks: Task[];
   completedCount: number;
   activeTaskId: string | null;
+  isTimerRunning?: boolean;
   editingTaskId?: string | null;
   editTitle?: string;
   dragProjectId?: string | null;
@@ -288,6 +340,7 @@ function ProjectCard({
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
+  onDeleteTask?: (taskId: string) => void;
   onExpandProject?: (projectId: string) => void;
 }) {
   const [draft, setDraft] = useState("");
@@ -329,8 +382,8 @@ function ProjectCard({
         isPersonal
           ? "border-slate-200/90 dark:border-slate-600/40 bg-slate-50/90 dark:bg-[#151c2c]/80"
           : "border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80"
-      } ${isDragging ? "opacity-50" : ""} ${
-        isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent bg-cyan-50/40 dark:bg-cyan-900/10" : ""
+      } ${isDragging ? "opacity-40" : ""} ${
+        isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent" : ""
       }`}
       style={
         !isPersonal && project.color
@@ -400,6 +453,8 @@ function ProjectCard({
               key={task.id}
               task={task}
               projectId={project.id}
+              activeTaskId={activeTaskId}
+              isTimerRunning={isTimerRunning}
               isEditing={editingTaskId === task.id}
               editTitle={editTitle ?? ""}
               dragTaskId={dragTaskId}
@@ -412,6 +467,7 @@ function ProjectCard({
               onEditTitleChange={onEditTitleChange}
               onSaveEdit={onSaveEdit}
               onCancelEdit={onCancelEdit}
+              onDeleteTask={onDeleteTask}
             />
           ))
         )}
@@ -457,6 +513,7 @@ export default function TaskCardView({
   tasksByProject,
   completedCountByProject,
   activeTaskId,
+  isTimerRunning,
   editingTaskId,
   editTitle,
   dragProjectId,
@@ -475,13 +532,35 @@ export default function TaskCardView({
   onEditTitleChange,
   onSaveEdit,
   onCancelEdit,
+  onDeleteTask,
   onExpandProject,
   onQuickAdd,
 }: TaskCardViewProps) {
+  const previewProjects = useMemo(
+    () => getProjectsDragPreview(projects, dragProjectId ?? null, dragOverProjectId ?? null),
+    [projects, dragProjectId, dragOverProjectId],
+  );
+  const showDragPlaceholder = !!(
+    dragProjectId &&
+    dragOverProjectId &&
+    dragProjectId !== dragOverProjectId
+  );
+
   return (
     <div className="px-3 sm:px-4 pb-4 pt-1">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {projects.map((project) => (
+        {previewProjects.map((project) => {
+          if (showDragPlaceholder && project.id === dragProjectId) {
+            return (
+              <ProjectDragPlaceholder
+                key={project.id}
+                dragOverProjectId={dragOverProjectId}
+                onProjectDrop={onProjectDrop}
+              />
+            );
+          }
+
+          return (
           <ProjectCard
             key={project.id}
             project={project}
@@ -489,6 +568,7 @@ export default function TaskCardView({
             tasks={tasksByProject.get(project.id) ?? []}
             completedCount={completedCountByProject?.get(project.id) ?? 0}
             activeTaskId={activeTaskId}
+            isTimerRunning={isTimerRunning}
             editingTaskId={editingTaskId}
             editTitle={editTitle}
             dragProjectId={dragProjectId}
@@ -507,10 +587,12 @@ export default function TaskCardView({
             onEditTitleChange={onEditTitleChange}
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
+            onDeleteTask={onDeleteTask}
             onExpandProject={onExpandProject}
             onQuickAdd={onQuickAdd}
           />
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -146,7 +146,7 @@ export default async function BlogPostPage({ params }: Props) {
       )}
       <AppNavbar />
 
-      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 flex-1">
+      <main className="app-container py-8 flex-1">
         <div className="max-w-3xl mx-auto">
         <Link
           href="/blog"

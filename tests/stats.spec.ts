@@ -77,10 +77,10 @@ test.describe("Stats Page", () => {
     await expect(page.getByText("Total Tasks")).toBeVisible();
   });
 
-  test("page uses full width layout (max-w-1280px)", async ({ page }) => {
+  test("page uses shared app container width", async ({ page }) => {
     const main = page.locator("main");
     const className = await main.getAttribute("class");
-    expect(className).toContain("max-w-[1280px]");
+    expect(className).toContain("app-container");
   });
 
   test("has navbar", async ({ page }) => {

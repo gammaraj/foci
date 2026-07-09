@@ -97,7 +97,7 @@ export default function BlogIndexPage() {
       />
       <AppNavbar />
 
-      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="app-container py-8 sm:py-12">
         <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
           Blog
         </h1>

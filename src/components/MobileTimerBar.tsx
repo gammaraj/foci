@@ -41,7 +41,7 @@ export default function MobileTimerBar({
       {isBreak && (
         <div className="h-1 bg-gradient-to-r from-green-400 to-emerald-500" aria-hidden="true" />
       )}
-      <div className="flex items-center gap-2 px-3 py-2.5 max-w-[1280px] mx-auto">
+      <div className="app-container flex items-center gap-2 py-2.5">
         <button
           type="button"
           onClick={onExpandTimer}

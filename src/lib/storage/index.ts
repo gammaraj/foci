@@ -72,6 +72,18 @@ async function doActivateSupabase(): Promise<void> {
             if (localGoal) {
               await supabaseAdapter.saveDailyGoalData(JSON.parse(localGoal));
             }
+
+            const legacyDefaultView = localStorage.getItem("foci_default_task_view");
+            const legacyLastView = localStorage.getItem("foci_task_view_mode");
+            const legacyExplicit = localStorage.getItem("foci_task_view_explicit") === "1";
+            if (legacyDefaultView || legacyLastView || legacyExplicit) {
+              const { isDefaultTaskView } = await import("../task-view-preference");
+              await supabaseAdapter.saveTaskViewPreferences({
+                ...(isDefaultTaskView(legacyDefaultView) ? { defaultTaskView: legacyDefaultView } : {}),
+                ...(isDefaultTaskView(legacyLastView) ? { lastTaskView: legacyLastView } : {}),
+                ...(legacyExplicit ? { taskViewExplicit: true } : {}),
+              });
+            }
           }
         }
 
@@ -83,6 +95,10 @@ async function doActivateSupabase(): Promise<void> {
           "foci_tasks",
           "foci_projects",
           "foci_selected_project",
+          "foci_task_view_prefs",
+          "foci_default_task_view",
+          "foci_task_view_mode",
+          "foci_task_view_explicit",
           "tempo_settings",
           "tempo_daily_goal",
           "tempo_streak_history",
@@ -150,6 +166,9 @@ export const deleteProject = (...args: Parameters<StorageAdapter["deleteProject"
 export const loadSelectedProjectId = () => currentAdapter.loadSelectedProjectId();
 export const saveSelectedProjectId = (...args: Parameters<StorageAdapter["saveSelectedProjectId"]>) =>
   currentAdapter.saveSelectedProjectId(...args);
+export const loadTaskViewPreferences = () => currentAdapter.loadTaskViewPreferences();
+export const saveTaskViewPreferences = (...args: Parameters<StorageAdapter["saveTaskViewPreferences"]>) =>
+  currentAdapter.saveTaskViewPreferences(...args);
 
 // ── Collaboration API ───────────────────────────────────
 export const getProjectCollaborators = (...args: Parameters<StorageAdapter["getProjectCollaborators"]>) =>

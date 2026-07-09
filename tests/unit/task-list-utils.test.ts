@@ -5,6 +5,7 @@ import {
   isDueDateOverdue,
   sortProjectsForDisplay,
   reorderProjects,
+  getProjectsDragPreview,
   moveProjectInDisplayOrder,
 } from "@/components/task-list/utils";
 import type { Project } from "@/lib/types";
@@ -46,6 +47,17 @@ describe("task-list utils", () => {
     expect(sortProjectsForDisplay(updated!).map((p) => p.id)).toEqual(["c", "a", "b"]);
     expect(updated!.find((p) => p.id === "c")?.favorite).toBe(true);
     expect(updated!.find((p) => p.id === "c")?.order).toBe(0);
+  });
+
+  it("getProjectsDragPreview shifts cards before drop", () => {
+    const projects: Project[] = [
+      { id: "a", name: "A", createdAt: 1, order: 0 },
+      { id: "b", name: "B", createdAt: 2, order: 1 },
+      { id: "c", name: "C", createdAt: 3, order: 2 },
+      { id: "d", name: "D", createdAt: 4, order: 3 },
+    ];
+    expect(getProjectsDragPreview(projects, "a", "c").map((p) => p.id)).toEqual(["b", "c", "a", "d"]);
+    expect(getProjectsDragPreview(projects, null, "c").map((p) => p.id)).toEqual(["a", "b", "c", "d"]);
   });
 
   it("moveProjectInDisplayOrder shifts a project by one step", () => {

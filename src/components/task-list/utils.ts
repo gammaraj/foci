@@ -22,6 +22,25 @@ export function getActiveProjectsInDisplayOrder(projects: Project[]): Project[] 
   return sortProjectsForDisplay(projects.filter((p) => !p.archived));
 }
 
+/** Preview tab order while dragging — cards shift before drop. */
+export function getProjectsDragPreview(
+  projects: Project[],
+  draggedId: string | null,
+  targetId: string | null,
+): Project[] {
+  const sorted = getActiveProjectsInDisplayOrder(projects);
+  if (!draggedId || !targetId || draggedId === targetId) return sorted;
+
+  const fromIdx = sorted.findIndex((p) => p.id === draggedId);
+  const toIdx = sorted.findIndex((p) => p.id === targetId);
+  if (fromIdx === -1 || toIdx === -1) return sorted;
+
+  const preview = [...sorted];
+  const [moved] = preview.splice(fromIdx, 1);
+  preview.splice(toIdx, 0, moved);
+  return preview;
+}
+
 /**
  * Reorder projects in the tab bar. Dropping onto a target adopts that project's pin state.
  * Returns updated projects array, or null when the move is invalid.

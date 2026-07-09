@@ -10,6 +10,11 @@ import {
   TODAY_FILTER_ID,
 } from "../types";
 import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
+import {
+  DEFAULT_TASK_VIEW_PREFERENCES,
+  isDefaultTaskView,
+  type TaskViewPreferences,
+} from "../task-view-preference";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 const SETTINGS_KEY = "foci_settings";
@@ -18,6 +23,7 @@ const STREAK_HISTORY_KEY = "foci_streak_history";
 const TASKS_KEY = "foci_tasks";
 const PROJECTS_KEY = "foci_projects";
 const SELECTED_PROJECT_KEY = "foci_selected_project";
+const TASK_VIEW_PREFS_KEY = "foci_task_view_prefs";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -282,6 +288,32 @@ export class LocalStorageAdapter implements StorageAdapter {
     if (!isBrowser()) return;
     try {
       localStorage.setItem(SELECTED_PROJECT_KEY, id);
+    } catch { /* quota exceeded */ }
+  }
+
+  async loadTaskViewPreferences(): Promise<TaskViewPreferences> {
+    if (!isBrowser()) return { ...DEFAULT_TASK_VIEW_PREFERENCES };
+    try {
+      const raw = localStorage.getItem(TASK_VIEW_PREFS_KEY);
+      if (!raw) return { ...DEFAULT_TASK_VIEW_PREFERENCES };
+      const parsed = JSON.parse(raw) as Partial<TaskViewPreferences>;
+      return {
+        defaultTaskView: isDefaultTaskView(parsed.defaultTaskView)
+          ? parsed.defaultTaskView
+          : DEFAULT_TASK_VIEW_PREFERENCES.defaultTaskView,
+        lastTaskView: isDefaultTaskView(parsed.lastTaskView) ? parsed.lastTaskView : null,
+        taskViewExplicit: parsed.taskViewExplicit === true,
+      };
+    } catch {
+      return { ...DEFAULT_TASK_VIEW_PREFERENCES };
+    }
+  }
+
+  async saveTaskViewPreferences(prefs: Partial<TaskViewPreferences>): Promise<void> {
+    if (!isBrowser()) return;
+    try {
+      const current = await this.loadTaskViewPreferences();
+      localStorage.setItem(TASK_VIEW_PREFS_KEY, JSON.stringify({ ...current, ...prefs }));
     } catch { /* quota exceeded */ }
   }
 

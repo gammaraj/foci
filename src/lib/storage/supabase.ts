@@ -13,6 +13,11 @@ import {
   TODAY_FILTER_ID,
 } from "../types";
 import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
+import {
+  DEFAULT_TASK_VIEW_PREFERENCES,
+  isDefaultTaskView,
+  type TaskViewPreferences,
+} from "../task-view-preference";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 /** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
@@ -456,6 +461,43 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       await this.supabase.from("user_preferences").upsert({
         user_id: userId,
         selected_project_id: id,
+      })
+    );
+  }
+
+  async loadTaskViewPreferences(): Promise<TaskViewPreferences> {
+    const userId = await this.getUserId();
+    const data = check(
+      await this.supabase
+        .from("user_preferences")
+        .select("default_task_view, last_task_view, task_view_explicit")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      { silent: true },
+    );
+
+    if (!data) return { ...DEFAULT_TASK_VIEW_PREFERENCES };
+
+    return {
+      defaultTaskView: isDefaultTaskView(data.default_task_view)
+        ? data.default_task_view
+        : DEFAULT_TASK_VIEW_PREFERENCES.defaultTaskView,
+      lastTaskView: isDefaultTaskView(data.last_task_view) ? data.last_task_view : null,
+      taskViewExplicit: data.task_view_explicit === true,
+    };
+  }
+
+  async saveTaskViewPreferences(prefs: Partial<TaskViewPreferences>): Promise<void> {
+    const userId = await this.getUserId();
+    const current = await this.loadTaskViewPreferences();
+    const merged = { ...current, ...prefs };
+
+    check(
+      await this.supabase.from("user_preferences").upsert({
+        user_id: userId,
+        default_task_view: merged.defaultTaskView,
+        last_task_view: merged.lastTaskView,
+        task_view_explicit: merged.taskViewExplicit,
       })
     );
   }

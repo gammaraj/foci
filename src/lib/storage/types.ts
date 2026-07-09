@@ -5,6 +5,7 @@ import {
   Task,
   Project,
 } from "../types";
+import type { TaskViewPreferences } from "../task-view-preference";
 
 // ── Collaboration Types ─────────────────────────────────────
 
@@ -106,6 +107,8 @@ export interface StorageAdapter {
   deleteProject(id: string): Promise<void>;
   loadSelectedProjectId(): Promise<string>;
   saveSelectedProjectId(id: string): Promise<void>;
+  loadTaskViewPreferences(): Promise<TaskViewPreferences>;
+  saveTaskViewPreferences(prefs: Partial<TaskViewPreferences>): Promise<void>;
 
   // ── Collaboration ─────────────────────────────────────
   // Get collaborators for a project (owner only)

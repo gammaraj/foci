@@ -342,14 +342,23 @@ export type Database = {
         Row: {
           selected_project_id: string
           user_id: string
+          default_task_view: string
+          last_task_view: string | null
+          task_view_explicit: boolean
         }
         Insert: {
           selected_project_id?: string
           user_id: string
+          default_task_view?: string
+          last_task_view?: string | null
+          task_view_explicit?: boolean
         }
         Update: {
           selected_project_id?: string
           user_id?: string
+          default_task_view?: string
+          last_task_view?: string | null
+          task_view_explicit?: boolean
         }
         Relationships: []
       }

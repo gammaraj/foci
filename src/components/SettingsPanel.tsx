@@ -7,8 +7,13 @@ import TaskImportExport from "@/components/TaskImportExport";
 import AccountSharingModal from "@/components/AccountSharingModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
-import { loadProjects } from "@/lib/storage";
+import { loadProjects, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
 import { getFocusModeAuto, setFocusModeAuto, getStartTimerOnFocus, setStartTimerOnFocus } from "@/lib/focus-mode";
+import {
+  DEFAULT_TASK_VIEW_OPTIONS,
+  DEFAULT_VIEW_CHANGED_EVENT,
+  type DefaultTaskView,
+} from "@/lib/task-view-preference";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -44,11 +49,15 @@ export default function SettingsPanel({
   );
   const [focusModeAuto, setFocusModeAutoState] = useState(false);
   const [startTimerOnFocus, setStartTimerOnFocusState] = useState(true);
+  const [defaultTaskView, setDefaultTaskViewState] = useState<DefaultTaskView>("card");
   const [browserPerm, setBrowserPerm] = useState<NotificationPermission>("default");
 
   useEffect(() => {
     setFocusModeAutoState(getFocusModeAuto());
     setStartTimerOnFocusState(getStartTimerOnFocus());
+    loadTaskViewPreferences()
+      .then((prefs) => setDefaultTaskViewState(prefs.defaultTaskView))
+      .catch((err) => console.error("[Foci] Failed to load task view preference:", err));
   }, []);
 
   useEffect(() => {
@@ -394,6 +403,41 @@ export default function SettingsPanel({
                   }}
                   className="h-5 w-5 text-cyan-600 border-slate-300 rounded"
                 />
+              </div>
+              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
+                <div className="flex flex-col min-w-0 flex-1 pr-3">
+                  <label htmlFor="defaultTaskView" className="text-base font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                    <span>📋</span> Default task view
+                  </label>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Opens when you first visit. Your last view is remembered while you browse.
+                  </span>
+                </div>
+                <select
+                  id="defaultTaskView"
+                  value={defaultTaskView}
+                  onChange={async (e) => {
+                    const view = e.target.value as DefaultTaskView;
+                    setDefaultTaskViewState(view);
+                    try {
+                      await saveTaskViewPreferences({
+                        defaultTaskView: view,
+                        lastTaskView: view,
+                        taskViewExplicit: true,
+                      });
+                      window.dispatchEvent(new CustomEvent(DEFAULT_VIEW_CHANGED_EVENT, { detail: view }));
+                    } catch (err) {
+                      console.error("[Foci] Failed to save task view preference:", err);
+                    }
+                  }}
+                  className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 outline-none"
+                >
+                  {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
