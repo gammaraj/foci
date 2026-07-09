@@ -820,3 +820,138 @@ input:focus-visible {
     box-shadow: -4px 0 0 0 rgba(59, 130, 246, 0.45);
   }
 }
+
+/* ===== Print — tasks in current view layout ===== */
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 0.6in;
+  }
+
+  body {
+    background: #fff !important;
+    color: #0f172a !important;
+    padding: 0 !important;
+  }
+
+  .no-print,
+  .nav-chrome,
+  #focus-dock,
+  .skip-link,
+  .fixed,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .app-shell {
+    background: #fff !important;
+    min-height: auto !important;
+  }
+
+  .app-container,
+  #tasks-section {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .app-surface {
+    background: #fff !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .dark,
+  .dark * {
+    color-scheme: light;
+  }
+
+  .print-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .print-header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .print-header p {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0.25rem 0 0;
+  }
+
+  #tasks-section .panel-header-calm {
+    background: transparent !important;
+    padding-top: 0 !important;
+  }
+
+  #tasks-section .task-list-section-header,
+  #tasks-section .bucket-lane-label {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #tasks-section .task-list-section-panel,
+  #tasks-section .rounded-lg.border {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  #tasks-section .overflow-x-auto {
+    overflow: visible !important;
+    flex-wrap: wrap !important;
+  }
+
+  #tasks-section button[aria-label^="Mark"],
+  #tasks-section button[aria-label^="Edit task"],
+  #tasks-section button[aria-label^="Close task"],
+  #tasks-section button[aria-label^="Delete"],
+  #tasks-section button[aria-label^="Focus"],
+  #tasks-section button[aria-label="Move up"],
+  #tasks-section button[aria-label="Move down"],
+  #tasks-section button[title="Deselect task"],
+  #tasks-section .hover-reveal-desktop,
+  #tasks-section .cursor-grab,
+  #tasks-section form,
+  #tasks-section select,
+  #tasks-section input[type="text"],
+  #tasks-section input[type="date"],
+  #tasks-section textarea,
+  #tasks-section .animate-pulse {
+    display: none !important;
+  }
+
+  #tasks-section button[aria-label*="Due"] {
+    display: inline-flex !important;
+    border: none !important;
+    background: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    pointer-events: none;
+  }
+
+  #tasks-section .task-timer-linked::after {
+    display: none !important;
+  }
+
+  #tasks-section .line-clamp-2 {
+    overflow: visible !important;
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
+  }
+}

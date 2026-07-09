@@ -977,7 +977,7 @@ export default function TaskBucketView({
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          className="w-full flex gap-4 overflow-x-auto pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
+          className="w-full flex gap-4 overflow-x-auto print:overflow-visible print:flex-wrap pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
           onScroll={showScrollHint ? dismissScrollHint : undefined}
         >
         {orderedColumns.map((project) => (

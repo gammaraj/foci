@@ -13,6 +13,8 @@ interface TaskPanelMenuProps {
   onSelectTemplate?: (template: TaskTemplate) => void;
   onTogglePlan?: () => void;
   isPlanView?: boolean;
+  onPrint?: () => void;
+  printDisabled?: boolean;
 }
 
 export default function TaskPanelMenu({
@@ -24,6 +26,8 @@ export default function TaskPanelMenu({
   onSelectTemplate,
   onTogglePlan,
   isPlanView,
+  onPrint,
+  printDisabled,
 }: TaskPanelMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -65,6 +69,16 @@ export default function TaskPanelMenu({
           >
             Settings & import
           </button>
+          {onPrint && (
+            <button
+              type="button"
+              disabled={printDisabled}
+              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => { onPrint(); setOpen(false); }}
+            >
+              Print current view
+            </button>
+          )}
           <button
             type="button"
             className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"

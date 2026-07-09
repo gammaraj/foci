@@ -260,7 +260,7 @@ function AppPageContent() {
         onTasksImported={() => setTaskListKey((k) => k + 1)}
       />
       {!focusMode && (
-        <div id="focus-dock">
+        <div id="focus-dock" className="no-print">
           <DailyQuoteBanner
             timerPanelExpanded={!timerCollapsed}
             onCollapseAll={() => setTimerCollapsed(true)}
@@ -319,10 +319,12 @@ function AppPageContent() {
           />
         </div>
       )}
-      <AppMessageQueue user={user} focusMode={focusMode} />
+      <div className="no-print">
+        <AppMessageQueue user={user} focusMode={focusMode} />
+      </div>
       {focusMode && (
         <>
-          <div className="app-container py-2">
+          <div className="no-print app-container py-2">
             <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 text-sm">
               <span className="text-cyan-800 dark:text-cyan-200 font-medium">Focus mode — fewer distractions</span>
               <button
@@ -345,11 +347,15 @@ function AppPageContent() {
       <div className={tasksFullscreen ? "w-full px-2 sm:px-4" : "app-container"}>
 
         {certStudContext && !focusMode && (
-          <CertStudStudyPromo context={certStudContext} variant="inline" className="mb-3" />
+          <div className="no-print">
+            <CertStudStudyPromo context={certStudContext} variant="inline" className="mb-3" />
+          </div>
         )}
 
         {boostLogikContext && !focusMode && (
-          <BoostLogikPromo context={boostLogikContext} variant="inline" className="mb-3" />
+          <div className="no-print">
+            <BoostLogikPromo context={boostLogikContext} variant="inline" className="mb-3" />
+          </div>
         )}
 
         {/* Tasks — full width */}
