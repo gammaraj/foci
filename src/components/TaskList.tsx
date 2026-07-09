@@ -2016,6 +2016,7 @@ export default function TaskList({
         <TaskCardView
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
+          completedCountByProject={bucketCompletedCountByProject}
           activeTaskId={activeTaskId}
           editingTaskId={editingId}
           editTitle={editTitle}

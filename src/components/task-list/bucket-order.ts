@@ -13,7 +13,6 @@ export function getBucketSwimlaneId(task: Task): BucketSwimlaneId {
   return "dated";
 }
 
-/** Same sort as bucket columns — active task first, then manual order, then due grouping. */
 export function sortBucketTasks(tasks: Task[], activeTaskId: string | null): Task[] {
   return [...tasks].sort((a, b) => {
     if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
@@ -44,6 +43,11 @@ export function tasksInSwimlane(
   activeTaskId: string | null
 ): Task[] {
   return sortBucketTasks(tasks, activeTaskId).filter((t) => getBucketSwimlaneId(t) === laneId);
+}
+
+/** Card view — swimlane priority first (overdue → dated → blocked → undated → someday). */
+export function sortCardTasks(tasks: Task[], activeTaskId: string | null): Task[] {
+  return SWIMLANE_ORDER.flatMap((laneId) => tasksInSwimlane(tasks, laneId, activeTaskId));
 }
 
 export type BucketDropTarget =
