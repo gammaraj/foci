@@ -7,6 +7,7 @@ import {
   reorderProjects,
   getProjectsDragPreview,
   moveProjectInDisplayOrder,
+  resolveProjectColor,
 } from "@/components/task-list/utils";
 import type { Project } from "@/lib/types";
 
@@ -25,6 +26,15 @@ describe("task-list utils", () => {
   it("isDueDateOverdue compares against today", () => {
     expect(isDueDateOverdue("2000-01-01")).toBe(true);
     expect(isDueDateOverdue("2099-12-31")).toBe(false);
+  });
+
+  it("resolveProjectColor uses saved color or stable fallback", () => {
+    expect(resolveProjectColor({ id: "p1", color: "#ff0000" })).toBe("#ff0000");
+    const a = resolveProjectColor({ id: "legacy-work" });
+    const b = resolveProjectColor({ id: "legacy-work" });
+    const c = resolveProjectColor({ id: "legacy-foci" });
+    expect(a).toBe(b);
+    expect(a).not.toBe(c);
   });
 
   it("sortProjectsForDisplay puts favorites first, then order, then name", () => {

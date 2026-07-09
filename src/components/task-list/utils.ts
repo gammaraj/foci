@@ -1,9 +1,20 @@
 import type { Project, RecurrenceType } from "@/lib/types";
+import { PROJECT_COLORS } from "@/lib/types";
 import { getToday, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
 export const MAX_VISIBLE_PROJECT_TABS = 3; // initial floor before width measurement
+
+/** Stable accent color for every project — uses saved color or a deterministic fallback. */
+export function resolveProjectColor(project: Pick<Project, "id" | "color">): string {
+  if (project.color) return project.color;
+  let hash = 0;
+  for (let i = 0; i < project.id.length; i++) {
+    hash = (hash * 31 + project.id.charCodeAt(i)) | 0;
+  }
+  return PROJECT_COLORS[Math.abs(hash) % PROJECT_COLORS.length];
+}
 
 /** Favorites first, then manual order, then name. */
 export function sortProjectsForDisplay(projects: Project[]): Project[] {

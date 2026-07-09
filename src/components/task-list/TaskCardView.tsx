@@ -10,6 +10,7 @@ import {
   getDaysOverdue,
   isDueDateOverdue,
   MAX_TASK_TITLE,
+  resolveProjectColor,
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
@@ -48,6 +49,7 @@ interface TaskCardViewProps {
   onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
+  onToggleProjectFavorite?: (projectId: string) => void;
   hideEmptyProjects?: boolean;
   onToggleHideEmptyProjects?: () => void;
   emptyProjectCount?: number;
@@ -424,6 +426,7 @@ function ProjectCard({
   onExpandProject,
   onOpenProject,
   onQuickAdd,
+  onToggleProjectFavorite,
 }: {
   project: Project;
   projectIndex: number;
@@ -459,6 +462,7 @@ function ProjectCard({
   onDeleteTask?: (taskId: string) => void;
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
+  onToggleProjectFavorite?: (projectId: string) => void;
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -467,6 +471,7 @@ function ProjectCard({
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
   const isPersonal = project.id === DEFAULT_PROJECT_ID;
+  const accentColor = resolveProjectColor(project);
   const canReorder = projectCount >= 2 && !!onProjectDragStart;
   const isDragging = dragProjectId === project.id;
   const isDropTarget = dragOverProjectId === project.id && dragProjectId !== project.id;
@@ -495,31 +500,19 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`rounded-lg border px-2.5 py-2 min-w-0 flex flex-col gap-1 transition-colors ${
-        isPersonal
-          ? "border-slate-200/90 dark:border-slate-600/40 bg-slate-50/90 dark:bg-[#151c2c]/80"
-          : "border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80"
-      } ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card rounded-lg border px-2.5 py-2 min-w-0 flex flex-col gap-1 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent" : ""
       }`}
-      style={
-        !isPersonal && project.color
-          ? {
-              borderTopWidth: 2,
-              borderTopColor: project.color,
-            }
-          : undefined
-      }
+      style={{
+        borderTopWidth: 2,
+        borderTopColor: accentColor,
+      }}
     >
       <header
         className="flex flex-col gap-0.5 min-w-0 pb-1.5 mb-0.5 border-b border-slate-200/70 dark:border-[#243350]/80"
-        style={
-          project.color
-            ? {
-                borderBottomColor: `color-mix(in srgb, ${project.color} 25%, transparent)`,
-              }
-            : undefined
-        }
+        style={{
+          borderBottomColor: `color-mix(in srgb, ${accentColor} 25%, transparent)`,
+        }}
       >
         <div className="flex items-center gap-1 min-w-0">
           {canReorder ? (
@@ -563,13 +556,42 @@ function ProjectCard({
               </button>
             </div>
           ) : null}
-          {project.color && (
-            <span
-              className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-              style={{ backgroundColor: project.color }}
-              aria-hidden
-            />
-          )}
+          {onToggleProjectFavorite ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleProjectFavorite(project.id);
+              }}
+              className={`flex-shrink-0 touch-target-sm p-0.5 rounded transition-colors ${
+                project.favorite
+                  ? "text-amber-400 hover:text-amber-500"
+                  : "text-slate-300 dark:text-slate-600 opacity-100 sm:opacity-0 sm:group-hover/card:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
+              }`}
+              title={
+                project.favorite
+                  ? "Pinned — click to unpin (pinned cards appear first)"
+                  : "Pin project — show this card first"
+              }
+              aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name}`}
+              aria-pressed={!!project.favorite}
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={project.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={project.favorite ? 0 : 1.5} aria-hidden>
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </button>
+          ) : project.favorite ? (
+            <span title="Pinned — appears first in card view" className="flex-shrink-0" aria-hidden>
+              <svg className="w-3.5 h-3.5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </span>
+          ) : null}
+          <span
+            className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
+            style={{ backgroundColor: accentColor }}
+            aria-hidden
+          />
           <button
             type="button"
             onClick={() => onOpenProject?.(project.id)}
@@ -692,6 +714,7 @@ export default function TaskCardView({
   onQuickAdd,
   onToggleComplete,
   onToggleTaskDetail,
+  onToggleProjectFavorite,
   hideEmptyProjects = true,
   onToggleHideEmptyProjects,
   emptyProjectCount = 0,
@@ -792,6 +815,7 @@ export default function TaskCardView({
               onExpandProject={onExpandProject}
               onOpenProject={onOpenProject}
               onQuickAdd={onQuickAdd}
+              onToggleProjectFavorite={onToggleProjectFavorite}
             />
           );
         })}

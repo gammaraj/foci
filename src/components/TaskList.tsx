@@ -2285,6 +2285,7 @@ export default function TaskList({
           onMoveTask={handleCardTaskMove}
           onExpandProject={expandProjectToList}
           onOpenProject={expandProjectToList}
+          onToggleProjectFavorite={toggleProjectFavorite}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleComplete={toggleComplete}
           onToggleTaskDetail={toggleTaskDetail}

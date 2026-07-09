@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE } from "@/components/task-list/utils";
+import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
@@ -605,31 +605,18 @@ function BucketColumn({
   const columnHighlighted =
     dragOverColumn?.projectId === project.id && dragTaskId != null;
   const isPersonal = project.id === DEFAULT_PROJECT_ID;
+  const accentColor = resolveProjectColor(project);
 
   return (
     <div
       data-bucket-project={project.id}
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm ${
-        isPersonal
-          ? "bg-slate-50/95 dark:bg-[#151c2c]/95 border border-slate-200/90 dark:border-slate-600/40 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.05)] dark:shadow-none"
-          : "bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none"
-      } ${columnHighlighted ? "ring-2 ring-cyan-400/30 dark:ring-cyan-500/35" : ""}`}
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none ${columnHighlighted ? "ring-2 ring-cyan-400/30 dark:ring-cyan-500/35" : ""}`}
     >
       <div
-        className={`group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl ${
-          isPersonal
-            ? "bg-gradient-to-br from-slate-100/90 to-slate-50/50 dark:from-slate-800/55 dark:to-[#151c2c]/40 border-b border-slate-200/80 dark:border-slate-600/30"
-            : project.color
-              ? "border-b border-slate-200/60 dark:border-[#243350]/60"
-              : "border-b border-slate-200/60 dark:border-[#243350]/60"
-        }`}
-        style={
-          !isPersonal && project.color
-            ? {
-                background: `linear-gradient(135deg, color-mix(in srgb, ${project.color} 12%, transparent), transparent 72%)`,
-              }
-            : undefined
-        }
+        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-200/60 dark:border-[#243350]/60"
+        style={{
+          background: `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 12%, transparent), transparent 72%)`,
+        }}
         title={project.description?.trim() || project.name}
       >
         {onToggleProjectFavorite ? (
@@ -665,14 +652,12 @@ function BucketColumn({
             </svg>
           </span>
         ) : null}
-        {project.color && (
-          <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-            style={{ backgroundColor: project.color }}
-            title={`${project.name} color`}
-            aria-hidden
-          />
-        )}
+        <span
+          className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
+          style={{ backgroundColor: accentColor }}
+          title={`${project.name} color`}
+          aria-hidden
+        />
         <BucketColumnTitle project={project} />
         {isPersonal && (
           <span
