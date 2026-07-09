@@ -54,6 +54,12 @@ const FILTER_TAB_ACTIVE =
 const FILTER_TAB_INACTIVE =
   "text-slate-600 dark:text-white/80 hover:text-slate-800 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10";
 
+/** Cyan-accent active state so layout view is easy to spot. */
+const VIEW_TAB_ACTIVE =
+  "bg-white dark:bg-[#1a2d4a] text-cyan-700 dark:text-cyan-300 shadow-sm ring-1 ring-cyan-400/70 dark:ring-cyan-500/55 font-semibold";
+const VIEW_TAB_INACTIVE =
+  "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10";
+
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
   "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-cyan-400/50 dark:ring-cyan-500/45 font-semibold";
@@ -1489,7 +1495,7 @@ export default function TaskList({
       {/* Focus mode header */}
       {isFocusMode ? (
         <div
-          className="panel-header-calm px-3 sm:px-5 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
+          className="panel-header-calm px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
         >
           <div className="flex items-center justify-between min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -1516,7 +1522,7 @@ export default function TaskList({
       <>
       {/* Header */}
       <div
-        className="panel-header-calm px-3 sm:px-5 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
         <div className="flex items-center justify-between min-w-0 gap-2">
           <div className="min-w-0 flex-shrink">
@@ -1558,9 +1564,9 @@ export default function TaskList({
                 Back to Buckets
               </button>
             )}
-            <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2 flex-wrap">
+            <h2 className="text-base font-semibold flex items-center gap-1.5 flex-wrap">
               <svg
-                className="w-5 h-5 flex-shrink-0"
+                className="w-4 h-4 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1599,7 +1605,7 @@ export default function TaskList({
               )}
             </h2>
             {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0 pl-7 leading-snug hidden lg:block line-clamp-1">
                 {viewMode === "card"
                   ? sortedProjects.length >= 2
                     ? "Top priorities per project · drag ⋮⋮ to reorder"
@@ -1632,10 +1638,10 @@ export default function TaskList({
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             {!focusMode && !projectManageOpen && (
-            <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="time-filters">
+            <div className="app-seg-track hidden sm:flex items-center gap-0.5" data-tour="time-filters">
               <button
                 onClick={() => selectProject(ALL_PROJECTS_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="All open tasks — every project"
                 aria-label="All tasks"
               >
@@ -1643,7 +1649,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Tasks with a due date of today or earlier"}
                 aria-label="Due today or earlier"
               >
@@ -1656,7 +1662,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this week or earlier"
                 aria-label="Due this week or earlier"
               >
@@ -1664,7 +1670,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this month or earlier"
                 aria-label="Due this month or earlier"
               >
@@ -1672,7 +1678,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this year or earlier"
                 aria-label="Due this year or earlier"
               >
@@ -1682,63 +1688,75 @@ export default function TaskList({
             )}
             {/* View mode — mobile dropdown */}
             {!projectManageOpen && (
-            <select
-              value={viewMode}
-              onChange={(e) => selectViewMode(e.target.value as TaskViewMode)}
-              className="sm:hidden text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
-              aria-label="Task view mode"
-              data-tour="view-modes"
-            >
-              <option value="bucket">Buckets</option>
-              <option value="card">Cards</option>
-              <option value="list">List</option>
-              <option value="calendar">Calendar</option>
-              <option value="plan">Smart Plan</option>
-            </select>
+            <label className="sm:hidden flex items-center gap-1.5 min-w-0">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">View</span>
+              <select
+                value={viewMode}
+                onChange={(e) => selectViewMode(e.target.value as TaskViewMode)}
+                className="flex-1 min-w-0 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
+                aria-label="Task view mode"
+                data-tour="view-modes"
+              >
+                <option value="bucket">Buckets</option>
+                <option value="card">Cards</option>
+                <option value="list">List</option>
+                <option value="calendar">Calendar</option>
+                <option value="plan">Smart Plan</option>
+              </select>
+            </label>
             )}
             {/* View mode toggles — desktop */}
             {!projectManageOpen && (
-            <div className="app-seg-track hidden sm:flex items-center gap-1" data-tour="view-modes">
+            <div className="hidden sm:flex items-center gap-1.5 shrink-0" data-tour="view-modes">
+              <span className="hidden md:inline text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 shrink-0">
+                View
+              </span>
+              <div className="app-seg-track app-view-track flex items-center gap-0.5">
               <button
                 onClick={() => selectViewMode("bucket")}
-                className={`p-2.5 rounded-md transition-colors ${viewMode === "bucket" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "bucket" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
                 title="Bucket view — all projects"
                 aria-label="Bucket view"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
                 </svg>
+                <span>Buckets</span>
               </button>
               <button
                 onClick={() => selectViewMode("card")}
-                className={`p-2.5 rounded-md transition-colors ${viewMode === "card" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "card" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
                 title="Card view — top tasks per project"
                 aria-label="Card view"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                 </svg>
+                <span>Cards</span>
               </button>
               <button
                 onClick={() => selectViewMode("list")}
-                className={`p-2.5 rounded-md transition-colors ${viewMode === "list" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "list" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
                 title="List view"
                 aria-label="List view"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
+                <span>List</span>
               </button>
               <button
                 onClick={() => selectViewMode("calendar")}
-                className={`p-2.5 rounded-md transition-colors ${viewMode === "calendar" ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80"}`}
+                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "calendar" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
                 title="Calendar view"
                 aria-label="Calendar view"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
+                <span>Cal</span>
               </button>
+              </div>
             </div>
             )}
             {onOpenSettings && (
@@ -1768,7 +1786,7 @@ export default function TaskList({
             {onToggleFullscreen && (
               <button
                 onClick={onToggleFullscreen}
-                className={`p-2.5 rounded-lg transition-colors ${isFullscreen ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+                className={`p-2 rounded-lg transition-colors ${isFullscreen ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
                 title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
                 aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
               >

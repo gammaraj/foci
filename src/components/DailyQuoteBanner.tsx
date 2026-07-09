@@ -84,25 +84,25 @@ export default function DailyQuoteBanner({
       role="status"
       aria-label="Weather and focus timer"
     >
-      <div className="app-container py-1.5 sm:py-2 space-y-1.5">
+      <div className="app-container py-1 sm:py-1.5 space-y-1">
         {threeColumnStrip ? (
           <div
             className="grid min-w-0 grid-cols-1 sm:grid-cols-3 sm:items-stretch rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
           >
             {/* Weather — secondary context */}
-            <div className={`min-w-0 px-2.5 sm:px-3 flex items-center min-h-[3.25rem] shrink-0 text-slate-500 dark:text-slate-400 overflow-visible ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            <div className={`min-w-0 w-full px-2 sm:px-2.5 flex items-center min-h-[2.75rem] shrink-0 text-slate-500 dark:text-slate-400 overflow-visible ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               <WeatherTime compact embedded />
             </div>
             {/* Timer — primary focus strip */}
-            <div className="relative min-w-0 flex flex-col px-3 sm:px-4 overflow-visible sm:bg-cyan-50/35 dark:sm:bg-cyan-950/15 sm:ring-1 sm:ring-inset sm:ring-cyan-200/50 dark:sm:ring-cyan-500/20">
-              <div className="flex items-center min-h-[3.5rem] w-full shrink-0 gap-1">
+            <div className="relative min-w-0 flex flex-col px-2.5 sm:px-3 overflow-visible sm:bg-cyan-50/35 dark:sm:bg-cyan-950/15 sm:ring-1 sm:ring-inset sm:ring-cyan-200/50 dark:sm:ring-cyan-500/20">
+              <div className="flex items-center min-h-[2.75rem] w-full shrink-0 gap-1">
                 <div className="flex-1 min-w-0">{timerToolbar}</div>
                 <CollapseToggle />
               </div>
               {timerPanel}
             </div>
             {/* Music — ambient utility */}
-            <div className={`relative min-w-0 flex flex-col px-2.5 sm:px-3 overflow-visible bg-slate-50/40 dark:bg-white/[0.012] sm:opacity-95 rounded-br-xl ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            <div className={`relative min-w-0 flex flex-col px-2 sm:px-2.5 overflow-visible bg-slate-50/40 dark:bg-white/[0.012] sm:opacity-95 rounded-br-xl ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               {musicToolbar}
             </div>
             {showMobileCollapseBar && (
@@ -124,7 +124,7 @@ export default function DailyQuoteBanner({
               <WeatherTime compact />
             </div>
             {hasFocusStrip && (
-              <div className="w-full min-w-0 flex flex-col rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible min-h-[3.5rem]">
+              <div className="w-full min-w-0 flex flex-col rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible min-h-[2.75rem]">
                 <div
                   className={`grid min-w-0 flex-1 ${
                     timerToolbar && musicToolbar
@@ -134,7 +134,7 @@ export default function DailyQuoteBanner({
                 >
                   {timerToolbar && (
                     <div className={`min-w-0 flex flex-col px-2.5 sm:px-3 ${musicToolbar ? "border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80" : ""}`}>
-                      <div className="flex items-center min-h-[3.5rem] w-full gap-1">
+                      <div className="flex items-center min-h-[2.75rem] w-full gap-1">
                         <div className="flex-1 min-w-0">{timerToolbar}</div>
                         <CollapseToggle />
                       </div>

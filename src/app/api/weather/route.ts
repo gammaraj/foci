@@ -75,11 +75,12 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const unit = searchParams.get("unit") === "celsius" ? "celsius" : "fahrenheit";
+    const windUnit = unit === "celsius" ? "kmh" : "mph";
 
     const { latitude, longitude, city } = await getLocationFromIP(ip);
 
     const weatherRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=${unit}&timezone=auto`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=${unit}&wind_speed_unit=${windUnit}&timezone=auto`,
       { signal: AbortSignal.timeout(5000) },
     );
     if (!weatherRes.ok) throw new Error("Weather API error");
@@ -89,10 +90,18 @@ export async function GET(request: Request) {
     const temp = Math.round(weatherData.current?.temperature_2m ?? 0);
     const high = Math.round(weatherData.daily?.temperature_2m_max?.[0] ?? 0);
     const low = Math.round(weatherData.daily?.temperature_2m_min?.[0] ?? 0);
+    const humidity =
+      weatherData.current?.relative_humidity_2m != null
+        ? Math.round(weatherData.current.relative_humidity_2m)
+        : undefined;
+    const wind =
+      weatherData.current?.wind_speed_10m != null
+        ? Math.round(weatherData.current.wind_speed_10m)
+        : undefined;
     const { description, icon } = weatherCodeToInfo(weatherCode);
 
     return NextResponse.json(
-      { temp, high, low, description, icon, city, unit },
+      { temp, high, low, humidity, wind, windUnit, description, icon, city, unit },
       { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300" } },
     );
   } catch {
