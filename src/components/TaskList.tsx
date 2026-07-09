@@ -30,6 +30,7 @@ import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
+import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import {
   MAX_TASK_TITLE,
   MAX_PROJECT_NAME,
@@ -47,6 +48,12 @@ import {
 } from "@/components/task-list/utils";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
+
+const VIEW_RETURN_LABELS: Record<string, string> = {
+  card: "Cards",
+  bucket: "Buckets",
+  calendar: "Calendar",
+};
 
 /** Neutral active state for time/view filters (not a primary CTA). */
 const FILTER_TAB_ACTIVE =
@@ -168,25 +175,11 @@ export default function TaskList({
     syncProjectsUrl(false);
   }, [syncProjectsUrl]);
 
-  const [cameFromBucket, setCameFromBucket] = useState(false);
-
-  const expandProjectFromBucket = useCallback((projectId: string) => {
-    selectProject(projectId);
-    setViewMode("list");
-    setCameFromBucket(true);
-    persistTaskView("list");
-  }, [persistTaskView]);
-
-  const backToBuckets = useCallback(() => {
-    selectProject(ALL_PROJECTS_ID);
-    setViewMode("bucket");
-    setCameFromBucket(false);
-    persistTaskView("bucket");
-  }, [persistTaskView]);
+  const [listReturnView, setListReturnView] = useState<TaskViewMode | null>(null);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
-    setCameFromBucket(false);
+    setListReturnView(null);
     setExpandedTaskId(null);
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
@@ -204,6 +197,25 @@ export default function TaskList({
       selectedProjectId === THIS_YEAR_FILTER_ID;
     setNewTaskDueDate(inTimeScope ? getToday() : "");
   }, [selectedProjectId]);
+
+  const [hideEmptyCardProjects, setHideEmptyCardProjects] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("foci-hide-empty-cards") === "0") {
+      setHideEmptyCardProjects(false);
+    }
+  }, []);
+
+  const toggleHideEmptyCardProjects = useCallback(() => {
+    setHideEmptyCardProjects((hidden) => {
+      const next = !hidden;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("foci-hide-empty-cards", next ? "1" : "0");
+      }
+      return next;
+    });
+  }, []);
 
   const [planSettings, setPlanSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [calendarDate, setCalendarDate] = useState(new Date());
@@ -434,6 +446,23 @@ export default function TaskList({
     closeProjectManage();
     setShowOverflowProjectMenu(false);
   };
+
+  const expandProjectToList = useCallback((projectId: string) => {
+    if (viewMode !== "list") {
+      setListReturnView(viewMode);
+    }
+    selectProject(projectId);
+    setViewMode("list");
+    persistTaskView("list");
+  }, [viewMode, persistTaskView]);
+
+  const backFromProjectList = useCallback(() => {
+    const returnTo = listReturnView ?? "bucket";
+    selectProject(ALL_PROJECTS_ID);
+    setViewMode(returnTo);
+    setListReturnView(null);
+    persistTaskView(returnTo);
+  }, [listReturnView, persistTaskView]);
 
   const selectProjectScope = (projectId: string) => {
     const timeScope =
@@ -1365,6 +1394,14 @@ export default function TaskList({
       tasks.filter((t) => !t.archivedAt && t.completed && t.projectId === project.id).length
     );
   }
+  const emptyCardProjectCount = sortedProjects.filter(
+    (p) => (bucketTasksByProject.get(p.id) ?? []).length === 0,
+  ).length;
+  const timeFilterActiveProject =
+    projectFilterId !== ALL_PROJECTS_ID
+      ? projects.find((p) => p.id === projectFilterId)
+      : undefined;
+
   const completedTasks = projectTasks.filter((t) => t.completed);
   const archivedTasks = isAllProjects
     ? tasks.filter((t) => t.archivedAt)
@@ -1552,16 +1589,16 @@ export default function TaskList({
               </>
             ) : (
               <>
-            {cameFromBucket && viewMode === "list" && (
+            {listReturnView && viewMode === "list" && (
               <button
                 type="button"
-                onClick={backToBuckets}
+                onClick={backFromProjectList}
                 className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 mb-1.5 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to Buckets
+                Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
               </button>
             )}
             <h2 className="text-base font-semibold flex items-center gap-1.5 flex-wrap">
@@ -1586,7 +1623,7 @@ export default function TaskList({
                   </span>
                 )}
               </span>
-              {!focusMode && viewMode === "list" && isAllProjects && !isTimeFilter && (
+              {!focusMode && (viewMode === "list" || viewMode === "card") && isAllProjects && !isTimeFilter && (
                 <button
                   type="button"
                   onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -1605,7 +1642,7 @@ export default function TaskList({
               )}
             </h2>
             {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0 pl-7 leading-snug hidden lg:block line-clamp-1">
+              <p className="text-sm text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0 pl-7 leading-snug hidden lg:block line-clamp-1">
                 {viewMode === "card"
                   ? sortedProjects.length >= 2
                     ? "Top priorities per project · drag ⋮⋮ to reorder"
@@ -1686,29 +1723,10 @@ export default function TaskList({
               </button>
             </div>
             )}
-            {/* View mode — mobile dropdown */}
-            {!projectManageOpen && (
-            <label className="sm:hidden flex items-center gap-1.5 min-w-0">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">View</span>
-              <select
-                value={viewMode}
-                onChange={(e) => selectViewMode(e.target.value as TaskViewMode)}
-                className="flex-1 min-w-0 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 px-2 py-2 touch-target-sm"
-                aria-label="Task view mode"
-                data-tour="view-modes"
-              >
-                <option value="bucket">Buckets</option>
-                <option value="card">Cards</option>
-                <option value="list">List</option>
-                <option value="calendar">Calendar</option>
-                <option value="plan">Smart Plan</option>
-              </select>
-            </label>
-            )}
             {/* View mode toggles — desktop */}
             {!projectManageOpen && (
             <div className="hidden sm:flex items-center gap-1.5 shrink-0" data-tour="view-modes">
-              <span className="hidden md:inline text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 shrink-0">
+              <span className="hidden md:inline app-section-label text-slate-500 dark:text-slate-400 shrink-0">
                 View
               </span>
               <div className="app-seg-track app-view-track flex items-center gap-0.5">
@@ -1754,7 +1772,8 @@ export default function TaskList({
                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>Cal</span>
+                <span className="hidden lg:inline">Calendar</span>
+                <span className="lg:hidden">Cal</span>
               </button>
               </div>
             </div>
@@ -1854,6 +1873,27 @@ export default function TaskList({
           </button>
         </div>
         )}
+
+        {/* View mode — mobile scrollable tabs */}
+        {!projectManageOpen && (
+        <div className="app-seg-track app-view-track flex sm:hidden overflow-x-auto items-center gap-0.5 mt-2" data-tour="view-modes">
+          {([
+            ["bucket", "Buckets"],
+            ["card", "Cards"],
+            ["list", "List"],
+            ["calendar", "Cal"],
+          ] as const).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => selectViewMode(mode)}
+              className={`flex-shrink-0 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === mode ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        )}
       </div>
       </>
       )}
@@ -1939,25 +1979,20 @@ export default function TaskList({
         />
       )}
 
-      {/* Time scope meta — list view only (bucket uses header subtitle) */}
-      {!isFocusMode && !projectManageOpen && viewMode === "list" && isTimeFilter && (() => {
-        const activeProject = projects.find((p) => p.id === projectFilterId);
-        return (
-          <p className="app-inline-meta px-3 sm:px-4 pt-1.5 pb-0 text-sm app-text-meta text-slate-600 dark:text-slate-400">
-            <span className="font-medium text-slate-700 dark:text-slate-200">{timeScopeDescription}</span>
-            {projectFilterId !== ALL_PROJECTS_ID && activeProject && (
-              <span className="font-medium text-slate-700 dark:text-slate-200">{activeProject.name}</span>
-            )}
-            <span>{scopedDatedOpenCount} due</span>
-            {scopedUndatedOpenCount > 0 && (
-              <span>{scopedUndatedOpenCount} no date</span>
-            )}
-            {overdueTasks.length > 0 && (
-              <span className="text-red-600 dark:text-red-400">{overdueTasks.length} overdue</span>
-            )}
-          </p>
-        );
-      })()}
+      {/* Time scope banner — card, bucket, and list */}
+      {!isFocusMode && !projectManageOpen && isTimeFilter && timeScopeDescription && (
+        <TimeFilterBanner
+          description={timeScopeDescription}
+          datedCount={scopedDatedOpenCount}
+          undatedCount={scopedUndatedOpenCount}
+          overdueCount={overdueTasks.length}
+          projectName={
+            viewMode === "list" && projectFilterId !== ALL_PROJECTS_ID
+              ? timeFilterActiveProject?.name
+              : undefined
+          }
+        />
+      )}
 
       {/* Bucket toolbar — projects only (counts live in header subtitle) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
@@ -2050,7 +2085,7 @@ export default function TaskList({
           onSelectTask={onSelectTask}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleProjectFavorite={toggleProjectFavorite}
-          onExpandProject={expandProjectFromBucket}
+          onExpandProject={expandProjectToList}
           editingTaskId={editingId}
           editTitle={editTitle}
           onStartEdit={startEditing}
@@ -2107,6 +2142,7 @@ export default function TaskList({
           completedCountByProject={bucketCompletedCountByProject}
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
+          expandedTaskId={expandedTaskId}
           dragProjectId={dragProjectId}
           dragOverProjectId={dragOverProjectId}
           onProjectDragStart={handleProjectDragStart}
@@ -2128,8 +2164,17 @@ export default function TaskList({
           onDeleteTask={deleteTask}
           onMoveProject={handleMoveProject}
           onMoveTask={handleCardTaskMove}
-          onExpandProject={expandProjectFromBucket}
+          onExpandProject={expandProjectToList}
+          onOpenProject={expandProjectToList}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
+          onToggleComplete={toggleComplete}
+          onStartTask={onStartTask}
+          onToggleTaskDetail={toggleTaskDetail}
+          hideEmptyProjects={hideEmptyCardProjects}
+          onToggleHideEmptyProjects={toggleHideEmptyCardProjects}
+          emptyProjectCount={emptyCardProjectCount}
+          overdueCount={overdueTasks.length}
+          onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
         />
       )}
 
@@ -2848,8 +2893,8 @@ export default function TaskList({
       </div>
       </>)}
 
-      {/* Bucket task detail drawer — keeps column layout stable */}
-      {viewMode === "bucket" && expandedTaskId && (() => {
+      {/* Task detail drawer — bucket and card views */}
+      {(viewMode === "bucket" || viewMode === "card") && expandedTaskId && (() => {
         const task = tasks.find((t) => t.id === expandedTaskId);
         if (!task) return null;
         return (

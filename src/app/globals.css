@@ -227,6 +227,44 @@ body {
   }
 }
 
+/* Tight UI labels — minimum 12px, 13px on sm+ (never use text-[9–11px]) */
+.app-caption {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+@media (min-width: 640px) {
+  .app-caption {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* Status strip + cards: same readable scale as app-shell */
+.status-strip .text-xs,
+.app-surface .text-xs {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+@media (min-width: 640px) {
+  .status-strip .text-xs,
+  .app-surface .text-xs {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+.status-strip .text-sm,
+.app-surface .text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+@media (min-width: 640px) {
+  .status-strip .text-sm,
+  .app-surface .text-sm {
+    font-size: 0.9375rem;
+    line-height: 1.375rem;
+  }
+}
+
 /* Light mode: darken grey UI copy on white cards (slate-400/500 are too faint) */
 :root:not(.dark) .app-shell {
   --app-text-muted: #475569;
@@ -390,7 +428,7 @@ body {
 .task-list-section-count {
   margin-left: auto;
   flex-shrink: 0;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   padding: 0.125rem 0.5rem;
@@ -451,9 +489,14 @@ body {
 }
 
 .app-badge {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.1;
+}
+@media (min-width: 640px) {
+  .app-badge {
+    font-size: 0.875rem;
+  }
 }
 
 /* ===== Timer Control Buttons ===== */

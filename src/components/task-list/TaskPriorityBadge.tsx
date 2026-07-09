@@ -18,7 +18,7 @@ export function TaskPriorityBadge({
   return (
     <span
       className={`inline-flex items-center font-semibold uppercase rounded border shrink-0 ${
-        size === "compact" ? "px-1 py-0 text-[10px] leading-tight" : "px-1.5 py-0.5 text-xs"
+        size === "compact" ? "px-1 py-0 text-xs leading-tight" : "px-1.5 py-0.5 text-xs"
       } ${colors}`}
       title={`${label} priority`}
     >

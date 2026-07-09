@@ -479,13 +479,13 @@ function BucketTaskCard({
         <div className="flex flex-wrap items-center gap-1.5 mt-1 pl-6 sm:pl-7">
           {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
           {isActive && isTimerRunning && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded bg-cyan-600 text-white">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-cyan-600 text-white">
               <span className="w-1 h-1 rounded-full bg-white animate-pulse" aria-hidden />
               Timing
             </span>
           )}
           {isActive && !isTimerRunning && (
-            <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50">
+            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50">
               Selected
             </span>
           )}
@@ -507,7 +507,7 @@ function BucketTaskCard({
             </DueDateField>
           )}
           {(task.subtasks?.length ?? 0) > 0 && (
-            <span className="text-[10px] font-medium text-violet-600 dark:text-violet-400 tabular-nums">
+            <span className="text-xs font-medium text-violet-600 dark:text-violet-400 tabular-nums">
               {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length} subtasks
             </span>
           )}

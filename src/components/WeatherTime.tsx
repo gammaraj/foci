@@ -66,10 +66,10 @@ function WeatherStat({
 }) {
   return (
     <span className="inline-flex flex-col items-center leading-none gap-0.5" title={title}>
-      <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+      <span className="app-caption font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </span>
-      <span className="text-[11px] font-semibold tabular-nums text-slate-600 dark:text-slate-300">
+      <span className="text-xs font-semibold tabular-nums text-slate-600 dark:text-slate-300">
         {value}
       </span>
     </span>
@@ -79,6 +79,7 @@ function WeatherStat({
 export default function WeatherTime({ compact = false, embedded = false }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const prefersCelsius =
     typeof navigator !== "undefined" && !navigator.language?.startsWith("en-US");
@@ -152,7 +153,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
             {formatClock(now)}
           </span>
           {embedded && (
-            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 hidden xl:block">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 hidden xl:block">
               {formatShortWeekday(now)}
             </span>
           )}
@@ -171,7 +172,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
                   <span className="text-sm sm:text-base font-semibold tabular-nums text-slate-800 dark:text-slate-100 whitespace-nowrap">
                     {weather.temp}°{unitSuffix}
                   </span>
-                  <span className="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate hidden sm:inline">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate hidden sm:inline">
                     {weather.description}
                   </span>
                 </div>
@@ -187,26 +188,66 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
             </div>
 
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
-              {weather.low != null && weather.high != null && (
-                <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
-              )}
-              {weather.humidity != null && (
-                <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
-              )}
-              {weather.wind != null && (
-                <WeatherStat
-                  label="Wind"
-                  value={`${weather.wind} ${windLabel(weather.windUnit)}`}
-                  title="Wind speed"
-                />
-              )}
-              {embedded && weather.city && (
-                <span
-                  className="hidden lg:inline text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate max-w-[4.5rem] xl:max-w-[6rem]"
-                  title={weather.city}
-                >
-                  {weather.city}
-                </span>
+              <div className={`items-center gap-2 sm:gap-2.5 ${embedded ? "hidden xl:flex" : "flex"}`}>
+                {weather.low != null && weather.high != null && (
+                  <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
+                )}
+                {weather.humidity != null && (
+                  <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
+                )}
+                {weather.wind != null && (
+                  <WeatherStat
+                    label="Wind"
+                    value={`${weather.wind} ${windLabel(weather.windUnit)}`}
+                    title="Wind speed"
+                  />
+                )}
+                {embedded && weather.city && (
+                  <span
+                    className="hidden 2xl:inline text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[6rem]"
+                    title={weather.city}
+                  >
+                    {weather.city}
+                  </span>
+                )}
+              </div>
+              {embedded && (
+                <div className="relative xl:hidden shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setDetailsOpen((open) => !open)}
+                    className="w-7 h-7 rounded-lg border border-slate-200/80 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors flex items-center justify-center"
+                    aria-expanded={detailsOpen}
+                    aria-label={detailsOpen ? "Hide weather details" : "Show weather details"}
+                    title="Weather details"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  {detailsOpen && (
+                    <div className="absolute right-0 top-full mt-1 z-20 flex items-center gap-2 px-2.5 py-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-lg whitespace-nowrap">
+                      {weather.low != null && weather.high != null && (
+                        <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
+                      )}
+                      {weather.humidity != null && (
+                        <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
+                      )}
+                      {weather.wind != null && (
+                        <WeatherStat
+                          label="Wind"
+                          value={`${weather.wind} ${windLabel(weather.windUnit)}`}
+                          title="Wind speed"
+                        />
+                      )}
+                      {weather.city && (
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-[7rem] truncate" title={weather.city}>
+                          {weather.city}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </>

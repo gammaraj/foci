@@ -504,7 +504,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         >
           {stripEmbedded ? (
             <span className="flex items-baseline gap-1.5 min-w-0">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 leading-none shrink-0">
+              <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0">
                 Music
               </span>
               <span className={`${FOCUS_STRIP_VALUE} truncate min-w-0`}>{nowPlayingLabel}</span>

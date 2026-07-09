@@ -75,7 +75,7 @@ export default function CircularTimer({
         >
           <div
             className={`${
-              compact ? "text-[9px]" : "text-[10px] sm:text-[11px]"
+              compact ? "app-caption" : "text-xs sm:text-sm"
             } font-medium text-slate-700 dark:text-slate-100 leading-none truncate max-w-[88%]`}
           >
             {isBreak ? "🎉 " : ""}
@@ -88,7 +88,7 @@ export default function CircularTimer({
           >
             {displayTime}
           </div>
-          <div className="text-[9px] sm:text-[10px] text-slate-600 dark:text-slate-200 max-w-[4.75rem] leading-[1.15] line-clamp-2">
+          <div className="app-caption text-slate-600 dark:text-slate-200 max-w-[4.75rem] leading-snug line-clamp-2">
             {statusText}
           </div>
         </div>

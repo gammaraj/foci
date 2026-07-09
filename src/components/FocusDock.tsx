@@ -235,7 +235,7 @@ export function FocusDockToolbar({
           <span className="truncate">{activeTaskTitle}</span>
         </span>
       ) : !isRunning ? (
-        <span className="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 italic truncate">
+        <span className="hidden sm:inline text-xs sm:text-sm text-slate-400 dark:text-slate-500 italic truncate">
           Select a task ↓
         </span>
       ) : null}
@@ -261,10 +261,10 @@ export function FocusDockToolbar({
           dismissShortcutHint();
           onShowShortcuts();
         }}
-        className={`relative hidden sm:flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-all ${
+        className={`relative flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-all ${
           showShortcutHint
-            ? "opacity-100 text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 ring-1 ring-cyan-300/60"
-            : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300"
+            ? "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 ring-1 ring-cyan-300/60"
+            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300 opacity-70 sm:opacity-100"
         }`}
         aria-label="Keyboard shortcuts"
         title={showShortcutHint ? "Keyboard shortcuts (press ?)" : "Keyboard shortcuts (?)"}

@@ -26,6 +26,12 @@ const STEPS: Step[] = [
     position: "top",
   },
   {
+    target: "[data-tour='view-modes']",
+    title: "Task Views",
+    description: "Switch between Cards, Buckets, List, and Calendar. Cards show top tasks per project; List is best for focusing and completing.",
+    position: "bottom",
+  },
+  {
     target: "#dailyGoalProgress",
     title: "Daily Progress",
     description: "Track your daily session goal and build streaks to stay consistent.",
