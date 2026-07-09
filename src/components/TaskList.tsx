@@ -19,7 +19,7 @@ import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import TaskCardView from "@/components/task-list/TaskCardView";
-import { applyBucketDrop, moveBucketTaskInLane, type BucketDropTarget } from "@/components/task-list/bucket-order";
+import { applyBucketDrop, moveBucketTaskInLane, moveCardTaskInProject, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
@@ -880,6 +880,27 @@ export default function TaskList({
     setDragOverTaskId(null);
   };
 
+  const handleCardTaskDrop = (projectId: string, targetTaskId: string) => {
+    if (!dragTaskId || dragTaskId === targetTaskId) {
+      handleDragEnd();
+      return;
+    }
+    const dragged = tasks.find((t) => t.id === dragTaskId);
+    if (!dragged || dragged.projectId !== projectId) {
+      handleDragEnd();
+      return;
+    }
+    const updated = moveCardTaskInProject(
+      tasks,
+      projectId,
+      dragTaskId,
+      targetTaskId,
+      activeTaskId
+    );
+    if (updated) persist(updated);
+    handleDragEnd();
+  };
+
   // Subtask helpers
   const addSubtask = (taskId: string) => {
     const title = newSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
@@ -1557,7 +1578,9 @@ export default function TaskList({
             {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
               <p className="text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 hidden sm:block">
                 {viewMode === "card"
-                  ? "Top priorities per project at a glance"
+                  ? sortedProjects.length >= 2
+                    ? "Top priorities per project · drag ⋮⋮ to reorder"
+                    : "Top priorities per project at a glance"
                   : viewMode === "bucket"
                   ? isTimeFilter
                     ? [
@@ -2018,6 +2041,18 @@ export default function TaskList({
           tasksByProject={bucketTasksByProject}
           completedCountByProject={bucketCompletedCountByProject}
           activeTaskId={activeTaskId}
+          dragProjectId={dragProjectId}
+          dragOverProjectId={dragOverProjectId}
+          onProjectDragStart={handleProjectDragStart}
+          onProjectDragOver={handleProjectDragOver}
+          onProjectDrop={handleProjectDrop}
+          onProjectDragEnd={handleProjectDragEnd}
+          dragTaskId={dragTaskId}
+          dragOverTaskId={dragOverTaskId}
+          onTaskDragStart={handleDragStart}
+          onTaskDragOver={handleDragOver}
+          onTaskDrop={handleCardTaskDrop}
+          onTaskDragEnd={handleDragEnd}
           editingTaskId={editingId}
           editTitle={editTitle}
           onStartEdit={startEditing}

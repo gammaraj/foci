@@ -45,9 +45,45 @@ export function tasksInSwimlane(
   return sortBucketTasks(tasks, activeTaskId).filter((t) => getBucketSwimlaneId(t) === laneId);
 }
 
-/** Card view — swimlane priority first (overdue → dated → blocked → undated → someday). */
+/** Card view — swimlane priority first, or manual order once set via card drag. */
 export function sortCardTasks(tasks: Task[], activeTaskId: string | null): Task[] {
+  const hasManualOrder = tasks.some((t) => t.order != null);
+  if (hasManualOrder) {
+    return [...tasks].sort((a, b) => {
+      if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
+      if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
+      if (a.order != null && b.order != null && a.order !== b.order) return a.order - b.order;
+      if (a.order != null && b.order == null) return -1;
+      if (a.order == null && b.order != null) return 1;
+      return sortBucketTasks([a, b], activeTaskId)[0].id === a.id ? -1 : 1;
+    });
+  }
   return SWIMLANE_ORDER.flatMap((laneId) => tasksInSwimlane(tasks, laneId, activeTaskId));
+}
+
+/** Reorder tasks within a project card (persists `order` on all open project tasks). */
+export function moveCardTaskInProject(
+  allTasks: Task[],
+  projectId: string,
+  draggedTaskId: string,
+  targetTaskId: string,
+  activeTaskId: string | null
+): Task[] | null {
+  if (draggedTaskId === targetTaskId) return null;
+
+  const pool = allTasks.filter(
+    (t) => t.projectId === projectId && !t.completed && !t.archivedAt
+  );
+  const sorted = sortCardTasks(pool, activeTaskId);
+  const fromIdx = sorted.findIndex((t) => t.id === draggedTaskId);
+  const toIdx = sorted.findIndex((t) => t.id === targetTaskId);
+  if (fromIdx === -1 || toIdx === -1) return null;
+
+  const reordered = [...sorted];
+  const [moved] = reordered.splice(fromIdx, 1);
+  reordered.splice(toIdx, 0, moved);
+
+  return applyOrderToProject(allTasks, projectId, reordered.map((t) => t.id));
 }
 
 export type BucketDropTarget =

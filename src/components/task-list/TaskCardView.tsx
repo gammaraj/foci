@@ -20,12 +20,32 @@ interface TaskCardViewProps {
   activeTaskId: string | null;
   editingTaskId?: string | null;
   editTitle?: string;
+  dragProjectId?: string | null;
+  dragOverProjectId?: string | null;
+  onProjectDragStart?: (id: string) => void;
+  onProjectDragOver?: (e: React.DragEvent, id: string) => void;
+  onProjectDrop?: (targetId: string) => void;
+  onProjectDragEnd?: () => void;
+  dragTaskId?: string | null;
+  dragOverTaskId?: string | null;
+  onTaskDragStart?: (taskId: string) => void;
+  onTaskDragOver?: (e: React.DragEvent, taskId: string) => void;
+  onTaskDrop?: (projectId: string, targetTaskId: string) => void;
+  onTaskDragEnd?: () => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onExpandProject?: (projectId: string) => void;
+}
+
+function GripIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+      <path d="M7 4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 13a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
+    </svg>
+  );
 }
 
 function CardDuePrefix({ task }: { task: Task }) {
@@ -91,16 +111,30 @@ function CardHeaderCounts({
 
 function CardTaskRow({
   task,
+  projectId,
   isEditing,
   editTitle,
+  dragTaskId,
+  dragOverTaskId,
+  onTaskDragStart,
+  onTaskDragOver,
+  onTaskDrop,
+  onTaskDragEnd,
   onStartEdit,
   onEditTitleChange,
   onSaveEdit,
   onCancelEdit,
 }: {
   task: Task;
+  projectId: string;
   isEditing: boolean;
   editTitle: string;
+  dragTaskId?: string | null;
+  dragOverTaskId?: string | null;
+  onTaskDragStart?: (taskId: string) => void;
+  onTaskDragOver?: (e: React.DragEvent, taskId: string) => void;
+  onTaskDrop?: (projectId: string, targetTaskId: string) => void;
+  onTaskDragEnd?: () => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
@@ -109,10 +143,37 @@ function CardTaskRow({
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
   const someday = !!task.someday;
+  const dragEnabled = !!onTaskDragStart && !isEditing;
+  const isDragging = dragTaskId === task.id;
+  const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
 
   return (
     <div
-      className={`group/row rounded-md border-l-[3px] pl-1.5 pr-0.5 py-0.5 ${
+      draggable={dragEnabled}
+      onDragStart={(e) => {
+        if (!dragEnabled) return;
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", task.id);
+        e.stopPropagation();
+        onTaskDragStart?.(task.id);
+      }}
+      onDragOver={(e) => {
+        if (!dragEnabled || !dragTaskId) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onTaskDragOver?.(e, task.id);
+      }}
+      onDrop={(e) => {
+        if (!dragEnabled || !dragTaskId) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onTaskDrop?.(projectId, task.id);
+      }}
+      onDragEnd={(e) => {
+        e.stopPropagation();
+        onTaskDragEnd?.();
+      }}
+      className={`group/row rounded-md border-l-[3px] pl-1.5 pr-0.5 py-0.5 transition-opacity ${
         overdue
           ? "border-l-red-500 dark:border-l-red-400"
           : blocked
@@ -124,7 +185,9 @@ function CardTaskRow({
                   ? "border-l-amber-400 dark:border-l-amber-500"
                   : "border-l-cyan-500 dark:border-l-cyan-400"
                 : "border-l-slate-300/60 dark:border-l-slate-600"
-      }`}
+      } ${dragEnabled ? "cursor-grab active:cursor-grabbing" : ""} ${
+        isDragging ? "opacity-40" : ""
+      } ${isDragOver ? "ring-1 ring-inset ring-cyan-400/60 dark:ring-cyan-500/50" : ""}`}
     >
       <div className="flex items-center gap-1 min-h-[1.25rem]">
         {isEditing ? (
@@ -176,11 +239,24 @@ function CardTaskRow({
 
 function ProjectCard({
   project,
+  projectCount,
   tasks,
   completedCount,
   activeTaskId,
   editingTaskId,
   editTitle,
+  dragProjectId,
+  dragOverProjectId,
+  onProjectDragStart,
+  onProjectDragOver,
+  onProjectDrop,
+  onProjectDragEnd,
+  dragTaskId,
+  dragOverTaskId,
+  onTaskDragStart,
+  onTaskDragOver,
+  onTaskDrop,
+  onTaskDragEnd,
   onStartEdit,
   onEditTitleChange,
   onSaveEdit,
@@ -189,11 +265,24 @@ function ProjectCard({
   onQuickAdd,
 }: {
   project: Project;
+  projectCount: number;
   tasks: Task[];
   completedCount: number;
   activeTaskId: string | null;
   editingTaskId?: string | null;
   editTitle?: string;
+  dragProjectId?: string | null;
+  dragOverProjectId?: string | null;
+  onProjectDragStart?: (id: string) => void;
+  onProjectDragOver?: (e: React.DragEvent, id: string) => void;
+  onProjectDrop?: (targetId: string) => void;
+  onProjectDragEnd?: () => void;
+  dragTaskId?: string | null;
+  dragOverTaskId?: string | null;
+  onTaskDragStart?: (taskId: string) => void;
+  onTaskDragOver?: (e: React.DragEvent, taskId: string) => void;
+  onTaskDrop?: (projectId: string, targetTaskId: string) => void;
+  onTaskDragEnd?: () => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
@@ -208,6 +297,9 @@ function ProjectCard({
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
   const isPersonal = project.id === DEFAULT_PROJECT_ID;
+  const canReorder = projectCount >= 2 && !!onProjectDragStart;
+  const isDragging = dragProjectId === project.id;
+  const isDropTarget = dragOverProjectId === project.id && dragProjectId !== project.id;
 
   useEffect(() => {
     if (showAdd) addInputRef.current?.focus();
@@ -224,10 +316,21 @@ function ProjectCard({
 
   return (
     <article
-      className={`rounded-lg border px-2.5 py-2 flex flex-col gap-1 ${
+      onDragOver={(e) => {
+        if (!canReorder || !onProjectDragOver || !dragProjectId) return;
+        onProjectDragOver(e, project.id);
+      }}
+      onDrop={(e) => {
+        if (!canReorder || !onProjectDrop || !dragProjectId) return;
+        e.preventDefault();
+        onProjectDrop(project.id);
+      }}
+      className={`rounded-lg border px-2.5 py-2 flex flex-col gap-1 transition-colors ${
         isPersonal
           ? "border-slate-200/90 dark:border-slate-600/40 bg-slate-50/90 dark:bg-[#151c2c]/80"
           : "border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80"
+      } ${isDragging ? "opacity-50" : ""} ${
+        isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent bg-cyan-50/40 dark:bg-cyan-900/10" : ""
       }`}
       style={
         !isPersonal && project.color
@@ -248,7 +351,22 @@ function ProjectCard({
             : undefined
         }
       >
-        <div className="flex items-center gap-1.5 min-w-0">
+        <div className="flex items-center gap-1 min-w-0">
+          {canReorder ? (
+            <span
+              draggable
+              onDragStart={(e) => {
+                onProjectDragStart?.(project.id);
+                e.stopPropagation();
+              }}
+              onDragEnd={onProjectDragEnd}
+              className="text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing p-0.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              title="Drag to reorder projects"
+              aria-label={`Drag ${project.name} to reorder`}
+            >
+              <GripIcon />
+            </span>
+          ) : null}
           {project.color && (
             <span
               className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
@@ -281,8 +399,15 @@ function ProjectCard({
             <CardTaskRow
               key={task.id}
               task={task}
+              projectId={project.id}
               isEditing={editingTaskId === task.id}
               editTitle={editTitle ?? ""}
+              dragTaskId={dragTaskId}
+              dragOverTaskId={dragOverTaskId}
+              onTaskDragStart={onTaskDragStart}
+              onTaskDragOver={onTaskDragOver}
+              onTaskDrop={onTaskDrop}
+              onTaskDragEnd={onTaskDragEnd}
               onStartEdit={onStartEdit}
               onEditTitleChange={onEditTitleChange}
               onSaveEdit={onSaveEdit}
@@ -334,6 +459,18 @@ export default function TaskCardView({
   activeTaskId,
   editingTaskId,
   editTitle,
+  dragProjectId,
+  dragOverProjectId,
+  onProjectDragStart,
+  onProjectDragOver,
+  onProjectDrop,
+  onProjectDragEnd,
+  dragTaskId,
+  dragOverTaskId,
+  onTaskDragStart,
+  onTaskDragOver,
+  onTaskDrop,
+  onTaskDragEnd,
   onStartEdit,
   onEditTitleChange,
   onSaveEdit,
@@ -348,11 +485,24 @@ export default function TaskCardView({
           <ProjectCard
             key={project.id}
             project={project}
+            projectCount={projects.length}
             tasks={tasksByProject.get(project.id) ?? []}
             completedCount={completedCountByProject?.get(project.id) ?? 0}
             activeTaskId={activeTaskId}
             editingTaskId={editingTaskId}
             editTitle={editTitle}
+            dragProjectId={dragProjectId}
+            dragOverProjectId={dragOverProjectId}
+            onProjectDragStart={onProjectDragStart}
+            onProjectDragOver={onProjectDragOver}
+            onProjectDrop={onProjectDrop}
+            onProjectDragEnd={onProjectDragEnd}
+            dragTaskId={dragTaskId}
+            dragOverTaskId={dragOverTaskId}
+            onTaskDragStart={onTaskDragStart}
+            onTaskDragOver={onTaskDragOver}
+            onTaskDrop={onTaskDrop}
+            onTaskDragEnd={onTaskDragEnd}
             onStartEdit={onStartEdit}
             onEditTitleChange={onEditTitleChange}
             onSaveEdit={onSaveEdit}
