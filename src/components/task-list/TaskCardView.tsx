@@ -100,7 +100,7 @@ function CardDuePrefix({ task }: { task: Task }) {
 
   return (
     <span
-      className={`shrink-0 font-semibold tabular-nums ${
+      className={`shrink-0 font-semibold tabular-nums text-[0.6875rem] sm:text-xs ${
         overdue
           ? "text-red-600 dark:text-red-300"
           : blocked
@@ -252,7 +252,7 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row rounded-md border-l-[3px] pl-1 pr-0.5 py-0.5 min-w-0 transition-colors ${
+      className={`group/row rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0 py-0 sm:py-0.5 min-w-0 transition-colors ${
         isActive
           ? "bg-cyan-50/80 dark:bg-cyan-900/20 ring-1 ring-cyan-400/40"
           : isExpanded
@@ -274,7 +274,7 @@ function CardTaskRow({
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-cyan-400/60 dark:ring-cyan-500/50" : ""}`}
     >
-      <div className="flex items-center gap-0.5 sm:gap-1 min-h-[1.5rem] w-full min-w-0">
+      <div className="flex items-start sm:items-center gap-0 sm:gap-1 min-h-0 sm:min-h-[1.5rem] w-full min-w-0">
         {onToggleComplete && (
           <button
             type="button"
@@ -282,12 +282,12 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleComplete(task.id);
             }}
-            className="flex-shrink-0 w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
+            className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
             aria-label={`Mark "${task.title}" complete`}
           />
         )}
         {onMoveTask && taskCount > 1 && (
-          <div className="sm:hidden flex flex-col shrink-0 -my-0.5">
+          <div className="sm:hidden flex flex-col shrink-0 -space-y-px">
             <button
               type="button"
               onClick={(e) => {
@@ -295,10 +295,10 @@ function CardTaskRow({
                 onMoveTask(projectId, task.id, "up");
               }}
               disabled={taskIndex === 0}
-              className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
+              className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
               aria-label="Move task up"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
             </button>
@@ -309,10 +309,10 @@ function CardTaskRow({
                 onMoveTask(projectId, task.id, "down");
               }}
               disabled={taskIndex >= taskCount - 1}
-              className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
+              className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
               aria-label="Move task down"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -340,17 +340,18 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className="flex-1 min-w-0 basis-0 overflow-hidden flex items-center gap-1 text-sm font-normal text-slate-700 dark:text-slate-200 leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+            className="flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-0.5 sm:gap-1 text-xs sm:text-sm font-normal text-slate-700 dark:text-slate-200 leading-tight sm:leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors py-0.5 sm:py-0"
             title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
           >
             {task.dueDate && <CardDuePrefix task={task} />}
-            <span className="min-w-0 truncate">{task.title}</span>
+            <span className="min-w-0 line-clamp-2 sm:line-clamp-1 sm:truncate break-all sm:break-normal">{task.title}</span>
           </button>
         )}
         {!isEditing && (
-          <div className="shrink-0 flex items-center gap-0.5">
+          <div className="shrink-0 flex items-start sm:items-center gap-0.5 pt-0.5 sm:pt-0">
             {onToggleTaskDetail && (
               <TaskEditButton
+                compact
                 isOpen={isExpanded}
                 taskTitle={task.title}
                 onClick={(e) => {
@@ -517,7 +518,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card rounded-lg border px-2.5 py-2 min-w-0 flex flex-col gap-1 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card rounded-lg border px-2 py-1.5 sm:px-2.5 sm:py-2 min-w-0 flex flex-col gap-0.5 sm:gap-1 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent" : ""
       }`}
       style={{
@@ -526,7 +527,7 @@ function ProjectCard({
       }}
     >
       <header
-        className="flex flex-col gap-0.5 min-w-0 pb-1.5 mb-0.5 border-b border-slate-200/70 dark:border-[#243350]/80"
+        className="flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80"
         style={{
           borderBottomColor: `color-mix(in srgb, ${accentColor} 25%, transparent)`,
         }}
@@ -548,15 +549,15 @@ function ProjectCard({
             </span>
           ) : null}
           {canReorder && onMoveProject ? (
-            <div className="sm:hidden flex items-center gap-0.5 shrink-0 -ml-0.5">
+            <div className="sm:hidden flex flex-col shrink-0 -space-y-px -ml-0.5">
               <button
                 type="button"
                 onClick={() => onMoveProject(project.id, "up")}
                 disabled={projectIndex === 0}
-                className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} up`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               </button>
@@ -564,10 +565,10 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "down")}
                 disabled={projectIndex >= projectCount - 1}
-                className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} down`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -580,7 +581,7 @@ function ProjectCard({
                 e.stopPropagation();
                 onToggleProjectFavorite(project.id);
               }}
-              className={`flex-shrink-0 touch-target-sm p-0.5 rounded transition-colors ${
+              className={`flex-shrink-0 p-0.5 sm:touch-target-sm rounded transition-colors ${
                 project.favorite
                   ? "text-amber-400 hover:text-amber-500"
                   : "text-slate-300 dark:text-slate-600 opacity-100 sm:opacity-0 sm:group-hover/card:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
@@ -612,7 +613,7 @@ function ProjectCard({
           <button
             type="button"
             onClick={() => onOpenProject?.(project.id)}
-            className="flex-1 min-w-0 truncate text-sm sm:text-base font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+            className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
             title={`View all tasks in ${project.name}`}
           >
             {project.name}
@@ -631,7 +632,7 @@ function ProjectCard({
         />
       </header>
 
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-0 sm:gap-0.5">
         {topTasks.length === 0 ? (
           <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
         ) : (
@@ -666,7 +667,7 @@ function ProjectCard({
         )}
       </div>
 
-      <div className="no-print flex items-center gap-2 pt-0.5">
+      <div className="no-print flex items-center gap-2 pt-0 sm:pt-0.5">
         {remaining > 0 && onExpandProject && (
           <button
             type="button"
@@ -790,7 +791,7 @@ export default function TaskCardView({
         </div>
       ) : null}
 
-      <div className="px-3 sm:px-4 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 print:grid-cols-2 gap-3">
+      <div className="px-3 sm:px-4 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 print:grid-cols-2 gap-2 sm:gap-3">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (
