@@ -1696,7 +1696,7 @@ export default function TaskList({
       <>
       {/* Header */}
       <div
-        className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm no-print px-3 sm:px-4 py-1.5 sm:py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
         <div className="flex items-center justify-between min-w-0 gap-2">
           <div className="min-w-0 flex-shrink">
@@ -1738,7 +1738,7 @@ export default function TaskList({
                 Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
               </button>
             )}
-            <h2 className="text-base font-semibold flex items-center gap-1.5 flex-wrap">
+            <h2 className="text-base font-semibold flex items-center gap-1.5 min-w-0">
               <svg
                 className="w-4 h-4 flex-shrink-0"
                 fill="none"
@@ -1752,7 +1752,7 @@ export default function TaskList({
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                 />
               </svg>
-              <span>
+              <span className="shrink-0">
                 Tasks
                 {viewMode === "plan" && (
                   <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
@@ -1760,9 +1760,19 @@ export default function TaskList({
                   </span>
                 )}
               </span>
+              {showUrgencySummary && (
+                <TaskUrgencySummary
+                  compact
+                  className="no-print sm:hidden ml-0.5"
+                  overdueCount={overdueTasks.length}
+                  dueTodayCount={dueExactlyTodayCount}
+                  onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
+                  onViewToday={() => selectProject(TODAY_FILTER_ID)}
+                />
+              )}
             </h2>
             {showUrgencySummary && (
-              <div className="no-print pl-7 mt-1 flex flex-wrap items-center gap-1.5">
+              <div className="no-print hidden sm:flex pl-7 mt-1 flex-wrap items-center gap-1.5">
                 <TaskUrgencySummary
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
@@ -1962,38 +1972,34 @@ export default function TaskList({
           </div>
         </div>
 
-        {/* Mobile toolbar — scope + view in one row */}
+        {/* Mobile toolbar — single dense row */}
         {!focusMode && !projectManageOpen && (
         <MobileTaskToolbar
           selectedScope={mobileTimeScope}
           onSelectScope={selectProject}
           viewMode={viewMode}
           onSelectViewMode={selectViewMode}
-          onPrint={handlePrint}
           onManageProjects={openProjectManage}
           overdueCount={overdueTasks.length}
           projects={sortedProjects}
-          projectJumpId={viewMode === "bucket" ? bucketJumpProjectId : cardJumpProjectId}
+          projectJumpId={bucketJumpProjectId}
           onProjectJump={handleMobileProjectJump}
           projectCounts={cardProjectCounts}
-          showProjectJump={viewMode === "card" || viewMode === "bucket"}
-          printDisabled={projectManageOpen}
+          showProjectJump={viewMode === "bucket"}
         />
         )}
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
-          <div className="no-print sm:hidden mx-3 mt-2 px-3 py-2 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#0d1526]/60 flex items-start gap-2">
-            <p className="flex-1 text-xs text-slate-600 dark:text-slate-300 leading-snug">
-              Use ▲▼ on each card to reorder tasks and projects.
-            </p>
+          <p className="no-print sm:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
+            <span className="flex-1 truncate">▲▼ reorders tasks &amp; projects</span>
             <button
               type="button"
               onClick={dismissCardReorderTip}
-              className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 px-2 py-1"
+              className="shrink-0 font-semibold text-cyan-600 dark:text-cyan-400"
             >
               Got it
             </button>
-          </div>
+          </p>
         )}
 
       </div>
