@@ -340,7 +340,7 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className="flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-0.5 sm:gap-1 text-xs sm:text-sm font-normal text-slate-700 dark:text-slate-200 leading-tight sm:leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors py-0.5 sm:py-0"
+            className="flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-0.5 sm:gap-1 text-[13px] sm:text-sm font-normal text-slate-700 dark:text-slate-200 leading-tight sm:leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors py-0.5 sm:py-0"
             title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
           >
             {task.dueDate && <CardDuePrefix task={task} />}
