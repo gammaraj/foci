@@ -25,7 +25,7 @@ import {
 } from "@/lib/task-view-preference";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import TaskCardView from "@/components/task-list/TaskCardView";
-import { applyBucketDrop, moveBucketTaskInLane, moveCardTaskInProject, moveCardTaskInProjectByDirection, type BucketDropTarget } from "@/components/task-list/bucket-order";
+import { applyBucketDrop, moveCardTaskInProject, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
@@ -929,15 +929,6 @@ export default function TaskList({
       setDragTaskId(null);
       setDragOverTaskId(null);
     },
-    onMoveTask: (taskId: string, direction: "up" | "down") => {
-      const ordered = [...taskList];
-      const idx = ordered.findIndex((t) => t.id === taskId);
-      if (idx === -1) return;
-      const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-      if (targetIdx < 0 || targetIdx >= ordered.length) return;
-      [ordered[idx], ordered[targetIdx]] = [ordered[targetIdx], ordered[idx]];
-      applyTaskOrder(ordered);
-    },
   });
 
   const handleDragEnd = () => {
@@ -964,11 +955,6 @@ export default function TaskList({
     );
     if (updated) persist(updated);
     handleDragEnd();
-  };
-
-  const handleCardTaskMove = (projectId: string, taskId: string, direction: "up" | "down") => {
-    const updated = moveCardTaskInProjectByDirection(tasks, projectId, taskId, direction, activeTaskId);
-    if (updated) persist(updated);
   };
 
   // Subtask helpers
@@ -1081,11 +1067,6 @@ export default function TaskList({
       return;
     }
     persist(updated);
-  };
-
-  const handleBucketMove = (taskId: string, direction: "up" | "down") => {
-    const updated = moveBucketTaskInLane(tasks, taskId, direction, activeTaskId);
-    if (updated) persist(updated);
   };
 
   const setTaskRecurrence = (taskId: string, recurrence: RecurrenceType | undefined) => {
@@ -1988,7 +1969,7 @@ export default function TaskList({
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
           <p className="no-print sm:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
-            <span className="flex-1 truncate">▲▼ reorders tasks &amp; projects</span>
+            <span className="flex-1 truncate">Drag tasks to reorder · ▲▼ moves projects</span>
             <button
               type="button"
               onClick={dismissCardReorderTip}
@@ -2203,7 +2184,6 @@ export default function TaskList({
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
           onBucketDrop={handleBucketDrop}
-          onBucketMove={handleBucketMove}
           scrollToProjectId={bucketJumpProjectId || null}
           scrollToProjectToken={bucketScrollToken}
           renderBelowTask={preparingPrint ? () => null : renderTaskInlineExpansion}
@@ -2253,7 +2233,6 @@ export default function TaskList({
           onCancelEdit={() => setEditingId(null)}
           onDeleteTask={deleteTask}
           onMoveProject={handleMoveProject}
-          onMoveTask={handleCardTaskMove}
           onExpandProject={expandProjectToList}
           onOpenProject={expandProjectToList}
           onToggleProjectFavorite={toggleProjectFavorite}

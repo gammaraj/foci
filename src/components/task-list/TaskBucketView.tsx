@@ -71,7 +71,6 @@ interface TaskBucketViewProps {
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
   onBucketDrop?: (draggedTaskId: string, target: BucketDropTarget) => void;
-  onBucketMove?: (taskId: string, direction: "up" | "down") => void;
   renderBelowTask?: (task: Task, compact?: boolean) => React.ReactNode;
   /** When set, scroll the matching column into view (use scrollToProjectToken to re-trigger). */
   scrollToProjectId?: string | null;
@@ -226,10 +225,6 @@ function BucketTaskCard({
   onDragOver,
   onDrop,
   onDragEnd,
-  canMoveUp,
-  canMoveDown,
-  onMoveUp,
-  onMoveDown,
 }: {
   task: Task;
   isActive: boolean;
@@ -253,10 +248,6 @@ function BucketTaskCard({
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: () => void;
   onDragEnd?: () => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
 }) {
   const canEdit = !!onStartEdit;
   const canOpenDetail = !!onToggleTaskDetail;
@@ -317,38 +308,6 @@ function BucketTaskCard({
       }`}
     >
       <div className="flex items-start gap-1.5 min-h-[1.5rem]">
-        {onMoveUp && onMoveDown && (
-          <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMoveUp();
-              }}
-              disabled={!canMoveUp}
-              className="p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all"
-              aria-label="Move up"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMoveDown();
-              }}
-              disabled={!canMoveDown}
-              className="p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all"
-              aria-label="Move down"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-        )}
         {dragEnabled && (
           <div
             className="hidden sm:flex flex-shrink-0 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity mt-[3px]"
@@ -535,7 +494,6 @@ function BucketColumn({
   onDropOnTask,
   onDropOnLane,
   onDragEnd,
-  onBucketMove,
   renderBelowTask,
 }: {
   project: Project;
@@ -569,7 +527,6 @@ function BucketColumn({
   onDropOnTask: (taskId: string, swimlaneId: BucketSwimlaneId) => void;
   onDropOnLane: (swimlaneId: BucketSwimlaneId) => void;
   onDragEnd: () => void;
-  onBucketMove?: (taskId: string, direction: "up" | "down") => void;
   renderBelowTask?: (task: Task, compact?: boolean) => React.ReactNode;
 }) {
   const [draft, setDraft] = useState("");
@@ -816,7 +773,7 @@ function BucketColumn({
                 )}
                 {!isCollapsed && (
                 <div className="space-y-1 min-h-[1.25rem]">
-                  {lane.tasks.map((task, taskIdx) => (
+                  {lane.tasks.map((task) => (
                     <div key={task.id} className="min-w-0">
                     <BucketTaskCard
                       task={task}
@@ -841,14 +798,6 @@ function BucketColumn({
                       onDragOver={() => onDragOverTask(task.id)}
                       onDrop={() => onDropOnTask(task.id, swimlaneId)}
                       onDragEnd={onDragEnd}
-                      canMoveUp={taskIdx > 0}
-                      canMoveDown={taskIdx < lane.tasks.length - 1}
-                      onMoveUp={
-                        onBucketMove ? () => onBucketMove(task.id, "up") : undefined
-                      }
-                      onMoveDown={
-                        onBucketMove ? () => onBucketMove(task.id, "down") : undefined
-                      }
                     />
                     </div>
                   ))}
@@ -894,7 +843,6 @@ export default function TaskBucketView({
   expandedTaskId = null,
   onToggleTaskDetail,
   onBucketDrop,
-  onBucketMove,
   renderBelowTask,
   scrollToProjectId = null,
   scrollToProjectToken = 0,
@@ -1014,7 +962,6 @@ export default function TaskBucketView({
               })
             }
             onDragEnd={clearDrag}
-            onBucketMove={onBucketMove}
             renderBelowTask={renderBelowTask}
           />
         ))}

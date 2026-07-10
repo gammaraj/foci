@@ -49,7 +49,6 @@ export interface OpenTaskListProps {
   onDragOver: (e: React.DragEvent, id: string) => void;
   onDrop: (id: string) => void;
   onDragEnd: () => void;
-  onMoveTask: (id: string, direction: "up" | "down") => void;
   renderBelowTask: (task: Task) => React.ReactNode;
   emptyMessage?: string;
   className?: string;
@@ -90,7 +89,6 @@ export default function OpenTaskList({
   onDragOver,
   onDrop,
   onDragEnd,
-  onMoveTask,
   renderBelowTask,
   emptyMessage = "No open tasks",
   className = "space-y-1.5",
@@ -184,22 +182,10 @@ export default function OpenTaskList({
           }`}
         >
         <div className="flex items-start gap-1.5 sm:gap-2 p-1.5 sm:p-2">
-          <div className="flex-shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
-            <div className="hidden sm:block cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
-              </svg>
-            </div>
-            {tasks.length > 1 && (
-              <div className="sm:hidden flex flex-col -my-1">
-                <button onClick={(e) => { e.stopPropagation(); onMoveTask(task.id, "up"); }} disabled={tasks[0]?.id === task.id} className="p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all" aria-label="Move up">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
-                </button>
-                <button onClick={(e) => { e.stopPropagation(); onMoveTask(task.id, "down"); }} disabled={tasks[tasks.length - 1]?.id === task.id} className="p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0 transition-all" aria-label="Move down">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                </button>
-              </div>
-            )}
+          <div className="hidden sm:flex flex-shrink-0 items-center mt-0.5 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+              <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
+            </svg>
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); onToggleComplete(task.id); }}

@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import UserMenu from "@/components/UserMenu";
 import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
-import { FOCI_TAGLINE_FOCUS, FOCI_TAGLINE_NAV, FOCI_WORDMARK_NAV } from "@/lib/logo-brand";
+import { FOCI_TAGLINE_FOCUS, FOCI_TAGLINE_NAV, FOCI_TAGLINE_ON_DARK, FOCI_WORDMARK_NAV } from "@/lib/logo-brand";
 
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
@@ -130,7 +130,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             />
             <div className="flex flex-col items-start gap-0.5 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_NAV} tone="dark" />
-              <p className={`${FOCI_TAGLINE_NAV} text-cyan-400/75 whitespace-nowrap`}>
+              <p className={`${FOCI_TAGLINE_NAV} ${FOCI_TAGLINE_ON_DARK} whitespace-nowrap`}>
                 {FOCI_TAGLINE_FOCUS}
               </p>
             </div>

@@ -179,7 +179,7 @@ export function FocusDockToolbar({
     <button
       type="button"
       onClick={onToggleExpanded}
-      className={`flex items-center gap-1.5 min-w-0 text-left rounded-lg px-1 -mx-1 transition-colors hover:bg-slate-100/80 dark:hover:bg-white/5 ${embedded ? "" : "flex-1 sm:flex-initial"}`}
+      className={`flex items-center gap-1.5 shrink-0 text-left rounded-lg px-1 -mx-1 transition-colors hover:bg-slate-100/80 dark:hover:bg-white/5 ${embedded ? "" : "flex-1 sm:flex-initial min-w-0"}`}
       aria-expanded={expanded}
       aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
       title={
@@ -218,7 +218,7 @@ export function FocusDockToolbar({
         </span>
       )}
       <span
-        className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none ${
+        className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none shrink-0 ${
           isBreak
             ? "text-green-700 dark:text-green-300"
             : isRunning
@@ -229,7 +229,7 @@ export function FocusDockToolbar({
         {displayTime}
       </span>
       {activeTaskTitle ? (
-        <span className="min-w-0 inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300 truncate max-w-[7rem] sm:max-w-[12rem] lg:max-w-[16rem]">
+        <span className="min-w-0 hidden sm:inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300 truncate max-w-[7rem] sm:max-w-[12rem] lg:max-w-[16rem]">
           <span className="shrink-0 text-cyan-500 dark:text-cyan-400" aria-hidden>
             ↳
           </span>
@@ -301,15 +301,15 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`group flex items-center justify-between gap-2 min-w-0 w-full h-full min-h-[2.75rem] px-0 transition-colors ${embeddedChrome}`}
+        className={`group flex items-center justify-between gap-1.5 min-w-0 w-full h-full min-h-[2.75rem] px-0 transition-colors ${embeddedChrome}`}
       >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-          {sessionsLink}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <div className="hidden sm:block shrink-0">{sessionsLink}</div>
           {timerLabelButton}
         </div>
-        <div className="flex items-center gap-0.5 shrink-0 pl-1 rounded-lg bg-slate-100/70 dark:bg-white/[0.04] p-0.5">
+        <div className="flex items-center gap-0.5 shrink-0 rounded-lg bg-slate-100/70 dark:bg-white/[0.04] p-0.5">
           {timerControls}
-          {shortcutsButton}
+          <span className="hidden sm:contents">{shortcutsButton}</span>
           {expandChevron}
         </div>
       </div>

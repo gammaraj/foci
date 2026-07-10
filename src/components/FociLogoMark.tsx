@@ -5,6 +5,8 @@ import {
   FOCI_RING_COLORS,
   FOCI_TAGLINE_FOCUS,
   FOCI_TAGLINE_LOCKUP,
+  FOCI_TAGLINE_ON_DARK,
+  FOCI_TAGLINE_ON_LIGHT,
   FOCI_WORDMARK_LOCKUP,
   FOCI_WORDMARK_ON_DARK,
   FOCI_WORDMARK_ON_LIGHT,
@@ -126,7 +128,7 @@ export function FociBrandLockup({
         {showTagline && (
           <p
             className={`${FOCI_TAGLINE_LOCKUP} ${
-              tone === "light" ? "text-cyan-700" : "text-cyan-400/80"
+              tone === "light" ? FOCI_TAGLINE_ON_LIGHT : FOCI_TAGLINE_ON_DARK
             }`}
           >
             {FOCI_TAGLINE_FOCUS}

@@ -44,9 +44,9 @@ function OgBrandImage() {
           <div
             style={{
               fontSize: FOCI_TAGLINE_OG_PX,
-              fontWeight: 500,
-              letterSpacing: 4,
-              color: "rgba(6, 182, 212, 0.7)",
+              fontWeight: 600,
+              letterSpacing: 3.2,
+              color: "#67e8f9",
             }}
           >
             {FOCI_TAGLINE_FOCUS}

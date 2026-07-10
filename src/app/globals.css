@@ -925,8 +925,6 @@ input:focus-visible {
   #tasks-section button[aria-label^="Focus"],
   #tasks-section button[aria-label="Move up"],
   #tasks-section button[aria-label="Move down"],
-  #tasks-section button[aria-label="Move task up"],
-  #tasks-section button[aria-label="Move task down"],
   #tasks-section button[title="Deselect task"],
   #tasks-section [draggable][aria-label*="Drag"],
   #tasks-section [title="Drag to reorder projects"],

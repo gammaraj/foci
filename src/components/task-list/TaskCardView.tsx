@@ -46,7 +46,6 @@ interface TaskCardViewProps {
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
   onMoveProject?: (projectId: string, direction: "up" | "down") => void;
-  onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
@@ -140,7 +139,7 @@ function CardHeaderCounts({
   const title = `${open} open · ${completed} completed${overdue > 0 ? ` · ${overdue} overdue` : ""}`;
 
   return (
-    <span className="text-xs app-text-meta tabular-nums leading-snug pl-0.5" title={title}>
+    <span className="text-xs app-text-meta tabular-nums leading-snug shrink-0 ml-auto pl-2 text-right" title={title}>
       <span className="text-slate-500 dark:text-slate-400">{open} open</span>
       {overdue > 0 && (
         <>
@@ -181,9 +180,6 @@ function CardTaskRow({
   onSaveEdit,
   onCancelEdit,
   onDeleteTask,
-  onMoveTask,
-  taskIndex,
-  taskCount,
 }: {
   task: Task;
   projectId: string;
@@ -205,24 +201,12 @@ function CardTaskRow({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
-  onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
-  taskIndex: number;
-  taskCount: number;
 }) {
-  const [allowDrag, setAllowDrag] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 640px) and (pointer: fine)");
-    const update = () => setAllowDrag(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
   const someday = !!task.someday;
   const isActive = activeTaskId === task.id;
-  const dragEnabled = !!onTaskDragStart && !isEditing && allowDrag;
+  const dragEnabled = !!onTaskDragStart && !isEditing;
   const isDragging = dragTaskId === task.id;
   const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
 
@@ -274,7 +258,7 @@ function CardTaskRow({
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-cyan-400/60 dark:ring-cyan-500/50" : ""}`}
     >
-      <div className="flex items-start sm:items-center gap-0 sm:gap-1 min-h-0 sm:min-h-[1.5rem] w-full min-w-0">
+      <div className="flex items-start sm:items-center gap-1 min-h-0 sm:min-h-[1.5rem] w-full min-w-0">
         {onToggleComplete && (
           <button
             type="button"
@@ -285,38 +269,6 @@ function CardTaskRow({
             className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
             aria-label={`Mark "${task.title}" complete`}
           />
-        )}
-        {onMoveTask && taskCount > 1 && (
-          <div className="sm:hidden flex flex-col shrink-0 -space-y-px">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMoveTask(projectId, task.id, "up");
-              }}
-              disabled={taskIndex === 0}
-              className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
-              aria-label="Move task up"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMoveTask(projectId, task.id, "down");
-              }}
-              disabled={taskIndex >= taskCount - 1}
-              className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
-              aria-label="Move task down"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
         )}
         {isEditing ? (
           <input
@@ -430,7 +382,6 @@ function ProjectCard({
   onTaskDragOver,
   onTaskDrop,
   onTaskDragEnd,
-  onMoveTask,
   onToggleComplete,
   onToggleTaskDetail,
   onStartEdit,
@@ -467,7 +418,6 @@ function ProjectCard({
   onTaskDragOver?: (e: React.DragEvent, taskId: string) => void;
   onTaskDrop?: (projectId: string, targetTaskId: string) => void;
   onTaskDragEnd?: () => void;
-  onMoveTask?: (projectId: string, taskId: string, direction: "up" | "down") => void;
   onToggleComplete?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
   onQuickAdd: (title: string, projectId: string) => void;
@@ -623,20 +573,20 @@ function ProjectCard({
               Personal
             </span>
           )}
+          <CardHeaderCounts
+            open={tasks.length}
+            completed={completedCount}
+            overdue={overdueCount}
+            softOverdueLabel={softProjectOverdueLabels}
+          />
         </div>
-        <CardHeaderCounts
-          open={tasks.length}
-          completed={completedCount}
-          overdue={overdueCount}
-          softOverdueLabel={softProjectOverdueLabels}
-        />
       </header>
 
       <div className="flex flex-col gap-0 sm:gap-0.5">
         {topTasks.length === 0 ? (
           <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
         ) : (
-          topTasks.map((task, taskIndex) => (
+          topTasks.map((task) => (
             <CardTaskRow
               key={task.id}
               task={task}
@@ -659,9 +609,6 @@ function ProjectCard({
               onSaveEdit={onSaveEdit}
               onCancelEdit={onCancelEdit}
               onDeleteTask={onDeleteTask}
-              onMoveTask={onMoveTask}
-              taskIndex={taskIndex}
-              taskCount={topTasks.length}
             />
           ))
         )}
@@ -731,7 +678,6 @@ export default function TaskCardView({
   onCancelEdit,
   onDeleteTask,
   onMoveProject,
-  onMoveTask,
   onExpandProject,
   onOpenProject,
   onQuickAdd,
@@ -829,7 +775,6 @@ export default function TaskCardView({
               onTaskDragOver={onTaskDragOver}
               onTaskDrop={onTaskDrop}
               onTaskDragEnd={onTaskDragEnd}
-              onMoveTask={onMoveTask}
               onToggleComplete={onToggleComplete}
               onToggleTaskDetail={onToggleTaskDetail}
               onStartEdit={onStartEdit}
