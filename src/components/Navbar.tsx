@@ -174,7 +174,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             )}
           </div>
 
-          <div className="flex sm:hidden items-center gap-0.5">
+          <div className="flex sm:hidden items-center gap-0.5 ml-auto">
             {onOpenSettings && (
               <button
                 type="button"
