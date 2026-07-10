@@ -33,6 +33,8 @@ import { dismissDatePicker } from "@/components/task-list/dismiss-overlays";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
+import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
+import { MobileTaskToolbar } from "@/components/task-list/MobileTaskToolbar";
 import {
   MAX_TASK_TITLE,
   MAX_PROJECT_NAME,
@@ -114,6 +116,8 @@ export default function TaskList({
   const [projectManageOpen, setProjectManageOpen] = useState(false);
   const [bucketJumpProjectId, setBucketJumpProjectId] = useState("");
   const [bucketScrollToken, setBucketScrollToken] = useState(0);
+  const [cardJumpProjectId, setCardJumpProjectId] = useState("");
+  const [showCardReorderTip, setShowCardReorderTip] = useState(false);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [showAddProject, setShowAddProject] = useState(false);
@@ -1232,6 +1236,9 @@ export default function TaskList({
   const endOfYear = `${new Date().getFullYear()}-12-31`;
   const todayTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= today));
   const todayOpenCount = todayTasks.length;
+  const dueExactlyTodayCount = tasks.filter(
+    (t) => !t.archivedAt && !t.completed && t.dueDate === today,
+  ).length;
   const allOpenCount = tasks.filter((t) => !t.completed && !t.archivedAt).length;
   const overdueTasks = tasks.filter((t) => !t.archivedAt && !t.completed && isActionableOverdue(t));
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
@@ -1598,6 +1605,48 @@ export default function TaskList({
     />
   );
 
+  const showUrgencySummary =
+    !focusMode &&
+    !projectManageOpen &&
+    isAllProjects &&
+    !isTimeFilter &&
+    (viewMode === "list" || viewMode === "card" || viewMode === "bucket");
+
+  const mobileTimeScope = isTimeFilter ? selectedProjectId : ALL_PROJECTS_ID;
+
+  const cardProjectCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const project of sortedProjects) {
+      counts.set(project.id, bucketTasksByProject.get(project.id)?.length ?? 0);
+    }
+    return counts;
+  }, [sortedProjects, bucketTasksByProject]);
+
+  useEffect(() => {
+    if (viewMode !== "card" || projectManageOpen) return;
+    setShowCardReorderTip(localStorage.getItem("foci-card-reorder-tip-dismissed") !== "1");
+  }, [viewMode, projectManageOpen]);
+
+  useEffect(() => {
+    if (!cardJumpProjectId) return;
+    const el = document.getElementById(`project-card-${cardJumpProjectId}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [cardJumpProjectId]);
+
+  const dismissCardReorderTip = () => {
+    localStorage.setItem("foci-card-reorder-tip-dismissed", "1");
+    setShowCardReorderTip(false);
+  };
+
+  const handleMobileProjectJump = (projectId: string) => {
+    if (viewMode === "bucket") {
+      setBucketJumpProjectId(projectId);
+      if (projectId) setBucketScrollToken((n) => n + 1);
+      return;
+    }
+    setCardJumpProjectId(projectId);
+  };
+
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
       <div className="print-only print-header px-3 sm:px-4 pt-3">
@@ -1711,24 +1760,17 @@ export default function TaskList({
                   </span>
                 )}
               </span>
-              {!focusMode && (viewMode === "list" || viewMode === "card") && isAllProjects && !isTimeFilter && (
-                <button
-                  type="button"
-                  onClick={() => selectProject(TODAY_FILTER_ID)}
-                  className="no-print inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors shadow-sm"
-                >
-                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span className="leading-none">Due today</span>
-                  {todayOpenCount > 0 && (
-                    <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none">
-                      {todayOpenCount}
-                    </span>
-                  )}
-                </button>
-              )}
             </h2>
+            {showUrgencySummary && (
+              <div className="no-print pl-7 mt-1 flex flex-wrap items-center gap-1.5">
+                <TaskUrgencySummary
+                  overdueCount={overdueTasks.length}
+                  dueTodayCount={dueExactlyTodayCount}
+                  onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
+                  onViewToday={() => selectProject(TODAY_FILTER_ID)}
+                />
+              </div>
+            )}
             {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
               <p className="no-print text-sm text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0 pl-7 leading-snug hidden lg:block line-clamp-1">
                 {viewMode === "card"
@@ -1750,13 +1792,6 @@ export default function TaskList({
                     : "Pick a task, then hit Focus to start your session"}
               </p>
             )}
-            {!focusMode && viewMode === "card" && (
-              <p className="no-print text-xs text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0.5 pl-7 sm:hidden">
-                {sortedProjects.length >= 2
-                  ? "Top tasks per project · use ▲▼ to reorder · ⋯ to manage"
-                  : "Top tasks per project · ⋯ to manage projects"}
-              </p>
-            )}
               </>
             )}
           </div>
@@ -1766,7 +1801,7 @@ export default function TaskList({
             <div className="app-seg-track hidden sm:flex items-center gap-0.5" data-tour="time-filters">
               <button
                 onClick={() => selectProject(ALL_PROJECTS_ID)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="All open tasks — every project"
                 aria-label="All tasks"
               >
@@ -1774,20 +1809,20 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Tasks with a due date of today or earlier"}
+                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue · ${dueExactlyTodayCount} due today` : "Tasks with a due date of today or earlier"}
                 aria-label="Due today or earlier"
               >
                 Today
                 {overdueTasks.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs app-badge font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
-                    {overdueTasks.length}
+                  <span className="ml-1 text-xs font-semibold text-red-600 dark:text-red-400 tabular-nums">
+                    {overdueTasks.length} late
                   </span>
                 )}
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this week or earlier"
                 aria-label="Due this week or earlier"
               >
@@ -1795,7 +1830,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this month or earlier"
                 aria-label="Due this month or earlier"
               >
@@ -1803,7 +1838,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this year or earlier"
                 aria-label="Due this year or earlier"
               >
@@ -1927,90 +1962,40 @@ export default function TaskList({
           </div>
         </div>
 
-        {/* Time filters - mobile: own row below title */}
+        {/* Mobile toolbar — scope + view in one row */}
         {!focusMode && !projectManageOpen && (
-        <div className="no-print app-seg-track flex sm:hidden items-center gap-1 mt-3" data-tour="time-filters">
-          <button
-            onClick={() => selectProject(ALL_PROJECTS_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="All open tasks"
-            aria-label="All tasks"
-          >
-            All
-          </button>
-          <button
-            onClick={() => selectProject(TODAY_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center relative ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? '' : 's'}` : "Tasks with a due date of today or earlier"}
-            aria-label="Due today or earlier"
-          >
-            Today
-            {overdueTasks.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs app-badge font-bold rounded-full bg-red-500 text-white border border-white dark:border-[#111827]">
-                {overdueTasks.length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="Tasks with a due date this week or earlier"
-            aria-label="Due this week or earlier"
-          >
-            Week
-          </button>
-          <button
-            onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="Tasks with a due date this month or earlier"
-            aria-label="Due this month or earlier"
-          >
-            Month
-          </button>
-          <button
-            onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-            className={`flex-1 px-1.5 py-1.5 rounded-md text-sm font-medium transition-colors text-center ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-            title="Tasks with a due date this year or earlier"
-            aria-label="Due this year or earlier"
-          >
-            Year
-          </button>
-        </div>
+        <MobileTaskToolbar
+          selectedScope={mobileTimeScope}
+          onSelectScope={selectProject}
+          viewMode={viewMode}
+          onSelectViewMode={selectViewMode}
+          onPrint={handlePrint}
+          onManageProjects={openProjectManage}
+          overdueCount={overdueTasks.length}
+          projects={sortedProjects}
+          projectJumpId={viewMode === "bucket" ? bucketJumpProjectId : cardJumpProjectId}
+          onProjectJump={handleMobileProjectJump}
+          projectCounts={cardProjectCounts}
+          showProjectJump={viewMode === "card" || viewMode === "bucket"}
+          printDisabled={projectManageOpen}
+        />
         )}
 
-        {/* View mode — mobile scrollable tabs */}
-        {!projectManageOpen && (
-        <div className="no-print app-seg-track app-view-track flex sm:hidden overflow-x-auto items-center gap-0.5 mt-2" data-tour="view-modes">
-          {([
-            ["bucket", "Buckets"],
-            ["card", "Cards"],
-            ["list", "List"],
-            ["calendar", "Cal"],
-          ] as const).map(([mode, label]) => (
+        {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
+          <div className="no-print sm:hidden mx-3 mt-2 px-3 py-2 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#0d1526]/60 flex items-start gap-2">
+            <p className="flex-1 text-xs text-slate-600 dark:text-slate-300 leading-snug">
+              Use ▲▼ on each card to reorder tasks and projects.
+            </p>
             <button
-              key={mode}
               type="button"
-              onClick={() => selectViewMode(mode)}
-              className={`flex-shrink-0 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === mode ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
+              onClick={dismissCardReorderTip}
+              className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 px-2 py-1"
             >
-              {label}
+              Got it
             </button>
-          ))}
-          <button
-            type="button"
-            onClick={handlePrint}
-            disabled={projectManageOpen}
-            className={`flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${VIEW_TAB_INACTIVE} disabled:opacity-40 disabled:cursor-not-allowed`}
-            title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
-            aria-label="Print current view"
-          >
-            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Print
-          </button>
-        </div>
+          </div>
         )}
+
       </div>
       </>
       )}
@@ -2113,9 +2098,9 @@ export default function TaskList({
         </div>
       )}
 
-      {/* Bucket toolbar — projects only (counts live in header subtitle) */}
+      {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="no-print px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <button
               type="button"
@@ -2222,23 +2207,6 @@ export default function TaskList({
         />
       )}
 
-      {/* Card toolbar — manage projects on mobile */}
-      {!isFocusMode && !projectManageOpen && viewMode === "card" && tasksReady && (
-        <div className="no-print sm:hidden px-3 py-2 flex items-center border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
-          <button
-            type="button"
-            onClick={openProjectManage}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 touch-target-sm"
-            data-tour="manage-projects"
-          >
-            <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
-            </svg>
-            Manage projects
-          </button>
-        </div>
-      )}
-
       {!isFocusMode && !projectManageOpen && viewMode === "card" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -2294,6 +2262,8 @@ export default function TaskList({
           emptyProjectCount={emptyCardProjectCount}
           overdueCount={overdueTasks.length}
           onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
+          suppressOverdueBanner={showUrgencySummary}
+          softProjectOverdueLabels={showUrgencySummary}
         />
       )}
 

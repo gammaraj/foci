@@ -746,6 +746,10 @@ input:focus-visible {
   justify-content: center;
 }
 
+.touch-target-tab {
+  min-height: 2.75rem;
+}
+
 .hover-reveal-desktop {
   opacity: 1;
 }

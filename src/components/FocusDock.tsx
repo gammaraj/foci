@@ -375,7 +375,7 @@ export default function FocusDockPanel({
   if (compactStrip) {
     return (
       <div
-        className={`absolute left-1/2 top-[calc(100%+0.25rem)] z-50 w-[22rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-3 shadow-lg shadow-slate-900/10 ${
+        className={`absolute left-1/2 top-[calc(100%+0.25rem)] z-50 w-[20rem] max-w-[calc(100vw-1.5rem)] -translate-x-1/2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${
           isBreak ? "timer-break-mode" : ""
         } ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >
@@ -387,7 +387,7 @@ export default function FocusDockPanel({
         <div className="text-center space-y-0.5 pb-3">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
           <p
-            className={`text-2xl sm:text-3xl font-mono font-bold tabular-nums leading-none ${
+            className={`text-xl sm:text-3xl font-mono font-bold tabular-nums leading-none ${
               isBreak
                 ? "text-green-700 dark:text-green-300"
                 : isRunning

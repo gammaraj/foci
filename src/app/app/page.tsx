@@ -81,6 +81,13 @@ function AppPageContent() {
   }, [timerCollapsed]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.innerWidth < 640) {
+      setTimerCollapsed(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!activeTaskId) {
       setActiveTaskTitle("");
       return;

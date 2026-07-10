@@ -55,6 +55,10 @@ interface TaskCardViewProps {
   emptyProjectCount?: number;
   overdueCount?: number;
   onViewOverdue?: () => void;
+  /** When true, hide the overdue banner (urgency summary shown in header instead). */
+  suppressOverdueBanner?: boolean;
+  /** Softer per-project overdue labels when global urgency bar is visible. */
+  softProjectOverdueLabels?: boolean;
 }
 
 function GripIcon() {
@@ -124,10 +128,12 @@ function CardHeaderCounts({
   open,
   completed,
   overdue,
+  softOverdueLabel = false,
 }: {
   open: number;
   completed: number;
   overdue: number;
+  softOverdueLabel?: boolean;
 }) {
   if (open === 0 && completed === 0) return null;
 
@@ -139,7 +145,15 @@ function CardHeaderCounts({
       {overdue > 0 && (
         <>
           <span className="text-slate-400 dark:text-slate-500"> · </span>
-          <span className="text-red-600 dark:text-red-300 font-medium">{overdue} late</span>
+          <span
+            className={
+              softOverdueLabel
+                ? "text-amber-700 dark:text-amber-300 font-medium"
+                : "text-red-600 dark:text-red-300 font-medium"
+            }
+          >
+            {overdue} late
+          </span>
         </>
       )}
     </span>
@@ -273,7 +287,7 @@ function CardTaskRow({
           />
         )}
         {onMoveTask && taskCount > 1 && (
-          <div className="sm:hidden flex flex-col -my-0.5 shrink-0">
+          <div className="sm:hidden flex flex-col shrink-0 -my-0.5">
             <button
               type="button"
               onClick={(e) => {
@@ -281,10 +295,10 @@ function CardTaskRow({
                 onMoveTask(projectId, task.id, "up");
               }}
               disabled={taskIndex === 0}
-              className="touch-target-sm !min-h-0 !min-w-0 p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0"
+              className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
               aria-label="Move task up"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
             </button>
@@ -295,10 +309,10 @@ function CardTaskRow({
                 onMoveTask(projectId, task.id, "down");
               }}
               disabled={taskIndex >= taskCount - 1}
-              className="touch-target-sm !min-h-0 !min-w-0 p-0.5 text-slate-400 hover:text-slate-600 disabled:opacity-0"
+              className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-0"
               aria-label="Move task down"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -427,6 +441,7 @@ function ProjectCard({
   onOpenProject,
   onQuickAdd,
   onToggleProjectFavorite,
+  softProjectOverdueLabels = false,
 }: {
   project: Project;
   projectIndex: number;
@@ -463,6 +478,7 @@ function ProjectCard({
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  softProjectOverdueLabels?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -491,6 +507,7 @@ function ProjectCard({
 
   return (
     <article
+      id={`project-card-${project.id}`}
       onDragOver={(e) => {
         if (!canReorder || !onProjectDragOver || !dragProjectId) return;
         onProjectDragOver(e, project.id);
@@ -536,10 +553,10 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "up")}
                 disabled={projectIndex === 0}
-                className="touch-target-sm !min-h-8 !min-w-8 p-0.5 rounded text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} up`}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               </button>
@@ -547,10 +564,10 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "down")}
                 disabled={projectIndex >= projectCount - 1}
-                className="touch-target-sm !min-h-8 !min-w-8 p-0.5 rounded text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                className="touch-target-sm !min-h-9 !min-w-9 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} down`}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -606,7 +623,12 @@ function ProjectCard({
             </span>
           )}
         </div>
-        <CardHeaderCounts open={tasks.length} completed={completedCount} overdue={overdueCount} />
+        <CardHeaderCounts
+          open={tasks.length}
+          completed={completedCount}
+          overdue={overdueCount}
+          softOverdueLabel={softProjectOverdueLabels}
+        />
       </header>
 
       <div className="flex flex-col gap-0.5">
@@ -720,6 +742,8 @@ export default function TaskCardView({
   emptyProjectCount = 0,
   overdueCount = 0,
   onViewOverdue,
+  suppressOverdueBanner = false,
+  softProjectOverdueLabels = false,
 }: TaskCardViewProps) {
   const visibleProjects = useMemo(() => {
     if (!hideEmptyProjects) return projects;
@@ -738,13 +762,13 @@ export default function TaskCardView({
 
   return (
     <div className="pb-4 pt-1">
-      {(overdueCount > 0 || onToggleHideEmptyProjects) && (
+      {(!suppressOverdueBanner && overdueCount > 0) || onToggleHideEmptyProjects ? (
         <div className="px-3 sm:px-4 mb-2 flex flex-wrap items-center gap-2">
-          {overdueCount > 0 && onViewOverdue && (
+          {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (
             <button
               type="button"
               onClick={onViewOverdue}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/30 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/30 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors touch-target-sm !min-h-0"
             >
               <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold tabular-nums">
                 {overdueCount}
@@ -764,7 +788,7 @@ export default function TaskCardView({
             </button>
           )}
         </div>
-      )}
+      ) : null}
 
       <div className="px-3 sm:px-4 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 print:grid-cols-2 gap-3">
         {previewProjects.map((project, projectIndex) => {
@@ -816,6 +840,7 @@ export default function TaskCardView({
               onOpenProject={onOpenProject}
               onQuickAdd={onQuickAdd}
               onToggleProjectFavorite={onToggleProjectFavorite}
+              softProjectOverdueLabels={softProjectOverdueLabels}
             />
           );
         })}

@@ -18,7 +18,7 @@ export function TaskEditButton({ onClick, isOpen, taskTitle, className = "" }: T
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 px-1.5 py-0.5 text-xs font-semibold rounded-md border transition-colors whitespace-nowrap ${
+      className={`shrink-0 px-2 py-1 sm:px-1.5 sm:py-0.5 text-xs font-semibold rounded-md border transition-colors whitespace-nowrap min-h-[2rem] sm:min-h-0 ${
         isOpen
           ? "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-700/50"
           : "text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-[#2a3f5f]/80 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/90 dark:hover:bg-violet-900/20 hover:border-violet-200 dark:hover:border-violet-700/50"
