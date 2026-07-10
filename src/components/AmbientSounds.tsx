@@ -441,7 +441,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       <div
         className={`flex items-center gap-1.5 transition-colors ${
           stripEmbedded
-            ? "w-full min-w-0 flex-1 min-h-[2.75rem] px-0 py-0"
+            ? "w-full min-w-0 flex-1 min-h-[2.75rem] px-0 py-0 justify-between"
             : inline
               ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
               : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
@@ -499,7 +499,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className={`min-w-0 flex-1 text-left ${stripEmbedded ? "max-w-none" : "max-w-[8rem] sm:max-w-[10rem]"}`}
+          className={`min-w-0 ${stripEmbedded ? "flex-1 max-w-[11rem]" : "flex-1 max-w-[8rem] sm:max-w-[10rem]"} text-left`}
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
           {stripEmbedded ? (
@@ -521,6 +521,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           )}
         </button>
 
+        <div className="flex items-center gap-1 shrink-0">
         {mode === "sounds" && activeSound && collapsed && (
           <input
             type="range"
@@ -584,6 +585,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
+        </div>
       </div>
 
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}

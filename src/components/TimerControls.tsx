@@ -36,7 +36,7 @@ export default function TimerControls({
   if (compact) {
     if (dock) {
       return (
-        <div className="flex items-center gap-1" role="group" aria-label="Timer control buttons">
+        <div className="flex items-center gap-0.5" role="group" aria-label="Timer control buttons">
           {showStartPause && (
             <button
               onClick={onStartPause}

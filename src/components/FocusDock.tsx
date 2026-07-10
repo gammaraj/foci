@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
+import { miniDockGhostButtonClass } from "@/components/FocusStripControls";
 
 const WORK_DURATION_PRESETS = [15, 25, 30, 45] as const;
 
@@ -96,10 +97,10 @@ export function FocusDockToolbar({
 
   const embeddedChrome =
     isBreak
-      ? "border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20 sm:rounded-lg sm:px-2"
+      ? "rounded-lg px-1.5 border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
       : isRunning
-        ? "border border-cyan-300/60 dark:border-cyan-600/45 bg-cyan-50/70 dark:bg-cyan-900/20 sm:rounded-lg sm:px-2 sm:shadow-sm sm:shadow-cyan-500/10"
-        : "sm:rounded-lg sm:px-1";
+        ? "rounded-lg px-1.5 border border-cyan-300/60 dark:border-cyan-600/45 bg-cyan-50/70 dark:bg-cyan-900/20"
+        : "rounded-lg px-1";
 
   const sessionsLink = sessions ? (
     <Link
@@ -228,14 +229,14 @@ export function FocusDockToolbar({
         {displayTime}
       </span>
       {activeTaskTitle ? (
-        <span className="min-w-0 inline-flex items-center gap-1 text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate max-w-[7rem] sm:max-w-[12rem] lg:max-w-[16rem]">
+        <span className="min-w-0 inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300 truncate max-w-[7rem] sm:max-w-[12rem] lg:max-w-[16rem]">
           <span className="shrink-0 text-cyan-500 dark:text-cyan-400" aria-hidden>
             ↳
           </span>
           <span className="truncate">{activeTaskTitle}</span>
         </span>
       ) : !isRunning ? (
-        <span className="hidden sm:inline text-xs sm:text-sm text-slate-400 dark:text-slate-500 italic truncate">
+        <span className="hidden sm:inline text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
           Select a task ↓
         </span>
       ) : null}
@@ -261,17 +262,13 @@ export function FocusDockToolbar({
           dismissShortcutHint();
           onShowShortcuts();
         }}
-        className={`relative flex w-7 h-7 rounded-full text-xs font-bold items-center justify-center shrink-0 transition-all ${
-          showShortcutHint
-            ? "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 ring-1 ring-cyan-300/60"
-            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] hover:text-slate-600 dark:hover:text-slate-300 opacity-70 sm:opacity-100"
-        }`}
+        className={miniDockGhostButtonClass(showShortcutHint)}
         aria-label="Keyboard shortcuts"
         title={showShortcutHint ? "Keyboard shortcuts (press ?)" : "Keyboard shortcuts (?)"}
       >
-        ?
+        <span className="text-sm font-semibold leading-none">?</span>
         {showShortcutHint && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-cyan-500 animate-pulse" aria-hidden />
+          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-cyan-500" aria-hidden />
         )}
       </button>
     ) : null;
@@ -280,10 +277,10 @@ export function FocusDockToolbar({
     <button
       type="button"
       onClick={onToggleExpanded}
-      className={`flex-shrink-0 touch-target-sm ${
+      className={`flex-shrink-0 ${
         embedded
-          ? "hidden sm:flex p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-          : "p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+          ? `${miniDockGhostButtonClass(false)} hidden sm:flex`
+          : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
       }`}
       aria-expanded={expanded}
       aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
@@ -310,7 +307,7 @@ export function FocusDockToolbar({
           {sessionsLink}
           {timerLabelButton}
         </div>
-        <div className="flex items-center gap-1.5 shrink-0 pl-1">
+        <div className="flex items-center gap-0.5 shrink-0 pl-1 rounded-lg bg-slate-100/70 dark:bg-white/[0.04] p-0.5">
           {timerControls}
           {shortcutsButton}
           {expandChevron}

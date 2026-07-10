@@ -79,7 +79,6 @@ function WeatherStat({
 export default function WeatherTime({ compact = false, embedded = false }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const prefersCelsius =
     typeof navigator !== "undefined" && !navigator.language?.startsWith("en-US");
@@ -128,7 +127,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
 
   if (compact) {
     const chrome = embedded
-      ? "min-h-[2.75rem] min-w-0 w-full h-full py-0.5 overflow-visible"
+      ? "min-h-[2.75rem] min-w-0 w-full h-full py-0 overflow-visible"
       : "min-h-[2.75rem] min-w-0 w-full h-full px-2 sm:px-2.5 py-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden";
 
     const weatherTitle = weather
@@ -143,20 +142,75 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
           .join(" · ")
       : "";
 
+    // Embedded strip: clock + condition + compact stats (city truncated).
+    if (embedded) {
+      return (
+        <div
+          className={`flex items-center gap-2 w-full min-w-0 ${chrome}`}
+          title={weatherTitle || undefined}
+        >
+          <div className="flex items-baseline gap-1.5 shrink-0">
+            <span className="text-sm font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
+              {formatClock(now)}
+            </span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-none hidden xl:inline">
+              {formatShortWeekday(now)}
+            </span>
+          </div>
+
+          {weather && (
+            <>
+              <span className="h-5 w-px bg-slate-200/80 dark:bg-[#243350] shrink-0" aria-hidden />
+              <div className="flex items-center gap-1.5 min-w-0 shrink">
+                <span className="text-sm leading-none shrink-0" aria-hidden>
+                  {weather.icon}
+                </span>
+                <span className="text-sm font-semibold tabular-nums text-slate-800 dark:text-slate-100 whitespace-nowrap shrink-0">
+                  {weather.temp}°{unitSuffix}
+                </span>
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden lg:inline max-w-[5.5rem]">
+                  {weather.description}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
+                {weather.low != null && weather.high != null && (
+                  <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
+                )}
+                {weather.humidity != null && (
+                  <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
+                )}
+                {weather.wind != null && (
+                  <WeatherStat
+                    label="Wind"
+                    value={`${weather.wind} ${windLabel(weather.windUnit)}`}
+                    title="Wind speed"
+                  />
+                )}
+                {weather.city && (
+                  <span
+                    className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[5.5rem] xl:max-w-[7rem]"
+                    title={weather.city}
+                  >
+                    {weather.city}
+                  </span>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div
-        className={`flex items-center ${embedded ? "justify-between gap-2" : "gap-3"} w-full min-w-0 ${chrome}`}
+        className={`flex items-center gap-3 w-full min-w-0 ${chrome}`}
         title={weatherTitle || undefined}
       >
         <div className="flex flex-col shrink-0 justify-center">
           <span className="text-sm sm:text-base font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
             {formatClock(now)}
           </span>
-          {embedded && (
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5 hidden xl:block">
-              {formatShortWeekday(now)}
-            </span>
-          )}
         </div>
 
         {weather && (
@@ -176,7 +230,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
                     {weather.description}
                   </span>
                 </div>
-                {!embedded && weather.city && (
+                {weather.city && (
                   <span
                     className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate max-w-[5.5rem] block mt-0.5"
                     title={weather.city}
@@ -188,66 +242,18 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
             </div>
 
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
-              <div className={`items-center gap-2 sm:gap-2.5 ${embedded ? "hidden xl:flex" : "flex"}`}>
-                {weather.low != null && weather.high != null && (
-                  <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
-                )}
-                {weather.humidity != null && (
-                  <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
-                )}
-                {weather.wind != null && (
-                  <WeatherStat
-                    label="Wind"
-                    value={`${weather.wind} ${windLabel(weather.windUnit)}`}
-                    title="Wind speed"
-                  />
-                )}
-                {embedded && weather.city && (
-                  <span
-                    className="hidden 2xl:inline text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[6rem]"
-                    title={weather.city}
-                  >
-                    {weather.city}
-                  </span>
-                )}
-              </div>
-              {embedded && (
-                <div className="relative xl:hidden shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setDetailsOpen((open) => !open)}
-                    className="w-7 h-7 rounded-lg border border-slate-200/80 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors flex items-center justify-center"
-                    aria-expanded={detailsOpen}
-                    aria-label={detailsOpen ? "Hide weather details" : "Show weather details"}
-                    title="Weather details"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                  {detailsOpen && (
-                    <div className="absolute right-0 top-full mt-1 z-20 flex items-center gap-2 px-2.5 py-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-lg whitespace-nowrap">
-                      {weather.low != null && weather.high != null && (
-                        <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
-                      )}
-                      {weather.humidity != null && (
-                        <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
-                      )}
-                      {weather.wind != null && (
-                        <WeatherStat
-                          label="Wind"
-                          value={`${weather.wind} ${windLabel(weather.windUnit)}`}
-                          title="Wind speed"
-                        />
-                      )}
-                      {weather.city && (
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-[7rem] truncate" title={weather.city}>
-                          {weather.city}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
+              {weather.low != null && weather.high != null && (
+                <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
+              )}
+              {weather.humidity != null && (
+                <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
+              )}
+              {weather.wind != null && (
+                <WeatherStat
+                  label="Wind"
+                  value={`${weather.wind} ${windLabel(weather.windUnit)}`}
+                  title="Wind speed"
+                />
               )}
             </div>
           </>
