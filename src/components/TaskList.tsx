@@ -73,17 +73,14 @@ const FILTER_TAB_ACTIVE =
 const FILTER_TAB_INACTIVE =
   "text-slate-600 dark:text-white/80 hover:text-slate-800 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10";
 
-/** Cyan-accent active state so layout view is easy to spot. */
-const VIEW_TAB_ACTIVE =
-  "bg-white dark:bg-[#1a2d4a] text-cyan-700 dark:text-cyan-300 shadow-sm ring-1 ring-cyan-400/70 dark:ring-cyan-500/55 font-semibold";
-const VIEW_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10";
-
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
   "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-cyan-400/50 dark:ring-cyan-500/45 font-semibold";
 const PROJECT_TAB_INACTIVE =
   "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]";
+
+const SEG_TAB_PAD = "px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors";
+const SEG_TAB_ICON_PAD = `inline-flex items-center gap-1.5 ${SEG_TAB_PAD} whitespace-nowrap`;
 
 export default function TaskList({
   activeTaskId,
@@ -1805,13 +1802,13 @@ export default function TaskList({
               </>
             )}
           </div>
-          <div className="no-print flex items-center gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
+          <div className="no-print flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
             {/* Time filters - hidden on mobile, shown inline on sm+ */}
             {!focusMode && !projectManageOpen && (
             <div className="app-seg-track hidden sm:flex items-center gap-0.5" data-tour="time-filters">
               <button
                 onClick={() => selectProject(ALL_PROJECTS_ID)}
-                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`${SEG_TAB_PAD} ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="All open tasks — every project"
                 aria-label="All tasks"
               >
@@ -1819,7 +1816,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`${SEG_TAB_PAD} ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue · ${dueExactlyTodayCount} due today` : "Tasks with a due date of today or earlier"}
                 aria-label="Due today or earlier"
               >
@@ -1832,7 +1829,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`${SEG_TAB_PAD} ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this week or earlier"
                 aria-label="Due this week or earlier"
               >
@@ -1840,7 +1837,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`${SEG_TAB_PAD} ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this month or earlier"
                 aria-label="Due this month or earlier"
               >
@@ -1848,7 +1845,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                className={`${SEG_TAB_PAD} ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Tasks with a due date this year or earlier"
                 aria-label="Due this year or earlier"
               >
@@ -1858,14 +1855,14 @@ export default function TaskList({
             )}
             {/* View mode toggles — desktop */}
             {!projectManageOpen && (
-            <div className="hidden sm:flex items-center gap-1.5 shrink-0" data-tour="view-modes">
+            <div className="hidden sm:flex items-center gap-2.5 shrink-0 ml-2 sm:ml-4 pl-3 sm:pl-4 border-l border-slate-300/80 dark:border-[#3a5070]/90" data-tour="view-modes">
               <span className="hidden md:inline app-section-label text-slate-500 dark:text-slate-400 shrink-0">
                 View
               </span>
-              <div className="app-seg-track app-view-track flex items-center gap-0.5">
+              <div className="app-seg-track flex items-center gap-0.5">
               <button
                 onClick={() => selectViewMode("bucket")}
-                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "bucket" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
+                className={`${SEG_TAB_ICON_PAD} ${viewMode === "bucket" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Bucket view — all projects"
                 aria-label="Bucket view"
               >
@@ -1876,7 +1873,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectViewMode("card")}
-                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "card" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
+                className={`${SEG_TAB_ICON_PAD} ${viewMode === "card" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Card view — top tasks per project"
                 aria-label="Card view"
               >
@@ -1887,7 +1884,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectViewMode("list")}
-                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "list" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
+                className={`${SEG_TAB_ICON_PAD} ${viewMode === "list" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="List view"
                 aria-label="List view"
               >
@@ -1898,7 +1895,7 @@ export default function TaskList({
               </button>
               <button
                 onClick={() => selectViewMode("calendar")}
-                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${viewMode === "calendar" ? VIEW_TAB_ACTIVE : VIEW_TAB_INACTIVE}`}
+                className={`${SEG_TAB_ICON_PAD} ${viewMode === "calendar" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                 title="Calendar view"
                 aria-label="Calendar view"
               >
@@ -1913,7 +1910,7 @@ export default function TaskList({
                 type="button"
                 onClick={handlePrint}
                 disabled={projectManageOpen}
-                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${VIEW_TAB_INACTIVE} disabled:opacity-40 disabled:cursor-not-allowed`}
+                className={`${SEG_TAB_ICON_PAD} ${FILTER_TAB_INACTIVE} disabled:opacity-40 disabled:cursor-not-allowed`}
                 title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
                 aria-label="Print current view"
                 data-tour="print-tasks"

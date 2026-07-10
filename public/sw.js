@@ -1,4 +1,4 @@
-const CACHE_VERSION = "4";
+const CACHE_VERSION = "5";
 const CACHE_NAME = `foci-v${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   "/",
@@ -43,6 +43,22 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
+function isDevHost(hostname) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".local")
+  );
+}
+
+function shouldBypassCache(url) {
+  const path = url.pathname;
+  // Never intercept Next.js / Turbopack / HMR — hashes change every compile
+  if (path.startsWith("/_next/")) return true;
+  if (path.includes("turbopack") || path.includes("hmr-client")) return true;
+  return false;
+}
+
 // Fetch: network-first for API/auth, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -54,6 +70,9 @@ self.addEventListener("fetch", (event) => {
   // Skip cross-origin requests entirely (e.g. Google avatars, GTM, SoundCloud)
   if (url.origin !== self.location.origin) return;
 
+  // Dev / HMR: let the browser talk to Next.js directly
+  if (isDevHost(url.hostname) || shouldBypassCache(url)) return;
+
   // Network-only for auth and Supabase API calls
   if (
     url.pathname.startsWith("/auth") ||
@@ -63,11 +82,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for static assets (images, fonts, CSS, JS)
-  if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf|eot)$/) ||
-    url.pathname.startsWith("/_next/static")
-  ) {
+  // Cache-first for static assets (images, fonts, CSS, JS) — not /_next/
+  if (url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf|eot)$/)) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached;
