@@ -80,10 +80,28 @@ interface TaskBucketViewProps {
 
 const LANE_COLLAPSE_THRESHOLD = 4;
 
-/** Low-urgency lanes — collapsed by default so overdue/dated stay above the fold. */
-const DEFAULT_COLLAPSED_LANES: BucketSwimlaneId[] = ["undated", "someday", "blocked"];
+/** Waiting / someday stay collapsed; “No date” stays open so open work is visible. */
+const DEFAULT_COLLAPSED_LANES: BucketSwimlaneId[] = ["someday", "blocked"];
 
-const ALWAYS_COLLAPSIBLE_LANES = new Set<BucketSwimlaneId>(DEFAULT_COLLAPSED_LANES);
+/** Lanes the user can always collapse even when short. */
+const ALWAYS_COLLAPSIBLE_LANES = new Set<BucketSwimlaneId>([
+  "undated",
+  "someday",
+  "blocked",
+]);
+
+/** Default collapse set — only bury undated when urgent lanes already fill the column. */
+function defaultCollapsedLanes(swimlanes: BucketSwimlane[]): Set<BucketSwimlaneId> {
+  const collapsed = new Set<BucketSwimlaneId>(DEFAULT_COLLAPSED_LANES);
+  const hasUrgent = swimlanes.some(
+    (lane) => (lane.id === "overdue" || lane.id === "dated") && lane.tasks.length > 0
+  );
+  const undated = swimlanes.find((lane) => lane.id === "undated");
+  if (hasUrgent && undated && undated.tasks.length >= LANE_COLLAPSE_THRESHOLD) {
+    collapsed.add("undated");
+  }
+  return collapsed;
+}
 
 interface BucketSwimlane {
   id: string;
@@ -546,9 +564,16 @@ function BucketColumn({
   const topAddInputRef = useRef<HTMLInputElement>(null);
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
-  const [collapsedLanes, setCollapsedLanes] = useState<Set<BucketSwimlaneId>>(
-    () => new Set(DEFAULT_COLLAPSED_LANES)
-  );
+  /** Explicit user toggles win over smart defaults (so undated stays visible until they collapse it). */
+  const [laneCollapseOverrides, setLaneCollapseOverrides] = useState<
+    Partial<Record<BucketSwimlaneId, boolean>>
+  >({});
+
+  const laneDefaults = defaultCollapsedLanes(swimlanes);
+  const isLaneCollapsed = (laneId: BucketSwimlaneId) =>
+    laneId in laneCollapseOverrides
+      ? !!laneCollapseOverrides[laneId]
+      : laneDefaults.has(laneId);
 
   const submitQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -563,11 +588,10 @@ function BucketColumn({
   };
 
   const toggleLane = (laneId: BucketSwimlaneId) => {
-    setCollapsedLanes((prev) => {
-      const next = new Set(prev);
-      if (next.has(laneId)) next.delete(laneId);
-      else next.add(laneId);
-      return next;
+    setLaneCollapseOverrides((prev) => {
+      const currentlyCollapsed =
+        laneId in prev ? !!prev[laneId] : laneDefaults.has(laneId);
+      return { ...prev, [laneId]: !currentlyCollapsed };
     });
   };
 
@@ -706,7 +730,7 @@ function BucketColumn({
               const isCollapsible =
                 ALWAYS_COLLAPSIBLE_LANES.has(swimlaneId) ||
                 lane.tasks.length >= LANE_COLLAPSE_THRESHOLD;
-              const isCollapsed = collapsedLanes.has(swimlaneId);
+              const isCollapsed = isLaneCollapsed(swimlaneId);
               return (
               <div
                 key={lane.id}
