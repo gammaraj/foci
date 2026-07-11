@@ -115,6 +115,8 @@ export default function TaskList({
   const [bucketJumpProjectId, setBucketJumpProjectId] = useState("");
   const [bucketScrollToken, setBucketScrollToken] = useState(0);
   const [cardJumpProjectId, setCardJumpProjectId] = useState("");
+  const [cardJumpToken, setCardJumpToken] = useState(0);
+  const [highlightProjectId, setHighlightProjectId] = useState<string | null>(null);
   const [showCardReorderTip, setShowCardReorderTip] = useState(false);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
@@ -1297,6 +1299,7 @@ export default function TaskList({
       daysLate: worstDays,
       title: worst.title,
       projectName: project?.name ?? "Project",
+      projectId: worst.projectId,
     };
   })();
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
@@ -1679,9 +1682,26 @@ export default function TaskList({
 
   useEffect(() => {
     if (!cardJumpProjectId) return;
-    const el = document.getElementById(`project-card-${cardJumpProjectId}`);
-    el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [cardJumpProjectId]);
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(`project-card-${cardJumpProjectId}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 60);
+    return () => window.clearTimeout(t);
+  }, [cardJumpProjectId, cardJumpToken]);
+
+  useEffect(() => {
+    if (!highlightProjectId) return;
+    const t = window.setTimeout(() => setHighlightProjectId(null), 1800);
+    return () => window.clearTimeout(t);
+  }, [highlightProjectId, cardJumpToken]);
+
+  const jumpToWorstOverdue = () => {
+    if (!worstOverdue?.projectId) return;
+    if (viewMode !== "card") setViewMode("card");
+    setCardJumpProjectId(worstOverdue.projectId);
+    setCardJumpToken((n) => n + 1);
+    setHighlightProjectId(worstOverdue.projectId);
+  };
 
   const dismissCardReorderTip = () => {
     localStorage.setItem("foci-card-reorder-tip-dismissed", "1");
@@ -1813,23 +1833,25 @@ export default function TaskList({
               {showUrgencySummary && (
                 <TaskUrgencySummary
                   compact
-                  className="no-print sm:hidden ml-0.5"
+                  className="no-print sm:hidden ml-0.5 min-w-0"
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
                   worstOverdue={worstOverdue}
                   onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
                   onViewToday={() => selectProject(TODAY_FILTER_ID)}
+                  onJumpToWorst={jumpToWorstOverdue}
                 />
               )}
             </h2>
             {showUrgencySummary && (
-              <div className="no-print hidden sm:flex pl-7 mt-1 flex-wrap items-center gap-1.5">
+              <div className="no-print hidden sm:block pl-7 mt-1 min-w-0 max-w-full">
                 <TaskUrgencySummary
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
                   worstOverdue={worstOverdue}
                   onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
                   onViewToday={() => selectProject(TODAY_FILTER_ID)}
+                  onJumpToWorst={jumpToWorstOverdue}
                 />
               </div>
             )}
@@ -2320,6 +2342,7 @@ export default function TaskList({
           onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
           suppressOverdueBanner={showUrgencySummary}
           softProjectOverdueLabels={showUrgencySummary}
+          highlightProjectId={highlightProjectId}
         />
       )}
 

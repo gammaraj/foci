@@ -79,6 +79,8 @@ interface TaskCardViewProps {
   suppressOverdueBanner?: boolean;
   /** Softer per-project overdue labels when global urgency bar is visible. */
   softProjectOverdueLabels?: boolean;
+  /** Soft flash highlight for jump-to-card (e.g. most-late CTA). */
+  highlightProjectId?: string | null;
 }
 
 function GripIcon() {
@@ -131,6 +133,20 @@ function overdueTitleClass(daysLate: number): string {
   if (severity === "severe") return "text-red-900 dark:text-red-200 font-semibold";
   if (severity === "medium") return "text-red-800 dark:text-red-200 font-medium";
   return "text-red-700 dark:text-red-300 font-medium";
+}
+
+/** Intensity ramp: light outline at 1d → deep fill at 5d+. */
+function overdueDayChipClass(daysLate: number): string {
+  if (daysLate >= 5) {
+    return "bg-red-800 text-white ring-1 ring-red-900/40 dark:bg-red-700 dark:ring-red-500/40";
+  }
+  if (daysLate >= 3) {
+    return "bg-red-600 text-white dark:bg-red-600";
+  }
+  if (daysLate >= 2) {
+    return "bg-red-500 text-white dark:bg-red-500";
+  }
+  return "bg-red-100 text-red-700 border border-red-300 dark:bg-red-950/40 dark:text-red-300 dark:border-red-700/50";
 }
 
 function CardDuePrefix({ task }: { task: Task }) {
@@ -253,6 +269,8 @@ function CardTaskRow({
   onDeleteTask?: (taskId: string) => void;
 }) {
   const [titleExpanded, setTitleExpanded] = useState(false);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const titleTextRef = useRef<HTMLSpanElement>(null);
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
   const someday = !!task.someday;
@@ -267,6 +285,21 @@ function CardTaskRow({
   const titleTooltip = [overdueLabel, task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null, task.title]
     .filter(Boolean)
     .join(" — ");
+
+  useEffect(() => {
+    const el = titleTextRef.current;
+    if (!el || titleExpanded) {
+      setIsTruncated(false);
+      return;
+    }
+    const check = () => {
+      setIsTruncated(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [task.title, titleExpanded, overdue, daysLate]);
 
   return (
     <div
@@ -357,17 +390,17 @@ function CardTaskRow({
             }`}
             title={titleTooltip}
             aria-expanded={titleExpanded}
-            aria-label={titleExpanded ? `Collapse title: ${task.title}` : `Expand title: ${task.title}`}
+            aria-label={
+              titleExpanded
+                ? `Collapse title: ${task.title}`
+                : isTruncated
+                  ? `Show full title: ${task.title}`
+                  : task.title
+            }
           >
             {overdue && (
               <span
-                className={`shrink-0 inline-flex items-center justify-center min-w-[1.5rem] h-4 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${
-                  overdueSeverity(daysLate) === "severe"
-                    ? "bg-red-700 text-white"
-                    : overdueSeverity(daysLate) === "medium"
-                      ? "bg-red-600 text-white"
-                      : "bg-red-500 text-white"
-                }`}
+                className={`shrink-0 inline-flex items-center justify-center min-w-[1.5rem] h-4 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${overdueDayChipClass(daysLate)}`}
                 title={overdueLabel ?? "Overdue"}
                 aria-label={overdueLabel ?? "Overdue"}
               >
@@ -378,24 +411,23 @@ function CardTaskRow({
             {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
             {task.dueDate && <CardDuePrefix task={task} />}
             <span
+              ref={titleTextRef}
               className={`min-w-0 break-words sm:break-normal ${
                 titleExpanded ? "whitespace-normal" : "line-clamp-2 sm:line-clamp-1 sm:truncate break-all"
               }`}
             >
               {task.title}
             </span>
-            {!titleExpanded && (
+            {(isTruncated || titleExpanded) && (
               <span
-                role="tooltip"
-                className="pointer-events-none absolute left-0 z-30 top-[calc(100%+2px)] hidden w-max max-w-[min(20rem,70vw)] rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] px-2.5 py-1.5 text-xs font-normal not-italic text-slate-800 dark:text-slate-100 shadow-lg group-hover/title:block whitespace-normal break-words"
+                className={`shrink-0 self-center text-[10px] font-bold uppercase tracking-wide ${
+                  titleExpanded
+                    ? "text-slate-400 dark:text-slate-500"
+                    : "text-blue-600 dark:text-blue-400"
+                }`}
+                aria-hidden
               >
-                {overdueLabel ? (
-                  <span className="block font-semibold text-red-600 dark:text-red-300 mb-0.5">{overdueLabel}</span>
-                ) : null}
-                {task.title}
-                <span className="block mt-1 text-[10px] text-slate-400 dark:text-slate-500">
-                  Click to expand · double-click to edit
-                </span>
+                {titleExpanded ? "less" : "more"}
               </span>
             )}
           </button>
@@ -498,6 +530,7 @@ function ProjectCard({
   softProjectOverdueLabels = false,
   collapsed = false,
   onToggleCollapsed,
+  highlighted = false,
 }: {
   project: Project;
   projectIndex: number;
@@ -536,6 +569,7 @@ function ProjectCard({
   softProjectOverdueLabels?: boolean;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
+  highlighted?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -574,9 +608,13 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-[colors,box-shadow] duration-300 border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
-      } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""}`}
+      } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""} ${
+        highlighted
+          ? "ring-2 ring-red-400 dark:ring-red-500 shadow-[0_0_0_4px_rgba(248,113,113,0.28)] dark:shadow-[0_0_0_4px_rgba(239,68,68,0.25)]"
+          : ""
+      }`}
       style={{
         borderTopWidth: 2,
         borderTopColor: accentColor,
@@ -845,12 +883,24 @@ export default function TaskCardView({
   onViewOverdue,
   suppressOverdueBanner = false,
   softProjectOverdueLabels = false,
+  highlightProjectId = null,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     setCollapsedIds(loadCollapsedProjectIds());
   }, []);
+
+  useEffect(() => {
+    if (!highlightProjectId) return;
+    setCollapsedIds((prev) => {
+      if (!prev.has(highlightProjectId)) return prev;
+      const next = new Set(prev);
+      next.delete(highlightProjectId);
+      persistCollapsedProjectIds(next);
+      return next;
+    });
+  }, [highlightProjectId]);
 
   const toggleCollapsed = useCallback((projectId: string) => {
     setCollapsedIds((prev) => {
@@ -977,6 +1027,7 @@ export default function TaskCardView({
               softProjectOverdueLabels={softProjectOverdueLabels}
               collapsed={collapsedIds.has(project.id)}
               onToggleCollapsed={() => toggleCollapsed(project.id)}
+              highlighted={highlightProjectId === project.id}
             />
           );
         })}
