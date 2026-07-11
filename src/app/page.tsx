@@ -211,8 +211,8 @@ export default function LandingPage() {
         <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-3xl mx-auto w-full">
           {/* Proof badge */}
           <div className="flex justify-center mb-5">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200/70 dark:border-cyan-700/40 text-xs font-semibold text-cyan-700 dark:text-cyan-300 tracking-wide uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" aria-hidden />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200/70 dark:border-blue-700/40 text-xs font-semibold text-blue-700 dark:text-blue-300 tracking-wide uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden />
               Free · No signup · Works instantly
             </span>
           </div>
@@ -227,13 +227,13 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
               href="/app"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-700/25 dark:shadow-cyan-600/20"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-base transition-colors shadow-lg shadow-blue-700/25 dark:shadow-blue-600/20"
             >
               Try Foci — free
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
             >
               Sign in to sync →
             </Link>
@@ -459,7 +459,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/app"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold text-base transition-colors shadow-lg shadow-cyan-700/25 dark:shadow-cyan-600/20"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-base transition-colors shadow-lg shadow-blue-700/25 dark:shadow-blue-600/20"
           >
             Try Foci — free
           </Link>

@@ -25,7 +25,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#030712" },
+    { media: "(prefers-color-scheme: dark)", color: "#070b16" },
   ],
   colorScheme: "light dark",
 };
@@ -257,7 +257,7 @@ export default async function RootLayout({
         <link rel="help" href="/llms.txt" type="text/plain" />
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
       </head>
-      <body className={`${fontSans.className} min-h-screen bg-slate-50 dark:bg-[#0b1121] antialiased`}>
+      <body className={`${fontSans.className} min-h-screen bg-slate-50 dark:bg-[#070b16] antialiased`}>
         {SAFE_GA_ID && (
           <>
             <Script

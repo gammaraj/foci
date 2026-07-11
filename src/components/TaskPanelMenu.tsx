@@ -47,7 +47,7 @@ export default function TaskPanelMenu({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="touch-target-sm p-2 rounded-lg text-slate-500 dark:text-white/70 hover:bg-slate-200/60 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+        className="touch-target-sm p-2 rounded-lg text-slate-500 dark:text-white/70 hover:bg-slate-200/60 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         aria-label="Task panel menu"
         aria-expanded={open}
         data-tour="task-panel-menu"

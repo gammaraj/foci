@@ -351,7 +351,7 @@ function StatCard({
   return (
     <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-[#1e3355] shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-3">
-        <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${accentBg ?? "bg-cyan-50 dark:bg-cyan-900/30"} ${accentText ?? "text-cyan-600 dark:text-cyan-400"}`}>
+        <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${accentBg ?? "bg-blue-50 dark:bg-blue-900/30"} ${accentText ?? "text-blue-600 dark:text-blue-400"}`}>
           {icon}
         </div>
         {trend && (
@@ -547,7 +547,7 @@ export default function StatsPage() {
 
   if (!loaded) {
     return (
-      <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
+      <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#070b16]">
         <AppNavbar />
         <div className="app-container py-12 text-center text-slate-500 dark:text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
@@ -557,7 +557,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#0b1121]">
+    <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#070b16]">
       <AppNavbar />
 
       <main className="app-container py-6 sm:py-8">
@@ -595,8 +595,8 @@ export default function StatsPage() {
             label="Total Sessions"
             value={String(totalSessions)}
             trend={trendData}
-            accentBg="bg-cyan-50 dark:bg-cyan-900/30"
-            accentText="text-cyan-600 dark:text-cyan-400"
+            accentBg="bg-blue-50 dark:bg-blue-900/30"
+            accentText="text-blue-600 dark:text-blue-400"
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -807,7 +807,7 @@ export default function StatsPage() {
                 return (
                   <div key={d} className="flex-1 flex flex-col items-center h-full justify-end">
                     <div
-                      className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-cyan-500 dark:bg-cyan-400" : "bg-slate-200 dark:bg-[#1a2744]"}`}
+                      className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-blue-500 dark:bg-blue-400" : "bg-slate-200 dark:bg-[#1a2744]"}`}
                       style={{ height: `${Math.max(pct, val > 0 ? 6 : 2)}%` }}
                     />
                     <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">{d.slice(0, 2)}</span>
@@ -817,7 +817,7 @@ export default function StatsPage() {
             </div>
             {Math.max(...dayOfWeekSessions) > 0 && (
               <p className="text-sm text-slate-600 dark:text-slate-300 text-center">
-                Most productive on <span className="font-semibold text-cyan-600 dark:text-cyan-400">{bestDayName}s</span>
+                Most productive on <span className="font-semibold text-blue-600 dark:text-blue-400">{bestDayName}s</span>
               </p>
             )}
           </div>

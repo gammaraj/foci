@@ -66,7 +66,7 @@ export default function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-full p-1.5 hover:bg-white/10 transition-colors"
+        className="flex items-center gap-2 rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
         aria-label="User menu"
         aria-expanded={open}
       >
@@ -79,7 +79,7 @@ export default function UserMenu() {
             onError={() => setAvatarError(true)}
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center text-white text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
             {initials}
           </div>
         )}

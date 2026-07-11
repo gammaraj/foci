@@ -7,6 +7,7 @@ import {
   Task,
   Project,
   TaskPriority,
+  TaskKind,
   DEFAULT_SETTINGS,
   DEFAULT_PROJECT,
   ALL_PROJECTS_ID,
@@ -45,9 +46,16 @@ type TaskRow = {
   priority?: number | null;
   blocked?: boolean | null;
   someday?: boolean | null;
+  kind?: string | null;
 };
 
+function parseTaskKind(value: string | null | undefined): TaskKind | undefined {
+  if (value === "note" || value === "question") return value;
+  return undefined;
+}
+
 function mapTaskRow(row: TaskRow): Task {
+  const kind = parseTaskKind(row.kind);
   return {
     id: row.id,
     title: row.title,
@@ -65,6 +73,7 @@ function mapTaskRow(row: TaskRow): Task {
     ...(row.priority != null ? { priority: row.priority as TaskPriority } : {}),
     ...(row.blocked ? { blocked: true } : {}),
     ...(row.someday ? { someday: true } : {}),
+    ...(kind ? { kind } : {}),
   };
 }
 
@@ -87,6 +96,7 @@ function taskToRow(task: Task, userId: string) {
     priority: task.priority ?? null,
     blocked: task.blocked ?? false,
     someday: task.someday ?? false,
+    kind: task.kind ?? "task",
   };
 }
 

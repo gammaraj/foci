@@ -150,7 +150,7 @@ export default function OnboardingTour() {
       {/* Highlight the target element */}
       {targetEl && (
         <div
-          className="fixed z-[9998] rounded-xl ring-4 ring-cyan-500/50 pointer-events-none"
+          className="fixed z-[9998] rounded-xl ring-4 ring-blue-500/50 pointer-events-none"
           style={{
             top: targetEl.getBoundingClientRect().top - 4,
             left: targetEl.getBoundingClientRect().left - 4,
@@ -188,7 +188,7 @@ export default function OnboardingTour() {
           </button>
           <button
             onClick={next}
-            className="px-4 py-2 text-sm font-medium bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             {currentStep < STEPS.length - 1 ? "Next" : "Done"}
           </button>

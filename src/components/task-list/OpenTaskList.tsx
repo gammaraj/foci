@@ -169,7 +169,7 @@ export default function OpenTaskList({
           onDragEnd={onDragEnd}
           className={`group flex flex-col overflow-hidden rounded-lg border transition-colors ${
             activeTaskId === task.id
-              ? "task-timer-linked border-cyan-400 dark:border-cyan-500 bg-cyan-50 dark:bg-cyan-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-cyan-400/30 dark:ring-cyan-500/25"
+              ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-blue-400/30 dark:ring-blue-500/25"
               : isExpanded
                 ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
                 : isBlocked
@@ -189,11 +189,13 @@ export default function OpenTaskList({
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); onToggleComplete(task.id); }}
-            className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
+            className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
             aria-label={`Mark "${task.title}" complete`}
           />
           <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-medium text-slate-800 dark:text-slate-50 break-words leading-normal">
+            <div className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-medium break-words leading-normal ${
+              isOverdue ? "text-red-700 dark:text-red-300" : "text-slate-800 dark:text-slate-50"
+            }`}>
               {editingId === task.id ? (
                 <input
                   type="text"
@@ -205,16 +207,34 @@ export default function OpenTaskList({
                     if (e.key === "Escape") onCancelEdit();
                   }}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full px-1 py-0.5 text-sm font-medium border border-cyan-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                  className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
                   autoFocus
                 />
               ) : (
-                <span onDoubleClick={(e) => { e.stopPropagation(); onStartEdit(task); }} className="cursor-text" title="Double-click to edit title">
+                <span
+                  onDoubleClick={(e) => { e.stopPropagation(); onStartEdit(task); }}
+                  className="cursor-text"
+                  title={task.title}
+                >
                   {task.title}
                 </span>
               )}
               {activeTaskId === task.id && isTimerRunning && (
-                <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse align-middle" />
+                <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
+              )}
+              {isOverdue && (
+                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50">
+                  OVERDUE
+                </span>
+              )}
+              {task.kind && task.kind !== "task" && (
+                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded border ${
+                  task.kind === "note"
+                    ? "bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600/60"
+                    : "bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800/50"
+                }`}>
+                  {task.kind === "note" ? "NOTE" : "Q"}
+                </span>
               )}
               {task.blocked && (
                 <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
@@ -227,7 +247,7 @@ export default function OpenTaskList({
                 </span>
               )}
               {task.priority && (
-                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded ${task.priority === 1 ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50" : task.priority === 2 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50" : "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-900/50"}`}>
+                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded ${task.priority === 1 ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50" : task.priority === 2 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50" : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50"}`}>
                   {task.priority === 1 ? "HIGH" : task.priority === 2 ? "MED" : "LOW"}
                 </span>
               )}
@@ -251,7 +271,7 @@ export default function OpenTaskList({
                           ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
                           : !task.completed && task.dueDate === getToday()
                             ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                            : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-cyan-600 dark:hover:text-cyan-400"
+                            : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                   >
                     <span
@@ -293,13 +313,13 @@ export default function OpenTaskList({
                   className="flex shrink-0 items-center gap-1 opacity-0 pointer-events-none group-hover/task:opacity-100 group-hover/task:pointer-events-auto transition-opacity"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-cyan-400 dark:hover:border-cyan-500 transition-colors whitespace-nowrap">
+                  <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
                     Move to today
                   </button>
                   <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
                     Done
                   </button>
-                  <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors whitespace-nowrap">
+                  <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors whitespace-nowrap">
                     Focus
                   </button>
                 </div>
@@ -309,13 +329,14 @@ export default function OpenTaskList({
           <TaskEditButton
             isOpen={isExpanded}
             taskTitle={task.title}
+            revealOnHover
             onClick={(e) => {
               e.stopPropagation();
               onToggleTaskDetail(task.id);
             }}
           />
           {activeTaskId === task.id && isTimerRunning ? (
-            <span className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-cyan-600 text-white hidden sm:flex items-center gap-1">
+            <span className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-600 text-white hidden sm:flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               <span className="hidden sm:inline">Running</span>
             </span>
@@ -326,7 +347,7 @@ export default function OpenTaskList({
           ) : !isOverdue ? (
             <button
               onClick={(e) => { e.stopPropagation(); onStartTask(task.id); }}
-              className="flex-shrink-0 flex items-center justify-center px-2 py-1 text-xs font-semibold rounded text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 bg-cyan-50 dark:bg-cyan-900/25 hover:bg-cyan-100 dark:hover:bg-cyan-900/40"
+              className="flex-shrink-0 flex items-center justify-center px-2 py-1 text-xs font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40"
               title={isTimerRunning ? "Switch focus to this task" : "Focus on this task and start the timer"}
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>

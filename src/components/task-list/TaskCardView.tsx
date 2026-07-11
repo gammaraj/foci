@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { sortCardTasks } from "@/components/task-list/bucket-order";
@@ -15,6 +15,27 @@ import {
 import { isActionableOverdue } from "@/lib/task-status";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
+import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
+import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+
+const COLLAPSED_PROJECTS_KEY = "foci-collapsed-card-projects";
+
+function loadCollapsedProjectIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(COLLAPSED_PROJECTS_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? new Set(parsed.filter((id): id is string => typeof id === "string")) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function persistCollapsedProjectIds(ids: Set<string>) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(COLLAPSED_PROJECTS_KEY, JSON.stringify([...ids]));
+}
 
 interface TaskCardViewProps {
   projects: Project[];
@@ -83,7 +104,7 @@ function ProjectDragPlaceholder({
         e.preventDefault();
         if (dragOverProjectId) onProjectDrop?.(dragOverProjectId);
       }}
-      className="rounded-lg border-2 border-dashed border-cyan-400/60 dark:border-cyan-500/50 bg-cyan-50/30 dark:bg-cyan-900/10 min-h-[8rem] transition-[opacity,transform] duration-150 ease-out"
+      className="rounded-lg border-2 border-dashed border-blue-400/60 dark:border-blue-500/50 bg-blue-50/30 dark:bg-blue-900/10 min-h-[8rem] transition-[opacity,transform] duration-150 ease-out"
     />
   );
 }
@@ -209,6 +230,14 @@ function CardTaskRow({
   const dragEnabled = !!onTaskDragStart && !isEditing;
   const isDragging = dragTaskId === task.id;
   const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
+  const daysLate = overdue && task.dueDate ? getDaysOverdue(task.dueDate) : 0;
+  const titleTooltip = [
+    overdue ? `${daysLate}d overdue` : null,
+    task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null,
+    task.title,
+  ]
+    .filter(Boolean)
+    .join(" — ");
 
   return (
     <div
@@ -238,10 +267,14 @@ function CardTaskRow({
       }}
       className={`group/row rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0 py-0 sm:py-0.5 min-w-0 transition-colors ${
         isActive
-          ? "bg-cyan-50/80 dark:bg-cyan-900/20 ring-1 ring-cyan-400/40"
+          ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40"
           : isExpanded
             ? "bg-violet-50/50 dark:bg-violet-900/15"
-            : ""
+            : overdue
+              ? "bg-red-50/70 dark:bg-red-950/35 hover:bg-red-50/90 dark:hover:bg-red-950/50"
+              : blocked
+                ? "bg-amber-50/40 dark:bg-amber-950/20"
+                : ""
       } ${
         overdue
           ? "border-l-red-500 dark:border-l-red-400"
@@ -252,11 +285,11 @@ function CardTaskRow({
               : task.dueDate
                 ? task.dueDate === getToday()
                   ? "border-l-amber-400 dark:border-l-amber-500"
-                  : "border-l-cyan-500 dark:border-l-cyan-400"
+                  : "border-l-blue-500 dark:border-l-blue-400"
                 : "border-l-slate-300/60 dark:border-l-slate-600"
       } ${dragEnabled ? "cursor-grab active:cursor-grabbing" : ""} ${
         isDragging ? "opacity-40" : ""
-      } ${isDragOver ? "ring-1 ring-inset ring-cyan-400/60 dark:ring-cyan-500/50" : ""}`}
+      } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
     >
       <div className="flex items-start sm:items-center gap-1 min-h-0 sm:min-h-[1.5rem] w-full min-w-0">
         {onToggleComplete && (
@@ -266,7 +299,7 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleComplete(task.id);
             }}
-            className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors"
+            className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
             aria-label={`Mark "${task.title}" complete`}
           />
         )}
@@ -281,7 +314,7 @@ function CardTaskRow({
               if (e.key === "Escape") onCancelEdit?.();
             }}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-cyan-300 dark:border-cyan-600 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
             autoFocus
             aria-label="Edit task title"
           />
@@ -292,9 +325,26 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className="flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-0.5 sm:gap-1 text-[13px] sm:text-sm font-normal text-slate-700 dark:text-slate-200 leading-tight sm:leading-snug text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors py-0.5 sm:py-0"
-            title={task.dueDate ? `Due ${formatDueDate(task.dueDate)} — ${task.title}` : task.title}
+            className={`flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-0.5 sm:gap-1 text-[13px] sm:text-sm font-normal leading-tight sm:leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
+              overdue
+                ? "text-red-700 dark:text-red-300 font-medium"
+                : "text-slate-700 dark:text-slate-200"
+            }`}
+            title={titleTooltip}
           >
+            {overdue && (
+              <span
+                className="shrink-0 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white"
+                title={`${daysLate}d overdue`}
+                aria-hidden
+              >
+                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 9v3m0 3h.01M12 5a7 7 0 100 14 7 7 0 000-14z" />
+                </svg>
+              </span>
+            )}
+            {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
+            {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
             {task.dueDate && <CardDuePrefix task={task} />}
             <span className="min-w-0 line-clamp-2 sm:line-clamp-1 sm:truncate break-all sm:break-normal">{task.title}</span>
           </button>
@@ -304,6 +354,7 @@ function CardTaskRow({
             {onToggleTaskDetail && (
               <TaskEditButton
                 compact
+                revealOnHover
                 isOpen={isExpanded}
                 taskTitle={task.title}
                 onClick={(e) => {
@@ -321,8 +372,8 @@ function CardTaskRow({
                     onStartEdit(task);
                   }}
                   className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-                  title={`Edit "${task.title}"`}
-                  aria-label={`Edit task ${task.title}`}
+                  title={`Rename "${task.title}"`}
+                  aria-label={`Rename task ${task.title}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path
@@ -394,6 +445,8 @@ function ProjectCard({
   onQuickAdd,
   onToggleProjectFavorite,
   softProjectOverdueLabels = false,
+  collapsed = false,
+  onToggleCollapsed,
 }: {
   project: Project;
   projectIndex: number;
@@ -430,6 +483,8 @@ function ProjectCard({
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
   softProjectOverdueLabels?: boolean;
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -469,8 +524,8 @@ function ProjectCard({
         onProjectDrop(project.id);
       }}
       className={`group/card rounded-lg border px-2 py-1.5 sm:px-2.5 sm:py-2 min-w-0 flex flex-col gap-0.5 sm:gap-1 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
-        isDropTarget ? "ring-2 ring-cyan-400/70 ring-offset-1 ring-offset-transparent" : ""
-      }`}
+        isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
+      } ${collapsed ? "opacity-90" : ""}`}
       style={{
         borderTopWidth: 2,
         borderTopColor: accentColor,
@@ -483,6 +538,29 @@ function ProjectCard({
         }}
       >
         <div className="flex items-center gap-1 min-w-0">
+          {onToggleCollapsed ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCollapsed();
+              }}
+              className="flex-shrink-0 p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] transition-colors"
+              title={collapsed ? `Expand ${project.name}` : `Collapse ${project.name}`}
+              aria-label={collapsed ? `Expand ${project.name}` : `Collapse ${project.name}`}
+              aria-expanded={!collapsed}
+            >
+              <svg
+                className={`w-3.5 h-3.5 transition-transform ${collapsed ? "-rotate-90" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          ) : null}
           {canReorder ? (
             <span
               draggable
@@ -563,7 +641,7 @@ function ProjectCard({
           <button
             type="button"
             onClick={() => onOpenProject?.(project.id)}
-            className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+            className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
             title={`View all tasks in ${project.name}`}
           >
             {project.name}
@@ -582,70 +660,84 @@ function ProjectCard({
         </div>
       </header>
 
-      <div className="flex flex-col gap-0 sm:gap-0.5">
-        {topTasks.length === 0 ? (
-          <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
-        ) : (
-          topTasks.map((task) => (
-            <CardTaskRow
-              key={task.id}
-              task={task}
-              projectId={project.id}
-              activeTaskId={activeTaskId}
-              isTimerRunning={isTimerRunning}
-              isExpanded={expandedTaskId === task.id}
-              isEditing={editingTaskId === task.id}
-              editTitle={editTitle ?? ""}
-              dragTaskId={dragTaskId}
-              dragOverTaskId={dragOverTaskId}
-              onTaskDragStart={onTaskDragStart}
-              onTaskDragOver={onTaskDragOver}
-              onTaskDrop={onTaskDrop}
-              onTaskDragEnd={onTaskDragEnd}
-              onToggleComplete={onToggleComplete}
-              onToggleTaskDetail={onToggleTaskDetail}
-              onStartEdit={onStartEdit}
-              onEditTitleChange={onEditTitleChange}
-              onSaveEdit={onSaveEdit}
-              onCancelEdit={onCancelEdit}
-              onDeleteTask={onDeleteTask}
-            />
-          ))
-        )}
-      </div>
+      {collapsed ? (
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          className="text-left app-text-meta text-slate-400 dark:text-slate-500 py-0.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >
+          {tasks.length === 0
+            ? "No tasks — click to expand"
+            : `${tasks.length} task${tasks.length === 1 ? "" : "s"} hidden — click to expand`}
+        </button>
+      ) : (
+        <>
+          <div className="flex flex-col gap-0 sm:gap-0.5">
+            {topTasks.length === 0 ? (
+              <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
+            ) : (
+              topTasks.map((task) => (
+                <CardTaskRow
+                  key={task.id}
+                  task={task}
+                  projectId={project.id}
+                  activeTaskId={activeTaskId}
+                  isTimerRunning={isTimerRunning}
+                  isExpanded={expandedTaskId === task.id}
+                  isEditing={editingTaskId === task.id}
+                  editTitle={editTitle ?? ""}
+                  dragTaskId={dragTaskId}
+                  dragOverTaskId={dragOverTaskId}
+                  onTaskDragStart={onTaskDragStart}
+                  onTaskDragOver={onTaskDragOver}
+                  onTaskDrop={onTaskDrop}
+                  onTaskDragEnd={onTaskDragEnd}
+                  onToggleComplete={onToggleComplete}
+                  onToggleTaskDetail={onToggleTaskDetail}
+                  onStartEdit={onStartEdit}
+                  onEditTitleChange={onEditTitleChange}
+                  onSaveEdit={onSaveEdit}
+                  onCancelEdit={onCancelEdit}
+                  onDeleteTask={onDeleteTask}
+                />
+              ))
+            )}
+          </div>
 
-      <div className="no-print flex items-center gap-2 pt-0 sm:pt-0.5">
-        {remaining > 0 && onExpandProject && (
-          <button
-            type="button"
-            onClick={() => onExpandProject(project.id)}
-            className="text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:underline shrink-0"
-          >
-            View all ({remaining} more)
-          </button>
-        )}
-        {!showAdd && (
-          <button
-            type="button"
-            onClick={() => setShowAdd(true)}
-            className="text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
-          >
-            + Add
-          </button>
-        )}
-      </div>
+          <div className="no-print flex items-center gap-2 pt-0 sm:pt-0.5">
+            {remaining > 0 && onExpandProject && (
+              <button
+                type="button"
+                onClick={() => onExpandProject(project.id)}
+                className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+              >
+                View all ({remaining} more)
+              </button>
+            )}
+            {!showAdd && (
+              <button
+                type="button"
+                onClick={() => setShowAdd(true)}
+                className="text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                + Add
+              </button>
+            )}
+          </div>
 
-      {showAdd && (
-        <div className="no-print">
-        <QuickAddForm
-          draft={draft}
-          onDraftChange={setDraft}
-          onSubmit={submitQuickAdd}
-          inputRef={addInputRef}
-          compact
-          className="shrink-0"
-        />
-        </div>
+          {showAdd && (
+            <div className="no-print">
+              <QuickAddForm
+                draft={draft}
+                onDraftChange={setDraft}
+                onSubmit={submitQuickAdd}
+                inputRef={addInputRef}
+                compact
+                className="shrink-0"
+              />
+            </div>
+          )}
+        </>
       )}
     </article>
   );
@@ -692,6 +784,30 @@ export default function TaskCardView({
   suppressOverdueBanner = false,
   softProjectOverdueLabels = false,
 }: TaskCardViewProps) {
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    setCollapsedIds(loadCollapsedProjectIds());
+  }, []);
+
+  const toggleCollapsed = useCallback((projectId: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(projectId)) next.delete(projectId);
+      else next.add(projectId);
+      persistCollapsedProjectIds(next);
+      return next;
+    });
+  }, []);
+
+  const expandAll = useCallback(() => {
+    setCollapsedIds(() => {
+      const next = new Set<string>();
+      persistCollapsedProjectIds(next);
+      return next;
+    });
+  }, []);
+
   const visibleProjects = useMemo(() => {
     if (!hideEmptyProjects) return projects;
     return projects.filter((p) => (tasksByProject.get(p.id) ?? []).length > 0);
@@ -706,10 +822,11 @@ export default function TaskCardView({
     dragOverProjectId &&
     dragProjectId !== dragOverProjectId
   );
+  const collapsedVisibleCount = visibleProjects.filter((p) => collapsedIds.has(p.id)).length;
 
   return (
     <div className="pb-4 pt-1">
-      {(!suppressOverdueBanner && overdueCount > 0) || onToggleHideEmptyProjects ? (
+      {(!suppressOverdueBanner && overdueCount > 0) || onToggleHideEmptyProjects || collapsedVisibleCount > 0 ? (
         <div className="px-3 sm:px-4 mb-2 flex flex-wrap items-center gap-2">
           {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (
             <button
@@ -727,11 +844,20 @@ export default function TaskCardView({
             <button
               type="button"
               onClick={onToggleHideEmptyProjects}
-              className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+              className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               {hideEmptyProjects
                 ? `Show ${emptyProjectCount} empty project${emptyProjectCount === 1 ? "" : "s"}`
                 : "Hide empty projects"}
+            </button>
+          )}
+          {collapsedVisibleCount > 0 && (
+            <button
+              type="button"
+              onClick={expandAll}
+              className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              Expand {collapsedVisibleCount} collapsed
             </button>
           )}
         </div>
@@ -787,6 +913,8 @@ export default function TaskCardView({
               onQuickAdd={onQuickAdd}
               onToggleProjectFavorite={onToggleProjectFavorite}
               softProjectOverdueLabels={softProjectOverdueLabels}
+              collapsed={collapsedIds.has(project.id)}
+              onToggleCollapsed={() => toggleCollapsed(project.id)}
             />
           );
         })}
@@ -801,7 +929,7 @@ export default function TaskCardView({
               <button
                 type="button"
                 onClick={onToggleHideEmptyProjects}
-                className="text-cyan-600 dark:text-cyan-400 font-medium hover:underline"
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
               >
                 Show {emptyProjectCount} empty
               </button>

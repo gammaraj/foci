@@ -21,7 +21,7 @@ export function QuickAddForm({
   return (
     <form className={className} onSubmit={onSubmit}>
       <div
-        className={`flex items-center gap-2 rounded-xl bg-slate-100/70 dark:bg-white/5 focus-within:ring-2 focus-within:ring-cyan-500/15 dark:focus-within:ring-cyan-400/20 transition-shadow ${
+        className={`flex items-center gap-2 rounded-xl bg-slate-100/70 dark:bg-white/5 focus-within:ring-2 focus-within:ring-blue-500/15 dark:focus-within:ring-blue-400/20 transition-shadow ${
           compact ? "px-2 py-1.5" : "px-3 py-2"
         }`}
       >
@@ -39,7 +39,7 @@ export function QuickAddForm({
         <button
           type="submit"
           disabled={!draft.trim()}
-          className={`font-medium text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
+          className={`font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
             compact ? "text-xs" : "text-sm"
           }`}
           aria-label="Add task"

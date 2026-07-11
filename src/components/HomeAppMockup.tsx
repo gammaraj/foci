@@ -36,14 +36,14 @@ function MockBucketTask({
     <div
       className={`rounded-lg border px-2 py-1.5 ${
         active
-          ? "border-cyan-500/40 bg-cyan-950/30"
+          ? "border-blue-500/40 bg-blue-950/30"
           : "border-[#2a3f5f]/90 bg-white/[0.03] hover:bg-white/[0.05]"
       }`}
     >
       <div className="flex items-start gap-2 min-h-[1.5rem]">
         <div
           className={`mt-[3px] w-4 h-4 rounded-full border-[1.5px] flex-shrink-0 ${
-            active ? "border-cyan-500" : "border-slate-600"
+            active ? "border-blue-500" : "border-slate-600"
           }`}
         />
         <span className={`flex-1 min-w-0 text-xs leading-snug truncate ${active ? "text-slate-100 font-medium" : "text-slate-300"}`}>
@@ -181,20 +181,20 @@ export default function HomeAppMockup() {
               </div>
             </div>
 
-            <div className="min-w-0 px-3 py-2 flex items-center gap-2 border-cyan-600/30 bg-cyan-900/15">
+            <div className="min-w-0 px-3 py-2 flex items-center gap-2 border-blue-600/30 bg-blue-900/15">
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="flex items-center gap-[3px]" aria-hidden>
-                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
                   <span className="w-2 h-2 rounded-full bg-slate-600" />
                 </span>
                 <span className="text-xs text-orange-400" aria-hidden>🔥</span>
               </div>
               <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <span className="text-base font-mono font-semibold tabular-nums text-cyan-400 leading-none">22:30</span>
+                <span className="text-base font-mono font-semibold tabular-nums text-blue-400 leading-none">22:30</span>
                 <span className="hidden sm:inline text-[11px] text-slate-400 truncate">Research API integration</span>
               </div>
-              <span className="shrink-0 px-2.5 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-semibold">
+              <span className="shrink-0 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-semibold">
                 Start
               </span>
             </div>
@@ -211,7 +211,7 @@ export default function HomeAppMockup() {
                     key={sound.label}
                     className={`text-center py-1 px-0.5 rounded-md text-[10px] font-medium ${
                       sound.active
-                        ? "bg-cyan-900/40 text-cyan-300 ring-1 ring-cyan-600/40"
+                        ? "bg-blue-900/40 text-blue-300 ring-1 ring-blue-600/40"
                         : "bg-[#1a2d4a] text-slate-400"
                     }`}
                   >
@@ -344,7 +344,7 @@ export default function HomeAppMockup() {
         </div>
       </div>
 
-      <div className="absolute -inset-6 bg-gradient-to-b from-cyan-500/[0.06] via-transparent to-indigo-500/[0.04] rounded-3xl -z-10 blur-2xl pointer-events-none" />
+      <div className="absolute -inset-6 bg-gradient-to-b from-blue-500/[0.06] via-transparent to-indigo-500/[0.04] rounded-3xl -z-10 blur-2xl pointer-events-none" />
     </div>
   );
 }

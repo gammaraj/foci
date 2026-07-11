@@ -68,9 +68,9 @@ export default function TimerControls({
             onClick={onStartPause}
             className={`${btnPad} rounded-lg transition-all active:scale-90 ${
               isRunning
-                ? "text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/30"
+                ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                 : emphasizeStart
-                  ? "bg-cyan-600 text-white shadow-sm hover:bg-cyan-700"
+                  ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
                   : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             }`}
             aria-label={isRunning ? "Pause timer" : "Start timer"}

@@ -1,5 +1,6 @@
 import {
   FOCI_LOGO_BG,
+  FOCI_LOGO_BG_LIGHT,
   FOCI_LOGO_DOT,
   FOCI_RING,
   FOCI_RING_COLORS,
@@ -23,13 +24,14 @@ export function FociLogoMark({
   size?: number;
   className?: string;
   idPrefix?: string;
-  /** "dark" = glow on navy; "light" = flat shadow for white backgrounds */
+  /** "dark" = glow on navy; "light" = light tile for white backgrounds */
   surface?: "dark" | "light";
 }) {
   const p = idPrefix;
   const { dim, mid, bright } = FOCI_RING_COLORS;
   const { r, stroke, dash, innerR, dotR, tileRx } = FOCI_RING;
   const shadowClass = getFociLogoShadow(surface);
+  const tileFill = surface === "light" ? FOCI_LOGO_BG_LIGHT : FOCI_LOGO_BG;
 
   return (
     <svg
@@ -48,7 +50,7 @@ export function FociLogoMark({
           <stop offset="100%" stopColor={bright} />
         </linearGradient>
       </defs>
-      <rect width="32" height="32" rx={tileRx} fill={FOCI_LOGO_BG} />
+      <rect width="32" height="32" rx={tileRx} fill={tileFill} />
       <circle cx="16" cy="16" r={r} stroke={mid} strokeOpacity={0.14} strokeWidth={stroke} fill="none" />
       <circle
         cx="16"

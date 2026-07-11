@@ -219,14 +219,14 @@ export default function ShareProjectModal({
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@example.com"
-              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={inviting}
             />
             <div className="flex gap-2">
             <select
               value={inviteRole}
               onChange={(e) => setInviteRole(e.target.value as CollaboratorRole)}
-              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={inviting}
             >
               <option value="editor">Can edit</option>
@@ -235,7 +235,7 @@ export default function ShareProjectModal({
             <button
               type="submit"
               disabled={inviting || !inviteEmail.trim()}
-              className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors touch-target-sm"
+              className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors touch-target-sm"
             >
               {inviting ? "..." : "Invite"}
             </button>
@@ -244,14 +244,14 @@ export default function ShareProjectModal({
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
             Editors can complete and edit tasks. Viewers can only view.
           </p>
-          <p className="mt-2 text-xs text-cyan-600 dark:text-cyan-400">
+          <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
             💡 Want to share <strong>all your projects</strong>? Check out Settings → Sharing → Account Sharing.
           </p>
         </form>
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
@@ -314,8 +314,8 @@ export default function ShareProjectModal({
                             className="w-8 h-8 rounded-full"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-cyan-100 dark:bg-cyan-900 flex items-center justify-center">
-                            <span className="text-sm font-medium text-cyan-600 dark:text-cyan-400">
+                          <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
                               {(collab.displayName || collab.email)[0].toUpperCase()}
                             </span>
                           </div>

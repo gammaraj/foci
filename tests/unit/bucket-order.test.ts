@@ -17,6 +17,8 @@ function task(
     title: id,
     projectId,
     completed: false,
+    sessions: 0,
+    timeSpent: 0,
     createdAt: 1,
     ...opts,
   };

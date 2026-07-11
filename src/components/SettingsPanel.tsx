@@ -227,7 +227,7 @@ export default function SettingsPanel({
                     }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-medium border transition-all ${
                       isActive
-                        ? "bg-cyan-100 dark:bg-cyan-900/40 border-cyan-300 dark:border-cyan-600 text-cyan-700 dark:text-cyan-200 ring-1 ring-cyan-200 dark:ring-cyan-800"
+                        ? "bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200 ring-1 ring-blue-200 dark:ring-blue-800"
                         : "bg-slate-50 dark:bg-[#131d30] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
                     }`}
                     title={preset.description}
@@ -244,7 +244,7 @@ export default function SettingsPanel({
           {/* Timer Settings */}
           <div>
             <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <div className="w-2 h-2 bg-cyan-600 rounded-full mr-2" />
+              <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
               Timer Settings
             </h4>
             <div className="grid grid-cols-2 gap-3">
@@ -263,7 +263,7 @@ export default function SettingsPanel({
                   max={120}
                   value={workMin}
                   onChange={(e) => { setWorkMin(Number(e.target.value)); setValidationErrors((v) => { const { workMin: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 ${validationErrors.workMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.workMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
                 {validationErrors.workMin && <p className="text-xs text-red-500 mt-1">{validationErrors.workMin}</p>}
               </div>
@@ -283,7 +283,7 @@ export default function SettingsPanel({
                   max={60}
                   value={breakMin}
                   onChange={(e) => { setBreakMin(Number(e.target.value)); setValidationErrors((v) => { const { breakMin: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 ${validationErrors.breakMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.breakMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
                 {validationErrors.breakMin && <p className="text-xs text-red-500 mt-1">{validationErrors.breakMin}</p>}
               </div>
@@ -302,7 +302,7 @@ export default function SettingsPanel({
                   min={1}
                   value={inactivityMin}
                   onChange={(e) => { setInactivityMin(Number(e.target.value)); setValidationErrors((v) => { const { inactivityMin: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 ${validationErrors.inactivityMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.inactivityMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
                 {validationErrors.inactivityMin && <p className="text-xs text-red-500 mt-1">{validationErrors.inactivityMin}</p>}
                 <div className="text-[0.9rem] text-slate-500 dark:text-slate-400 mt-1">
@@ -325,7 +325,7 @@ export default function SettingsPanel({
                   max={20}
                   value={dailyGoal}
                   onChange={(e) => { setDailyGoal(Number(e.target.value)); setValidationErrors((v) => { const { dailyGoal: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 ${validationErrors.dailyGoal ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
+                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.dailyGoal ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
                 />
                 {validationErrors.dailyGoal && <p className="text-xs text-red-500 mt-1">{validationErrors.dailyGoal}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -336,7 +336,7 @@ export default function SettingsPanel({
                       onClick={() => setDailyGoal(gp.sessions)}
                       className={`flex-1 text-base py-1.5 rounded-lg border transition-all ${
                         dailyGoal === gp.sessions
-                        ? "bg-cyan-100 dark:bg-cyan-900/40 border-cyan-300 dark:border-cyan-600 text-cyan-700 dark:text-cyan-200"
+                        ? "bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200"
                         : "bg-white dark:bg-[#131d30] border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
                       }`}
                       title={gp.description}
@@ -363,7 +363,7 @@ export default function SettingsPanel({
                   id="autoStart"
                   checked={autoStart}
                   onChange={(e) => setAutoStart(e.target.checked)}
-                  className="h-5 w-5 text-cyan-600 border-slate-300 rounded"
+                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
                 />
               </div>
 
@@ -382,7 +382,7 @@ export default function SettingsPanel({
                     setFocusModeAutoState(e.target.checked);
                     setFocusModeAuto(e.target.checked);
                   }}
-                  className="h-5 w-5 text-cyan-600 border-slate-300 rounded"
+                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
                 />
               </div>
 
@@ -401,7 +401,7 @@ export default function SettingsPanel({
                     setStartTimerOnFocusState(e.target.checked);
                     setStartTimerOnFocus(e.target.checked);
                   }}
-                  className="h-5 w-5 text-cyan-600 border-slate-300 rounded"
+                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
                 />
               </div>
               <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
@@ -430,7 +430,7 @@ export default function SettingsPanel({
                       console.error("[Foci] Failed to save task view preference:", err);
                     }
                   }}
-                  className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-200 outline-none"
+                  className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
                 >
                   {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -468,7 +468,7 @@ export default function SettingsPanel({
                   id="notifications"
                   checked={notifications}
                   onChange={(e) => setNotifications(e.target.checked)}
-                  className="h-5 w-5 text-cyan-600 border-slate-300 rounded"
+                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
                 />
               </div>
               <p className="text-[0.9rem] text-slate-500 dark:text-slate-300 mt-2 px-2">
@@ -491,7 +491,7 @@ export default function SettingsPanel({
                   <button
                     type="button"
                     onClick={requestPermission}
-                    className="text-[0.9rem] font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
+                    className="text-[0.9rem] font-medium text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     Allow browser notifications →
                   </button>
@@ -534,7 +534,7 @@ export default function SettingsPanel({
                 <button
                   type="button"
                   onClick={() => setShowAccountSharing(true)}
-                  className="w-full px-4 py-2 text-sm font-medium text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -557,7 +557,7 @@ export default function SettingsPanel({
                 </div>
                 {loadingProjects ? (
                   <div className="flex items-center justify-center py-4">
-                    <div className="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : projects.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400 py-2 text-center">
@@ -575,7 +575,7 @@ export default function SettingsPanel({
                         <span className="text-slate-800 dark:text-slate-100 truncate">
                           {project.name}
                         </span>
-                        <svg className="w-4 h-4 text-slate-400 group-hover:text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-slate-400 group-hover:text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
                       </button>
@@ -591,7 +591,7 @@ export default function SettingsPanel({
           {/* Save Button */}
           <button
             type="submit"
-            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center text-base"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center text-base"
           >
             {saved ? (
               <>

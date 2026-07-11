@@ -15,6 +15,7 @@ import {
 } from "@/components/task-list/bucket-order";
 import { isActionableOverdue } from "@/lib/task-status";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
+import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 
 function BucketColumnTitle({ project }: { project: Project }) {
@@ -153,7 +154,7 @@ function DueBadge({
         : isToday
           ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
           : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
-  } ${interactive ? "cursor-pointer hover:border-cyan-300 dark:hover:border-cyan-600" : ""}`;
+  } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`;
 
   const badgeTitle =
     blocked
@@ -258,8 +259,8 @@ function BucketTaskCard({
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
     `w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ${
       playing || filled
-        ? "bg-cyan-600 text-white shadow-sm shadow-cyan-500/25 hover:bg-cyan-700"
-        : "text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-50/90 dark:hover:bg-cyan-950/40"
+        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25 hover:bg-blue-700"
+        : "text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/90 dark:hover:bg-blue-950/40"
     }`;
   const playVisible = isActive || isTimerRunning;
 
@@ -289,9 +290,9 @@ function BucketTaskCard({
         isDetailOpen
           ? "border-violet-200/90 dark:border-violet-500/40 bg-violet-50/80 dark:bg-violet-950/25"
           : isActive && isTimerRunning
-            ? "border-cyan-300/90 dark:border-cyan-500/50 bg-cyan-50/95 dark:bg-cyan-950/35 ring-2 ring-cyan-500/40 shadow-sm shadow-cyan-500/10"
+            ? "border-blue-300/90 dark:border-blue-500/50 bg-blue-50/95 dark:bg-blue-950/35 ring-2 ring-blue-500/40 shadow-sm shadow-blue-500/10"
           : isActive
-            ? "border-cyan-200/90 dark:border-cyan-500/40 bg-cyan-50/90 dark:bg-cyan-950/30 ring-1 ring-cyan-400/30"
+            ? "border-blue-200/90 dark:border-blue-500/40 bg-blue-50/90 dark:bg-blue-950/30 ring-1 ring-blue-400/30"
             : isBlocked
               ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               : isOverdue
@@ -303,7 +304,7 @@ function BucketTaskCard({
               : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.03] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.05]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
         isDragOver
-          ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-cyan-500 dark:before:bg-cyan-400"
+          ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-blue-500 dark:before:bg-blue-400"
           : ""
       }`}
     >
@@ -346,7 +347,7 @@ function BucketTaskCard({
             }}
             onClick={(e) => e.stopPropagation()}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-cyan-300 dark:border-cyan-600 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
             autoFocus
             aria-label="Edit task title"
           />
@@ -354,14 +355,18 @@ function BucketTaskCard({
           <button
             type="button"
             onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className={`flex-1 min-w-0 text-left text-sm font-medium leading-snug line-clamp-2 hover:text-slate-900 dark:hover:text-white transition-colors ${
+              isOverdue ? "text-red-700 dark:text-red-300" : "text-slate-800 dark:text-slate-100"
+            }`}
             title={task.title}
           >
             {task.title}
           </button>
         ) : (
           <p
-            className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug line-clamp-2"
+            className={`flex-1 min-w-0 text-sm font-medium leading-snug line-clamp-2 ${
+              isOverdue ? "text-red-700 dark:text-red-300" : "text-slate-800 dark:text-slate-100"
+            }`}
             title={task.title}
           >
             {task.title}
@@ -371,6 +376,7 @@ function BucketTaskCard({
           <TaskEditButton
             isOpen={isDetailOpen}
             taskTitle={task.title}
+            revealOnHover
             className="mt-[1px]"
             onClick={(e) => {
               e.stopPropagation();
@@ -422,15 +428,21 @@ function BucketTaskCard({
       </div>
       {!isEditing && (
         <div className="flex flex-wrap items-center gap-1.5 mt-1 pl-6 sm:pl-7">
+          {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
           {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
+          {isOverdue && (
+            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50">
+              Overdue
+            </span>
+          )}
           {isActive && isTimerRunning && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-cyan-600 text-white">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-blue-600 text-white">
               <span className="w-1 h-1 rounded-full bg-white animate-pulse" aria-hidden />
               Timing
             </span>
           )}
           {isActive && !isTimerRunning && (
-            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50">
+            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50">
               Selected
             </span>
           )}
@@ -443,7 +455,7 @@ function BucketTaskCard({
               onChange={(date) => date && onSetDueDate(task.id, date)}
               requireExplicitPick
               ariaLabel="Set due date"
-              className="inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 cursor-pointer transition-colors"
+              className="inline-flex items-center gap-0.5 shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-md border border-dashed border-slate-300/70 dark:border-slate-500/60 text-slate-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 cursor-pointer transition-colors"
             >
               <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -567,7 +579,7 @@ function BucketColumn({
   return (
     <div
       data-bucket-project={project.id}
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none ${columnHighlighted ? "ring-2 ring-cyan-400/30 dark:ring-cyan-500/35" : ""}`}
+      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
     >
       <div
         className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-200/60 dark:border-[#243350]/60"
@@ -671,14 +683,14 @@ function BucketColumn({
         {tasks.length === 0 ? (
           <p className="text-sm app-text-meta text-slate-400 dark:text-slate-500 text-center py-6 px-2">
             {dragEnabled && dragTaskId ? (
-              <span className="text-cyan-600 dark:text-cyan-400 font-medium">Drop here to move</span>
+              <span className="text-blue-600 dark:text-blue-400 font-medium">Drop here to move</span>
             ) : (
               <>
                 No tasks ·{" "}
                 <button
                   type="button"
                   onClick={focusAddInput}
-                  className="font-semibold text-cyan-600 dark:text-cyan-400 hover:underline"
+                  className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   + Add
                 </button>
@@ -698,7 +710,7 @@ function BucketColumn({
               return (
               <div
                 key={lane.id}
-                className={`${laneHighlighted ? "ring-1 ring-cyan-400/40 rounded-xl" : ""}`}
+                className={`${laneHighlighted ? "ring-1 ring-blue-400/40 rounded-xl" : ""}`}
                 onDragOver={(e) => {
                   if (!dragEnabled || !dragTaskId) return;
                   e.preventDefault();

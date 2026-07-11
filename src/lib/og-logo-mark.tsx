@@ -44,7 +44,7 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
           width: ringDiameter,
           height: ringDiameter,
           borderRadius: "50%",
-          border: `${ringStroke}px solid rgba(8, 145, 178, 0.18)`,
+          border: `${ringStroke}px solid rgba(37, 99, 235, 0.18)`,
           boxSizing: "border-box",
         }}
       />
@@ -73,7 +73,7 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
           width: innerDiameter,
           height: innerDiameter,
           borderRadius: "50%",
-          border: `${Math.max(1, size * 0.03)}px solid rgba(6, 182, 212, 0.28)`,
+          border: `${Math.max(1, size * 0.03)}px solid rgba(59, 130, 246, 0.28)`,
           boxSizing: "border-box",
         }}
       />

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import type { Project, RecurrenceType, Subtask, Task, TaskPriority } from "@/lib/types";
+import type { Project, RecurrenceType, Subtask, Task, TaskKind, TaskPriority } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
@@ -13,7 +13,7 @@ const chipBase =
 const chipIdle =
   "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30]";
 const chipEmpty =
-  "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:text-cyan-500";
+  "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500";
 
 export interface TaskDetailPanelProps {
   task: Task;
@@ -30,6 +30,7 @@ export interface TaskDetailPanelProps {
   onCancelEditDesc: () => void;
   onSetDueDate: (date: string | undefined) => void;
   onSetPriority: (priority: TaskPriority | undefined) => void;
+  onSetKind: (kind: TaskKind | undefined) => void;
   onSetBlocked: (blocked: boolean) => void;
   onSetSomeday: (someday: boolean) => void;
   onSetRecurrence: (recurrence: RecurrenceType | undefined) => void;
@@ -70,6 +71,7 @@ export function TaskDetailPanel({
   onCancelEditDesc,
   onSetDueDate,
   onSetPriority,
+  onSetKind,
   onSetBlocked,
   onSetSomeday,
   onSetRecurrence,
@@ -97,7 +99,7 @@ export function TaskDetailPanel({
     variant === "inline"
       ? `border border-t-0 rounded-b-xl py-3 space-y-2 ${
           isLinked
-            ? "border-cyan-300 dark:border-cyan-600 bg-cyan-50/50 dark:bg-cyan-900/10"
+            ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
             : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
         }`
       : "py-2 space-y-2";
@@ -124,16 +126,16 @@ export function TaskDetailPanel({
             placeholder="Add a description..."
             maxLength={2000}
             rows={3}
-            className="w-full px-3 py-2 text-sm border border-cyan-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 resize-y"
+            className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y"
             autoFocus
           />
         ) : (
           <button
             type="button"
             onClick={onStartEditDesc}
-            className={`w-full text-left px-3 py-2 text-sm rounded-lg border transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:outline-none ${
+            className={`w-full text-left px-3 py-2 text-sm rounded-lg border transition-colors focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:outline-none ${
               task.description
-                ? "border-slate-200 dark:border-[#243350] hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                ? "border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
                 : chipEmpty
             }`}
           >
@@ -187,13 +189,33 @@ export function TaskDetailPanel({
               const value = e.target.value;
               onSetPriority(value ? (parseInt(value, 10) as TaskPriority) : undefined);
             }}
-            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer"
+            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer"
             aria-label="Priority"
           >
             <option value="">No priority</option>
             <option value="1">High</option>
             <option value="2">Medium</option>
             <option value="3">Low</option>
+          </select>
+        </div>
+
+        <div className={`${chipBase} ${chipIdle}`}>
+          <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
+          <select
+            value={task.kind ?? "task"}
+            onChange={(e) => {
+              const value = e.target.value as TaskKind;
+              onSetKind(value === "task" ? undefined : value);
+            }}
+            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer"
+            aria-label="Type"
+            title="Mark as task, note, or question"
+          >
+            <option value="task">Task</option>
+            <option value="note">Note</option>
+            <option value="question">Question</option>
           </select>
         </div>
 
@@ -238,7 +260,7 @@ export function TaskDetailPanel({
           <select
             value={task.recurrence ?? ""}
             onChange={(e) => onSetRecurrence((e.target.value || undefined) as RecurrenceType | undefined)}
-            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer"
+            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer"
             aria-label="Recurrence"
           >
             <option value="">No repeat</option>
@@ -257,7 +279,7 @@ export function TaskDetailPanel({
             <select
               value={task.projectId}
               onChange={(e) => onMoveToProject(e.target.value)}
-              className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer truncate"
+              className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer truncate"
               aria-label="Move to project"
             >
               {activeProjects.map((p) => (
@@ -272,7 +294,7 @@ export function TaskDetailPanel({
         {onStartTask && (
           isInProgress ? (
             <span
-              className={`${chipBase} border-cyan-500/50 bg-cyan-600 text-white`}
+              className={`${chipBase} border-blue-500/50 bg-blue-600 text-white`}
               title="Timer is running on this task"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
@@ -287,8 +309,8 @@ export function TaskDetailPanel({
               }}
               className={`${chipBase} ${
                 isFocused
-                  ? "border-cyan-400/60 dark:border-cyan-500/50 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-900/25"
-                  : `${chipIdle} hover:border-cyan-400 dark:hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-300`
+                  ? "border-blue-400/60 dark:border-blue-500/50 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/25"
+                  : `${chipIdle} hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-300`
               }`}
               title={
                 isFocused
@@ -339,7 +361,7 @@ export function TaskDetailPanel({
             <button
               type="button"
               onClick={handleSave}
-              className="flex-1 px-3 py-2 text-xs font-semibold rounded-md bg-cyan-600 text-white hover:bg-cyan-700 transition-colors"
+              className="flex-1 px-3 py-2 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               Save
             </button>

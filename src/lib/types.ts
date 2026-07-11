@@ -77,6 +77,9 @@ export type RecurrenceType = "daily" | "weekly" | "monthly" | "yearly";
 
 export type TaskPriority = 1 | 2 | 3; // 1=High, 2=Medium, 3=Low
 
+/** Lightweight content type so brain-dump notes/questions don't look like actionable tasks. */
+export type TaskKind = "task" | "note" | "question";
+
 export interface Task {
   id: string;
   title: string;
@@ -96,6 +99,8 @@ export interface Task {
   blocked?: boolean;
   /** Intentionally undated / deferred — someday-maybe pile. */
   someday?: boolean;
+  /** Content type — defaults to task when unset. */
+  kind?: TaskKind;
 }
 
 export const DEFAULT_SETTINGS: Settings = {

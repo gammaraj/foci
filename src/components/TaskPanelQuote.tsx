@@ -13,14 +13,14 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
   if (variant === "navbar") {
     return (
       <p
-        className="text-sm italic text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0"
+        className="text-sm italic text-slate-600 dark:text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0"
         role="complementary"
         aria-label="Quote of the day"
         title={author ? `${text} — ${author}` : text}
       >
         &ldquo;{text}&rdquo;
         {author ? (
-          <span className="font-normal not-italic text-slate-400/75"> — {author}</span>
+          <span className="font-normal not-italic text-slate-500 dark:text-slate-400/80"> — {author}</span>
         ) : null}
       </p>
     );

@@ -31,7 +31,7 @@ export default function GuideLinkHub({
           <Link
             key={link.slug}
             href={`/blog/${link.slug}`}
-            className="text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+            className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             {link.label}
           </Link>
@@ -51,7 +51,7 @@ export default function GuideLinkHub({
             <li key={link.slug}>
               <Link
                 href={`/blog/${link.slug}`}
-                className="text-sm text-cyan-600 dark:text-cyan-400 hover:underline"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 {link.label}
               </Link>
@@ -75,9 +75,9 @@ export default function GuideLinkHub({
           <Link
             key={link.slug}
             href={`/blog/${link.slug}`}
-            className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f1b33] hover:border-cyan-300 dark:hover:border-cyan-700 hover:shadow-md transition-all"
+            className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f1b33] hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all"
           >
-            <h3 className="text-base font-semibold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               {link.label}
             </h3>
             {link.description ? (
@@ -85,7 +85,7 @@ export default function GuideLinkHub({
                 {link.description}
               </p>
             ) : null}
-            <span className="mt-2 inline-block text-sm font-medium text-cyan-600 dark:text-cyan-400 group-hover:underline">
+            <span className="mt-2 inline-block text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
               Read guide →
             </span>
           </Link>

@@ -4,9 +4,16 @@ import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { useTheme } from "@/components/ThemeProvider";
 import UserMenu from "@/components/UserMenu";
 import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
-import { FOCI_TAGLINE_FOCUS, FOCI_TAGLINE_NAV, FOCI_TAGLINE_ON_DARK, FOCI_WORDMARK_NAV } from "@/lib/logo-brand";
+import {
+  FOCI_TAGLINE_FOCUS,
+  FOCI_TAGLINE_NAV,
+  FOCI_TAGLINE_ON_DARK,
+  FOCI_TAGLINE_ON_LIGHT,
+  FOCI_WORDMARK_NAV,
+} from "@/lib/logo-brand";
 
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
@@ -42,8 +49,8 @@ type NavLink = {
 function navLinkClass(active: boolean, mobile = false) {
   if (mobile) {
     return active
-      ? "nav-chrome-link-active px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full bg-white/10"
-      : "nav-chrome-link px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full hover:bg-white/5";
+      ? "nav-chrome-link-active px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full bg-slate-100 dark:bg-white/10"
+      : "nav-chrome-link px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full hover:bg-slate-100 dark:hover:bg-white/5";
   }
   return active
     ? "nav-chrome-link-active text-base font-medium transition-colors"
@@ -52,13 +59,18 @@ function navLinkClass(active: boolean, mobile = false) {
 
 const chromeBtn = "nav-chrome-btn rounded-lg";
 const chromeBtnPad = `${chromeBtn} p-2`;
-const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 border border-transparent hover:border-white/10`;
+const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 border border-transparent hover:border-slate-200 dark:hover:border-white/10`;
 
 function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps) {
   const { user } = useAuth();
+  const { resolvedTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isLight = resolvedTheme === "light";
+  const logoSurface = isLight ? "light" : "dark";
+  const wordmarkTone = isLight ? "light" : "dark";
+  const taglineClass = isLight ? FOCI_TAGLINE_ON_LIGHT : FOCI_TAGLINE_ON_DARK;
 
   const projectsOpen = pathname === "/app" && searchParams.get("projects") === "1";
 
@@ -125,12 +137,12 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             <FociLogoMark
               size={40}
               idPrefix="nav"
-              surface="dark"
+              surface={logoSurface}
               className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex-shrink-0"
             />
             <div className="flex flex-col items-start gap-0.5 min-w-0">
-              <FociWordmark className={FOCI_WORDMARK_NAV} tone="dark" />
-              <p className={`${FOCI_TAGLINE_NAV} ${FOCI_TAGLINE_ON_DARK} whitespace-nowrap`}>
+              <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />
+              <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap`}>
                 {FOCI_TAGLINE_FOCUS}
               </p>
             </div>
@@ -145,7 +157,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           <div className="hidden sm:flex items-center gap-6 flex-shrink-0 ml-auto">
             {navLinks.map((link) => renderNavLink(link))}
             {(toolbarSlot || onOpenSettings) && (
-              <span className="w-px h-5 bg-white/15 rounded-full self-center" aria-hidden />
+              <span className="nav-chrome-divider w-px h-5 rounded-full self-center" aria-hidden />
             )}
             <div className="flex items-center gap-0.5">
               {toolbarSlot}
@@ -167,7 +179,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             ) : (
               <Link
                 href="/login"
-                className="text-sm font-medium px-4 py-2 rounded-lg bg-white text-slate-900 hover:bg-slate-100 transition-colors"
+                className="nav-chrome-login text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
                 Log in
               </Link>
@@ -206,9 +218,9 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
         </div>
 
         {menuOpen && (
-          <div className="sm:hidden mt-3 pb-1 border-t border-white/10">
+          <div className="sm:hidden mt-3 pb-1 border-t nav-chrome-menu">
             {toolbarSlot && (
-              <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-white/10">
+              <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b nav-chrome-menu">
                 {toolbarSlot}
               </div>
             )}
@@ -221,7 +233,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                     onOpenSettings();
                     setMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium nav-chrome-link hover:bg-white/5 transition-colors text-left w-full"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium nav-chrome-link hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-left w-full"
                 >
                   <SettingsIcon className="w-4 h-4" />
                   Settings
@@ -235,7 +247,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg bg-white text-slate-900 hover:bg-slate-100 transition-colors"
+                  className="nav-chrome-login mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg transition-colors"
                 >
                   Log in
                 </Link>

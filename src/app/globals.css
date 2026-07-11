@@ -4,9 +4,9 @@
 
 /* ===== Custom Properties ===== */
 :root {
-  --primary-blue: #0891b2;
-  --primary-blue-dark: #0e7490;
-  --accent-indigo: #06b6d4;
+  --primary-blue: #2563eb;
+  --primary-blue-dark: #1d4ed8;
+  --accent-indigo: #3b82f6;
   --success-green: #10b981;
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
@@ -37,74 +37,134 @@ body {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
-/* Site chrome — same dark bar in light and dark page themes */
+/* Site chrome — light bar in light mode, ink bar in dark */
 .nav-chrome {
-  background: #0b1121;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: #ffffff;
+  border-bottom: 1px solid var(--surface-border);
   padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+}
+.dark .nav-chrome {
+  background: #070b16;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;
 }
 
 .nav-chrome-link {
-  color: #cbd5e1;
+  color: #64748b;
   transition: color 0.15s ease;
 }
 .nav-chrome-link:hover {
-  color: #fff;
+  color: #0f172a;
 }
 .nav-chrome-link-active {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+.dark .nav-chrome-link {
+  color: #cbd5e1;
+}
+.dark .nav-chrome-link:hover {
   color: #fff;
+}
+.dark .nav-chrome-link-active {
+  color: #fff;
+  font-weight: 500;
 }
 
 .nav-chrome-btn {
-  color: #cbd5e1;
+  color: #64748b;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 .nav-chrome-btn:hover {
+  color: #0f172a;
+  background-color: rgba(15, 23, 42, 0.06);
+}
+.dark .nav-chrome-btn {
+  color: #cbd5e1;
+}
+.dark .nav-chrome-btn:hover {
   color: #fff;
   background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-icon-btn {
-  color: #cbd5e1;
+  color: #64748b;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 .nav-icon-btn:hover {
+  color: #0f172a;
+  background-color: rgba(15, 23, 42, 0.06);
+}
+.dark .nav-icon-btn {
+  color: #cbd5e1;
+}
+.dark .nav-icon-btn:hover {
   color: #fff;
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+.nav-chrome-divider {
+  background: rgba(15, 23, 42, 0.12);
+}
+.dark .nav-chrome-divider {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-chrome-menu {
+  border-color: var(--surface-border);
+}
+.dark .nav-chrome-menu {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-chrome-login {
+  background: #2563eb;
+  color: #fff;
+}
+.nav-chrome-login:hover {
+  background: #1d4ed8;
+}
+.dark .nav-chrome-login {
+  background: #fff;
+  color: #0f172a;
+}
+.dark .nav-chrome-login:hover {
+  background: #f1f5f9;
+}
+
 /* Landing page hero warm gradient — light and dark */
 .hero-gradient-bg {
-  background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(8,145,178,0.07) 0%, transparent 62%), #f8fafc;
+  background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(37,99,235,0.08) 0%, transparent 62%), #f8fafc;
 }
 @media (prefers-color-scheme: dark) {
   .hero-gradient-bg {
-    background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(6,182,212,0.10) 0%, transparent 60%), #0a0f1a;
+    background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), #0a0f1a;
   }
 }
 .dark .hero-gradient-bg {
-  background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(6,182,212,0.10) 0%, transparent 60%), #0a0f1a;
+  background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), #0a0f1a;
 }
 
 /* Shared content width — navbar, status strip, tasks, stats, blog */
 :root {
-  --app-max-width: 1760px;
+  --app-max-width: 1680px;
 }
 
 .app-container {
   width: 100%;
   max-width: var(--app-max-width);
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: 2rem;
 }
 @media (min-width: 640px) {
   .app-container {
-    padding-inline: 1.25rem;
+    padding-inline: 2.5rem;
   }
 }
 @media (min-width: 1024px) {
   .app-container {
-    padding-inline: 1.5rem;
+    padding-inline: 3.5rem;
   }
 }
 
@@ -759,9 +819,10 @@ input:focus-visible {
   }
   .group:hover .hover-reveal-desktop,
   .group\/row:hover .hover-reveal-desktop,
+  .group\/task:hover .hover-reveal-desktop,
   .hover-reveal-desktop:focus-within {
     opacity: 1;
-    max-width: 4rem;
+    max-width: 6rem;
     pointer-events: auto;
   }
 }

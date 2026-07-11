@@ -48,7 +48,7 @@ export function TaskSubtaskSection({
 
   const pad = compact ? "px-2" : "px-3 sm:px-4";
   const indent = compact ? "pl-4 ml-2" : "pl-6 ml-4";
-  const borderColor = "border-l-2 border-cyan-200/70 dark:border-cyan-800/50";
+  const borderColor = "border-l-2 border-blue-200/70 dark:border-blue-800/50";
 
   return (
     <div
@@ -71,7 +71,7 @@ export function TaskSubtaskSection({
             className={`flex-shrink-0 w-4 h-4 rounded-full border-[1.5px] transition-colors flex items-center justify-center ${
               sub.completed
                 ? "border-emerald-500 bg-emerald-500"
-                : "border-slate-300 dark:border-slate-600 hover:border-cyan-500"
+                : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
             }`}
             aria-label={`Toggle subtask "${sub.title}"`}
           >
@@ -91,7 +91,7 @@ export function TaskSubtaskSection({
                 if (e.key === "Enter") onSaveSubtaskEdit(sub.id);
                 if (e.key === "Escape") onCancelEditSubtask();
               }}
-              className="flex-1 min-w-0 px-1 py-0.5 text-sm border border-cyan-300 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
+              className="flex-1 min-w-0 px-1 py-0.5 text-sm border border-blue-300 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
               autoFocus
             />
           ) : (
@@ -117,7 +117,7 @@ export function TaskSubtaskSection({
                 ? "text-red-500 dark:text-red-400"
                 : sub.dueDate
                   ? "text-slate-500 dark:text-slate-400"
-                  : "text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100"
+                  : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100"
             }`}
           >
             <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
@@ -162,12 +162,12 @@ export function TaskSubtaskSection({
             value={newSubtaskTitle}
             onChange={(e) => onNewSubtaskTitleChange(e.target.value)}
             placeholder="Add a subtask…"
-            className="flex-1 min-w-0 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white focus:border-cyan-400 outline-none"
+            className="flex-1 min-w-0 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-400 outline-none"
           />
           <button
             type="submit"
             disabled={!newSubtaskTitle.trim()}
-            className="px-2 py-1 text-xs font-medium bg-cyan-600 text-white rounded-md hover:bg-cyan-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+            className="px-2 py-1 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
           >
             Add
           </button>

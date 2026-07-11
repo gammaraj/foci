@@ -256,6 +256,7 @@ export type Database = {
           created_at: number
           due_date: string | null
           id: string
+          kind: string
           order: number | null
           priority: number | null
           project_id: string
@@ -275,6 +276,7 @@ export type Database = {
           created_at: number
           due_date?: string | null
           id: string
+          kind?: string
           order?: number | null
           priority?: number | null
           project_id?: string
@@ -294,6 +296,7 @@ export type Database = {
           created_at?: number
           due_date?: string | null
           id?: string
+          kind?: string
           order?: number | null
           priority?: number | null
           project_id?: string
