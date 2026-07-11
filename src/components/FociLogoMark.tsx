@@ -14,7 +14,7 @@ import {
   getFociLogoShadow,
 } from "@/lib/logo-brand";
 
-/** Shared Foci ring-and-dot mark — keep in sync with public/favicon.svg */
+/** Shared Foci ring-and-dot mark — keep in sync with public/favicon.svg + favicon-light.svg */
 export function FociLogoMark({
   size = 32,
   className,
