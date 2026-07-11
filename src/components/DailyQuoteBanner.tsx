@@ -89,14 +89,14 @@ export default function DailyQuoteBanner({
       <div className="app-container py-0.5 sm:py-1 space-y-1">
         {threeColumnStrip ? (
           <div
-            className="grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1.15fr)_minmax(0,0.9fr)] sm:items-stretch rounded-lg border border-blue-300/55 dark:border-[#243350] bg-white/85 dark:bg-[#131d30]/90 overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-blue-100/80 dark:divide-[#243350]/80"
+            className="status-strip-card grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1.15fr)_minmax(0,0.9fr)] sm:items-stretch rounded-lg overflow-visible divide-y sm:divide-y-0 sm:divide-x status-strip-divider"
           >
             {/* Weather — secondary context */}
-            <div className={`min-w-0 w-full px-2.5 sm:px-3 flex items-center min-h-[2.75rem] shrink-0 text-slate-500 dark:text-slate-400 overflow-visible ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            <div className={`status-strip-zone status-strip-zone--side min-w-0 w-full px-2.5 sm:px-3 flex items-center min-h-[2.75rem] shrink-0 text-slate-600 dark:text-slate-400 overflow-visible sm:rounded-l-lg ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               <WeatherTime compact embedded />
             </div>
-            {/* Timer — primary focus strip (accent only when running/break, via toolbar) */}
-            <div className="relative min-w-0 flex flex-col px-2.5 sm:px-3 overflow-visible">
+            {/* Timer — primary focus strip */}
+            <div className="status-strip-zone status-strip-zone--focus relative min-w-0 flex flex-col px-2.5 sm:px-3 overflow-visible">
               <div className="flex items-center min-h-[2.75rem] w-full shrink-0 gap-1">
                 <div className="flex-1 min-w-0">{timerToolbar}</div>
                 <CollapseToggle />
@@ -104,14 +104,14 @@ export default function DailyQuoteBanner({
               {timerPanel}
             </div>
             {/* Music — ambient utility */}
-            <div className={`relative min-w-0 flex flex-col px-2.5 sm:px-3 overflow-visible justify-center ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+            <div className={`status-strip-zone status-strip-zone--side relative min-w-0 flex flex-col px-2.5 sm:px-3 overflow-visible justify-center sm:rounded-r-lg ${mobileExpanded ? "" : "hidden sm:flex"}`}>
               {musicToolbar}
             </div>
             {showMobileCollapseBar && (
               <button
                 type="button"
                 onClick={collapseAllMobile}
-                className="sm:hidden col-span-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-t border-slate-100/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="sm:hidden col-span-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-blue-800/70 dark:text-slate-400 border-t status-strip-divider hover:bg-white/50 dark:hover:bg-white/5 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7-7" />
@@ -126,16 +126,16 @@ export default function DailyQuoteBanner({
               <WeatherTime compact />
             </div>
             {hasFocusStrip && (
-              <div className="w-full min-w-0 flex flex-col rounded-lg border border-blue-300/55 dark:border-[#243350] bg-white/85 dark:bg-[#131d30]/90 overflow-visible min-h-[2.75rem]">
+              <div className="status-strip-card w-full min-w-0 flex flex-col rounded-lg overflow-visible min-h-[2.75rem]">
                 <div
                   className={`grid min-w-0 flex-1 ${
                     timerToolbar && musicToolbar
-                      ? "grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:divide-x divide-blue-100/80 dark:divide-[#243350]/80"
+                      ? "grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:divide-x status-strip-divider"
                       : "grid-cols-1"
                   }`}
                 >
                   {timerToolbar && (
-                    <div className={`min-w-0 flex flex-col px-2.5 sm:px-3 ${musicToolbar ? "border-b sm:border-b-0 border-slate-100/90 dark:border-[#243350]/80" : ""}`}>
+                    <div className={`status-strip-zone status-strip-zone--focus min-w-0 flex flex-col px-2.5 sm:px-3 ${musicToolbar ? "border-b sm:border-b-0 status-strip-divider" : ""}`}>
                       <div className="flex items-center min-h-[2.5rem] sm:min-h-[2.75rem] w-full gap-1">
                         <div className="flex-1 min-w-0">{timerToolbar}</div>
                         <CollapseToggle />
@@ -144,7 +144,7 @@ export default function DailyQuoteBanner({
                     </div>
                   )}
                   {musicToolbar && (
-                    <div className={`min-w-0 flex flex-col px-2.5 sm:px-3 pb-2 overflow-x-auto ${mobileExpanded ? "" : "hidden sm:flex"}`}>
+                    <div className={`status-strip-zone status-strip-zone--side min-w-0 flex flex-col px-2.5 sm:px-3 pb-2 overflow-x-auto ${mobileExpanded ? "" : "hidden sm:flex"}`}>
                       {musicToolbar}
                     </div>
                   )}
@@ -153,7 +153,7 @@ export default function DailyQuoteBanner({
                   <button
                     type="button"
                     onClick={collapseAllMobile}
-                    className="sm:hidden flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border-t border-slate-100/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                    className="sm:hidden flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-blue-800/70 dark:text-slate-400 border-t status-strip-divider hover:bg-white/50 dark:hover:bg-white/5 transition-colors"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7-7" />

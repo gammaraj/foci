@@ -1766,25 +1766,25 @@ export default function TaskList({
       <>
       {/* Header — title row + controls row */}
       <div
-        className="panel-header-calm no-print px-3 sm:px-4 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
-        {/* Title + urgency + utilities */}
-        <div className="flex items-start justify-between min-w-0 gap-3">
+        {/* Title + urgency + utilities — single compact row */}
+        <div className="flex items-center justify-between min-w-0 gap-2">
           <div className="min-w-0 flex-1">
             {projectManageOpen ? (
               <>
                 <button
                   type="button"
                   onClick={closeProjectManage}
-                  className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1.5 transition-colors touch-target-sm -ml-2 px-2 py-1.5 rounded-lg"
+                  className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1 transition-colors touch-target-sm -ml-2 px-2 py-1 rounded-lg"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                   Back to tasks
                 </button>
-                <h2 className="text-base sm:text-lg font-semibold">Projects</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5">
+                <h2 className="text-base sm:text-lg font-semibold leading-tight">Projects</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 line-clamp-1">
                   {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
                   {pinnedProjectCount > 0 && (
                     <span className="text-amber-600 dark:text-amber-300">
@@ -1801,7 +1801,7 @@ export default function TaskList({
               <button
                 type="button"
                 onClick={backFromProjectList}
-                className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1.5 transition-colors"
+                className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1809,9 +1809,32 @@ export default function TaskList({
                 Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
               </button>
             )}
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white">
+            <h2
+              className="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white"
+              title={
+                !focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card")
+                  ? viewMode === "card"
+                    ? sortedProjects.length >= 2
+                      ? "Top priorities per project · drag ⋮⋮ to reorder"
+                      : "Top priorities per project at a glance"
+                    : viewMode === "bucket"
+                      ? isTimeFilter
+                        ? [
+                            timeScopeDescription,
+                            `${bucketDatedCount} due`,
+                            bucketUndatedCount > 0 ? `${bucketUndatedCount} no date` : null,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")
+                        : "All projects side by side"
+                      : isTimeFilter
+                        ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
+                        : "Pick a task, then hit Focus to start your session"
+                  : undefined
+              }
+            >
               <svg
-                className="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"
+                className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1834,7 +1857,7 @@ export default function TaskList({
               {showUrgencySummary && (
                 <TaskUrgencySummary
                   compact
-                  className="no-print sm:hidden ml-0.5 min-w-0"
+                  className="no-print ml-0.5 min-w-0"
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
                   worstOverdue={worstOverdue}
@@ -1844,50 +1867,17 @@ export default function TaskList({
                 />
               )}
             </h2>
-            {showUrgencySummary && (
-              <div className="no-print hidden sm:block pl-7 mt-1.5 min-w-0 max-w-full">
-                <TaskUrgencySummary
-                  overdueCount={overdueTasks.length}
-                  dueTodayCount={dueExactlyTodayCount}
-                  worstOverdue={worstOverdue}
-                  onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
-                  onViewToday={() => selectProject(TODAY_FILTER_ID)}
-                  onJumpToWorst={jumpToWorstOverdue}
-                />
-              </div>
-            )}
-            {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
-              <p className="no-print text-sm text-blue-800/70 dark:text-blue-200/70 font-normal normal-case tracking-normal mt-1 pl-7 leading-snug hidden lg:block line-clamp-1">
-                {viewMode === "card"
-                  ? sortedProjects.length >= 2
-                    ? "Top priorities per project · drag ⋮⋮ to reorder"
-                    : "Top priorities per project at a glance"
-                  : viewMode === "bucket"
-                  ? isTimeFilter
-                    ? [
-                        timeScopeDescription,
-                        `${bucketDatedCount} due`,
-                        bucketUndatedCount > 0 ? `${bucketUndatedCount} no date` : null,
-                      ]
-                        .filter(Boolean)
-                        .join(" · ")
-                    : "All projects side by side"
-                  : isTimeFilter
-                    ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
-                    : "Pick a task, then hit Focus to start your session"}
-              </p>
-            )}
               </>
             )}
           </div>
 
           {/* Utilities — keep out of the filter/view cluster */}
-          <div className="no-print flex items-center gap-0.5 sm:gap-1 flex-shrink-0 pt-0.5">
+          <div className="no-print flex items-center gap-0.5 flex-shrink-0">
             {!projectManageOpen && (
               <button
                 type="button"
                 onClick={handlePrint}
-                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-blue-800/80 dark:text-blue-200/80 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10 transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-blue-800/80 dark:text-blue-200/80 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10 transition-colors"
                 title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
                 aria-label="Print current view"
                 data-tour="print-tasks"
@@ -1926,7 +1916,7 @@ export default function TaskList({
             {onToggleFullscreen && (
               <button
                 onClick={onToggleFullscreen}
-                className={`no-print p-2 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-blue-700/70 dark:text-blue-200/60 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10"}`}
+                className={`no-print p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-blue-700/70 dark:text-blue-200/60 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10"}`}
                 title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
                 aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
               >
@@ -1946,7 +1936,7 @@ export default function TaskList({
 
         {/* Scope + view controls — own row so filters aren’t jammed into the title */}
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-2.5 pt-2.5 border-t border-blue-400/25 dark:border-blue-400/15 min-w-0">
+          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-blue-400/25 dark:border-blue-400/15 min-w-0">
             <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
               <button
                 onClick={() => selectProject(ALL_PROJECTS_ID)}
