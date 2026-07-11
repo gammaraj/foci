@@ -109,6 +109,30 @@ function ProjectDragPlaceholder({
   );
 }
 
+function overdueSeverity(daysLate: number): "mild" | "medium" | "severe" {
+  if (daysLate >= 5) return "severe";
+  if (daysLate >= 3) return "medium";
+  return "mild";
+}
+
+function overdueRowClasses(daysLate: number): string {
+  const severity = overdueSeverity(daysLate);
+  if (severity === "severe") {
+    return "bg-red-200/80 dark:bg-red-950/55 hover:bg-red-200 dark:hover:bg-red-950/70 border-l-red-700 dark:border-l-red-500";
+  }
+  if (severity === "medium") {
+    return "bg-red-100/85 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/55 border-l-red-600 dark:border-l-red-400";
+  }
+  return "bg-red-50/80 dark:bg-red-950/30 hover:bg-red-50 dark:hover:bg-red-950/45 border-l-red-400 dark:border-l-red-400/80";
+}
+
+function overdueTitleClass(daysLate: number): string {
+  const severity = overdueSeverity(daysLate);
+  if (severity === "severe") return "text-red-900 dark:text-red-200 font-semibold";
+  if (severity === "medium") return "text-red-800 dark:text-red-200 font-medium";
+  return "text-red-700 dark:text-red-300 font-medium";
+}
+
 function CardDuePrefix({ task }: { task: Task }) {
   if (!task.dueDate) return null;
 
@@ -117,12 +141,17 @@ function CardDuePrefix({ task }: { task: Task }) {
   const isToday = task.dueDate === getToday();
   const daysLate = overdue ? getDaysOverdue(task.dueDate) : 0;
   const label = formatDueDate(task.dueDate);
+  const severity = overdue ? overdueSeverity(daysLate) : null;
 
   return (
     <span
       className={`shrink-0 font-semibold tabular-nums text-xs ${
         overdue
-          ? "text-red-600 dark:text-red-300"
+          ? severity === "severe"
+            ? "text-red-800 dark:text-red-200"
+            : severity === "medium"
+              ? "text-red-700 dark:text-red-300"
+              : "text-red-600 dark:text-red-300"
           : blocked
             ? "text-amber-700 dark:text-amber-300"
             : isToday
@@ -133,7 +162,7 @@ function CardDuePrefix({ task }: { task: Task }) {
         blocked
           ? "Waiting on external blocker"
           : overdue
-            ? `${daysLate}d overdue`
+            ? `Overdue by ${daysLate} day${daysLate === 1 ? "" : "s"} (due ${label})`
             : isToday
               ? "Due today"
               : `Due ${label}`
@@ -223,6 +252,7 @@ function CardTaskRow({
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
 }) {
+  const [titleExpanded, setTitleExpanded] = useState(false);
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
   const someday = !!task.someday;
@@ -231,11 +261,10 @@ function CardTaskRow({
   const isDragging = dragTaskId === task.id;
   const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
   const daysLate = overdue && task.dueDate ? getDaysOverdue(task.dueDate) : 0;
-  const titleTooltip = [
-    overdue ? `${daysLate}d overdue` : null,
-    task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null,
-    task.title,
-  ]
+  const overdueLabel = overdue
+    ? `Overdue by ${daysLate} day${daysLate === 1 ? "" : "s"}`
+    : null;
+  const titleTooltip = [overdueLabel, task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null, task.title]
     .filter(Boolean)
     .join(" — ");
 
@@ -265,28 +294,22 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors ${
+      className={`group/row relative rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors ${
         isActive
-          ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40"
+          ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40 border-l-blue-500"
           : isExpanded
-            ? "bg-violet-50/50 dark:bg-violet-900/15"
+            ? "bg-violet-50/50 dark:bg-violet-900/15 border-l-violet-400"
             : overdue
-              ? "bg-red-50/70 dark:bg-red-950/35 hover:bg-red-50/90 dark:hover:bg-red-950/50"
+              ? overdueRowClasses(daysLate)
               : blocked
-                ? "bg-amber-50/40 dark:bg-amber-950/20"
-                : "hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
-      } ${
-        overdue
-          ? "border-l-red-500 dark:border-l-red-400"
-          : blocked
-            ? "border-l-amber-500 dark:border-l-amber-400"
-            : someday
-              ? "border-l-violet-400 dark:border-l-violet-500"
-              : task.dueDate
-                ? task.dueDate === getToday()
-                  ? "border-l-amber-400 dark:border-l-amber-500"
-                  : "border-l-blue-500 dark:border-l-blue-400"
-                : "border-l-slate-300/60 dark:border-l-slate-600"
+                ? "bg-amber-50/40 dark:bg-amber-950/20 border-l-amber-500 dark:border-l-amber-400"
+                : someday
+                  ? "border-l-violet-400 dark:border-l-violet-500 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
+                  : task.dueDate
+                    ? task.dueDate === getToday()
+                      ? "border-l-amber-400 dark:border-l-amber-500 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
+                      : "border-l-blue-500 dark:border-l-blue-400 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
+                    : "border-l-slate-300/60 dark:border-l-slate-600 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
       } ${dragEnabled ? "cursor-grab active:cursor-grabbing" : ""} ${
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
@@ -323,30 +346,58 @@ function CardTaskRow({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
+              setTitleExpanded((open) => !open);
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className={`flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-1 sm:gap-1.5 text-sm font-normal leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
-              overdue
-                ? "text-red-700 dark:text-red-300 font-medium"
-                : "text-slate-700 dark:text-slate-200"
+            className={`group/title relative flex-1 min-w-0 basis-0 flex items-start sm:items-center gap-1 sm:gap-1.5 text-sm font-normal leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
+              overdue ? overdueTitleClass(daysLate) : "text-slate-700 dark:text-slate-200"
             }`}
             title={titleTooltip}
+            aria-expanded={titleExpanded}
+            aria-label={titleExpanded ? `Collapse title: ${task.title}` : `Expand title: ${task.title}`}
           >
             {overdue && (
               <span
-                className="shrink-0 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500 text-white"
-                title={`${daysLate}d overdue`}
-                aria-hidden
+                className={`shrink-0 inline-flex items-center justify-center min-w-[1.5rem] h-4 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${
+                  overdueSeverity(daysLate) === "severe"
+                    ? "bg-red-700 text-white"
+                    : overdueSeverity(daysLate) === "medium"
+                      ? "bg-red-600 text-white"
+                      : "bg-red-500 text-white"
+                }`}
+                title={overdueLabel ?? "Overdue"}
+                aria-label={overdueLabel ?? "Overdue"}
               >
-                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 9v3m0 3h.01M12 5a7 7 0 100 14 7 7 0 000-14z" />
-                </svg>
+                {daysLate}d
               </span>
             )}
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
             {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
             {task.dueDate && <CardDuePrefix task={task} />}
-            <span className="min-w-0 line-clamp-2 sm:line-clamp-1 sm:truncate break-all sm:break-normal">{task.title}</span>
+            <span
+              className={`min-w-0 break-words sm:break-normal ${
+                titleExpanded ? "whitespace-normal" : "line-clamp-2 sm:line-clamp-1 sm:truncate break-all"
+              }`}
+            >
+              {task.title}
+            </span>
+            {!titleExpanded && (
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute left-0 z-30 top-[calc(100%+2px)] hidden w-max max-w-[min(20rem,70vw)] rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] px-2.5 py-1.5 text-xs font-normal not-italic text-slate-800 dark:text-slate-100 shadow-lg group-hover/title:block whitespace-normal break-words"
+              >
+                {overdueLabel ? (
+                  <span className="block font-semibold text-red-600 dark:text-red-300 mb-0.5">{overdueLabel}</span>
+                ) : null}
+                {task.title}
+                <span className="block mt-1 text-[10px] text-slate-400 dark:text-slate-500">
+                  Click to expand · double-click to edit
+                </span>
+              </span>
+            )}
           </button>
         )}
         {!isEditing && (
@@ -354,7 +405,7 @@ function CardTaskRow({
             {onToggleTaskDetail && (
               <TaskEditButton
                 compact
-                revealOnHover
+                revealOnHover={!titleExpanded}
                 isOpen={isExpanded}
                 taskTitle={task.title}
                 onClick={(e) => {
@@ -525,16 +576,19 @@ function ProjectCard({
       }}
       className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
-      } ${collapsed ? "opacity-90" : ""}`}
+      } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""}`}
       style={{
         borderTopWidth: 2,
         borderTopColor: accentColor,
       }}
+      data-collapsed={collapsed ? "true" : "false"}
     >
       <header
-        className="flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80"
+        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80 ${
+          collapsed ? "pb-0 mb-0 border-b-0" : ""
+        }`}
         style={{
-          borderBottomColor: `color-mix(in srgb, ${accentColor} 25%, transparent)`,
+          borderBottomColor: collapsed ? "transparent" : `color-mix(in srgb, ${accentColor} 25%, transparent)`,
         }}
       >
         <div className="flex items-center gap-1 min-w-0">
@@ -545,13 +599,22 @@ function ProjectCard({
                 e.stopPropagation();
                 onToggleCollapsed();
               }}
-              className="flex-shrink-0 p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] transition-colors"
-              title={collapsed ? `Expand ${project.name}` : `Collapse ${project.name}`}
+              className={`flex-shrink-0 p-0.5 rounded transition-colors ${
+                collapsed
+                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                  : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              }`}
+              title={
+                collapsed
+                  ? `Expand ${project.name} (saved preference)`
+                  : `Collapse ${project.name} — hides tasks until you expand (saved)`
+              }
               aria-label={collapsed ? `Expand ${project.name}` : `Collapse ${project.name}`}
               aria-expanded={!collapsed}
+              aria-pressed={collapsed}
             >
               <svg
-                className={`w-3.5 h-3.5 transition-transform ${collapsed ? "-rotate-90" : ""}`}
+                className={`w-3.5 h-3.5 transition-transform duration-150 ${collapsed ? "-rotate-90" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -664,11 +727,10 @@ function ProjectCard({
         <button
           type="button"
           onClick={onToggleCollapsed}
-          className="text-left app-text-meta text-slate-400 dark:text-slate-500 py-0.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 py-0.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
-          {tasks.length === 0
-            ? "No tasks — click to expand"
-            : `${tasks.length} task${tasks.length === 1 ? "" : "s"} hidden — click to expand`}
+          Collapsed · {tasks.length === 0 ? "no tasks" : `${tasks.length} task${tasks.length === 1 ? "" : "s"} hidden`}
+          {overdueCount > 0 ? ` · ${overdueCount} late` : ""} — click to expand
         </button>
       ) : (
         <>

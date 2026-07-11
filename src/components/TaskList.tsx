@@ -42,6 +42,7 @@ import {
   formatDuration,
   formatDueDate,
   isDueDateOverdue,
+  getDaysOverdue,
   openDatePicker,
   getNextDueDate,
   projectTabTooltip,
@@ -1278,6 +1279,26 @@ export default function TaskList({
   ).length;
   const allOpenCount = tasks.filter((t) => !t.completed && !t.archivedAt).length;
   const overdueTasks = tasks.filter((t) => !t.archivedAt && !t.completed && isActionableOverdue(t));
+  const worstOverdue = (() => {
+    if (overdueTasks.length === 0) return null;
+    let worst = overdueTasks[0];
+    let worstDays = worst.dueDate ? getDaysOverdue(worst.dueDate) : 0;
+    for (const t of overdueTasks) {
+      if (!t.dueDate) continue;
+      const days = getDaysOverdue(t.dueDate);
+      if (days > worstDays) {
+        worst = t;
+        worstDays = days;
+      }
+    }
+    if (!worst.dueDate || worstDays < 1) return null;
+    const project = projects.find((p) => p.id === worst.projectId);
+    return {
+      daysLate: worstDays,
+      title: worst.title,
+      projectName: project?.name ?? "Project",
+    };
+  })();
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
   const thisMonthTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfMonth));
   const thisYearTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfYear));
@@ -1795,6 +1816,7 @@ export default function TaskList({
                   className="no-print sm:hidden ml-0.5"
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
+                  worstOverdue={worstOverdue}
                   onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
                   onViewToday={() => selectProject(TODAY_FILTER_ID)}
                 />
@@ -1805,6 +1827,7 @@ export default function TaskList({
                 <TaskUrgencySummary
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
+                  worstOverdue={worstOverdue}
                   onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
                   onViewToday={() => selectProject(TODAY_FILTER_ID)}
                 />

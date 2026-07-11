@@ -1,10 +1,18 @@
 "use client";
 
+export interface WorstOverdueHint {
+  daysLate: number;
+  title: string;
+  projectName: string;
+}
+
 interface TaskUrgencySummaryProps {
   overdueCount: number;
   dueTodayCount: number;
   onViewOverdue?: () => void;
   onViewToday?: () => void;
+  /** Most stale overdue item — surfaced for cross-project triage. */
+  worstOverdue?: WorstOverdueHint | null;
   className?: string;
   /** Compact chips for the title row — side-by-side, shorter labels. */
   compact?: boolean;
@@ -16,6 +24,7 @@ export function TaskUrgencySummary({
   dueTodayCount,
   onViewOverdue,
   onViewToday,
+  worstOverdue = null,
   className = "",
   compact = false,
 }: TaskUrgencySummaryProps) {
@@ -27,6 +36,13 @@ export function TaskUrgencySummary({
       : overdueCount > 0
         ? `${overdueCount} overdue`
         : `${dueTodayCount} due today`;
+
+  const worstLabel = worstOverdue
+    ? `${worstOverdue.projectName} · ${worstOverdue.daysLate}d late`
+    : null;
+  const worstTitle = worstOverdue
+    ? `Most overdue: “${worstOverdue.title}” in ${worstOverdue.projectName} (${worstOverdue.daysLate} day${worstOverdue.daysLate === 1 ? "" : "s"} late)`
+    : undefined;
 
   if (compact) {
     return (
@@ -44,6 +60,16 @@ export function TaskUrgencySummary({
           >
             <span className="tabular-nums font-bold">{overdueCount}</span>
             <span className="leading-none">late</span>
+          </button>
+        )}
+        {worstLabel && (
+          <button
+            type="button"
+            onClick={onViewOverdue}
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap border border-red-300/80 dark:border-red-700/60 bg-red-100/80 dark:bg-red-950/50 text-red-800 dark:text-red-200 max-w-[9rem] truncate"
+            title={worstTitle}
+          >
+            {worstLabel}
           </button>
         )}
         {dueTodayCount > 0 && (
@@ -78,6 +104,22 @@ export function TaskUrgencySummary({
             {overdueCount}
           </span>
           <span className="leading-none">overdue</span>
+        </button>
+      )}
+      {worstOverdue && worstOverdue.daysLate >= 3 && (
+        <button
+          type="button"
+          onClick={onViewOverdue}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap border border-red-300/90 dark:border-red-700/60 bg-red-100/90 dark:bg-red-950/45 text-red-800 dark:text-red-200 hover:bg-red-200/80 dark:hover:bg-red-900/50 transition-colors max-w-[16rem]"
+          title={worstTitle}
+        >
+          <span className="inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-md bg-red-700 text-white text-[10px] font-bold tabular-nums leading-none">
+            {worstOverdue.daysLate}d
+          </span>
+          <span className="leading-none truncate">
+            {worstOverdue.projectName}
+            <span className="font-medium opacity-80"> most late</span>
+          </span>
         </button>
       )}
       {dueTodayCount > 0 && (
