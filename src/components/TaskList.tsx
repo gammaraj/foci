@@ -1986,7 +1986,7 @@ export default function TaskList({
             </div>
 
             <div className="flex items-center gap-2 shrink-0" data-tour="view-modes">
-              <span className="hidden md:inline app-section-label text-blue-800/60 dark:text-blue-200/55 shrink-0">
+              <span className="hidden md:inline app-section-label leading-none self-center text-blue-800/60 dark:text-blue-200/55 shrink-0">
                 View
               </span>
               <div className="app-seg-track flex items-center gap-0.5">
@@ -2335,7 +2335,6 @@ export default function TaskList({
           overdueCount={overdueTasks.length}
           onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
           suppressOverdueBanner={showUrgencySummary}
-          softProjectOverdueLabels={showUrgencySummary}
           highlightProjectId={highlightProjectId}
         />
       )}

@@ -41,9 +41,7 @@ export function TaskUrgencySummary({
         ? `${overdueCount} overdue`
         : `${dueTodayCount} due today`;
 
-  const worstLabel = worstOverdue
-    ? `${worstOverdue.projectName} · ${worstOverdue.daysLate}d`
-    : null;
+  const worstLabel = worstOverdue?.projectName ?? null;
   const worstTitle = worstOverdue
     ? `Jump to ${worstOverdue.projectName}: “${worstOverdue.title}” (${worstOverdue.daysLate} day${worstOverdue.daysLate === 1 ? "" : "s"} overdue)`
     : undefined;

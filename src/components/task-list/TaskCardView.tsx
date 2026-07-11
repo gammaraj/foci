@@ -77,8 +77,6 @@ interface TaskCardViewProps {
   onViewOverdue?: () => void;
   /** When true, hide the overdue banner (urgency summary shown in header instead). */
   suppressOverdueBanner?: boolean;
-  /** Softer per-project overdue labels when global urgency bar is visible. */
-  softProjectOverdueLabels?: boolean;
   /** Soft flash highlight for jump-to-card (e.g. most-late CTA). */
   highlightProjectId?: string | null;
 }
@@ -183,12 +181,10 @@ function CardHeaderCounts({
   open,
   completed,
   overdue,
-  softOverdueLabel = false,
 }: {
   open: number;
   completed: number;
   overdue: number;
-  softOverdueLabel?: boolean;
 }) {
   if (open === 0 && completed === 0) return null;
 
@@ -200,13 +196,7 @@ function CardHeaderCounts({
       {overdue > 0 && (
         <>
           <span className="text-slate-400 dark:text-slate-500"> · </span>
-          <span
-            className={
-              softOverdueLabel
-                ? "text-amber-700 dark:text-amber-300 font-medium"
-                : "urgency-text--mild font-medium"
-            }
-          >
+          <span className="urgency-text--mild font-medium">
             {overdue} late
           </span>
         </>
@@ -402,8 +392,10 @@ function CardTaskRow({
             {task.dueDate && <CardDuePrefix task={task} />}
             <span
               ref={titleTextRef}
-              className={`min-w-0 break-words sm:break-normal ${
-                titleExpanded ? "whitespace-normal" : "line-clamp-2 sm:line-clamp-1 sm:truncate break-all"
+              className={`min-w-0 ${
+                titleExpanded
+                  ? "whitespace-normal break-words"
+                  : "line-clamp-2 sm:line-clamp-1 sm:truncate break-words"
               }`}
             >
               {task.title}
@@ -517,7 +509,6 @@ function ProjectCard({
   onOpenProject,
   onQuickAdd,
   onToggleProjectFavorite,
-  softProjectOverdueLabels = false,
   collapsed = false,
   onToggleCollapsed,
   highlighted = false,
@@ -556,7 +547,6 @@ function ProjectCard({
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
-  softProjectOverdueLabels?: boolean;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
   highlighted?: boolean;
@@ -602,7 +592,7 @@ function ProjectCard({
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""} ${
         highlighted
-          ? "ring-2 ring-red-400 dark:ring-red-500 shadow-[0_0_0_4px_rgba(248,113,113,0.28)] dark:shadow-[0_0_0_4px_rgba(239,68,68,0.25)]"
+          ? "ring-2 ring-[var(--urgency-chip)] dark:ring-rose-400 shadow-[0_0_0_4px_color-mix(in_srgb,var(--urgency-chip)_22%,transparent)]"
           : ""
       }`}
       style={{
@@ -746,7 +736,6 @@ function ProjectCard({
             open={tasks.length}
             completed={completedCount}
             overdue={overdueCount}
-            softOverdueLabel={softProjectOverdueLabels}
           />
         </div>
       </header>
@@ -872,7 +861,6 @@ export default function TaskCardView({
   overdueCount = 0,
   onViewOverdue,
   suppressOverdueBanner = false,
-  softProjectOverdueLabels = false,
   highlightProjectId = null,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
@@ -1014,7 +1002,6 @@ export default function TaskCardView({
               onOpenProject={onOpenProject}
               onQuickAdd={onQuickAdd}
               onToggleProjectFavorite={onToggleProjectFavorite}
-              softProjectOverdueLabels={softProjectOverdueLabels}
               collapsed={collapsedIds.has(project.id)}
               onToggleCollapsed={() => toggleCollapsed(project.id)}
               highlighted={highlightProjectId === project.id}
