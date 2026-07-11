@@ -68,17 +68,17 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
   plan: "AI Plan",
 };
 
-/** Active time/view filters — soft brand blue instead of plain gray. */
+/** Active time/view filters — solid brand blue for clear selection. */
 const FILTER_TAB_ACTIVE =
-  "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/55 dark:ring-[#3a5070] font-semibold";
+  "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
 const FILTER_TAB_INACTIVE =
-  "text-slate-600 dark:text-white/80 hover:text-blue-700 dark:hover:text-white hover:bg-blue-100/70 dark:hover:bg-white/10";
+  "text-slate-700 dark:text-white/85 hover:text-blue-800 dark:hover:text-white hover:bg-white/75 dark:hover:bg-white/10";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
-  "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/55 dark:ring-blue-500/45 font-semibold";
+  "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
 const PROJECT_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-[#131d30] hover:bg-blue-50 dark:hover:bg-[#1a2d4a]";
+  "text-slate-600 dark:text-slate-300 bg-blue-50/90 dark:bg-[#131d30] hover:bg-blue-100 dark:hover:bg-[#1a2d4a]";
 
 const SEG_TAB_PAD = "px-2 py-1 min-h-[2rem] rounded-md text-sm font-medium transition-colors";
 const SEG_TAB_ICON_PAD = `inline-flex items-center gap-1.5 ${SEG_TAB_PAD} whitespace-nowrap`;
@@ -1764,12 +1764,13 @@ export default function TaskList({
         </div>
       ) : (
       <>
-      {/* Header */}
+      {/* Header — title row + controls row */}
       <div
-        className="panel-header-calm no-print px-3 sm:px-4 py-2 sm:py-2.5 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm no-print px-3 sm:px-4 py-2.5 sm:py-3 text-slate-700 dark:text-white rounded-t-2xl"
       >
-        <div className="flex items-center justify-between min-w-0 gap-2">
-          <div className="min-w-0 flex-shrink">
+        {/* Title + urgency + utilities */}
+        <div className="flex items-start justify-between min-w-0 gap-3">
+          <div className="min-w-0 flex-1">
             {projectManageOpen ? (
               <>
                 <button
@@ -1808,9 +1809,9 @@ export default function TaskList({
                 Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
               </button>
             )}
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-1.5 min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white">
               <svg
-                className="w-5 h-5 flex-shrink-0"
+                className="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1825,7 +1826,7 @@ export default function TaskList({
               <span className="shrink-0">
                 Tasks
                 {viewMode === "plan" && (
-                  <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300 normal-case tracking-normal">
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal">
                     {" "}· AI plan
                   </span>
                 )}
@@ -1844,7 +1845,7 @@ export default function TaskList({
               )}
             </h2>
             {showUrgencySummary && (
-              <div className="no-print hidden sm:block pl-7 mt-1 min-w-0 max-w-full">
+              <div className="no-print hidden sm:block pl-7 mt-1.5 min-w-0 max-w-full">
                 <TaskUrgencySummary
                   overdueCount={overdueTasks.length}
                   dueTodayCount={dueExactlyTodayCount}
@@ -1856,7 +1857,7 @@ export default function TaskList({
               </div>
             )}
             {!focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card") && (
-              <p className="no-print text-sm text-slate-600 dark:text-slate-300 font-normal normal-case tracking-normal mt-0 pl-7 leading-snug hidden lg:block line-clamp-1">
+              <p className="no-print text-sm text-blue-800/70 dark:text-blue-200/70 font-normal normal-case tracking-normal mt-1 pl-7 leading-snug hidden lg:block line-clamp-1">
                 {viewMode === "card"
                   ? sortedProjects.length >= 2
                     ? "Top priorities per project · drag ⋮⋮ to reorder"
@@ -1879,10 +1880,74 @@ export default function TaskList({
               </>
             )}
           </div>
-          <div className="no-print flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
-            {/* Time filters - hidden on mobile, shown inline on sm+ */}
-            {!focusMode && !projectManageOpen && (
-            <div className="app-seg-track hidden sm:flex items-center gap-0.5" data-tour="time-filters">
+
+          {/* Utilities — keep out of the filter/view cluster */}
+          <div className="no-print flex items-center gap-0.5 sm:gap-1 flex-shrink-0 pt-0.5">
+            {!projectManageOpen && (
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-blue-800/80 dark:text-blue-200/80 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10 transition-colors"
+                title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
+                aria-label="Print current view"
+                data-tour="print-tasks"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span className="hidden md:inline">Print</span>
+              </button>
+            )}
+            {onOpenSettings && (
+              <TaskPanelMenu
+                user={user}
+                onOpenSettings={onOpenSettings}
+                onToggleFullscreen={onToggleFullscreen}
+                isFullscreen={isFullscreen}
+                templates={TASK_TEMPLATES}
+                onSelectTemplate={applyTemplate}
+                onTogglePlan={() => {
+                  if (viewMode === "plan") {
+                    selectViewMode(viewBeforePlanRef.current);
+                  } else {
+                    viewBeforePlanRef.current =
+                      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
+                        ? viewMode
+                        : "card";
+                    setViewMode("plan");
+                  }
+                  loadSettings().then(setPlanSettings);
+                }}
+                isPlanView={viewMode === "plan"}
+                onPrint={handlePrint}
+                printDisabled={projectManageOpen}
+              />
+            )}
+            {onToggleFullscreen && (
+              <button
+                onClick={onToggleFullscreen}
+                className={`no-print p-2 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-blue-700/70 dark:text-blue-200/60 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10"}`}
+                title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
+                aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
+              >
+                {isFullscreen ? (
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9L4 4m0 0h4M4 4v4m11-1V3m0 0h-4m4 0v4M4 15v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Scope + view controls — own row so filters aren’t jammed into the title */}
+        {!focusMode && !projectManageOpen && (
+          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-2.5 pt-2.5 border-t border-blue-400/25 dark:border-blue-400/15 min-w-0">
+            <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
               <button
                 onClick={() => selectProject(ALL_PROJECTS_ID)}
                 className={`${SEG_TAB_PAD} ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
@@ -1899,7 +1964,7 @@ export default function TaskList({
               >
                 Today
                 {overdueTasks.length > 0 && (
-                  <span className="ml-1 text-xs font-semibold text-red-600 dark:text-red-400 tabular-nums">
+                  <span className={`ml-1 text-xs font-semibold tabular-nums ${isTodayFilter ? "text-white/95" : "text-red-600 dark:text-red-400"}`}>
                     {overdueTasks.length} late
                   </span>
                 )}
@@ -1929,122 +1994,61 @@ export default function TaskList({
                 Year
               </button>
             </div>
-            )}
-            {/* View mode toggles — desktop */}
-            {!projectManageOpen && (
-            <div className="hidden sm:flex items-center gap-2 shrink-0 ml-1 sm:ml-2 pl-2 sm:pl-3 border-l border-slate-300/80 dark:border-[#3a5070]/90" data-tour="view-modes">
-              <span className="hidden md:inline app-section-label text-slate-500 dark:text-slate-400 shrink-0">
+
+            <div className="flex items-center gap-2 shrink-0" data-tour="view-modes">
+              <span className="hidden md:inline app-section-label text-blue-800/60 dark:text-blue-200/55 shrink-0">
                 View
               </span>
               <div className="app-seg-track flex items-center gap-0.5">
-              <button
-                onClick={() => selectViewMode("bucket")}
-                className={`${SEG_TAB_ICON_PAD} ${viewMode === "bucket" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Bucket view — all projects"
-                aria-label="Bucket view"
-              >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
-                </svg>
-                <span>Buckets</span>
-              </button>
-              <button
-                onClick={() => selectViewMode("card")}
-                className={`${SEG_TAB_ICON_PAD} ${viewMode === "card" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Card view — top tasks per project"
-                aria-label="Card view"
-              >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                </svg>
-                <span>Cards</span>
-              </button>
-              <button
-                onClick={() => selectViewMode("list")}
-                className={`${SEG_TAB_ICON_PAD} ${viewMode === "list" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="List view"
-                aria-label="List view"
-              >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-                <span>List</span>
-              </button>
-              <button
-                onClick={() => selectViewMode("calendar")}
-                className={`${SEG_TAB_ICON_PAD} ${viewMode === "calendar" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Calendar view"
-                aria-label="Calendar view"
-              >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="hidden lg:inline">Calendar</span>
-                <span className="lg:hidden">Cal</span>
-              </button>
+                <button
+                  onClick={() => selectViewMode("bucket")}
+                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "bucket" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Bucket view — all projects"
+                  aria-label="Bucket view"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
+                  </svg>
+                  <span>Buckets</span>
+                </button>
+                <button
+                  onClick={() => selectViewMode("card")}
+                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "card" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Card view — top tasks per project"
+                  aria-label="Card view"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                  </svg>
+                  <span>Cards</span>
+                </button>
+                <button
+                  onClick={() => selectViewMode("list")}
+                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "list" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="List view"
+                  aria-label="List view"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <span>List</span>
+                </button>
+                <button
+                  onClick={() => selectViewMode("calendar")}
+                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "calendar" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Calendar view"
+                  aria-label="Calendar view"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="hidden lg:inline">Calendar</span>
+                  <span className="lg:hidden">Cal</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handlePrint}
-                disabled={projectManageOpen}
-                className={`${SEG_TAB_ICON_PAD} ${FILTER_TAB_INACTIVE} disabled:opacity-40 disabled:cursor-not-allowed`}
-                title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
-                aria-label="Print current view"
-                data-tour="print-tasks"
-              >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                <span className="hidden md:inline">Print</span>
-              </button>
             </div>
-            )}
-            {onOpenSettings && (
-              <TaskPanelMenu
-                user={user}
-                onOpenSettings={onOpenSettings}
-                onToggleFullscreen={onToggleFullscreen}
-                isFullscreen={isFullscreen}
-                templates={TASK_TEMPLATES}
-                onSelectTemplate={applyTemplate}
-                onTogglePlan={() => {
-                  if (viewMode === "plan") {
-                    selectViewMode(viewBeforePlanRef.current);
-                  } else {
-                    viewBeforePlanRef.current =
-                      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
-                        ? viewMode
-                        : "card";
-                    setViewMode("plan");
-                  }
-                  loadSettings().then(setPlanSettings);
-                }}
-                isPlanView={viewMode === "plan"}
-                onPrint={handlePrint}
-                printDisabled={projectManageOpen}
-              />
-            )}
-            {/* Fullscreen toggle */}
-            {onToggleFullscreen && (
-              <button
-                onClick={onToggleFullscreen}
-                className={`no-print p-2 rounded-lg transition-colors ${isFullscreen ? "bg-slate-300/70 dark:bg-white/20 text-slate-800 dark:text-white" : "text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white/80 hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
-                title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
-                aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
-              >
-                {isFullscreen ? (
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9L4 4m0 0h4M4 4v4m11-1V3m0 0h-4m4 0v4M4 15v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                )}
-              </button>
-            )}
           </div>
-        </div>
+        )}
 
         {/* Mobile toolbar — single dense row */}
         {!focusMode && !projectManageOpen && (

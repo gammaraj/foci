@@ -12,7 +12,7 @@ import {
 import { projectTabLabel, projectTabTooltip } from "@/components/task-list/utils";
 
 const SELECT_CLASS =
-  "min-w-0 px-2 py-1.5 min-h-[2.25rem] text-xs font-medium rounded-md bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.35rem_center] bg-no-repeat pr-6 truncate";
+  "min-w-0 px-2 py-1.5 min-h-[2.25rem] text-xs font-medium rounded-md bg-blue-50/90 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-blue-200/80 dark:border-[#243350] outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.35rem_center] bg-no-repeat pr-6 truncate";
 
 type TimeScopeId =
   | typeof ALL_PROJECTS_ID
@@ -143,7 +143,7 @@ export function MobileTaskToolbar({
         <button
           type="button"
           onClick={onManageProjects}
-          className="shrink-0 inline-flex items-center justify-center px-2 py-1.5 min-h-[2.25rem] min-w-[2.25rem] rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-500 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-600/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="shrink-0 inline-flex items-center justify-center px-2 py-1.5 min-h-[2.25rem] min-w-[2.25rem] rounded-md border border-blue-200/80 dark:border-[#243350] bg-white dark:bg-[#131d30] text-blue-600/80 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
           data-tour="manage-projects"
           title="Manage projects"
           aria-label="Manage projects"
