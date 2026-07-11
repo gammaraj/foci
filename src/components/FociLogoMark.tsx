@@ -69,7 +69,7 @@ export function FociLogoMark({
   );
 }
 
-/** Lowercase wordmark — saturated orange aligned with icon; “i” tittle echoes aperture dot */
+/** Lowercase wordmark — saturated blue aligned with icon; “i” tittle echoes aperture dot */
 export function FociWordmark({
   className = "",
   tone = "dark",
