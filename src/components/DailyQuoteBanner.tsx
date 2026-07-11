@@ -27,15 +27,14 @@ export default function DailyQuoteBanner({
   const hasFocusStrip = timerToolbar || musicToolbar;
   const threeColumnStrip = hasFocusStrip && timerToolbar && musicToolbar;
 
-  // Mobile: collapsed by default so tasks are immediately visible.
-  // Persisted across page loads.
-  const [mobileExpanded, setMobileExpanded] = useState(false);
+  // Mobile: weather/music expanded by default; collapse preference persists.
+  const [mobileExpanded, setMobileExpanded] = useState(true);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem("foci-status-expanded");
-    // Keep weather/music collapsed on mobile so tasks stay above the fold.
-    if (saved === "1" && window.innerWidth >= 640) setMobileExpanded(true);
+    if (saved === "0") setMobileExpanded(false);
+    else if (saved === "1") setMobileExpanded(true);
   }, []);
 
   const collapseAllMobile = () => {
