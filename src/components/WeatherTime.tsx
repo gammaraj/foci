@@ -59,17 +59,22 @@ function WeatherStat({
   label,
   value,
   title,
+  className = "",
 }: {
   label: string;
   value: string;
   title?: string;
+  className?: string;
 }) {
   return (
-    <span className="inline-flex flex-col items-center leading-none gap-0.5" title={title}>
-      <span className="app-caption font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+    <span
+      className={`inline-flex flex-col items-center justify-center gap-1 ${className}`}
+      title={title}
+    >
+      <span className="text-xs font-semibold uppercase tracking-wide !leading-none text-slate-400 dark:text-slate-500">
         {label}
       </span>
-      <span className="text-xs font-semibold tabular-nums text-slate-600 dark:text-slate-300">
+      <span className="text-xs font-semibold tabular-nums !leading-none text-slate-600 dark:text-slate-300">
         {value}
       </span>
     </span>
@@ -146,7 +151,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
     if (embedded) {
       return (
         <div
-          className={`flex items-center gap-2 w-full min-w-0 ${chrome}`}
+          className={`flex items-center gap-1.5 sm:gap-2 w-full min-w-0 ${chrome}`}
           title={weatherTitle || undefined}
         >
           <div className="flex items-baseline gap-1.5 shrink-0">
@@ -161,11 +166,11 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
           {weather && (
             <>
               <span className="h-5 w-px bg-slate-200/80 dark:bg-[#243350] shrink-0" aria-hidden />
-              <div className="flex items-center gap-1.5 min-w-0 shrink">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 <span className="text-sm leading-none shrink-0" aria-hidden>
                   {weather.icon}
                 </span>
-                <span className="text-sm font-semibold tabular-nums text-slate-800 dark:text-slate-100 whitespace-nowrap shrink-0">
+                <span className="text-sm font-semibold tabular-nums leading-none text-slate-800 dark:text-slate-100 whitespace-nowrap">
                   {weather.temp}°{unitSuffix}
                 </span>
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden lg:inline max-w-[5.5rem]">
@@ -173,15 +178,31 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 ml-auto overflow-hidden">
                 {weather.low != null && weather.high != null && (
-                  <WeatherStat label="Today" value={`${weather.low}°–${weather.high}°`} />
+                  <>
+                    {/* Mobile: single-line high/low — stacked labels collide with temp at narrow widths */}
+                    <span className="sm:hidden text-xs font-semibold tabular-nums !leading-none text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
+                      {weather.low}°–{weather.high}°
+                    </span>
+                    <WeatherStat
+                      className="hidden sm:inline-flex"
+                      label="Today"
+                      value={`${weather.low}°–${weather.high}°`}
+                    />
+                  </>
                 )}
                 {weather.humidity != null && (
-                  <WeatherStat label="Humid" value={`${weather.humidity}%`} title="Relative humidity" />
+                  <WeatherStat
+                    className="hidden sm:inline-flex"
+                    label="Humid"
+                    value={`${weather.humidity}%`}
+                    title="Relative humidity"
+                  />
                 )}
                 {weather.wind != null && (
                   <WeatherStat
+                    className="hidden md:inline-flex"
                     label="Wind"
                     value={`${weather.wind} ${windLabel(weather.windUnit)}`}
                     title="Wind speed"
@@ -189,7 +210,7 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
                 )}
                 {weather.city && (
                   <span
-                    className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[5.5rem] xl:max-w-[7rem]"
+                    className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 max-w-[4.5rem] sm:max-w-[5.5rem] xl:max-w-[7rem]"
                     title={weather.city}
                   >
                     {weather.city}
