@@ -156,7 +156,7 @@ export function TaskDetailPanel({
           ariaLabel="Set due date"
           className={`${chipBase} ${
             task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
-              ? "border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20"
+              ? "border-[var(--urgency-border)] text-[var(--urgency)] bg-[var(--urgency-soft-bg)] dark:border-rose-800 dark:text-rose-300 dark:bg-rose-950/30"
               : task.dueDate && task.dueDate === getToday()
                 ? "border-orange-200 dark:border-orange-800 text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
                 : task.dueDate

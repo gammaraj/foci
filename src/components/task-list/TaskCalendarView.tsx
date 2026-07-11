@@ -189,7 +189,7 @@ export default function TaskCalendarView({
                     : t.completed
                       ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                       : hasOverdue && !t.completed
-                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                        ? "urgency-chip--soft"
                         : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
                   return (
                     <div
@@ -215,7 +215,7 @@ export default function TaskCalendarView({
       <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-400 dark:text-slate-300">
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Pending</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> Done</div>
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> Overdue</div>
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[var(--urgency-chip)]" /> Overdue</div>
       </div>
 
       {selectedDay && (
@@ -269,12 +269,12 @@ export default function TaskCalendarView({
                         : activeTaskId === task.id
                           ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
                           : selectedDay < todayStr
-                            ? "border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-900/10"
+                            ? "urgency-surface border"
                             : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                   }`}
                 >
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-red-400" : "bg-blue-400"
+                    task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-[var(--urgency-chip)]" : "bg-blue-400"
                   }`} />
                   <span
                     className={`text-sm flex-1 truncate ${

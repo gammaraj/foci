@@ -31,7 +31,7 @@ export function TimeFilterBanner({
         <span>{datedCount} due</span>
         {undatedCount > 0 && <span>{undatedCount} without a date hidden</span>}
         {overdueCount > 0 && (
-          <span className="text-red-600 dark:text-red-400 font-medium">{overdueCount} overdue</span>
+          <span className="urgency-text--mild font-medium">{overdueCount} overdue</span>
         )}
       </p>
     </div>

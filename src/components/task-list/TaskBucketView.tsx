@@ -147,8 +147,8 @@ function DueBadge({
   } ${
     overdue
       ? criticalOverdue
-        ? "text-red-800 dark:text-red-200 bg-red-200/90 dark:bg-red-900/60 border border-red-400/80 dark:border-red-700/70"
-        : "text-red-700 dark:text-red-300 bg-red-100/90 dark:bg-red-950/50 border border-red-200/80 dark:border-red-800/50"
+        ? "urgency-text--severe urgency-chip--soft border border-[var(--urgency-border)]"
+        : "urgency-text--mild urgency-chip--soft"
       : blocked
         ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
         : isToday
@@ -296,7 +296,7 @@ function BucketTaskCard({
             : isBlocked
               ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               : isOverdue
-              ? "border-red-200/80 dark:border-red-800/50 border-l-[3px] border-l-red-500 dark:border-l-red-400 bg-red-50/75 dark:bg-red-950/45 hover:border-red-300/90 dark:hover:border-red-700/60 hover:bg-red-50/90 dark:hover:bg-red-950/55"
+              ? "urgency-surface urgency-surface--overdue border"
               : isDueToday
               ? "border-amber-200/70 dark:border-amber-800/45 bg-amber-50/65 dark:bg-amber-950/38 hover:border-amber-300/85 dark:hover:border-amber-700/55 hover:bg-amber-50/85 dark:hover:bg-amber-950/48"
               : isLowUrgency
@@ -356,7 +356,7 @@ function BucketTaskCard({
             type="button"
             onClick={() => onStartEdit?.(task)}
             className={`flex-1 min-w-0 text-left text-sm font-medium leading-snug line-clamp-2 hover:text-slate-900 dark:hover:text-white transition-colors ${
-              isOverdue ? "text-red-700 dark:text-red-300" : "text-slate-800 dark:text-slate-100"
+              isOverdue ? "urgency-text--mild" : "text-slate-800 dark:text-slate-100"
             }`}
             title={task.title}
           >
@@ -365,7 +365,7 @@ function BucketTaskCard({
         ) : (
           <p
             className={`flex-1 min-w-0 text-sm font-medium leading-snug line-clamp-2 ${
-              isOverdue ? "text-red-700 dark:text-red-300" : "text-slate-800 dark:text-slate-100"
+              isOverdue ? "urgency-text--mild" : "text-slate-800 dark:text-slate-100"
             }`}
             title={task.title}
           >
@@ -431,7 +431,7 @@ function BucketTaskCard({
           {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
           {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
           {isOverdue && (
-            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50">
+            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded urgency-chip--soft">
               Overdue
             </span>
           )}
@@ -731,7 +731,7 @@ function BucketColumn({
                       onClick={() => toggleLane(swimlaneId)}
                       className={`w-full flex items-center gap-1.5 bucket-lane-label px-1 mb-1.5 text-left ${
                         lane.id === "overdue"
-                          ? "text-red-600 dark:text-red-400"
+                          ? "urgency-text--mild"
                           : lane.id === "blocked"
                             ? "text-amber-700 dark:text-amber-400"
                             : lane.id === "someday"
@@ -764,7 +764,7 @@ function BucketColumn({
                     <p
                       className={`bucket-lane-label px-1 mb-1.5 ${
                         lane.id === "overdue"
-                          ? "text-red-600 dark:text-red-400"
+                          ? "urgency-text--mild"
                           : lane.id === "blocked"
                             ? "text-amber-700 dark:text-amber-400"
                             : lane.id === "someday"

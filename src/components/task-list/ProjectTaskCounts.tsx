@@ -17,7 +17,7 @@ export function ProjectTaskCounts({
   const numClass = "font-semibold tabular-nums text-slate-900 dark:text-slate-50";
   const labelClass = "font-medium text-slate-700 dark:text-slate-300";
   const doneClass = "font-medium tabular-nums text-emerald-700 dark:text-emerald-300";
-  const lateClass = "font-medium tabular-nums text-red-600 dark:text-red-300";
+  const lateClass = "font-medium tabular-nums urgency-text--mild";
 
   const content = (
     <span className="inline-flex items-center flex-wrap gap-x-1">

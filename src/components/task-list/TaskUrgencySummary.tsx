@@ -55,6 +55,13 @@ export function TaskUrgencySummary({
 
   const pad = compact ? "px-1.5 py-0.5 rounded-md text-xs" : "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm";
 
+  const worstPillClass =
+    worstOverdue && worstOverdue.daysLate >= 5
+      ? "urgency-pill--critical"
+      : worstOverdue && worstOverdue.daysLate >= 3
+        ? "urgency-pill--solid"
+        : "urgency-pill";
+
   return (
     <div
       className={`urgency-summary-bar inline-flex items-center gap-1.5 max-w-full overflow-x-auto scrollbar-hide ${className}`}
@@ -65,11 +72,11 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={onViewOverdue}
-          className={`inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 border border-red-200/80 dark:border-red-800/50 bg-red-50/80 dark:bg-red-950/30 text-red-700 dark:text-red-300 hover:bg-red-100/80 dark:hover:bg-red-900/40 transition-colors`}
+          className={`urgency-pill inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors`}
           title={`${overdueCount} overdue — view all`}
         >
           {!compact && (
-            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold tabular-nums leading-none">
+            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full urgency-chip--mid text-xs font-bold tabular-nums leading-none">
               {overdueCount}
             </span>
           )}
@@ -81,18 +88,12 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={handleWorst}
-          className={`inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 border transition-colors max-w-[14rem] ${
-            worstOverdue.daysLate >= 5
-              ? "border-red-800/70 dark:border-red-500/60 bg-red-700 text-white hover:bg-red-800 dark:bg-red-800 dark:hover:bg-red-700"
-              : worstOverdue.daysLate >= 3
-                ? "border-red-500/80 dark:border-red-600/60 bg-red-600 text-white hover:bg-red-700"
-                : "border-red-300/90 dark:border-red-700/50 bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200 hover:bg-red-200/90"
-          }`}
+          className={`${worstPillClass} inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors max-w-[14rem]`}
           title={worstTitle}
         >
           <span
             className={`inline-flex items-center justify-center min-w-[1.35rem] h-4 sm:h-5 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${
-              worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "bg-red-600 text-white"
+              worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "urgency-chip--mid"
             }`}
           >
             {worstOverdue.daysLate}d

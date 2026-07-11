@@ -385,7 +385,7 @@ function ProjectRow({
                 <span
                   className={`text-xs ml-1 ${
                     isDueDateOverdue(project.dueDate)
-                      ? "text-red-600 dark:text-red-300 font-medium"
+                      ? "urgency-text--mild font-medium"
                       : "text-slate-500 dark:text-slate-400"
                   }`}
                 >

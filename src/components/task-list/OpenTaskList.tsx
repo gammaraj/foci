@@ -110,7 +110,7 @@ export default function OpenTaskList({
     overdue: {
       label: "Overdue",
       headerModifier: "task-list-section-header--overdue",
-      labelClass: "text-red-700 dark:text-red-300",
+      labelClass: "urgency-text--mild",
     },
     upcoming: {
       label: "Upcoming",
@@ -175,7 +175,7 @@ export default function OpenTaskList({
                 : isBlocked
                   ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 shadow-sm"
                   : isOverdue
-                  ? "border-slate-300 dark:border-[#1e3050] hover:bg-red-50/40 dark:hover:bg-red-950/15 border-l-[3px] border-l-red-500 dark:border-l-rose-500 shadow-sm"
+                  ? "urgency-surface urgency-surface--overdue border shadow-sm"
                   : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
           } ${dragTaskId === task.id ? "opacity-50" : ""} ${
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
@@ -194,7 +194,7 @@ export default function OpenTaskList({
           />
           <div className="flex-1 min-w-0">
             <div className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-medium break-words leading-normal ${
-              isOverdue ? "text-red-700 dark:text-red-300" : "text-slate-800 dark:text-slate-50"
+              isOverdue ? "urgency-text--mild" : "text-slate-800 dark:text-slate-50"
             }`}>
               {editingId === task.id ? (
                 <input
@@ -223,7 +223,7 @@ export default function OpenTaskList({
                 <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
               )}
               {isOverdue && (
-                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50">
+                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded urgency-chip--soft">
                   OVERDUE
                 </span>
               )}

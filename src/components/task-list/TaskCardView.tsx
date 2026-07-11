@@ -119,34 +119,24 @@ function overdueSeverity(daysLate: number): "mild" | "medium" | "severe" {
 
 function overdueRowClasses(daysLate: number): string {
   const severity = overdueSeverity(daysLate);
-  if (severity === "severe") {
-    return "bg-red-200/80 dark:bg-red-950/55 hover:bg-red-200 dark:hover:bg-red-950/70 border-l-red-700 dark:border-l-red-500";
-  }
-  if (severity === "medium") {
-    return "bg-red-100/85 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/55 border-l-red-600 dark:border-l-red-400";
-  }
-  return "bg-red-50/80 dark:bg-red-950/30 hover:bg-red-50 dark:hover:bg-red-950/45 border-l-red-400 dark:border-l-red-400/80";
+  if (severity === "severe") return "urgency-row--severe border-l-[3px]";
+  if (severity === "medium") return "urgency-row--medium border-l-[3px]";
+  return "urgency-row--mild border-l-[3px]";
 }
 
 function overdueTitleClass(daysLate: number): string {
   const severity = overdueSeverity(daysLate);
-  if (severity === "severe") return "text-red-900 dark:text-red-200 font-semibold";
-  if (severity === "medium") return "text-red-800 dark:text-red-200 font-medium";
-  return "text-red-700 dark:text-red-300 font-medium";
+  if (severity === "severe") return "urgency-text--severe font-semibold";
+  if (severity === "medium") return "urgency-text--medium font-medium";
+  return "urgency-text--mild font-medium";
 }
 
-/** Intensity ramp: light outline at 1d → deep fill at 5d+. */
+/** Intensity ramp: soft outline at 1d → berry fill at 5d+. */
 function overdueDayChipClass(daysLate: number): string {
-  if (daysLate >= 5) {
-    return "bg-red-800 text-white ring-1 ring-red-900/40 dark:bg-red-700 dark:ring-red-500/40";
-  }
-  if (daysLate >= 3) {
-    return "bg-red-600 text-white dark:bg-red-600";
-  }
-  if (daysLate >= 2) {
-    return "bg-red-500 text-white dark:bg-red-500";
-  }
-  return "bg-red-100 text-red-700 border border-red-300 dark:bg-red-950/40 dark:text-red-300 dark:border-red-700/50";
+  if (daysLate >= 5) return "urgency-chip--strong";
+  if (daysLate >= 3) return "urgency-chip--mid";
+  if (daysLate >= 2) return "urgency-chip--mid";
+  return "urgency-chip--soft";
 }
 
 function CardDuePrefix({ task }: { task: Task }) {
@@ -164,10 +154,10 @@ function CardDuePrefix({ task }: { task: Task }) {
       className={`shrink-0 font-semibold tabular-nums text-xs ${
         overdue
           ? severity === "severe"
-            ? "text-red-800 dark:text-red-200"
+            ? "urgency-text--severe"
             : severity === "medium"
-              ? "text-red-700 dark:text-red-300"
-              : "text-red-600 dark:text-red-300"
+              ? "urgency-text--medium"
+              : "urgency-text--mild"
           : blocked
             ? "text-amber-700 dark:text-amber-300"
             : isToday
@@ -214,7 +204,7 @@ function CardHeaderCounts({
             className={
               softOverdueLabel
                 ? "text-amber-700 dark:text-amber-300 font-medium"
-                : "text-red-600 dark:text-red-300 font-medium"
+                : "urgency-text--mild font-medium"
             }
           >
             {overdue} late
@@ -944,9 +934,9 @@ export default function TaskCardView({
             <button
               type="button"
               onClick={onViewOverdue}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/30 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors touch-target-sm !min-h-0"
+              className="urgency-pill inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors touch-target-sm !min-h-0"
             >
-              <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold tabular-nums">
+              <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full urgency-chip--mid text-xs font-bold tabular-nums">
                 {overdueCount}
               </span>
               overdue — view all

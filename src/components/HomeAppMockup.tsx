@@ -160,7 +160,7 @@ export default function HomeAppMockup() {
               surface="dark"
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex-shrink-0"
             />
-            <div className="flex flex-col items-start gap-0.5 min-w-0">
+            <div className="flex flex-col items-start gap-1 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_MOCKUP} tone="dark" />
               <p className={`${FOCI_TAGLINE_MOCKUP} ${FOCI_TAGLINE_ON_DARK} whitespace-nowrap`}>
                 {FOCI_TAGLINE_FOCUS}

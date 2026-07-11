@@ -57,26 +57,26 @@ export function getFociLogoShadow(surface: "dark" | "light"): string {
 export const FOCI_TAGLINE_FOCUS = "FOCUS · FLOW · FINISH";
 export const FOCI_TAGLINE_CALM = "deep work, one calm window";
 
-/** Wordmark typography — +10% vs standard Tailwind text steps (nav, lockup, mockup, inline). */
-export const FOCI_WORDMARK_NAV = "text-[1.25rem] sm:text-[1.375rem] font-bold leading-none";
-export const FOCI_WORDMARK_LOCKUP = "text-[1.65rem] sm:text-[2.0625rem] font-bold leading-none";
-export const FOCI_WORDMARK_MOCKUP = "text-[1.2375rem] sm:text-[1.375rem] font-bold leading-none";
-export const FOCI_WORDMARK_INLINE = "text-[0.9625rem] font-semibold";
-export const FOCI_WORDMARK_OG_PX = 79;
+/** Wordmark typography — clearly dominant over the all-caps tagline. */
+export const FOCI_WORDMARK_NAV = "text-[1.5rem] sm:text-[1.6875rem] font-bold leading-none";
+export const FOCI_WORDMARK_LOCKUP = "text-[1.875rem] sm:text-[2.25rem] font-bold leading-none";
+export const FOCI_WORDMARK_MOCKUP = "text-[1.375rem] sm:text-[1.5rem] font-bold leading-none";
+export const FOCI_WORDMARK_INLINE = "text-[1rem] font-semibold";
+export const FOCI_WORDMARK_OG_PX = 86;
 
-/** Tagline typography — subordinate to wordmark, but readable (≥12px). */
+/** Tagline typography — subordinate (smaller, lighter weight, softer color). */
 export const FOCI_TAGLINE_NAV =
-  "text-[0.6875rem] sm:text-[0.75rem] font-semibold tracking-[0.1em] sm:tracking-[0.12em] uppercase leading-none";
+  "text-[0.625rem] sm:text-[0.6875rem] font-medium tracking-[0.08em] sm:tracking-[0.1em] uppercase leading-none";
 export const FOCI_TAGLINE_LOCKUP =
-  "text-[9px] sm:text-[10px] font-semibold tracking-[0.12em] sm:tracking-[0.13em] uppercase leading-none";
+  "text-[9px] sm:text-[10px] font-medium tracking-[0.1em] sm:tracking-[0.12em] uppercase leading-none";
 export const FOCI_TAGLINE_MOCKUP =
-  "text-[7.5px] sm:text-[8.5px] font-semibold tracking-[0.11em] uppercase leading-none";
-export const FOCI_TAGLINE_OG_PX = 13;
+  "text-[7px] sm:text-[8px] font-medium tracking-[0.1em] uppercase leading-none";
+export const FOCI_TAGLINE_OG_PX = 12;
 
-/** Tagline color on dark surfaces — blue-300 */
-export const FOCI_TAGLINE_ON_DARK = "text-blue-300";
-/** Tagline color on light surfaces — blue-700 */
-export const FOCI_TAGLINE_ON_LIGHT = "text-blue-700";
+/** Tagline color on dark surfaces — softer than wordmark */
+export const FOCI_TAGLINE_ON_DARK = "text-blue-300/75";
+/** Tagline color on light surfaces — softer than wordmark */
+export const FOCI_TAGLINE_ON_LIGHT = "text-blue-700/65";
 
 /** Ring geometry for 32×32 viewBox */
 export const FOCI_RING = {

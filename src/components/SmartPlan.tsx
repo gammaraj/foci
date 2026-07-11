@@ -29,7 +29,7 @@ function TaskRow({
   return (
     <div
       className={`group flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-2 rounded-lg transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1a2d4a] ${
-        st.overdue ? "border-l-2 border-red-400" : st.atRisk ? "border-l-2 border-amber-600" : ""
+        st.overdue ? "border-l-2 border-[var(--urgency-chip)]" : st.atRisk ? "border-l-2 border-amber-600" : ""
       }`}
       onClick={() => onStartTask(t.id)}
     >
@@ -48,7 +48,7 @@ function TaskRow({
             {t.title}
           </span>
           {st.overdue && (
-            <span className="text-xs font-medium text-red-500 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
+            <span className="text-xs font-medium urgency-chip--soft px-1.5 py-0.5 rounded flex-shrink-0">
               ⚠ Overdue
             </span>
           )}
@@ -161,9 +161,9 @@ export default function SmartPlan({
           <div className="text-xs text-slate-500 dark:text-slate-300">Days to Clear</div>
         </div>
         {plan.summary.overdueCount > 0 && (
-          <div className="bg-red-50 dark:bg-red-900/15 rounded-xl px-3 py-2.5 text-center">
-            <div className="text-lg font-bold text-red-600 dark:text-red-400">{plan.summary.overdueCount}</div>
-            <div className="text-xs text-red-500 dark:text-red-400">Overdue</div>
+          <div className="rounded-xl px-3 py-2.5 text-center urgency-surface border">
+            <div className="text-lg font-bold urgency-text--mild">{plan.summary.overdueCount}</div>
+            <div className="text-xs urgency-text--mild">Overdue</div>
           </div>
         )}
         {plan.summary.atRiskCount > 0 && (
