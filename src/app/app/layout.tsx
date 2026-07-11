@@ -3,7 +3,7 @@ import { absolutePageTitle } from "@/lib/site-metadata";
 
 const title = "Foci App – Free Pomodoro Timer, Tasks & Study Music";
 const description =
-  "Open the Foci app — free Pomodoro timer with task tracking, Smart Plan, daily goals, brown noise, and lo-fi. No signup. Start a focus session at usefoci.com/app.";
+  "Open the Foci app — free Pomodoro timer with card/bucket task views, Smart Plan, daily goals, brown noise, and lo-fi. No signup. Start at usefoci.com/app.";
 
 export const metadata: Metadata = {
   title: absolutePageTitle(title),
@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     "tomato timer",
     "concentration timer",
     "time management app",
+    "card view tasks",
+    "kanban bucket board",
+    "drag reorder tasks",
   ],
   alternates: { canonical: "/app" },
   openGraph: {

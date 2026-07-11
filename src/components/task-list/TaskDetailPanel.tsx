@@ -8,6 +8,13 @@ import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { handleOverlayDismiss } from "@/components/task-list/dismiss-overlays";
 
+const chipBase =
+  "inline-flex w-full items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors text-left min-w-0";
+const chipIdle =
+  "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30]";
+const chipEmpty =
+  "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:text-cyan-500";
+
 export interface TaskDetailPanelProps {
   task: Task;
   variant?: "inline" | "drawer";
@@ -42,6 +49,8 @@ export interface TaskDetailPanelProps {
   onDeleteTask?: () => void;
   onStartTask?: () => void;
   onDeselectTask?: () => void;
+  /** Flush drafts and close the panel / drawer. */
+  onSave?: () => void;
   /** When subtasks are shown inline below the task row */
   hideSubtasks?: boolean;
 }
@@ -80,9 +89,10 @@ export function TaskDetailPanel({
   onDeleteTask,
   onStartTask,
   onDeselectTask,
+  onSave,
   hideSubtasks = false,
 }: TaskDetailPanelProps) {
-  const pad = variant === "drawer" ? "px-4" : "px-4";
+  const pad = "px-4";
   const wrapperClass =
     variant === "inline"
       ? `border border-t-0 rounded-b-xl py-3 space-y-2 ${
@@ -91,6 +101,13 @@ export function TaskDetailPanel({
             : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
         }`
       : "py-2 space-y-2";
+
+  const isFocused = activeTaskId === task.id;
+  const isInProgress = isFocused && isTimerRunning;
+
+  const handleSave = () => {
+    onSave?.();
+  };
 
   return (
     <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
@@ -114,7 +131,11 @@ export function TaskDetailPanel({
           <button
             type="button"
             onClick={onStartEditDesc}
-            className="w-full text-left px-3 py-2 text-sm rounded-lg border border-dashed border-slate-200 dark:border-[#243350] hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:outline-none"
+            className={`w-full text-left px-3 py-2 text-sm rounded-lg border transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:outline-none ${
+              task.description
+                ? "border-slate-200 dark:border-[#243350] hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                : chipEmpty
+            }`}
           >
             {task.description ? (
               <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.description}</span>
@@ -125,37 +146,39 @@ export function TaskDetailPanel({
         )}
       </div>
 
-      <div className={`${pad} pb-2 flex flex-wrap items-center gap-2`}>
+      <div className={`${pad} pb-2 grid grid-cols-2 gap-2`}>
         <DueDateField
           value={task.dueDate}
           onChange={onSetDueDate}
           requireExplicitPick={!task.dueDate}
           ariaLabel="Set due date"
-          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+          className={`${chipBase} ${
             task.dueDate && !task.completed && isDueDateOverdue(task.dueDate)
               ? "border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20"
               : task.dueDate && task.dueDate === getToday()
                 ? "border-orange-200 dark:border-orange-800 text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
                 : task.dueDate
-                  ? "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 bg-white dark:bg-[#131d30]"
-                  : "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-cyan-300 dark:hover:border-cyan-600 hover:text-cyan-500"
+                  ? chipIdle
+                  : chipEmpty
           }`}
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          {task.dueDate ? (
-            <>
-              {formatDueDate(task.dueDate)}
-              {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
-            </>
-          ) : (
-            "Set due date"
-          )}
+          <span className="truncate">
+            {task.dueDate ? (
+              <>
+                {formatDueDate(task.dueDate)}
+                {!task.completed && isDueDateOverdue(task.dueDate) && " (overdue)"}
+              </>
+            ) : (
+              "Set due date"
+            )}
+          </span>
         </DueDateField>
 
-        <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
-          <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <div className={`${chipBase} ${chipIdle}`}>
+          <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
           </svg>
           <select
@@ -164,7 +187,7 @@ export function TaskDetailPanel({
               const value = e.target.value;
               onSetPriority(value ? (parseInt(value, 10) as TaskPriority) : undefined);
             }}
-            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer max-w-[6.5rem]"
+            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer"
             aria-label="Priority"
           >
             <option value="">No priority</option>
@@ -177,45 +200,45 @@ export function TaskDetailPanel({
         <button
           type="button"
           onClick={() => onSetBlocked(!task.blocked)}
-          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+          className={`${chipBase} ${
             task.blocked
               ? "border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40"
-              : "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30] hover:border-amber-300 dark:hover:border-amber-700 hover:text-amber-700 dark:hover:text-amber-300"
+              : `${chipIdle} hover:border-amber-300 dark:hover:border-amber-700 hover:text-amber-700 dark:hover:text-amber-300`
           }`}
           aria-pressed={!!task.blocked}
           title={task.blocked ? "Clear waiting status" : "Mark as waiting on something external"}
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          {task.blocked ? "Waiting" : "Mark waiting"}
+          <span className="truncate">{task.blocked ? "Waiting" : "Mark waiting"}</span>
         </button>
 
         <button
           type="button"
           onClick={() => onSetSomeday(!task.someday)}
-          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors ${
+          className={`${chipBase} ${
             task.someday
               ? "border-violet-300 dark:border-violet-700 text-violet-800 dark:text-violet-200 bg-violet-50 dark:bg-violet-950/40"
-              : "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30] hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-300"
+              : `${chipIdle} hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-300`
           }`}
           aria-pressed={!!task.someday}
           title={task.someday ? "Return to active inbox" : "Defer to someday/maybe — clears due date"}
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
           </svg>
-          {task.someday ? "Someday" : "Mark someday"}
+          <span className="truncate">{task.someday ? "Someday" : "Mark someday"}</span>
         </button>
 
-        <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]">
-          <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <div className={`${chipBase} ${chipIdle}`}>
+          <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <select
             value={task.recurrence ?? ""}
             onChange={(e) => onSetRecurrence((e.target.value || undefined) as RecurrenceType | undefined)}
-            className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer"
+            className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer"
             aria-label="Recurrence"
           >
             <option value="">No repeat</option>
@@ -227,14 +250,14 @@ export function TaskDetailPanel({
         </div>
 
         {activeProjects.length > 1 && (
-          <div className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] min-w-0 max-w-full">
+          <div className={`${chipBase} ${chipIdle}`}>
             <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
             <select
               value={task.projectId}
               onChange={(e) => onMoveToProject(e.target.value)}
-              className="text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer min-w-0 max-w-[8rem] truncate"
+              className="flex-1 min-w-0 text-xs bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-cyan-400 cursor-pointer truncate"
               aria-label="Move to project"
             >
               {activeProjects.map((p) => (
@@ -245,12 +268,54 @@ export function TaskDetailPanel({
             </select>
           </div>
         )}
+
+        {onStartTask && (
+          isInProgress ? (
+            <span
+              className={`${chipBase} border-cyan-500/50 bg-cyan-600 text-white`}
+              title="Timer is running on this task"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
+              <span className="truncate">In progress</span>
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                if (isFocused) onDeselectTask?.();
+                else onStartTask();
+              }}
+              className={`${chipBase} ${
+                isFocused
+                  ? "border-cyan-400/60 dark:border-cyan-500/50 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-900/25"
+                  : `${chipIdle} hover:border-cyan-400 dark:hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-300`
+              }`}
+              title={
+                isFocused
+                  ? "Deselect this task"
+                  : isTimerRunning
+                    ? "Switch focus to this task"
+                    : "Focus on this task and start the timer"
+              }
+              aria-pressed={isFocused}
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="truncate">
+                {isFocused ? "Focused" : isTimerRunning ? "Switch focus" : "Focus"}
+              </span>
+            </button>
+          )
+        )}
       </div>
 
       {!hideSubtasks && (
         <TaskSubtaskSection
           task={task}
           showAddForm
+          compact={variant === "drawer"}
           newSubtaskTitle={newSubtaskTitle}
           onNewSubtaskTitleChange={onNewSubtaskTitleChange}
           onAddSubtask={onAddSubtask}
@@ -266,41 +331,29 @@ export function TaskDetailPanel({
         />
       )}
 
-      {(onDeleteTask || onStartTask) && (
+      {(onDeleteTask || onSave) && (
         <div
           className={`flex items-center gap-2 ${pad} pt-3 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2`}
         >
-          {activeTaskId === task.id && isTimerRunning ? (
-            <span className="px-3 py-1.5 text-xs font-medium rounded-md bg-cyan-600 text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              In progress
-            </span>
-          ) : onStartTask ? (
+          {onSave && (
             <button
               type="button"
-              onClick={() => {
-                if (activeTaskId === task.id) onDeselectTask?.();
-                else onStartTask();
-              }}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
-                activeTaskId === task.id
-                  ? "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
-                  : "bg-cyan-600 text-white hover:bg-cyan-700"
-              }`}
+              onClick={handleSave}
+              className="flex-1 px-3 py-2 text-xs font-semibold rounded-md bg-cyan-600 text-white hover:bg-cyan-700 transition-colors"
             >
-              {activeTaskId === task.id ? "Deselect" : isTimerRunning ? "Switch focus" : "Focus"}
+              Save
             </button>
-          ) : null}
-          {onDeleteTask && !(isTimerRunning && activeTaskId === task.id) && (
+          )}
+          {onDeleteTask && !(isTimerRunning && isFocused) && (
             <button
               type="button"
               onClick={onDeleteTask}
-              className="px-3 py-1.5 text-xs font-medium rounded-md text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"
+              className="px-3 py-2 text-xs font-medium rounded-md text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5 shrink-0"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              Delete task
+              Delete
             </button>
           )}
         </div>

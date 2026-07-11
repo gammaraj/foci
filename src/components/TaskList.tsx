@@ -1147,6 +1147,51 @@ export default function TaskList({
     setNewSubtaskTitle("");
   };
 
+  const saveAndCloseTaskDetail = (taskId: string) => {
+    let next = tasks;
+    let changed: Task | null = null;
+
+    if (editingDescId === taskId) {
+      const desc = editDesc.trim();
+      next = next.map((t) =>
+        t.id === taskId ? { ...t, description: desc || undefined } : t
+      );
+      changed = next.find((t) => t.id === taskId) ?? null;
+      setEditingDescId(null);
+    }
+
+    if (editingSubtaskId) {
+      const title = editSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
+      if (title) {
+        next = next.map((t) =>
+          t.id === taskId
+            ? {
+                ...t,
+                subtasks: (t.subtasks || []).map((s) =>
+                  s.id === editingSubtaskId ? { ...s, title } : s
+                ),
+              }
+            : t
+        );
+        changed = next.find((t) => t.id === taskId) ?? null;
+      }
+      setEditingSubtaskId(null);
+    }
+
+    const pendingSub = newSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
+    if (pendingSub) {
+      const subtask: Subtask = { id: crypto.randomUUID(), title: pendingSub, completed: false };
+      next = next.map((t) =>
+        t.id === taskId ? { ...t, subtasks: [...(t.subtasks || []), subtask] } : t
+      );
+      changed = next.find((t) => t.id === taskId) ?? null;
+      setNewSubtaskTitle("");
+    }
+
+    if (changed) persistOne(next, changed);
+    closeTaskDetail();
+  };
+
   // Filter tasks for the selected project
   const isAllProjects = selectedProjectId === ALL_PROJECTS_ID;
   const activeProjects = projects.filter((p) => !p.archived);
@@ -1488,29 +1533,20 @@ export default function TaskList({
   });
 
   const renderTaskExpansionContent = (task: Task, compact = false) => {
-    const subtasks = task.subtasks || [];
-    const hasSubtasks = subtasks.length > 0;
-
     return (
-      <>
-        <TaskSubtaskSection
-          {...taskSubtaskSectionProps(task)}
-          showAddForm={hasSubtasks || compact}
-          compact={compact}
-        />
-        <TaskDetailPanel
-          task={task}
-          variant="inline"
-          hideSubtasks
-          {...taskDetailPanelProps(task)}
-          onDeleteTask={() => {
-            deleteTask(task.id);
-            closeTaskDetail();
-          }}
-          onStartTask={() => onStartTask(task.id)}
-          onDeselectTask={() => onSelectTask(null)}
-        />
-      </>
+      <TaskDetailPanel
+        task={task}
+        variant={compact ? "drawer" : "inline"}
+        hideSubtasks={false}
+        {...taskDetailPanelProps(task)}
+        onDeleteTask={() => {
+          deleteTask(task.id);
+          closeTaskDetail();
+        }}
+        onStartTask={() => onStartTask(task.id)}
+        onDeselectTask={() => onSelectTask(null)}
+        onSave={() => saveAndCloseTaskDetail(task.id)}
+      />
     );
   };
 
@@ -1547,6 +1583,7 @@ export default function TaskList({
             }}
             onStartTask={() => onStartTask(task.id)}
             onDeselectTask={() => onSelectTask(null)}
+            onSave={() => saveAndCloseTaskDetail(task.id)}
           />
         )}
       </div>
