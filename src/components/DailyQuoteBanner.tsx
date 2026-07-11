@@ -86,10 +86,10 @@ export default function DailyQuoteBanner({
       role="status"
       aria-label="Weather and focus timer"
     >
-      <div className="app-container py-0.5 sm:py-1.5 space-y-1">
+      <div className="app-container py-0.5 sm:py-1 space-y-1">
         {threeColumnStrip ? (
           <div
-            className="grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1.15fr)_minmax(0,0.9fr)] sm:items-stretch rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
+            className="grid min-w-0 grid-cols-1 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1.15fr)_minmax(0,0.9fr)] sm:items-stretch rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 overflow-visible divide-y sm:divide-y-0 sm:divide-x divide-slate-100/90 dark:divide-[#243350]/80"
           >
             {/* Weather — secondary context */}
             <div className={`min-w-0 w-full px-2.5 sm:px-3 flex items-center min-h-[2.75rem] shrink-0 text-slate-500 dark:text-slate-400 overflow-visible ${mobileExpanded ? "" : "hidden sm:flex"}`}>
@@ -126,7 +126,7 @@ export default function DailyQuoteBanner({
               <WeatherTime compact />
             </div>
             {hasFocusStrip && (
-              <div className="w-full min-w-0 flex flex-col rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-visible min-h-[2.75rem]">
+              <div className="w-full min-w-0 flex flex-col rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 overflow-visible min-h-[2.75rem]">
                 <div
                   className={`grid min-w-0 flex-1 ${
                     timerToolbar && musicToolbar

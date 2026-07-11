@@ -13,7 +13,7 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
   if (variant === "navbar") {
     return (
       <p
-        className="text-sm italic text-slate-600 dark:text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0"
+        className="text-xs sm:text-sm italic text-slate-600 dark:text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0"
         role="complementary"
         aria-label="Quote of the day"
         title={author ? `${text} — ${author}` : text}

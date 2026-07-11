@@ -58,15 +58,15 @@ export const FOCI_TAGLINE_FOCUS = "FOCUS · FLOW · FINISH";
 export const FOCI_TAGLINE_CALM = "deep work, one calm window";
 
 /** Wordmark typography — +10% vs standard Tailwind text steps (nav, lockup, mockup, inline). */
-export const FOCI_WORDMARK_NAV = "text-[1.375rem] sm:text-[1.65rem] font-bold leading-none";
+export const FOCI_WORDMARK_NAV = "text-[1.25rem] sm:text-[1.375rem] font-bold leading-none";
 export const FOCI_WORDMARK_LOCKUP = "text-[1.65rem] sm:text-[2.0625rem] font-bold leading-none";
 export const FOCI_WORDMARK_MOCKUP = "text-[1.2375rem] sm:text-[1.375rem] font-bold leading-none";
 export const FOCI_WORDMARK_INLINE = "text-[0.9625rem] font-semibold";
 export const FOCI_WORDMARK_OG_PX = 79;
 
-/** Tagline typography — subordinate to wordmark, but readable on dark chrome. */
+/** Tagline typography — subordinate to wordmark, but readable (≥12px). */
 export const FOCI_TAGLINE_NAV =
-  "text-[8px] sm:text-[9px] font-semibold tracking-[0.12em] sm:tracking-[0.13em] uppercase leading-none";
+  "text-[0.6875rem] sm:text-[0.75rem] font-semibold tracking-[0.1em] sm:tracking-[0.12em] uppercase leading-none";
 export const FOCI_TAGLINE_LOCKUP =
   "text-[9px] sm:text-[10px] font-semibold tracking-[0.12em] sm:tracking-[0.13em] uppercase leading-none";
 export const FOCI_TAGLINE_MOCKUP =

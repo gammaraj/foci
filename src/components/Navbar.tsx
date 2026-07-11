@@ -53,8 +53,8 @@ function navLinkClass(active: boolean, mobile = false) {
       : "nav-chrome-link px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full hover:bg-slate-100 dark:hover:bg-white/5";
   }
   return active
-    ? "nav-chrome-link-active text-base font-medium transition-colors"
-    : "nav-chrome-link text-base font-medium transition-colors";
+    ? "nav-chrome-link-active text-sm font-semibold transition-colors"
+    : "nav-chrome-link text-sm font-medium transition-colors";
 }
 
 const chromeBtn = "nav-chrome-btn rounded-lg";
@@ -131,14 +131,14 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
 
   return (
     <header className="nav-chrome sticky top-0 z-30">
-      <nav className="relative app-container pb-3 sm:pb-3.5">
-        <div className="relative flex items-center gap-3 min-h-[2.75rem]">
+      <nav className="relative app-container pb-2 sm:pb-2.5">
+        <div className="relative flex items-center gap-3 min-h-[2.5rem]">
           <Link href={logoHref} className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
             <FociLogoMark
-              size={40}
+              size={36}
               idPrefix="nav"
               surface={logoSurface}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex-shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex-shrink-0"
             />
             <div className="flex flex-col items-start gap-0.5 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />

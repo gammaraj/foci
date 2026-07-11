@@ -39,7 +39,7 @@ export function TaskUrgencySummary({
           <button
             type="button"
             onClick={onViewOverdue}
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap border border-red-200/70 dark:border-red-800/50 bg-red-50/70 dark:bg-red-950/30 text-red-700 dark:text-red-300"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap border border-red-200/70 dark:border-red-800/50 bg-red-50/70 dark:bg-red-950/30 text-red-700 dark:text-red-300"
             title={`${overdueCount} overdue — view all`}
           >
             <span className="tabular-nums font-bold">{overdueCount}</span>
@@ -50,7 +50,7 @@ export function TaskUrgencySummary({
           <button
             type="button"
             onClick={onViewToday}
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap border border-orange-200/70 dark:border-orange-800/50 bg-orange-50/50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-300"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap border border-orange-200/70 dark:border-orange-800/50 bg-orange-50/50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-300"
             title={`${dueTodayCount} due today`}
           >
             <span className="tabular-nums font-bold">{dueTodayCount}</span>

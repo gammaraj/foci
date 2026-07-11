@@ -11,13 +11,13 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode surfaces — grouped hierarchy with clearer contrast */
-  --page-bg: #d8e0ea;
-  --surface-border: #c8d3e0;
+  /* Light mode — cool gray with a soft electric-blue cast */
+  --page-bg: #dce4f2;
+  --surface-border: #c5d0e3;
   --surface-bg: #ffffff;
-  --panel-header-bg: #eef2f6;
-  --seg-track-bg: #e2e8f0;
-  --surface-muted: #f1f5f9;
+  --panel-header-bg: #e8eef9;
+  --seg-track-bg: #d9e3f4;
+  --surface-muted: #eef3fb;
 }
 
 /* ===== Base Styles ===== */
@@ -39,10 +39,10 @@ body {
 
 /* Site chrome — light bar in light mode, ink bar in dark */
 .nav-chrome {
-  background: #ffffff;
+  background: #fbfcff;
   border-bottom: 1px solid var(--surface-border);
   padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 0 rgba(37, 99, 235, 0.06);
 }
 .dark .nav-chrome {
   background: #070b16;
@@ -155,22 +155,22 @@ body {
   width: 100%;
   max-width: var(--app-max-width);
   margin-inline: auto;
-  padding-inline: 2rem;
+  padding-inline: 1.25rem;
 }
 @media (min-width: 640px) {
   .app-container {
-    padding-inline: 2.5rem;
+    padding-inline: 1.75rem;
   }
 }
 @media (min-width: 1024px) {
   .app-container {
-    padding-inline: 3.5rem;
+    padding-inline: 2rem;
   }
 }
 
 /* ===== Section Header Gradient ===== */
 .section-header-gradient {
-  background: linear-gradient(135deg, #d8e0ea 0%, #e4e9ff 100%);
+  background: linear-gradient(135deg, #dce4f2 0%, #e4ebff 100%);
   border-bottom: 1px solid var(--surface-border);
 }
 .dark .section-header-gradient {
@@ -178,13 +178,18 @@ body {
   border-bottom: 1px solid #243350;
 }
 
-/* Status strip below dark navbar — bridges chrome to page content */
+/* Status strip below navbar — bridges chrome to page content */
 .status-strip {
   border-bottom: 1px solid var(--surface-border);
   box-shadow: 0 10px 24px -16px rgba(11, 17, 33, 0.4);
 }
 :root:not(.dark) .status-strip {
-  background: linear-gradient(180deg, #d5dde8 0%, #e8edf3 22%, #eef2f6 100%);
+  background: linear-gradient(
+    180deg,
+    #d9e4f7 0%,
+    #e6edf9 28%,
+    #eef3fb 100%
+  );
 }
 .dark .status-strip {
   background: linear-gradient(180deg, #0d1528 0%, rgba(15, 23, 42, 0.92) 30%, rgba(15, 23, 42, 0.82) 100%);
@@ -192,7 +197,7 @@ body {
   box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.45);
 }
 
-/* Toolbar strip — slightly off-white; card body stays pure white below */
+/* Toolbar strip — soft blue-gray; card body stays pure white below */
 .panel-header-calm {
   background: var(--panel-header-bg);
   border-bottom: 1px solid var(--surface-border);
@@ -209,7 +214,7 @@ body {
   background: var(--seg-track-bg);
   border-radius: 0.5rem;
   padding: 0.125rem;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.14);
 }
 .dark .app-seg-track {
   background: var(--seg-track-bg);
@@ -226,8 +231,8 @@ body {
   background: var(--surface-bg);
   border: 1px solid var(--surface-border);
   box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.07),
-    0 6px 20px -4px rgba(15, 23, 42, 0.14);
+    0 1px 3px rgba(37, 99, 235, 0.05),
+    0 6px 20px -4px rgba(15, 23, 42, 0.1);
 }
 .dark .app-surface {
   background: #111827;

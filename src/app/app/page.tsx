@@ -350,7 +350,7 @@ function AppPageContent() {
         </>
       )}
       <DueDateReminders />
-      <div className="flex-1 py-2 sm:py-3">
+      <div className="flex-1 py-1.5 sm:py-2">
       <div className={tasksFullscreen ? "w-full px-2 sm:px-4" : "app-container"}>
 
         {certStudContext && !focusMode && (

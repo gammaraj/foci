@@ -120,7 +120,7 @@ function CardDuePrefix({ task }: { task: Task }) {
 
   return (
     <span
-      className={`shrink-0 font-semibold tabular-nums text-[0.6875rem] sm:text-xs ${
+      className={`shrink-0 font-semibold tabular-nums text-xs ${
         overdue
           ? "text-red-600 dark:text-red-300"
           : blocked
@@ -265,7 +265,7 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0 py-0 sm:py-0.5 min-w-0 transition-colors ${
+      className={`group/row rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors ${
         isActive
           ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40"
           : isExpanded
@@ -274,7 +274,7 @@ function CardTaskRow({
               ? "bg-red-50/70 dark:bg-red-950/35 hover:bg-red-50/90 dark:hover:bg-red-950/50"
               : blocked
                 ? "bg-amber-50/40 dark:bg-amber-950/20"
-                : ""
+                : "hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
       } ${
         overdue
           ? "border-l-red-500 dark:border-l-red-400"
@@ -291,7 +291,7 @@ function CardTaskRow({
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
     >
-      <div className="flex items-start sm:items-center gap-1 min-h-0 sm:min-h-[1.5rem] w-full min-w-0">
+      <div className="flex items-start sm:items-center gap-1.5 min-h-[1.75rem] sm:min-h-[1.875rem] w-full min-w-0">
         {onToggleComplete && (
           <button
             type="button"
@@ -325,7 +325,7 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleTaskDetail?.(task.id);
             }}
-            className={`flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-0.5 sm:gap-1 text-[13px] sm:text-sm font-normal leading-tight sm:leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
+            className={`flex-1 min-w-0 basis-0 overflow-hidden flex items-start sm:items-center gap-1 sm:gap-1.5 text-sm font-normal leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
               overdue
                 ? "text-red-700 dark:text-red-300 font-medium"
                 : "text-slate-700 dark:text-slate-200"
@@ -523,7 +523,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card rounded-lg border px-2 py-1.5 sm:px-2.5 sm:py-2 min-w-0 flex flex-col gap-0.5 sm:gap-1 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-colors border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "opacity-90" : ""}`}
       style={{
@@ -863,7 +863,7 @@ export default function TaskCardView({
         </div>
       ) : null}
 
-      <div className="px-3 sm:px-4 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 print:grid-cols-2 gap-2 sm:gap-3">
+      <div className="px-3 sm:px-4 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 print:grid-cols-2 gap-2.5 sm:gap-3.5">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (

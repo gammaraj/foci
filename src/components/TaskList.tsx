@@ -67,19 +67,19 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
   plan: "AI Plan",
 };
 
-/** Neutral active state for time/view filters (not a primary CTA). */
+/** Active time/view filters — soft brand blue instead of plain gray. */
 const FILTER_TAB_ACTIVE =
-  "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070] font-semibold";
+  "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/55 dark:ring-[#3a5070] font-semibold";
 const FILTER_TAB_INACTIVE =
-  "text-slate-600 dark:text-white/80 hover:text-slate-800 dark:hover:text-white hover:bg-slate-300/60 dark:hover:bg-white/10";
+  "text-slate-600 dark:text-white/80 hover:text-blue-700 dark:hover:text-white hover:bg-blue-100/70 dark:hover:bg-white/10";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
-  "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/50 dark:ring-blue-500/45 font-semibold";
+  "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-slate-100 shadow-sm ring-1 ring-blue-400/55 dark:ring-blue-500/45 font-semibold";
 const PROJECT_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#131d30] hover:bg-slate-200 dark:hover:bg-[#1a2d4a]";
+  "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-[#131d30] hover:bg-blue-50 dark:hover:bg-[#1a2d4a]";
 
-const SEG_TAB_PAD = "px-2.5 py-1.5 min-h-[2.25rem] rounded-md text-sm font-medium transition-colors";
+const SEG_TAB_PAD = "px-2 py-1 min-h-[2rem] rounded-md text-sm font-medium transition-colors";
 const SEG_TAB_ICON_PAD = `inline-flex items-center gap-1.5 ${SEG_TAB_PAD} whitespace-nowrap`;
 
 export default function TaskList({
@@ -1725,7 +1725,7 @@ export default function TaskList({
       <>
       {/* Header */}
       <div
-        className="panel-header-calm no-print px-3 sm:px-4 py-1.5 sm:py-2 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm no-print px-3 sm:px-4 py-2 sm:py-2.5 text-slate-700 dark:text-white rounded-t-2xl"
       >
         <div className="flex items-center justify-between min-w-0 gap-2">
           <div className="min-w-0 flex-shrink">
@@ -1767,9 +1767,9 @@ export default function TaskList({
                 Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
               </button>
             )}
-            <h2 className="text-base font-semibold flex items-center gap-1.5 min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-1.5 min-w-0">
               <svg
-                className="w-4 h-4 flex-shrink-0"
+                className="w-5 h-5 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1887,7 +1887,7 @@ export default function TaskList({
             )}
             {/* View mode toggles — desktop */}
             {!projectManageOpen && (
-            <div className="hidden sm:flex items-center gap-2.5 shrink-0 ml-2 sm:ml-4 pl-3 sm:pl-4 border-l border-slate-300/80 dark:border-[#3a5070]/90" data-tour="view-modes">
+            <div className="hidden sm:flex items-center gap-2 shrink-0 ml-1 sm:ml-2 pl-2 sm:pl-3 border-l border-slate-300/80 dark:border-[#3a5070]/90" data-tour="view-modes">
               <span className="hidden md:inline app-section-label text-slate-500 dark:text-slate-400 shrink-0">
                 View
               </span>
