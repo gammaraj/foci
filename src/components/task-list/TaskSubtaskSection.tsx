@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import type { Subtask, Task } from "@/lib/types";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
@@ -47,23 +47,7 @@ export function TaskSubtaskSection({
   const subtasks = task.subtasks || [];
   const completedSubtasks = subtasks.filter((s) => s.completed).length;
   const hasSubtasks = subtasks.length > 0;
-  const editInputRef = useRef<HTMLInputElement>(null);
-  /** Ignore blur that fires from the click that opened the editor. */
-  const skipBlurUntilRef = useRef(0);
-
-  useEffect(() => {
-    if (!editingSubtaskId) return;
-    skipBlurUntilRef.current = Date.now() + 250;
-    const id = window.setTimeout(() => {
-      const input = editInputRef.current;
-      if (!input) return;
-      input.focus();
-      // Place caret at end — avoid select-all, which forces a second click that often misses the field.
-      const len = input.value.length;
-      input.setSelectionRange(len, len);
-    }, 0);
-    return () => window.clearTimeout(id);
-  }, [editingSubtaskId]);
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   if (!hasSubtasks && !showAddForm) return null;
 
@@ -74,30 +58,12 @@ export function TaskSubtaskSection({
     ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 sm:focus-within:opacity-100"
     : "";
 
-  const beginEdit = (sub: Subtask) => {
-    skipBlurUntilRef.current = Date.now() + 150;
+  const focusSubtask = (sub: Subtask) => {
     onStartEditSubtask(sub);
-  };
-
-  const finishEdit = (subId: string, relatedTarget: EventTarget | null) => {
-    if (Date.now() < skipBlurUntilRef.current) {
-      editInputRef.current?.focus();
-      return;
-    }
-    // Stay in edit mode when focus moves to another control in the same row.
-    const row = editInputRef.current?.closest("li");
-    if (relatedTarget instanceof Node && row?.contains(relatedTarget)) return;
-
-    // Defer so a click that re-focuses this input (caret placement) is not treated as leave.
-    window.setTimeout(() => {
-      if (Date.now() < skipBlurUntilRef.current) return;
-      if (document.activeElement === editInputRef.current) return;
-      if (editInputRef.current && document.activeElement instanceof Node) {
-        const stillInRow = editInputRef.current.closest("li")?.contains(document.activeElement);
-        if (stillInRow) return;
-      }
-      onSaveSubtaskEdit(subId);
-    }, 0);
+    // Keep the same input mounted — focus without rewriting selection so the click caret sticks.
+    requestAnimationFrame(() => {
+      inputRefs.current[sub.id]?.focus();
+    });
   };
 
   return (
@@ -156,158 +122,151 @@ export function TaskSubtaskSection({
               : ""
           }
         >
-          {subtasks.map((sub) => (
-            <li
-              key={sub.id}
-              className={`group/sub flex items-center gap-1.5 ${
-                compact
-                  ? "py-0.5"
-                  : spacious
-                    ? "gap-2 py-2.5 px-2.5 rounded-lg hover:bg-white dark:hover:bg-white/[0.04]"
-                    : "py-1 gap-2"
-              } ${indent} ${borderColor}`}
-            >
-              <button
-                type="button"
-                onClick={() => onToggleSubtask(sub.id)}
-                className={`flex-shrink-0 rounded-full border-[1.5px] transition-colors flex items-center justify-center ${
-                  compact ? "w-3.5 h-3.5" : spacious ? "w-5 h-5" : "w-4 h-4"
-                } ${
-                  sub.completed
-                    ? "border-emerald-500 bg-emerald-500"
-                    : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
-                }`}
-                aria-label={`Toggle subtask "${sub.title}"`}
+          {subtasks.map((sub) => {
+            const isEditing = editingSubtaskId === sub.id;
+            return (
+              <li
+                key={sub.id}
+                className={`group/sub flex items-center gap-1.5 ${
+                  compact
+                    ? "py-0.5"
+                    : spacious
+                      ? "gap-2 py-2 px-2.5 rounded-lg hover:bg-white dark:hover:bg-white/[0.04]"
+                      : "py-1 gap-2"
+                } ${indent} ${borderColor}`}
               >
-                {sub.completed && (
-                  <svg
-                    className={`${compact ? "w-1.5 h-1.5" : spacious ? "w-2.5 h-2.5" : "w-2 h-2"} text-white`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-              </button>
-              {editingSubtaskId === sub.id ? (
+                <button
+                  type="button"
+                  onClick={() => onToggleSubtask(sub.id)}
+                  className={`flex-shrink-0 rounded-full border-[1.5px] transition-colors flex items-center justify-center ${
+                    compact ? "w-3.5 h-3.5" : spacious ? "w-5 h-5" : "w-4 h-4"
+                  } ${
+                    sub.completed
+                      ? "border-emerald-500 bg-emerald-500"
+                      : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
+                  }`}
+                  aria-label={`Toggle subtask "${sub.title}"`}
+                >
+                  {sub.completed && (
+                    <svg
+                      className={`${compact ? "w-1.5 h-1.5" : spacious ? "w-2.5 h-2.5" : "w-2 h-2"} text-white`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </button>
+
                 <input
-                  ref={editInputRef}
-                  type="text"
-                  value={editSubtaskTitle}
-                  onChange={(e) => onEditSubtaskTitleChange(e.target.value)}
-                  onMouseDown={(e) => {
-                    // Keep edit mode alive when repositioning the caret.
-                    e.stopPropagation();
-                    skipBlurUntilRef.current = Date.now() + 250;
+                  ref={(el) => {
+                    inputRefs.current[sub.id] = el;
                   }}
-                  onClick={(e) => e.stopPropagation()}
-                  onBlur={(e) => finishEdit(sub.id, e.relatedTarget)}
+                  type="text"
+                  value={isEditing ? editSubtaskTitle : sub.title}
+                  onFocus={() => {
+                    if (!isEditing) onStartEditSubtask(sub);
+                  }}
+                  onChange={(e) => {
+                    if (!isEditing) onStartEditSubtask(sub);
+                    onEditSubtaskTitleChange(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (editingSubtaskId === sub.id) onSaveSubtaskEdit(sub.id);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      skipBlurUntilRef.current = 0;
-                      onSaveSubtaskEdit(sub.id);
+                      (e.target as HTMLInputElement).blur();
                     }
                     if (e.key === "Escape") {
                       e.preventDefault();
-                      skipBlurUntilRef.current = Date.now() + 150;
                       onCancelEditSubtask();
+                      (e.target as HTMLInputElement).blur();
                     }
                   }}
-                  className={`flex-1 min-w-0 px-2 py-1.5 border border-blue-400 rounded-md bg-white dark:bg-[#0f172a] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40 ${
-                    compact ? "text-xs" : spacious ? "text-base sm:text-sm" : "text-sm"
-                  }`}
+                  aria-label={`Subtask title: ${sub.title}`}
+                  className={`flex-1 min-w-0 font-medium outline-none transition-colors ${
+                    compact ? "text-xs px-1 py-0.5" : "text-sm px-2 py-1.5"
+                  } ${
+                    isEditing
+                      ? "rounded-md border border-blue-400 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                      : `rounded-md border border-transparent bg-transparent cursor-text ${
+                          sub.completed
+                            ? "text-slate-400 dark:text-slate-500 line-through"
+                            : "text-slate-700 dark:text-slate-200"
+                        } hover:bg-slate-100/80 dark:hover:bg-white/[0.06]`
+                  } ${spacious || isEditing ? "" : "truncate"}`}
                 />
-              ) : (
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    // Prevent the opening click from immediately blurring the new input.
-                    e.preventDefault();
-                    beginEdit(sub);
-                  }}
-                  title="Click to edit"
-                  className={`flex-1 min-w-0 text-left font-medium cursor-text rounded-md px-1 -mx-1 py-0.5 hover:bg-slate-100/80 dark:hover:bg-white/[0.06] ${
-                    spacious ? "" : "truncate"
-                  } ${compact ? "text-xs" : "text-sm"} ${
-                    sub.completed
-                      ? "text-slate-400 dark:text-slate-500 line-through"
-                      : "text-slate-700 dark:text-slate-200"
-                  }`}
-                >
-                  {sub.title}
-                </button>
-              )}
-              {editingSubtaskId !== sub.id && (
-                <>
-                  <button
-                    type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      beginEdit(sub);
-                    }}
-                    className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
-                      spacious
-                        ? "opacity-100"
-                        : `${actionReveal} opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 sm:focus-within:opacity-100`
-                    }`}
-                    aria-label={`Edit subtask "${sub.title}"`}
-                    title="Edit subtask"
-                  >
-                    <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1.5 1.5 0 00-2.121-2.121L7.172 17.586A1 1 0 006.879 18.293L4 20z" />
-                    </svg>
-                  </button>
-                  <DueDateField
-                    value={sub.dueDate}
-                    onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
-                    requireExplicitPick={!sub.dueDate}
-                    ariaLabel="Subtask due date"
-                    className={`relative flex-shrink-0 p-1.5 transition-colors ${actionReveal} ${
-                      sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
-                        ? "text-red-500 dark:text-red-400"
-                        : sub.dueDate
-                          ? "text-slate-500 dark:text-slate-400"
-                          : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
-                    } ${!compact && !spacious && !sub.dueDate ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100" : ""}`}
-                  >
-                    <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
-                      {sub.dueDate ? (
-                        <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
-                      ) : (
-                        <svg
-                          className={compact ? "w-3 h-3" : "w-3.5 h-3.5"}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                      )}
-                    </span>
-                  </DueDateField>
-                  <button
-                    type="button"
-                    onClick={() => onDeleteSubtask(sub.id)}
-                    className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
-                    aria-label={`Delete subtask "${sub.title}"`}
-                    title="Delete subtask"
-                  >
-                    <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
+
+                {!isEditing && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => focusSubtask(sub)}
+                      className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
+                        spacious
+                          ? "opacity-100"
+                          : `${actionReveal} opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 sm:focus-within:opacity-100`
+                      }`}
+                      aria-label={`Edit subtask "${sub.title}"`}
+                      title="Edit subtask"
+                    >
+                      <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1.5 1.5 0 00-2.121-2.121L7.172 17.586A1 1 0 006.879 18.293L4 20z" />
+                      </svg>
+                    </button>
+                    <DueDateField
+                      value={sub.dueDate}
+                      onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
+                      requireExplicitPick={!sub.dueDate}
+                      ariaLabel="Subtask due date"
+                      className={`relative flex-shrink-0 p-1.5 transition-colors ${actionReveal} ${
+                        sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
+                          ? "text-red-500 dark:text-red-400"
+                          : sub.dueDate
+                            ? "text-slate-500 dark:text-slate-400"
+                            : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
+                      } ${!compact && !spacious && !sub.dueDate ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100" : ""}`}
+                    >
+                      <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
+                        {sub.dueDate ? (
+                          <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
+                        ) : (
+                          <svg
+                            className={compact ? "w-3 h-3" : "w-3.5 h-3.5"}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                    </DueDateField>
+                    <button
+                      type="button"
+                      onClick={() => onDeleteSubtask(sub.id)}
+                      className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
+                      aria-label={`Delete subtask "${sub.title}"`}
+                      title="Delete subtask"
+                    >
+                      <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 
