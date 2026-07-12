@@ -53,10 +53,14 @@ export function TaskSubtaskSection({
 
   useEffect(() => {
     if (!editingSubtaskId) return;
-    skipBlurUntilRef.current = Date.now() + 150;
+    skipBlurUntilRef.current = Date.now() + 250;
     const id = window.setTimeout(() => {
-      editInputRef.current?.focus();
-      editInputRef.current?.select();
+      const input = editInputRef.current;
+      if (!input) return;
+      input.focus();
+      // Place caret at end — avoid select-all, which forces a second click that often misses the field.
+      const len = input.value.length;
+      input.setSelectionRange(len, len);
     }, 0);
     return () => window.clearTimeout(id);
   }, [editingSubtaskId]);
@@ -75,12 +79,25 @@ export function TaskSubtaskSection({
     onStartEditSubtask(sub);
   };
 
-  const finishEdit = (subId: string) => {
+  const finishEdit = (subId: string, relatedTarget: EventTarget | null) => {
     if (Date.now() < skipBlurUntilRef.current) {
       editInputRef.current?.focus();
       return;
     }
-    onSaveSubtaskEdit(subId);
+    // Stay in edit mode when focus moves to another control in the same row.
+    const row = editInputRef.current?.closest("li");
+    if (relatedTarget instanceof Node && row?.contains(relatedTarget)) return;
+
+    // Defer so a click that re-focuses this input (caret placement) is not treated as leave.
+    window.setTimeout(() => {
+      if (Date.now() < skipBlurUntilRef.current) return;
+      if (document.activeElement === editInputRef.current) return;
+      if (editInputRef.current && document.activeElement instanceof Node) {
+        const stillInRow = editInputRef.current.closest("li")?.contains(document.activeElement);
+        if (stillInRow) return;
+      }
+      onSaveSubtaskEdit(subId);
+    }, 0);
   };
 
   return (
@@ -179,7 +196,13 @@ export function TaskSubtaskSection({
                   type="text"
                   value={editSubtaskTitle}
                   onChange={(e) => onEditSubtaskTitleChange(e.target.value)}
-                  onBlur={() => finishEdit(sub.id)}
+                  onMouseDown={(e) => {
+                    // Keep edit mode alive when repositioning the caret.
+                    e.stopPropagation();
+                    skipBlurUntilRef.current = Date.now() + 250;
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  onBlur={(e) => finishEdit(sub.id, e.relatedTarget)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -217,70 +240,72 @@ export function TaskSubtaskSection({
                 </button>
               )}
               {editingSubtaskId !== sub.id && (
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    beginEdit(sub);
-                  }}
-                  className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
-                    spacious
-                      ? "opacity-100"
-                      : `${actionReveal} opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 sm:focus-within:opacity-100`
-                  }`}
-                  aria-label={`Edit subtask "${sub.title}"`}
-                  title="Edit subtask"
-                >
-                  <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1.5 1.5 0 00-2.121-2.121L7.172 17.586A1 1 0 006.879 18.293L4 20z" />
-                  </svg>
-                </button>
-              )}
-              <DueDateField
-                value={sub.dueDate}
-                onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
-                requireExplicitPick={!sub.dueDate}
-                ariaLabel="Subtask due date"
-                className={`relative flex-shrink-0 p-1.5 transition-colors ${actionReveal} ${
-                  sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
-                    ? "text-red-500 dark:text-red-400"
-                    : sub.dueDate
-                      ? "text-slate-500 dark:text-slate-400"
-                      : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
-                } ${!compact && !spacious && !sub.dueDate ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100" : ""}`}
-              >
-                <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
-                  {sub.dueDate ? (
-                    <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
-                  ) : (
-                    <svg
-                      className={compact ? "w-3 h-3" : "w-3.5 h-3.5"}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
+                <>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      beginEdit(sub);
+                    }}
+                    className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
+                      spacious
+                        ? "opacity-100"
+                        : `${actionReveal} opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 sm:focus-within:opacity-100`
+                    }`}
+                    aria-label={`Edit subtask "${sub.title}"`}
+                    title="Edit subtask"
+                  >
+                    <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1.5 1.5 0 00-2.121-2.121L7.172 17.586A1 1 0 006.879 18.293L4 20z" />
                     </svg>
-                  )}
-                </span>
-              </DueDateField>
-              <button
-                type="button"
-                onClick={() => onDeleteSubtask(sub.id)}
-                className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
-                aria-label={`Delete subtask "${sub.title}"`}
-                title="Delete subtask"
-              >
-                <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                  </button>
+                  <DueDateField
+                    value={sub.dueDate}
+                    onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
+                    requireExplicitPick={!sub.dueDate}
+                    ariaLabel="Subtask due date"
+                    className={`relative flex-shrink-0 p-1.5 transition-colors ${actionReveal} ${
+                      sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
+                        ? "text-red-500 dark:text-red-400"
+                        : sub.dueDate
+                          ? "text-slate-500 dark:text-slate-400"
+                          : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
+                    } ${!compact && !spacious && !sub.dueDate ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100" : ""}`}
+                  >
+                    <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
+                      {sub.dueDate ? (
+                        <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
+                      ) : (
+                        <svg
+                          className={compact ? "w-3 h-3" : "w-3.5 h-3.5"}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                  </DueDateField>
+                  <button
+                    type="button"
+                    onClick={() => onDeleteSubtask(sub.id)}
+                    className={`flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
+                    aria-label={`Delete subtask "${sub.title}"`}
+                    title="Delete subtask"
+                  >
+                    <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </>
+              )}
             </li>
           ))}
         </ul>
