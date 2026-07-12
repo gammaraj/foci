@@ -708,24 +708,8 @@ body {
 @media (min-width: 640px) {
   .task-list-section-grid--two-col {
     grid-template-columns: 1fr 1fr;
-    column-gap: 0.875rem;
+    column-gap: 0.5rem;
     row-gap: 0.25rem;
-  }
-
-  .task-list-section-grid--two-col::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0.375rem;
-    bottom: 0.375rem;
-    width: 1px;
-    background: #e2e8f0;
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-
-  .dark .task-list-section-grid--two-col::before {
-    background: #243350;
   }
 }
 
