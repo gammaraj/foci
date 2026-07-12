@@ -21,6 +21,8 @@ export interface TaskSubtaskSectionProps {
   onDeleteSubtask: (subId: string) => void;
   /** Tighter layout for bucket/card columns */
   compact?: boolean;
+  /** Roomier layout for the task details drawer */
+  spacious?: boolean;
 }
 
 export function TaskSubtaskSection({
@@ -39,6 +41,7 @@ export function TaskSubtaskSection({
   onSetSubtaskDueDate,
   onDeleteSubtask,
   compact = false,
+  spacious = false,
 }: TaskSubtaskSectionProps) {
   const subtasks = task.subtasks || [];
   const completedSubtasks = subtasks.filter((s) => s.completed).length;
@@ -46,109 +49,159 @@ export function TaskSubtaskSection({
 
   if (!hasSubtasks && !showAddForm) return null;
 
-  const pad = compact ? "px-1.5 sm:px-2" : "px-3 sm:px-4";
-  const indent = compact ? "pl-3 ml-1.5" : "pl-6 ml-4";
-  const borderColor = "border-l-2 border-blue-200/70 dark:border-blue-800/50";
+  const pad = compact ? "px-1.5 sm:px-2" : spacious ? "px-4 sm:px-5" : "px-3 sm:px-4";
+  const indent = compact ? "pl-3 ml-1.5" : spacious ? "pl-0" : "pl-6 ml-4";
+  const borderColor = compact || spacious ? "" : "border-l-2 border-blue-200/70 dark:border-blue-800/50";
   const actionReveal = compact
     ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 sm:focus-within:opacity-100"
     : "";
 
   return (
     <div
-      className={`${pad} ${compact ? "pb-1 pt-0.5" : "pb-2 pt-0.5"} border-t border-slate-100/80 dark:border-[#243350]/60 ${compact ? "bg-transparent" : "bg-slate-50/50 dark:bg-black/10"}`}
+      className={`${pad} ${
+        compact
+          ? "pb-1 pt-0.5 border-t border-slate-100/80 dark:border-[#243350]/60 bg-transparent"
+          : spacious
+            ? "pb-3 pt-3 border-t border-slate-100 dark:border-[#243350]"
+            : "pb-2 pt-0.5 border-t border-slate-100/80 dark:border-[#243350]/60 bg-slate-50/50 dark:bg-black/10"
+      }`}
       onClick={(e) => e.stopPropagation()}
     >
-      {hasSubtasks && (
-        <p className={`text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide ${compact ? "pl-1.5 mb-0.5" : "mb-1"}`}>
-          Subtasks · {completedSubtasks}/{subtasks.length}
-        </p>
-      )}
-      {subtasks.map((sub) => (
-        <div
-          key={sub.id}
-          className={`group/sub flex items-center gap-1.5 ${compact ? "py-0.5" : "py-1 gap-2"} ${indent} ${borderColor}`}
-        >
-          <button
-            type="button"
-            onClick={() => onToggleSubtask(sub.id)}
-            className={`flex-shrink-0 rounded-full border-[1.5px] transition-colors flex items-center justify-center ${
-              compact ? "w-3.5 h-3.5" : "w-4 h-4"
-            } ${
-              sub.completed
-                ? "border-emerald-500 bg-emerald-500"
-                : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
+      {(hasSubtasks || showAddForm) && (
+        <div className={`flex items-baseline justify-between gap-2 ${compact ? "pl-1.5 mb-0.5" : spacious ? "mb-2.5" : "mb-1"}`}>
+          <p
+            className={`font-semibold text-slate-500 dark:text-slate-400 tracking-wide ${
+              compact ? "text-xs" : spacious ? "text-sm text-slate-600 dark:text-slate-300" : "text-xs"
             }`}
-            aria-label={`Toggle subtask "${sub.title}"`}
           >
-            {sub.completed && (
-              <svg className={`${compact ? "w-1.5 h-1.5" : "w-2 h-2"} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
+            Subtasks
+            {hasSubtasks && (
+              <span className="font-medium text-slate-400 dark:text-slate-500">
+                {" "}
+                · {completedSubtasks}/{subtasks.length}
+              </span>
             )}
-          </button>
-          {editingSubtaskId === sub.id ? (
-            <input
-              type="text"
-              value={editSubtaskTitle}
-              onChange={(e) => onEditSubtaskTitleChange(e.target.value)}
-              onBlur={() => onSaveSubtaskEdit(sub.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") onSaveSubtaskEdit(sub.id);
-                if (e.key === "Escape") onCancelEditSubtask();
-              }}
-              className={`flex-1 min-w-0 px-1 py-0.5 border border-blue-300 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none ${compact ? "text-xs" : "text-sm"}`}
-              autoFocus
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => onStartEditSubtask(sub)}
-              title={sub.title}
-              className={`flex-1 min-w-0 text-left font-medium truncate ${compact ? "text-xs" : "text-sm"} ${
-                sub.completed
-                  ? "text-slate-400 dark:text-slate-500 line-through"
-                  : "text-slate-700 dark:text-slate-200"
-              }`}
-            >
-              {sub.title}
-            </button>
+          </p>
+          {spacious && !hasSubtasks && showAddForm && (
+            <p className="hidden sm:block text-xs text-slate-400 dark:text-slate-500 shrink-0">
+              Break it into steps
+            </p>
           )}
-          <DueDateField
-            value={sub.dueDate}
-            onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
-            requireExplicitPick={!sub.dueDate}
-            ariaLabel="Subtask due date"
-            className={`relative flex-shrink-0 p-0.5 transition-colors ${actionReveal} ${
-              sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
-                ? "text-red-500 dark:text-red-400"
-                : sub.dueDate
-                  ? "text-slate-500 dark:text-slate-400"
-                  : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
-            } ${!compact && !sub.dueDate ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100" : ""}`}
-          >
-            <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
-              {sub.dueDate ? (
-                <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
-              ) : (
-                <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              )}
-            </span>
-          </DueDateField>
-          <button
-            type="button"
-            onClick={() => onDeleteSubtask(sub.id)}
-            className={`flex-shrink-0 p-0.5 sm:p-1 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
-            aria-label={`Delete subtask "${sub.title}"`}
-            title="Delete subtask"
-          >
-            <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
         </div>
-      ))}
+      )}
+
+      {hasSubtasks && (
+        <ul className={spacious ? "space-y-1 mb-3" : ""}>
+          {subtasks.map((sub) => (
+            <li
+              key={sub.id}
+              className={`group/sub flex items-center gap-1.5 ${
+                compact ? "py-0.5" : spacious ? "gap-2.5 py-2 px-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04]" : "py-1 gap-2"
+              } ${indent} ${borderColor}`}
+            >
+              <button
+                type="button"
+                onClick={() => onToggleSubtask(sub.id)}
+                className={`flex-shrink-0 rounded-full border-[1.5px] transition-colors flex items-center justify-center ${
+                  compact ? "w-3.5 h-3.5" : spacious ? "w-5 h-5" : "w-4 h-4"
+                } ${
+                  sub.completed
+                    ? "border-emerald-500 bg-emerald-500"
+                    : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
+                }`}
+                aria-label={`Toggle subtask "${sub.title}"`}
+              >
+                {sub.completed && (
+                  <svg
+                    className={`${compact ? "w-1.5 h-1.5" : spacious ? "w-2.5 h-2.5" : "w-2 h-2"} text-white`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+              {editingSubtaskId === sub.id ? (
+                <input
+                  type="text"
+                  value={editSubtaskTitle}
+                  onChange={(e) => onEditSubtaskTitleChange(e.target.value)}
+                  onBlur={() => onSaveSubtaskEdit(sub.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") onSaveSubtaskEdit(sub.id);
+                    if (e.key === "Escape") onCancelEditSubtask();
+                  }}
+                  className={`flex-1 min-w-0 px-1.5 py-1 border border-blue-300 rounded-md bg-white dark:bg-[#131d30] dark:text-white outline-none ${
+                    compact ? "text-xs" : "text-sm"
+                  }`}
+                  autoFocus
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onStartEditSubtask(sub)}
+                  title={sub.title}
+                  className={`flex-1 min-w-0 text-left font-medium ${spacious ? "" : "truncate"} ${
+                    compact ? "text-xs" : "text-sm"
+                  } ${
+                    sub.completed
+                      ? "text-slate-400 dark:text-slate-500 line-through"
+                      : "text-slate-700 dark:text-slate-200"
+                  }`}
+                >
+                  {sub.title}
+                </button>
+              )}
+              <DueDateField
+                value={sub.dueDate}
+                onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
+                requireExplicitPick={!sub.dueDate}
+                ariaLabel="Subtask due date"
+                className={`relative flex-shrink-0 p-0.5 transition-colors ${actionReveal} ${
+                  sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
+                    ? "text-red-500 dark:text-red-400"
+                    : sub.dueDate
+                      ? "text-slate-500 dark:text-slate-400"
+                      : "text-slate-400 hover:text-blue-500 dark:hover:text-blue-400"
+                } ${!compact && !spacious && !sub.dueDate ? "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100" : ""}`}
+              >
+                <span title={sub.dueDate ? `Due: ${formatDueDate(sub.dueDate)}` : "Set due date"}>
+                  {sub.dueDate ? (
+                    <span className="text-xs font-medium">{formatDueDate(sub.dueDate)}</span>
+                  ) : (
+                    <svg
+                      className={compact ? "w-3 h-3" : "w-3.5 h-3.5"}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
+                </span>
+              </DueDateField>
+              <button
+                type="button"
+                onClick={() => onDeleteSubtask(sub.id)}
+                className={`flex-shrink-0 p-0.5 sm:p-1 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
+                aria-label={`Delete subtask "${sub.title}"`}
+                title="Delete subtask"
+              >
+                <svg className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {showAddForm && (
         <form
@@ -156,24 +209,37 @@ export function TaskSubtaskSection({
             e.preventDefault();
             onAddSubtask();
           }}
-          className={`flex items-center gap-2 pt-1 ${indent} ${borderColor}`}
+          className={`flex items-stretch sm:items-center ${
+            spacious ? "gap-2 sm:gap-2.5" : `gap-2 pt-1 ${indent} ${borderColor}`
+          }`}
         >
-          <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-slate-400">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
+          {!spacious && (
+            <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-slate-400 self-center">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+          )}
           <input
             type="text"
             value={newSubtaskTitle}
             onChange={(e) => onNewSubtaskTitleChange(e.target.value)}
             placeholder="Add a subtask…"
-            className="flex-1 min-w-0 px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-400 outline-none"
+            enterKeyHint="done"
+            className={`flex-1 min-w-0 dark:text-white outline-none ${
+              spacious
+                ? "px-3.5 py-3 sm:py-2.5 text-base sm:text-sm border border-slate-200 dark:border-[#243350] rounded-xl bg-white dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                : "px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] focus:border-blue-400"
+            }`}
           />
           <button
             type="submit"
             disabled={!newSubtaskTitle.trim()}
-            className="px-2 py-1 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+            className={`font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0 ${
+              spacious
+                ? "px-4 py-3 sm:py-2.5 text-sm rounded-xl min-h-[2.75rem] sm:min-h-0"
+                : "px-2 py-1 text-xs rounded-md"
+            }`}
           >
             Add
           </button>
