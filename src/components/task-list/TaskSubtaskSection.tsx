@@ -49,7 +49,7 @@ export function TaskSubtaskSection({
 
   if (!hasSubtasks && !showAddForm) return null;
 
-  const pad = compact ? "px-1.5 sm:px-2" : spacious ? "px-4 sm:px-5" : "px-3 sm:px-4";
+  const pad = compact ? "px-1.5 sm:px-2" : spacious ? "px-4 sm:px-6" : "px-3 sm:px-4";
   const indent = compact ? "pl-3 ml-1.5" : spacious ? "pl-0" : "pl-6 ml-4";
   const borderColor = compact || spacious ? "" : "border-l-2 border-blue-200/70 dark:border-blue-800/50";
   const actionReveal = compact
@@ -62,16 +62,24 @@ export function TaskSubtaskSection({
         compact
           ? "pb-1 pt-0.5 border-t border-slate-100/80 dark:border-[#243350]/60 bg-transparent"
           : spacious
-            ? "pb-3 pt-3 border-t border-slate-100 dark:border-[#243350]"
+            ? "pb-4 pt-1"
             : "pb-2 pt-0.5 border-t border-slate-100/80 dark:border-[#243350]/60 bg-slate-50/50 dark:bg-black/10"
       }`}
       onClick={(e) => e.stopPropagation()}
     >
       {(hasSubtasks || showAddForm) && (
-        <div className={`flex items-baseline justify-between gap-2 ${compact ? "pl-1.5 mb-0.5" : spacious ? "mb-2.5" : "mb-1"}`}>
+        <div
+          className={`flex items-baseline justify-between gap-2 ${
+            compact ? "pl-1.5 mb-0.5" : spacious ? "mb-3" : "mb-1"
+          }`}
+        >
           <p
-            className={`font-semibold text-slate-500 dark:text-slate-400 tracking-wide ${
-              compact ? "text-xs" : spacious ? "text-sm text-slate-600 dark:text-slate-300" : "text-xs"
+            className={`font-semibold tracking-wide ${
+              compact
+                ? "text-xs text-slate-500 dark:text-slate-400"
+                : spacious
+                  ? "text-sm text-slate-700 dark:text-slate-200"
+                  : "text-xs text-slate-500 dark:text-slate-400"
             }`}
           >
             Subtasks
@@ -90,13 +98,29 @@ export function TaskSubtaskSection({
         </div>
       )}
 
+      {spacious && !hasSubtasks && showAddForm && (
+        <p className="sm:hidden text-xs text-slate-400 dark:text-slate-500 mb-2.5">
+          Break this into smaller steps
+        </p>
+      )}
+
       {hasSubtasks && (
-        <ul className={spacious ? "space-y-1 mb-3" : ""}>
+        <ul
+          className={
+            spacious
+              ? "space-y-1 mb-3 max-h-[min(40vh,18rem)] overflow-y-auto overscroll-contain rounded-xl border border-slate-100 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-black/20 p-1.5"
+              : ""
+          }
+        >
           {subtasks.map((sub) => (
             <li
               key={sub.id}
               className={`group/sub flex items-center gap-1.5 ${
-                compact ? "py-0.5" : spacious ? "gap-2.5 py-2 px-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04]" : "py-1 gap-2"
+                compact
+                  ? "py-0.5"
+                  : spacious
+                    ? "gap-2.5 py-2.5 px-2.5 rounded-lg hover:bg-white dark:hover:bg-white/[0.04]"
+                    : "py-1 gap-2"
               } ${indent} ${borderColor}`}
             >
               <button
@@ -133,7 +157,7 @@ export function TaskSubtaskSection({
                     if (e.key === "Escape") onCancelEditSubtask();
                   }}
                   className={`flex-1 min-w-0 px-1.5 py-1 border border-blue-300 rounded-md bg-white dark:bg-[#131d30] dark:text-white outline-none ${
-                    compact ? "text-xs" : "text-sm"
+                    compact ? "text-xs" : spacious ? "text-base sm:text-sm" : "text-sm"
                   }`}
                   autoFocus
                 />
@@ -158,7 +182,7 @@ export function TaskSubtaskSection({
                 onChange={(date) => onSetSubtaskDueDate(sub.id, date)}
                 requireExplicitPick={!sub.dueDate}
                 ariaLabel="Subtask due date"
-                className={`relative flex-shrink-0 p-0.5 transition-colors ${actionReveal} ${
+                className={`relative flex-shrink-0 p-1 transition-colors touch-target-sm ${actionReveal} ${
                   sub.dueDate && !sub.completed && isDueDateOverdue(sub.dueDate)
                     ? "text-red-500 dark:text-red-400"
                     : sub.dueDate
@@ -190,7 +214,7 @@ export function TaskSubtaskSection({
               <button
                 type="button"
                 onClick={() => onDeleteSubtask(sub.id)}
-                className={`flex-shrink-0 p-0.5 sm:p-1 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${actionReveal}`}
+                className={`flex-shrink-0 p-1 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors touch-target-sm ${actionReveal}`}
                 aria-label={`Delete subtask "${sub.title}"`}
                 title="Delete subtask"
               >
@@ -228,7 +252,7 @@ export function TaskSubtaskSection({
             enterKeyHint="done"
             className={`flex-1 min-w-0 dark:text-white outline-none ${
               spacious
-                ? "px-3.5 py-3 sm:py-2.5 text-base sm:text-sm border border-slate-200 dark:border-[#243350] rounded-xl bg-white dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                ? "px-3.5 py-3.5 sm:py-3 text-base sm:text-sm border border-slate-200 dark:border-[#243350] rounded-xl bg-white dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40 shadow-sm"
                 : "px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] focus:border-blue-400"
             }`}
           />
@@ -237,7 +261,7 @@ export function TaskSubtaskSection({
             disabled={!newSubtaskTitle.trim()}
             className={`font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0 ${
               spacious
-                ? "px-4 py-3 sm:py-2.5 text-sm rounded-xl min-h-[2.75rem] sm:min-h-0"
+                ? "px-5 py-3.5 sm:py-3 text-sm rounded-xl min-h-[3rem] sm:min-h-[2.75rem]"
                 : "px-2 py-1 text-xs rounded-md"
             }`}
           >

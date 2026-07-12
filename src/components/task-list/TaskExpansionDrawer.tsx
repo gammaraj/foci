@@ -36,14 +36,14 @@ export function TaskExpansionDrawer({
         role="dialog"
         aria-modal="true"
         aria-label={`Task details: ${task.title}`}
-        className="fixed z-50 bottom-0 left-0 right-0 sm:bottom-4 sm:right-4 sm:left-auto sm:w-[min(100%,32rem)] flex flex-col max-h-[min(92dvh,44rem)] sm:max-h-[calc(100dvh-5rem)] rounded-t-2xl sm:rounded-2xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-2xl shadow-slate-900/15 overflow-hidden"
+        className="fixed z-50 inset-x-0 bottom-0 sm:inset-x-auto sm:left-auto sm:right-3 sm:top-3 sm:bottom-3 sm:w-[min(calc(100%-1.5rem),40rem)] flex flex-col max-h-[min(94dvh,100%)] sm:max-h-none rounded-t-2xl sm:rounded-2xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-2xl shadow-slate-900/15 overflow-hidden"
       >
-        <header className="flex items-start gap-3 px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-200/80 dark:border-[#243350] shrink-0">
+        <header className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200/80 dark:border-[#243350] shrink-0">
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
               Task details
             </p>
-            <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3">
+            <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3">
               {task.title}
             </h3>
           </div>
@@ -58,7 +58,7 @@ export function TaskExpansionDrawer({
             </svg>
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
+        <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">{children}</div>
       </aside>
     </>
   );
