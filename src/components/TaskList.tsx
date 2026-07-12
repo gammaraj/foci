@@ -1588,15 +1588,17 @@ export default function TaskList({
     );
   };
 
-  /** Inline subtasks for card/bucket rows (detail editing stays in the drawer). */
+  /** Desktop+: inline subtasks under card/bucket rows. Mobile uses a count badge on the row. */
   const renderGridSubtasks = (task: Task) => {
     if (!(task.subtasks?.length)) return null;
     return (
-      <TaskSubtaskSection
-        {...taskSubtaskSectionProps(task)}
-        showAddForm={false}
-        compact
-      />
+      <div className="hidden sm:block">
+        <TaskSubtaskSection
+          {...taskSubtaskSectionProps(task)}
+          showAddForm={false}
+          compact
+        />
+      </div>
     );
   };
 
