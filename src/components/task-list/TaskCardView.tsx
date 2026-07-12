@@ -17,6 +17,7 @@ import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 
 const COLLAPSED_PROJECTS_KEY = "foci-collapsed-card-projects";
 
@@ -41,6 +42,8 @@ interface TaskCardViewProps {
   projects: Project[];
   tasksByProject: Map<string, Task[]>;
   completedCountByProject?: Map<string, number>;
+  /** Tasks completed today per project (Done today reel). */
+  doneTodayByProject?: Map<string, Task[]>;
   activeTaskId: string | null;
   isTimerRunning?: boolean;
   expandedTaskId?: string | null;
@@ -490,6 +493,7 @@ function ProjectCard({
   projectCount,
   tasks,
   completedCount,
+  doneTodayTasks = [],
   activeTaskId,
   isTimerRunning,
   expandedTaskId,
@@ -529,6 +533,7 @@ function ProjectCard({
   projectCount: number;
   tasks: Task[];
   completedCount: number;
+  doneTodayTasks?: Task[];
   activeTaskId: string | null;
   isTimerRunning?: boolean;
   expandedTaskId?: string | null;
@@ -759,7 +764,8 @@ function ProjectCard({
           className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 py-0.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           Collapsed · {tasks.length === 0 ? "no tasks" : `${tasks.length} task${tasks.length === 1 ? "" : "s"} hidden`}
-          {overdueCount > 0 ? ` · ${overdueCount} late` : ""} — click to expand
+          {overdueCount > 0 ? ` · ${overdueCount} late` : ""}
+          {doneTodayTasks.length > 0 ? ` · ${doneTodayTasks.length} done today` : ""} — click to expand
         </button>
       ) : (
         <>
@@ -796,6 +802,14 @@ function ProjectCard({
               ))
             )}
           </div>
+
+          {onToggleComplete && (
+            <DoneTodaySection
+              tasks={doneTodayTasks.slice(0, 5)}
+              onToggleComplete={onToggleComplete}
+              compact
+            />
+          )}
 
           <div className="no-print flex items-center gap-2 pt-0 sm:pt-0.5">
             {remaining > 0 && onExpandProject && (
@@ -840,6 +854,7 @@ export default function TaskCardView({
   projects,
   tasksByProject,
   completedCountByProject,
+  doneTodayByProject,
   activeTaskId,
   isTimerRunning,
   expandedTaskId,
@@ -915,8 +930,12 @@ export default function TaskCardView({
 
   const visibleProjects = useMemo(() => {
     if (!hideEmptyProjects) return projects;
-    return projects.filter((p) => (tasksByProject.get(p.id) ?? []).length > 0);
-  }, [projects, tasksByProject, hideEmptyProjects]);
+    return projects.filter(
+      (p) =>
+        (tasksByProject.get(p.id) ?? []).length > 0 ||
+        (doneTodayByProject?.get(p.id) ?? []).length > 0,
+    );
+  }, [projects, tasksByProject, doneTodayByProject, hideEmptyProjects]);
 
   const previewProjects = useMemo(
     () => getProjectsDragPreview(visibleProjects, dragProjectId ?? null, dragOverProjectId ?? null),
@@ -988,6 +1007,7 @@ export default function TaskCardView({
               projectCount={visibleProjects.length}
               tasks={tasksByProject.get(project.id) ?? []}
               completedCount={completedCountByProject?.get(project.id) ?? 0}
+              doneTodayTasks={doneTodayByProject?.get(project.id) ?? []}
               activeTaskId={activeTaskId}
               isTimerRunning={isTimerRunning}
               expandedTaskId={expandedTaskId}

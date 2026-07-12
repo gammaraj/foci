@@ -1503,9 +1503,17 @@ export default function TaskList({
       ? projects.find((p) => p.id === projectFilterId)
       : undefined;
 
-  const completedTasks = projectTasks.filter((t) => t.completed);
-  const doneTodayTasks = getDoneTodayTasks(projectTasks);
-  const earlierCompletedTasks = getEarlierCompletedTasks(projectTasks);
+  // Done today must ignore time filters (those scopes are open-task-only).
+  const listCompletedScope = (() => {
+    const scopeId = isTimeFilter ? projectFilterId : selectedProjectId;
+    if (scopeId === ALL_PROJECTS_ID) {
+      return tasks.filter((t) => !t.archivedAt);
+    }
+    return tasks.filter((t) => !t.archivedAt && t.projectId === scopeId);
+  })();
+  const completedTasks = listCompletedScope.filter((t) => t.completed);
+  const doneTodayTasks = getDoneTodayTasks(listCompletedScope);
+  const earlierCompletedTasks = getEarlierCompletedTasks(listCompletedScope);
   const archivedTasks = isAllProjects
     ? tasks.filter((t) => t.archivedAt)
     : tasks.filter((t) => t.projectId === selectedProjectId && t.archivedAt);
@@ -2346,6 +2354,7 @@ export default function TaskList({
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
           completedCountByProject={bucketCompletedCountByProject}
+          doneTodayByProject={doneTodayByProject}
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
