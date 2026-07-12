@@ -10,6 +10,7 @@ import {
   THIS_YEAR_FILTER_ID,
 } from "@/lib/types";
 import { projectTabLabel, projectTabTooltip } from "@/components/task-list/utils";
+import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
 
 const SELECT_CLASS =
   "min-w-0 px-2 py-1.5 min-h-[2.25rem] text-xs font-medium rounded-md bg-blue-50/90 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-blue-200/80 dark:border-[#243350] outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.35rem_center] bg-no-repeat pr-6 truncate";
@@ -28,6 +29,8 @@ interface MobileTaskToolbarProps {
   onSelectViewMode: (mode: TaskViewMode) => void;
   onManageProjects: () => void;
   overdueCount: number;
+  doneTodayCount?: number;
+  onDoneTodayClick?: () => void;
   projects?: Project[];
   projectJumpId?: string;
   onProjectJump?: (projectId: string) => void;
@@ -69,6 +72,8 @@ export function MobileTaskToolbar({
   onSelectViewMode,
   onManageProjects,
   overdueCount,
+  doneTodayCount = 0,
+  onDoneTodayClick,
   projects = [],
   projectJumpId = "",
   onProjectJump,
@@ -96,6 +101,8 @@ export function MobileTaskToolbar({
           <option value={THIS_MONTH_FILTER_ID}>{scopeLabel(THIS_MONTH_FILTER_ID, overdueCount)}</option>
           <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID, overdueCount)}</option>
         </select>
+
+        <DoneTodayTally count={doneTodayCount} onClick={onDoneTodayClick} />
 
         <label className="sr-only" htmlFor="mobile-view-mode">
           View mode

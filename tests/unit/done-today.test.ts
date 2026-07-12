@@ -1,11 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import type { Task } from "@/lib/types";
 import { DEFAULT_PROJECT_ID } from "@/lib/types";
 import {
   doneTodayToastMessage,
+  formatDoneTaskMeta,
   getDoneTodayTasks,
   getEarlierCompletedTasks,
   isDoneToday,
+  markDayRecapSeen,
+  shouldShowDayRecap,
+  summarizeDoneToday,
 } from "@/lib/done-today";
 
 function makeTask(overrides: Partial<Task> = {}): Task {
@@ -60,5 +64,39 @@ describe("done-today", () => {
     expect(doneTodayToastMessage(2, { recurring: true })).toBe(
       "2 tasks done today · next occurrence created",
     );
+  });
+
+  it("summarizeDoneToday aggregates count sessions and time", () => {
+    const tasks = [
+      makeTask({ id: "a", completed: true, completedAt: todayTs, sessions: 1, timeSpent: 25 * 60000 }),
+      makeTask({ id: "b", completed: true, completedAt: todayTs, sessions: 2, timeSpent: 10 * 60000 }),
+      makeTask({ id: "c", completed: true, completedAt: yesterdayTs, sessions: 9, timeSpent: 99 * 60000 }),
+    ];
+    expect(summarizeDoneToday(tasks)).toEqual({
+      count: 2,
+      sessions: 3,
+      timeSpent: 35 * 60000,
+    });
+  });
+
+  it("formatDoneTaskMeta joins time and sessions", () => {
+    expect(formatDoneTaskMeta({ timeSpent: 0, sessions: 0 })).toBeNull();
+    expect(formatDoneTaskMeta({ timeSpent: 25 * 60000, sessions: 0 })).toBe("25m");
+    expect(formatDoneTaskMeta({ timeSpent: 0, sessions: 1 })).toBe("1 session");
+    expect(formatDoneTaskMeta({ timeSpent: 25 * 60000, sessions: 2 })).toBe("25m · 2 sessions");
+  });
+
+  it("shouldShowDayRecap gates on count and prior dismiss", () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal("localStorage", {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => { store.set(k, v); },
+      removeItem: (k: string) => { store.delete(k); },
+    });
+    expect(shouldShowDayRecap(2)).toBe(false);
+    expect(shouldShowDayRecap(3)).toBe(true);
+    markDayRecapSeen();
+    expect(shouldShowDayRecap(5)).toBe(false);
+    vi.unstubAllGlobals();
   });
 });

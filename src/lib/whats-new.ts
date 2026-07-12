@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-07";
+export const WHATS_NEW_VERSION = "2026-07-b";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -17,16 +17,16 @@ export interface FeatureTourStep {
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
+    title: "Done today tally",
+    description: "See ✓ N done today in the Tasks header — tap to jump to your win reel. Soft recap after 3 completions.",
+  },
+  {
     title: "Done today",
     description: "Finished tasks land in a Done today reel — see your wins accumulate as you check things off.",
   },
   {
     title: "Bucket view",
     description: "See every project side by side — now the default when you open Tasks.",
-  },
-  {
-    title: "Favorite projects",
-    description: "Star projects in the manage menu (⋮) to pin them first in your tabs.",
   },
 ];
 

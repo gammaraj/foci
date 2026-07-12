@@ -17,9 +17,13 @@ import {
   getDoneTodayTasks,
   getEarlierCompletedTasks,
   isDoneToday,
+  markDayRecapSeen,
+  shouldShowDayRecap,
+  summarizeDoneToday,
 } from "@/lib/done-today";
 import TaskPanelMenu from "@/components/TaskPanelMenu";
 import { printCurrentView } from "@/lib/print-tasks";
+import DayRecap from "@/components/DayRecap";
 
 const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
@@ -39,6 +43,7 @@ import { dismissDatePicker } from "@/components/task-list/dismiss-overlays";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
+import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
 import { MobileTaskToolbar } from "@/components/task-list/MobileTaskToolbar";
@@ -198,6 +203,8 @@ export default function TaskList({
   }, [syncProjectsUrl]);
 
   const [listReturnView, setListReturnView] = useState<TaskViewMode | null>(null);
+  const [showDayRecap, setShowDayRecap] = useState(false);
+  const [tallyPulse, setTallyPulse] = useState(false);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     setViewMode(mode);
@@ -790,6 +797,12 @@ export default function TaskList({
           onClick: () => persist(snapshot),
         }
       );
+      setTallyPulse(true);
+      window.setTimeout(() => setTallyPulse(false), 900);
+      if (shouldShowDayRecap(doneTodayCount)) {
+        markDayRecapSeen();
+        setShowDayRecap(true);
+      }
       if (task.recurrence) {
         const nextTask: Task = {
           id: crypto.randomUUID(),
@@ -1528,6 +1541,16 @@ export default function TaskList({
       getDoneTodayTasks(tasks.filter((t) => t.projectId === project.id && !t.archivedAt)),
     );
   }
+  const globalDoneTodaySummary = summarizeDoneToday(tasks);
+  const scrollToDoneToday = useCallback(() => {
+    const el = document.querySelector<HTMLElement>("[data-done-today-section]");
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+  }, []);
+
+  const dismissDayRecap = useCallback(() => {
+    setShowDayRecap(false);
+  }, []);
 
   const isFocusMode = !!focusProjectId;
   const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
@@ -2036,6 +2059,12 @@ export default function TaskList({
               >
                 Year
               </button>
+              <DoneTodayTally
+                count={globalDoneTodaySummary.count}
+                pulse={tallyPulse}
+                onClick={scrollToDoneToday}
+                className="ml-1"
+              />
             </div>
 
             <div className="flex items-center gap-2 shrink-0" data-tour="view-modes">
@@ -2102,6 +2131,8 @@ export default function TaskList({
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
           overdueCount={overdueTasks.length}
+          doneTodayCount={globalDoneTodaySummary.count}
+          onDoneTodayClick={scrollToDoneToday}
           projects={sortedProjects}
           projectJumpId={bucketJumpProjectId}
           onProjectJump={handleMobileProjectJump}
@@ -3180,6 +3211,12 @@ export default function TaskList({
           onCancel={() => setPendingConfirm(null)}
         />
       )}
+
+      <DayRecap
+        show={showDayRecap}
+        summary={globalDoneTodaySummary}
+        onDismiss={dismissDayRecap}
+      />
 
       {/* Share Project Modal */}
       {shareModalProject && (

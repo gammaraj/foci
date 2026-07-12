@@ -22,6 +22,43 @@ export function getEarlierCompletedTasks(tasks: Task[], today: string = getToday
     .sort((a, b) => (b.completedAt ?? b.createdAt) - (a.completedAt ?? a.createdAt));
 }
 
+export interface DoneTodaySummary {
+  count: number;
+  sessions: number;
+  timeSpent: number;
+}
+
+/** Aggregate wins for today's completed tasks. */
+export function summarizeDoneToday(
+  tasks: Task[],
+  today: string = getToday(),
+): DoneTodaySummary {
+  const done = getDoneTodayTasks(tasks, today);
+  return {
+    count: done.length,
+    sessions: done.reduce((sum, t) => sum + (t.sessions || 0), 0),
+    timeSpent: done.reduce((sum, t) => sum + (t.timeSpent || 0), 0),
+  };
+}
+
+/** Per-task focus meta for Done rows, e.g. "25m · 1 session". */
+export function formatDoneTaskMeta(task: Pick<Task, "timeSpent" | "sessions">): string | null {
+  const parts: string[] = [];
+  if ((task.timeSpent || 0) > 0) {
+    const totalMin = Math.floor(task.timeSpent / 60000);
+    if (totalMin < 60) parts.push(`${totalMin}m`);
+    else {
+      const h = Math.floor(totalMin / 60);
+      const m = totalMin % 60;
+      parts.push(m > 0 ? `${h}h ${m}m` : `${h}h`);
+    }
+  }
+  if ((task.sessions || 0) > 0) {
+    parts.push(`${task.sessions} session${task.sessions === 1 ? "" : "s"}`);
+  }
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
 /** Toast copy after completing a task — emphasizes today's tally. */
 export function doneTodayToastMessage(
   doneTodayCount: number,
@@ -35,4 +72,29 @@ export function doneTodayToastMessage(
     return `${countPart} · next occurrence created`;
   }
   return countPart;
+}
+
+const DAY_RECAP_KEY_PREFIX = "foci_day_recap_seen_";
+
+export function hasSeenDayRecap(today: string = getToday()): boolean {
+  if (typeof localStorage === "undefined") return true;
+  try {
+    return localStorage.getItem(DAY_RECAP_KEY_PREFIX + today) === "1";
+  } catch {
+    return true;
+  }
+}
+
+export function markDayRecapSeen(today: string = getToday()): void {
+  if (typeof localStorage === "undefined") return;
+  try {
+    localStorage.setItem(DAY_RECAP_KEY_PREFIX + today, "1");
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+/** Show the soft day recap once per day starting at the 3rd completion. */
+export function shouldShowDayRecap(doneTodayCount: number, today: string = getToday()): boolean {
+  return doneTodayCount >= 3 && !hasSeenDayRecap(today);
 }
