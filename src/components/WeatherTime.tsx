@@ -59,7 +59,7 @@ function WeatherStat({
   label,
   value,
   title,
-  className = "",
+  className = "inline-flex",
 }: {
   label: string;
   value: string;
@@ -68,7 +68,7 @@ function WeatherStat({
 }) {
   return (
     <span
-      className={`inline-flex flex-col items-center justify-center gap-1 ${className}`}
+      className={`${className} flex-col items-center justify-center gap-1`}
       title={title}
     >
       <span className="text-xs font-semibold uppercase tracking-wide !leading-none text-slate-400 dark:text-slate-500">

@@ -82,30 +82,6 @@ export function TaskUrgencySummary({
           <span className="leading-none">{compact ? "late" : "overdue"}</span>
         </button>
       )}
-      {worstOverdue && worstOverdue.daysLate >= 1 && (
-        <button
-          type="button"
-          onClick={handleWorst}
-          className={`${worstPillClass} inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors max-w-[14rem]`}
-          title={worstTitle}
-        >
-          <span
-            className={`inline-flex items-center justify-center min-w-[1.35rem] h-4 sm:h-5 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${
-              worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "urgency-chip--mid"
-            }`}
-          >
-            {worstOverdue.daysLate}d
-          </span>
-          <span className="leading-none truncate">
-            {compact ? worstLabel : (
-              <>
-                {worstOverdue.projectName}
-                <span className="font-medium opacity-90"> — jump</span>
-              </>
-            )}
-          </span>
-        </button>
-      )}
       {dueTodayCount > 0 && (
         <button
           type="button"
@@ -118,8 +94,33 @@ export function TaskUrgencySummary({
               {dueTodayCount}
             </span>
           )}
-          {compact && <span className="tabular-nums font-bold">{dueTodayCount}</span>}
-          <span className="leading-none">{compact ? "today" : "due today"}</span>
+          <span className="leading-none whitespace-nowrap">
+            {compact ? `${dueTodayCount} today` : "due today"}
+          </span>
+        </button>
+      )}
+      {worstOverdue && worstOverdue.daysLate >= 1 && (
+        <button
+          type="button"
+          onClick={handleWorst}
+          className={`${worstPillClass} inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors ${compact ? "max-w-[7.5rem]" : "max-w-[14rem]"}`}
+          title={worstTitle}
+        >
+          <span
+            className={`inline-flex items-center justify-center min-w-[1.35rem] h-4 sm:h-5 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${
+              worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "urgency-chip--mid"
+            }`}
+          >
+            {worstOverdue.daysLate}d
+          </span>
+          <span className="leading-none truncate min-w-0">
+            {compact ? worstLabel : (
+              <>
+                {worstOverdue.projectName}
+                <span className="font-medium opacity-90"> — jump</span>
+              </>
+            )}
+          </span>
         </button>
       )}
     </div>
