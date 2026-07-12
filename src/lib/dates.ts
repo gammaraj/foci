@@ -12,3 +12,8 @@ export function getToday(): string {
 export function getYesterday(): string {
   return formatDateLocal(new Date(Date.now() - 86400000));
 }
+
+/** Local calendar date (YYYY-MM-DD) for a millisecond timestamp. */
+export function timestampToLocalDate(ts: number): string {
+  return formatDateLocal(new Date(ts));
+}

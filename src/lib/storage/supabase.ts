@@ -36,6 +36,7 @@ type TaskRow = {
   sessions: number;
   time_spent: number;
   created_at: number;
+  completed_at?: number | null;
   project_id: string;
   subtasks: Task["subtasks"];
   description?: string | null;
@@ -65,6 +66,7 @@ function mapTaskRow(row: TaskRow): Task {
     createdAt: row.created_at,
     projectId: row.project_id,
     subtasks: row.subtasks ?? [],
+    ...(row.completed_at ? { completedAt: row.completed_at } : {}),
     ...(row.description ? { description: row.description } : {}),
     ...(row.due_date ? { dueDate: row.due_date } : {}),
     ...(row.order !== null && row.order !== undefined ? { order: row.order } : {}),
@@ -86,6 +88,7 @@ function taskToRow(task: Task, userId: string) {
     sessions: task.sessions,
     time_spent: task.timeSpent,
     created_at: task.createdAt,
+    completed_at: task.completedAt ?? null,
     project_id: task.projectId,
     subtasks: task.subtasks ?? [],
     description: task.description ?? null,

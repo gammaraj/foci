@@ -87,6 +87,8 @@ export interface Task {
   sessions: number; // number of sessions spent on this task
   timeSpent: number; // total milliseconds spent on this task
   createdAt: number;
+  /** Timestamp when marked complete — used for Done today. Cleared on uncomplete. */
+  completedAt?: number;
   projectId: string; // which project this task belongs to
   subtasks?: Subtask[];
   description?: string; // optional task description/notes

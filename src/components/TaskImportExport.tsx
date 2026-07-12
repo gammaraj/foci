@@ -25,6 +25,7 @@ function toFociTasks(parsed: ParsedTask[], projectId: string): Task[] {
     sessions: 0,
     timeSpent: 0,
     createdAt: now + i, // ensure unique ordering
+    ...(p.completed ? { completedAt: now + i } : {}),
     projectId,
     subtasks: p.subtasks?.map((s) => ({
       id: uuid(),

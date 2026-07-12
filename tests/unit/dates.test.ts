@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatDateLocal, getToday, getYesterday } from "@/lib/dates";
+import { formatDateLocal, getToday, getYesterday, timestampToLocalDate } from "@/lib/dates";
 
 describe("dates", () => {
   it("formatDateLocal returns YYYY-MM-DD", () => {
@@ -15,5 +15,10 @@ describe("dates", () => {
     const today = new Date(getToday() + "T12:00:00");
     const yesterday = new Date(getYesterday() + "T12:00:00");
     expect(today.getTime() - yesterday.getTime()).toBe(86_400_000);
+  });
+
+  it("timestampToLocalDate matches formatDateLocal", () => {
+    const d = new Date(2026, 6, 12, 15, 30);
+    expect(timestampToLocalDate(d.getTime())).toBe("2026-07-12");
   });
 });

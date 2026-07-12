@@ -253,6 +253,7 @@ export type Database = {
           archived_at: number | null
           blocked: boolean
           completed: boolean
+          completed_at: number | null
           created_at: number
           due_date: string | null
           id: string
@@ -273,6 +274,7 @@ export type Database = {
           archived_at?: number | null
           blocked?: boolean
           completed?: boolean
+          completed_at?: number | null
           created_at: number
           due_date?: string | null
           id: string
@@ -293,6 +295,7 @@ export type Database = {
           archived_at?: number | null
           blocked?: boolean
           completed?: boolean
+          completed_at?: number | null
           created_at?: number
           due_date?: string | null
           id?: string

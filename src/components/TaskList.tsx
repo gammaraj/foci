@@ -12,6 +12,12 @@ import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getToday, formatDateLocal } from "@/lib/dates";
+import {
+  doneTodayToastMessage,
+  getDoneTodayTasks,
+  getEarlierCompletedTasks,
+  isDoneToday,
+} from "@/lib/done-today";
 import TaskPanelMenu from "@/components/TaskPanelMenu";
 import { printCurrentView } from "@/lib/print-tasks";
 
@@ -32,6 +38,7 @@ import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer"
 import { dismissDatePicker } from "@/components/task-list/dismiss-overlays";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
+import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
 import { MobileTaskToolbar } from "@/components/task-list/MobileTaskToolbar";
@@ -752,17 +759,31 @@ export default function TaskList({
     if (isCompleting && activeTaskId === id) {
       elapsed = onCompleteTask(id);
     }
-    let updated = tasks.map((t) =>
-      t.id === id
-        ? { ...t, completed: !t.completed, timeSpent: (t.timeSpent || 0) + elapsed }
-        : t
-    );
+    const now = Date.now();
+    let updated = tasks.map((t) => {
+      if (t.id !== id) return t;
+      if (isCompleting) {
+        return {
+          ...t,
+          completed: true,
+          completedAt: now,
+          timeSpent: (t.timeSpent || 0) + elapsed,
+        };
+      }
+      return {
+        ...t,
+        completed: false,
+        completedAt: undefined,
+        timeSpent: (t.timeSpent || 0) + elapsed,
+      };
+    });
     const changed = updated.find((t) => t.id === id)!;
     if (isCompleting) {
       trackTaskCompleted((changed.timeSpent || 0));
       const snapshot = tasks;
+      const doneTodayCount = updated.filter((t) => isDoneToday(t)).length;
       showToast(
-        task.recurrence ? "Task completed! Next occurrence created." : "Task completed!",
+        doneTodayToastMessage(doneTodayCount, { recurring: !!task.recurrence }),
         "success",
         {
           label: "Undo",
@@ -1483,12 +1504,22 @@ export default function TaskList({
       : undefined;
 
   const completedTasks = projectTasks.filter((t) => t.completed);
+  const doneTodayTasks = getDoneTodayTasks(projectTasks);
+  const earlierCompletedTasks = getEarlierCompletedTasks(projectTasks);
   const archivedTasks = isAllProjects
     ? tasks.filter((t) => t.archivedAt)
     : tasks.filter((t) => t.projectId === selectedProjectId && t.archivedAt);
   const currentProject = projects.find((p) => p.id === selectedProjectId);
   const getProjectName = (projectId: string) =>
     projects.find((p) => p.id === projectId)?.name ?? "General";
+
+  const doneTodayByProject = new Map<string, Task[]>();
+  for (const project of sortedProjects) {
+    doneTodayByProject.set(
+      project.id,
+      getDoneTodayTasks(tasks.filter((t) => t.projectId === project.id && !t.archivedAt)),
+    );
+  }
 
   const isFocusMode = !!focusProjectId;
   const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
@@ -2269,6 +2300,7 @@ export default function TaskList({
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
           completedCountByProject={bucketCompletedCountByProject}
+          doneTodayByProject={doneTodayByProject}
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
           datedLaneLabel={bucketDatedLaneLabel}
@@ -2939,14 +2971,99 @@ export default function TaskList({
           {...createTaskListDnD(pendingTasks)}
         />
 
-        {/* Completed tasks */}
-        {completedTasks.length > 0 && (
-          <div className="pt-2 border-t border-slate-100 dark:border-[#1e3050]">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="app-section-label text-slate-500 dark:text-slate-300">
-                Completed ({completedTasks.length})
-              </span>
-              <div className="no-print flex items-center gap-2">
+        {/* Done today + earlier completed */}
+        {(doneTodayTasks.length > 0 || earlierCompletedTasks.length > 0) && (
+          <div className="space-y-3 pt-2">
+            <DoneTodaySection
+              tasks={doneTodayTasks}
+              onToggleComplete={toggleComplete}
+              getProjectName={getProjectName}
+              showProject={isAllProjects || isTimeFilter}
+            />
+
+            {earlierCompletedTasks.length > 0 && (
+              <div className="pt-2 border-t border-slate-100 dark:border-[#1e3050]">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="app-section-label text-slate-500 dark:text-slate-300">
+                    {doneTodayTasks.length > 0
+                      ? `Earlier (${earlierCompletedTasks.length})`
+                      : `Completed (${earlierCompletedTasks.length})`}
+                  </span>
+                  <div className="no-print flex items-center gap-2">
+                    <button
+                      onClick={archiveCompleted}
+                      className="text-sm text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1"
+                      title="Archive completed tasks"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                      </svg>
+                      Archive
+                    </button>
+                    <button
+                      onClick={() => {
+                        setPendingConfirm({
+                          title: "Clear completed tasks",
+                          message: `Delete ${completedTasks.length} completed task${completedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`,
+                          confirmLabel: "Delete",
+                          onConfirm: () => {
+                            setPendingConfirm(null);
+                            clearCompleted();
+                          },
+                        });
+                      }}
+                      className="text-sm text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {earlierCompletedTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-[#131d30] transition-colors"
+                    >
+                      <button
+                        onClick={() => toggleComplete(task.id)}
+                        className="flex-shrink-0 w-5 h-5 rounded border-2 border-green-400 bg-green-500 flex items-center justify-center"
+                        aria-label={`Mark "${task.title}" incomplete`}
+                      >
+                        <svg
+                          className="w-3 h-3 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </button>
+                      <span className="text-sm text-slate-400 dark:text-slate-400 line-through truncate">
+                        {task.title}
+                        {(isAllProjects || isTimeFilter) && (
+                          <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle no-underline">
+                            {getProjectName(task.projectId)}
+                          </span>
+                        )}
+                      </span>
+                      {((task.timeSpent || 0) > 0 || task.sessions > 0) && (
+                        <span className="text-xs text-slate-400 dark:text-slate-400 ml-auto flex-shrink-0">
+                          {(task.timeSpent || 0) > 0 ? formatDuration(task.timeSpent) : `${task.sessions}s`}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {doneTodayTasks.length > 0 && earlierCompletedTasks.length === 0 && (
+              <div className="no-print flex items-center justify-end gap-2">
                 <button
                   onClick={archiveCompleted}
                   className="text-sm text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1"
@@ -2974,48 +3091,7 @@ export default function TaskList({
                   Clear
                 </button>
               </div>
-            </div>
-            <div className="space-y-1">
-              {completedTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-[#131d30] transition-colors"
-                >
-                  <button
-                    onClick={() => toggleComplete(task.id)}
-                    className="flex-shrink-0 w-5 h-5 rounded border-2 border-green-400 bg-green-500 flex items-center justify-center"
-                    aria-label={`Mark "${task.title}" incomplete`}
-                  >
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={3}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </button>
-                  <span className="text-sm text-slate-400 dark:text-slate-400 line-through truncate">
-                    {task.title}
-                    {(isAllProjects || isTimeFilter) && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle no-underline">
-                        {getProjectName(task.projectId)}
-                      </span>
-                    )}
-                  </span>
-                  {((task.timeSpent || 0) > 0 || task.sessions > 0) && (
-                    <span className="text-xs text-slate-400 dark:text-slate-400 ml-auto flex-shrink-0">
-                      {(task.timeSpent || 0) > 0 ? formatDuration(task.timeSpent) : `${task.sessions}s`}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+            )}
           </div>
         )}
 

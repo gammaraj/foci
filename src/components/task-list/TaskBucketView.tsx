@@ -17,6 +17,7 @@ import { isActionableOverdue } from "@/lib/task-status";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
+import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 
 function BucketColumnTitle({ project }: { project: Project }) {
   const subtitle = project.description?.trim();
@@ -51,6 +52,8 @@ interface TaskBucketViewProps {
   tasksByProject: Map<string, Task[]>;
   /** Non-archived completed tasks per project (for column header counts). */
   completedCountByProject?: Map<string, number>;
+  /** Tasks completed today per project (Done today reel). */
+  doneTodayByProject?: Map<string, Task[]>;
   activeTaskId: string | null;
   isTimerRunning: boolean;
   /** Label for the dated (in-scope) swimlane, e.g. "Due today". */
@@ -505,6 +508,7 @@ function BucketColumn({
   project,
   tasks,
   completedCount = 0,
+  doneTodayTasks = [],
   datedLaneLabel,
   activeTaskId,
   isTimerRunning,
@@ -538,6 +542,7 @@ function BucketColumn({
   project: Project;
   tasks: Task[];
   completedCount?: number;
+  doneTodayTasks?: Task[];
   datedLaneLabel: string;
   activeTaskId: string | null;
   isTimerRunning: boolean;
@@ -714,22 +719,29 @@ function BucketColumn({
         }}
       >
         {tasks.length === 0 ? (
-          <p className="text-sm app-text-meta text-slate-400 dark:text-slate-500 text-center py-6 px-2">
-            {dragEnabled && dragTaskId ? (
-              <span className="text-blue-600 dark:text-blue-400 font-medium">Drop here to move</span>
-            ) : (
-              <>
-                No tasks ·{" "}
-                <button
-                  type="button"
-                  onClick={focusAddInput}
-                  className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  + Add
-                </button>
-              </>
-            )}
-          </p>
+          <div className="px-0.5">
+            <p className="text-sm app-text-meta text-slate-400 dark:text-slate-500 text-center py-6 px-2">
+              {dragEnabled && dragTaskId ? (
+                <span className="text-blue-600 dark:text-blue-400 font-medium">Drop here to move</span>
+              ) : (
+                <>
+                  No tasks ·{" "}
+                  <button
+                    type="button"
+                    onClick={focusAddInput}
+                    className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    + Add
+                  </button>
+                </>
+              )}
+            </p>
+            <DoneTodaySection
+              tasks={doneTodayTasks}
+              onToggleComplete={onToggleComplete}
+              compact
+            />
+          </div>
         ) : (
           <div className="space-y-4">
             {swimlanes.map((lane) => {
@@ -852,6 +864,11 @@ function BucketColumn({
               </div>
             );
             })}
+            <DoneTodaySection
+              tasks={doneTodayTasks}
+              onToggleComplete={onToggleComplete}
+              compact
+            />
           </div>
         )}
       </div>
@@ -870,6 +887,7 @@ export default function TaskBucketView({
   projects,
   tasksByProject,
   completedCountByProject,
+  doneTodayByProject,
   activeTaskId,
   isTimerRunning,
   datedLaneLabel = "Scheduled",
@@ -965,6 +983,7 @@ export default function TaskBucketView({
             project={project}
             tasks={tasksByProject.get(project.id) ?? []}
             completedCount={completedCountByProject?.get(project.id) ?? 0}
+            doneTodayTasks={doneTodayByProject?.get(project.id) ?? []}
             datedLaneLabel={datedLaneLabel}
             activeTaskId={activeTaskId}
             isTimerRunning={isTimerRunning}
