@@ -2920,7 +2920,7 @@ export default function TaskList({
           somedayExpanded={preparingPrint || somedayExpanded}
           onToggleSomedayExpanded={() => setSomedayExpanded((open) => !open)}
           scopedSomedayOpenCount={scopedSomedayOpenCount}
-          twoColumn={viewMode === "list"}
+          twoColumn={false}
           onToggleComplete={toggleComplete}
           onSaveEdit={saveEdit}
           onStartEdit={startEditing}

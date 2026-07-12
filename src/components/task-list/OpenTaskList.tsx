@@ -167,33 +167,33 @@ export default function OpenTaskList({
           onDragOver={(e) => onDragOver(e, task.id)}
           onDrop={() => onDrop(task.id)}
           onDragEnd={onDragEnd}
-          className={`group flex flex-col overflow-hidden rounded-lg border transition-colors ${
+          className={`group flex flex-col overflow-hidden rounded-md border transition-colors ${
             activeTaskId === task.id
-              ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 border-l-[3px] border-l-blue-500 dark:border-l-blue-400 ring-2 ring-blue-400/30 dark:ring-blue-500/25"
+              ? "task-timer-linked border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/25 ring-1 ring-blue-400/30 dark:ring-blue-500/25"
               : isExpanded
                 ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
                 : isBlocked
-                  ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 shadow-sm"
+                  ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15"
                   : isOverdue
-                  ? "urgency-surface urgency-surface--overdue border shadow-sm"
-                  : "border-slate-300 dark:border-[#1e3050] hover:bg-slate-50 dark:hover:bg-[#131d30] shadow-sm"
+                  ? "urgency-surface urgency-surface--overdue border"
+                  : "border-slate-200/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-[#131d30]"
           } ${dragTaskId === task.id ? "opacity-50" : ""} ${
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
           }`}
         >
-        <div className="flex items-start gap-1.5 sm:gap-2 p-1.5 sm:p-2">
-          <div className="hidden sm:flex flex-shrink-0 items-center mt-0.5 cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+        <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 py-1 sm:px-2 sm:py-1">
+          <div className="hidden sm:flex flex-shrink-0 items-center cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
               <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
             </svg>
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); onToggleComplete(task.id); }}
-            className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 mt-0.5 rounded-md border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
+            className="flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
             aria-label={`Mark "${task.title}" complete`}
           />
           <div className="flex-1 min-w-0">
-            <div className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-medium break-words leading-normal ${
+            <div className={`flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-medium break-words leading-snug ${
               isOverdue ? "urgency-text--mild" : "text-slate-800 dark:text-slate-50"
             }`}>
               {editingId === task.id ? (
@@ -256,58 +256,54 @@ export default function OpenTaskList({
                   {getProjectName(task.projectId)}
                 </span>
               )}
-            </div>
-            <div className="flex items-center gap-x-2 mt-0.5 min-h-[22px]">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 flex-1 min-w-0">
-                {task.dueDate && (
-                  <DueDateField
-                    value={task.dueDate}
-                    onChange={(date) => onSetDueDate(task.id, date)}
-                    ariaLabel="Change due date"
-                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
-                      isBlocked
-                        ? "text-amber-700 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50"
-                        : !task.completed && isDueDateOverdue(task.dueDate)
-                          ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
-                          : !task.completed && task.dueDate === getToday()
-                            ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                            : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`}
+              {task.dueDate && (
+                <DueDateField
+                  value={task.dueDate}
+                  onChange={(date) => onSetDueDate(task.id, date)}
+                  ariaLabel="Change due date"
+                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
+                    isBlocked
+                      ? "text-amber-700 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50"
+                      : !task.completed && isDueDateOverdue(task.dueDate)
+                        ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        : !task.completed && task.dueDate === getToday()
+                          ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                          : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-blue-600 dark:hover:text-blue-400"
+                  }`}
+                >
+                  <span
+                    className="inline-flex items-center gap-1"
+                    title={isBlocked ? `Waiting — due ${formatDueDate(task.dueDate)}` : `Due: ${formatDueDate(task.dueDate)}`}
                   >
-                    <span
-                      className="inline-flex items-center gap-1"
-                      title={isBlocked ? `Waiting — due ${formatDueDate(task.dueDate)}` : `Due: ${formatDueDate(task.dueDate)}`}
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                      {formatDueDate(task.dueDate)}
-                      {!task.completed && !isBlocked && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                      {isBlocked && " (waiting)"}
-                    </span>
-                  </DueDateField>
-                )}
-                {task.description && (
-                  <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" /></svg>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    {formatDueDate(task.dueDate)}
+                    {!task.completed && !isBlocked && isDueDateOverdue(task.dueDate) && " (overdue)"}
+                    {isBlocked && " (waiting)"}
                   </span>
-                )}
-                {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
-                  <span className="app-text-meta text-slate-500 dark:text-slate-300">
-                    {task.sessions > 0 && <>{task.sessions}× </>}
-                    {(task.timeSpent || 0) > 0 && formatDuration(task.timeSpent)}
-                  </span>
-                )}
-                {task.recurrence && (
-                  <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                    {task.recurrence}
-                  </span>
-                )}
-                {twoColumn && subtaskCount > 0 && !isExpanded && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50">
-                    {completedSubtaskCount}/{subtaskCount} subtasks
-                  </span>
-                )}
-              </div>
+                </DueDateField>
+              )}
+              {task.description && (
+                <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" /></svg>
+                </span>
+              )}
+              {(task.sessions > 0 || (task.timeSpent || 0) > 0) && (
+                <span className="app-text-meta text-slate-500 dark:text-slate-300">
+                  {task.sessions > 0 && <>{task.sessions}× </>}
+                  {(task.timeSpent || 0) > 0 && formatDuration(task.timeSpent)}
+                </span>
+              )}
+              {task.recurrence && (
+                <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title={`Repeats ${task.recurrence}`}>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                  {task.recurrence}
+                </span>
+              )}
+              {subtaskCount > 0 && !isExpanded && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50">
+                  {completedSubtaskCount}/{subtaskCount} subtasks
+                </span>
+              )}
               {isOverdue && !task.completed && (
                 <div
                   className="flex shrink-0 items-center gap-1 opacity-0 pointer-events-none group-hover/task:opacity-100 group-hover/task:pointer-events-auto transition-opacity"
@@ -347,7 +343,7 @@ export default function OpenTaskList({
           ) : !isOverdue ? (
             <button
               onClick={(e) => { e.stopPropagation(); onStartTask(task.id); }}
-              className="flex-shrink-0 flex items-center justify-center px-2 py-1 text-xs font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+              className="flex-shrink-0 flex items-center justify-center px-2 py-1 text-xs font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 sm:opacity-0 sm:pointer-events-none sm:group-hover/task:opacity-100 sm:group-hover/task:pointer-events-auto transition-opacity"
               title={isTimerRunning ? "Switch focus to this task" : "Focus on this task and start the timer"}
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
