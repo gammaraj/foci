@@ -392,9 +392,9 @@ function BucketTaskCard({
         )}
         {!isEditing && canOpenDetail && (
           <TaskEditButton
+            compact
             isOpen={isDetailOpen}
             taskTitle={task.title}
-            revealOnHover
             className="mt-[1px]"
             onClick={(e) => {
               e.stopPropagation();
@@ -488,8 +488,8 @@ function BucketTaskCard({
                 e.stopPropagation();
                 onToggleTaskDetail?.(task.id);
               }}
-              className="sm:hidden inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50"
-              title={`${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length} subtasks — tap to edit`}
+              className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
+              title={`${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length} subtasks — open details`}
               aria-label={`${task.subtasks!.filter((s) => s.completed).length} of ${task.subtasks!.length} subtasks complete. Open task details.`}
             >
               {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length} subtasks

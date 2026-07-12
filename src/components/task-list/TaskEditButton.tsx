@@ -7,29 +7,30 @@ interface TaskEditButtonProps {
   isOpen?: boolean;
   taskTitle?: string;
   className?: string;
-  /** Icon-only kebab (card view / dense rows). */
+  /** Icon-first control for dense card/bucket rows. */
   compact?: boolean;
   /** Hide until row hover on fine-pointer desktops; always visible when open or on touch. */
   revealOnHover?: boolean;
 }
 
-const editBtnClass = (isOpen: boolean) =>
+const openBtnClass = (isOpen: boolean) =>
   isOpen
-    ? "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-700/50"
-    : "text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-[#2a3f5f]/80 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/90 dark:hover:bg-violet-900/20 hover:border-violet-200 dark:hover:border-violet-700/50";
+    ? "text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/35 border-blue-300 dark:border-blue-600/60"
+    : "text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#2a3f5f]/80 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50/90 dark:hover:bg-blue-900/25 hover:border-blue-300 dark:hover:border-blue-600/50";
 
-const KebabIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+/** Side-panel glyph — reads as “open details”, not a menu. */
+const DetailsIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+      d="M4 5a1 1 0 011-1h6v16H5a1 1 0 01-1-1V5zm8-1h7a1 1 0 011 1v14a1 1 0 01-1 1h-7V4z"
     />
   </svg>
 );
 
-/** Opens the task detail drawer/panel — labeled "Edit" for clarity (replaces chevron). */
+/** Opens the task detail drawer/panel. */
 export function TaskEditButton({
   onClick,
   isOpen,
@@ -38,7 +39,7 @@ export function TaskEditButton({
   compact = false,
   revealOnHover = false,
 }: TaskEditButtonProps) {
-  const label = isOpen ? "Close" : "Edit";
+  const label = isOpen ? "Close" : "Details";
   const named = taskTitle ? ` for "${taskTitle}"` : "";
   const revealClass = revealOnHover && !isOpen ? "hover-reveal-desktop" : "";
 
@@ -47,12 +48,13 @@ export function TaskEditButton({
       <button
         type="button"
         onClick={onClick}
-        className={`shrink-0 p-1 rounded-md border transition-colors ${editBtnClass(!!isOpen)} ${revealClass} ${className}`}
+        className={`shrink-0 inline-flex items-center gap-1 px-1.5 py-1 rounded-md border text-xs font-semibold transition-colors ${openBtnClass(!!isOpen)} ${revealClass} ${className}`}
         aria-expanded={isOpen}
-        aria-label={isOpen ? `Close task details${named}` : `Edit task${named}`}
-        title={isOpen ? "Close details" : "Edit task"}
+        aria-label={isOpen ? `Close task details${named}` : `Open task details${named}`}
+        title={isOpen ? "Close details" : "Open details"}
       >
-        <KebabIcon />
+        <DetailsIcon className="w-3.5 h-3.5 shrink-0" />
+        <span className="hidden sm:inline">{label}</span>
       </button>
     );
   }
@@ -61,11 +63,12 @@ export function TaskEditButton({
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 px-1.5 py-0.5 text-xs font-semibold rounded-md border transition-colors whitespace-nowrap ${editBtnClass(!!isOpen)} ${revealClass} ${className}`}
+      className={`shrink-0 inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-md border transition-colors whitespace-nowrap ${openBtnClass(!!isOpen)} ${revealClass} ${className}`}
       aria-expanded={isOpen}
-      aria-label={isOpen ? `Close task details${named}` : `Edit task${named}`}
-      title={isOpen ? "Close details" : "Edit task"}
+      aria-label={isOpen ? `Close task details${named}` : `Open task details${named}`}
+      title={isOpen ? "Close details" : "Open details"}
     >
+      <DetailsIcon className="w-3.5 h-3.5 shrink-0" />
       {label}
     </button>
   );

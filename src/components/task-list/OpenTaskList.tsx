@@ -300,16 +300,23 @@ export default function OpenTaskList({
                 </span>
               )}
               {subtaskCount > 0 && !isExpanded && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleTaskDetail(task.id);
+                  }}
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
+                  title="Open task details"
+                >
                   {completedSubtaskCount}/{subtaskCount} subtasks
-                </span>
+                </button>
               )}
             </div>
           </div>
           <TaskEditButton
             isOpen={isExpanded}
             taskTitle={task.title}
-            revealOnHover
             onClick={(e) => {
               e.stopPropagation();
               onToggleTaskDetail(task.id);
