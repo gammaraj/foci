@@ -481,11 +481,6 @@ function BucketTaskCard({
               <span className="hidden sm:inline">Set date</span>
             </DueDateField>
           )}
-          {(task.subtasks?.length ?? 0) > 0 && (
-            <span className="text-xs font-medium text-violet-600 dark:text-violet-400 tabular-nums">
-              {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length} subtasks
-            </span>
-          )}
         </div>
       )}
     </div>
@@ -835,6 +830,7 @@ function BucketColumn({
                       onDrop={() => onDropOnTask(task.id, swimlaneId)}
                       onDragEnd={onDragEnd}
                     />
+                    {renderBelowTask?.(task, true)}
                     </div>
                   ))}
                 </div>

@@ -1588,6 +1588,18 @@ export default function TaskList({
     );
   };
 
+  /** Inline subtasks for card/bucket rows (detail editing stays in the drawer). */
+  const renderGridSubtasks = (task: Task) => {
+    if (!(task.subtasks?.length)) return null;
+    return (
+      <TaskSubtaskSection
+        {...taskSubtaskSectionProps(task)}
+        showAddForm={false}
+        compact
+      />
+    );
+  };
+
   const renderTaskInlineExpansion = (task: Task, compact = false) => {
     if (compact) return null;
 
@@ -2276,7 +2288,7 @@ export default function TaskList({
           onBucketDrop={handleBucketDrop}
           scrollToProjectId={bucketJumpProjectId || null}
           scrollToProjectToken={bucketScrollToken}
-          renderBelowTask={preparingPrint ? () => null : renderTaskInlineExpansion}
+          renderBelowTask={preparingPrint ? () => null : renderGridSubtasks}
         />
       )}
 
@@ -2329,6 +2341,7 @@ export default function TaskList({
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleComplete={toggleComplete}
           onToggleTaskDetail={toggleTaskDetail}
+          renderBelowTask={preparingPrint ? () => null : renderGridSubtasks}
           hideEmptyProjects={hideEmptyCardProjects}
           onToggleHideEmptyProjects={toggleHideEmptyCardProjects}
           emptyProjectCount={emptyCardProjectCount}

@@ -70,6 +70,8 @@ interface TaskCardViewProps {
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  /** Render subtasks (or other content) under each task row. */
+  renderBelowTask?: (task: Task) => React.ReactNode;
   hideEmptyProjects?: boolean;
   onToggleHideEmptyProjects?: () => void;
   emptyProjectCount?: number;
@@ -509,6 +511,7 @@ function ProjectCard({
   onOpenProject,
   onQuickAdd,
   onToggleProjectFavorite,
+  renderBelowTask,
   collapsed = false,
   onToggleCollapsed,
   highlighted = false,
@@ -547,6 +550,7 @@ function ProjectCard({
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
+  renderBelowTask?: (task: Task) => React.ReactNode;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
   highlighted?: boolean;
@@ -756,29 +760,31 @@ function ProjectCard({
               <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
             ) : (
               topTasks.map((task) => (
-                <CardTaskRow
-                  key={task.id}
-                  task={task}
-                  projectId={project.id}
-                  activeTaskId={activeTaskId}
-                  isTimerRunning={isTimerRunning}
-                  isExpanded={expandedTaskId === task.id}
-                  isEditing={editingTaskId === task.id}
-                  editTitle={editTitle ?? ""}
-                  dragTaskId={dragTaskId}
-                  dragOverTaskId={dragOverTaskId}
-                  onTaskDragStart={onTaskDragStart}
-                  onTaskDragOver={onTaskDragOver}
-                  onTaskDrop={onTaskDrop}
-                  onTaskDragEnd={onTaskDragEnd}
-                  onToggleComplete={onToggleComplete}
-                  onToggleTaskDetail={onToggleTaskDetail}
-                  onStartEdit={onStartEdit}
-                  onEditTitleChange={onEditTitleChange}
-                  onSaveEdit={onSaveEdit}
-                  onCancelEdit={onCancelEdit}
-                  onDeleteTask={onDeleteTask}
-                />
+                <div key={task.id} className="min-w-0">
+                  <CardTaskRow
+                    task={task}
+                    projectId={project.id}
+                    activeTaskId={activeTaskId}
+                    isTimerRunning={isTimerRunning}
+                    isExpanded={expandedTaskId === task.id}
+                    isEditing={editingTaskId === task.id}
+                    editTitle={editTitle ?? ""}
+                    dragTaskId={dragTaskId}
+                    dragOverTaskId={dragOverTaskId}
+                    onTaskDragStart={onTaskDragStart}
+                    onTaskDragOver={onTaskDragOver}
+                    onTaskDrop={onTaskDrop}
+                    onTaskDragEnd={onTaskDragEnd}
+                    onToggleComplete={onToggleComplete}
+                    onToggleTaskDetail={onToggleTaskDetail}
+                    onStartEdit={onStartEdit}
+                    onEditTitleChange={onEditTitleChange}
+                    onSaveEdit={onSaveEdit}
+                    onCancelEdit={onCancelEdit}
+                    onDeleteTask={onDeleteTask}
+                  />
+                  {renderBelowTask?.(task)}
+                </div>
               ))
             )}
           </div>
@@ -855,6 +861,7 @@ export default function TaskCardView({
   onToggleComplete,
   onToggleTaskDetail,
   onToggleProjectFavorite,
+  renderBelowTask,
   hideEmptyProjects = true,
   onToggleHideEmptyProjects,
   emptyProjectCount = 0,
@@ -1002,6 +1009,7 @@ export default function TaskCardView({
               onOpenProject={onOpenProject}
               onQuickAdd={onQuickAdd}
               onToggleProjectFavorite={onToggleProjectFavorite}
+              renderBelowTask={renderBelowTask}
               collapsed={collapsedIds.has(project.id)}
               onToggleCollapsed={() => toggleCollapsed(project.id)}
               highlighted={highlightProjectId === project.id}
