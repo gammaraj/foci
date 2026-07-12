@@ -119,9 +119,9 @@ function overdueSeverity(daysLate: number): "mild" | "medium" | "severe" {
 
 function overdueRowClasses(daysLate: number): string {
   const severity = overdueSeverity(daysLate);
-  if (severity === "severe") return "urgency-row--severe border-l-[3px]";
-  if (severity === "medium") return "urgency-row--medium border-l-[3px]";
-  return "urgency-row--mild border-l-[3px]";
+  if (severity === "severe") return "urgency-row--severe";
+  if (severity === "medium") return "urgency-row--medium";
+  return "urgency-row--mild";
 }
 
 function overdueTitleClass(daysLate: number): string {
@@ -255,7 +255,6 @@ function CardTaskRow({
   const titleTextRef = useRef<HTMLSpanElement>(null);
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
-  const someday = !!task.someday;
   const isActive = activeTaskId === task.id;
   const dragEnabled = !!onTaskDragStart && !isEditing;
   const isDragging = dragTaskId === task.id;
@@ -309,22 +308,16 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row relative rounded-md border-l-[3px] pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors ${
+      className={`group/row relative rounded-md pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors ${
         isActive
-          ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40 border-l-blue-500"
+          ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40"
           : isExpanded
-            ? "bg-violet-50/50 dark:bg-violet-900/15 border-l-violet-400"
+            ? "bg-violet-50/50 dark:bg-violet-900/15"
             : overdue
               ? overdueRowClasses(daysLate)
               : blocked
-                ? "bg-amber-50/40 dark:bg-amber-950/20 border-l-amber-500 dark:border-l-amber-400"
-                : someday
-                  ? "border-l-violet-400 dark:border-l-violet-500 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
-                  : task.dueDate
-                    ? task.dueDate === getToday()
-                      ? "border-l-amber-400 dark:border-l-amber-500 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
-                      : "border-l-blue-500 dark:border-l-blue-400 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
-                    : "border-l-slate-300/60 dark:border-l-slate-600 hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
+                ? "bg-amber-50/40 dark:bg-amber-950/20"
+                : "hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
       } ${dragEnabled ? "cursor-grab active:cursor-grabbing" : ""} ${
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
