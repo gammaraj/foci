@@ -304,22 +304,6 @@ export default function OpenTaskList({
                   {completedSubtaskCount}/{subtaskCount} subtasks
                 </span>
               )}
-              {isOverdue && !task.completed && (
-                <div
-                  className="flex shrink-0 items-center gap-1 opacity-0 pointer-events-none group-hover/task:opacity-100 group-hover/task:pointer-events-auto transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
-                    Move to today
-                  </button>
-                  <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
-                    Done
-                  </button>
-                  <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors whitespace-nowrap">
-                    Focus
-                  </button>
-                </div>
-              )}
             </div>
           </div>
           <TaskEditButton
@@ -340,7 +324,22 @@ export default function OpenTaskList({
             <button onClick={(e) => { e.stopPropagation(); onSelectTask(null); }} className="flex-shrink-0 hidden sm:flex px-2 py-1 text-xs font-medium rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300" title="Deselect task">
               Deselect
             </button>
-          ) : !isOverdue ? (
+          ) : isOverdue ? (
+            <div
+              className="hidden sm:group-hover/task:flex shrink-0 items-center gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
+                Move to today
+              </button>
+              <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
+                Done
+              </button>
+              <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors whitespace-nowrap">
+                Focus
+              </button>
+            </div>
+          ) : (
             <button
               onClick={(e) => { e.stopPropagation(); onStartTask(task.id); }}
               className="flex-shrink-0 flex items-center justify-center px-2 py-1 text-xs font-semibold rounded text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/25 hover:bg-blue-100 dark:hover:bg-blue-900/40 sm:opacity-0 sm:pointer-events-none sm:group-hover/task:opacity-100 sm:group-hover/task:pointer-events-auto transition-opacity"
@@ -351,7 +350,7 @@ export default function OpenTaskList({
               </svg>
               <span className="ml-1">{isTimerRunning ? "Switch" : "Focus"}</span>
             </button>
-          ) : null}
+          )}
           {!(isTimerRunning && activeTaskId === task.id) && (
             <button onClick={(e) => { e.stopPropagation(); onDeleteTask(task.id); }} className="flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:flex hover-reveal-desktop transition-all" aria-label={`Delete "${task.title}"`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
