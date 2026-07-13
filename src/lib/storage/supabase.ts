@@ -978,31 +978,69 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {
     const userId = await this.getUserId();
-    
-    const { data, error } = await this.supabase
+
+    // Prefer the canonical FK from 20260514000000. Fall back without embed if
+    // PostgREST can't resolve the relationship (duplicate/legacy FK names).
+    const embedded = await this.supabase
       .from("account_collaborators")
       .select(`
         collaborator_id,
         role,
         created_at,
-        user_profiles!account_collaborators_collaborator_profile_fkey (
+        user_profiles!account_collaborators_collaborator_id_fkey (
           email,
           display_name,
           avatar_url
         )
       `)
       .eq("owner_id", userId);
-      
+
+    if (!embedded.error && embedded.data) {
+      return embedded.data.map((row) => {
+        const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+        return {
+          userId: row.collaborator_id,
+          email: profile?.email ?? "",
+          displayName: profile?.display_name ?? undefined,
+          avatarUrl: profile?.avatar_url ?? undefined,
+          role: row.role as CollaboratorRole,
+          addedAt: row.created_at,
+        };
+      });
+    }
+
+    if (embedded.error) {
+      console.warn(
+        "[Foci] getAccountCollaborators embed failed, falling back:",
+        embedded.error.message,
+      );
+    }
+
+    const { data, error } = await this.supabase
+      .from("account_collaborators")
+      .select("collaborator_id, role, created_at")
+      .eq("owner_id", userId);
+
     if (error) {
       console.error("[Foci] getAccountCollaborators error:", error);
       console.error("[Foci] getAccountCollaborators error details:", JSON.stringify(error, null, 2));
       throw new Error(error.message);
     }
-    
-    if (!data) return [];
-    
+
+    if (!data || data.length === 0) return [];
+
+    const ids = data.map((row) => row.collaborator_id);
+    const { data: profiles } = await this.supabase
+      .from("user_profiles")
+      .select("user_id, email, display_name, avatar_url")
+      .in("user_id", ids);
+
+    const byId = new Map(
+      (profiles ?? []).map((p) => [p.user_id, p] as const),
+    );
+
     return data.map((row) => {
-      const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+      const profile = byId.get(row.collaborator_id);
       return {
         userId: row.collaborator_id,
         email: profile?.email ?? "",
@@ -1117,7 +1155,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .from("user_profiles")
       .select("email, display_name")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
     
     return data.map((row) => ({
       id: row.id,

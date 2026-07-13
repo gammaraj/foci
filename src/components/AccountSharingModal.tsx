@@ -33,15 +33,38 @@ export default function AccountSharingModal({
       setLoading(true);
       try {
         const storage = getStorage();
-        const [collabs, invites] = await Promise.all([
+        const [collabsResult, invitesResult] = await Promise.allSettled([
           storage.getAccountCollaborators(),
           storage.getSentAccountInvites(),
         ]);
-        setCollaborators(collabs);
-        setPendingInvites(invites);
+
+        if (collabsResult.status === "fulfilled") {
+          setCollaborators(collabsResult.value);
+        } else {
+          console.error("[Foci] Failed to load account collaborators:", collabsResult.reason);
+          setCollaborators([]);
+        }
+
+        if (invitesResult.status === "fulfilled") {
+          setPendingInvites(invitesResult.value);
+        } else {
+          console.error("[Foci] Failed to load account invites:", invitesResult.reason);
+          setPendingInvites([]);
+        }
+
+        if (collabsResult.status === "rejected" && invitesResult.status === "rejected") {
+          const message =
+            collabsResult.reason instanceof Error
+              ? collabsResult.reason.message
+              : "Unknown error";
+          showToast(`Failed to load account sharing settings: ${message}`, "error");
+        } else if (collabsResult.status === "rejected" || invitesResult.status === "rejected") {
+          showToast("Some sharing settings could not be loaded", "error");
+        }
       } catch (err) {
         console.error("[Foci] Failed to load account collaborators:", err);
-        showToast("Failed to load account sharing settings", "error");
+        const message = err instanceof Error ? err.message : "Unknown error";
+        showToast(`Failed to load account sharing settings: ${message}`, "error");
       } finally {
         setLoading(false);
       }
