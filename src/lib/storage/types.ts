@@ -27,6 +27,8 @@ export interface CollaborationInvite {
   ownerEmail: string;
   ownerName?: string;
   ownerId: string;
+  /** Email the invite was sent to (owner-side pending lists). */
+  inviteeEmail?: string;
   role: CollaboratorRole;
   status: "pending" | "accepted" | "declined" | "expired";
   createdAt: string;
@@ -39,6 +41,8 @@ export interface AccountInvite {
   ownerEmail: string;
   ownerName?: string;
   ownerId: string;
+  /** Email the invite was sent to (owner-side pending lists). */
+  inviteeEmail?: string;
   role: CollaboratorRole;
   status: "pending" | "accepted" | "declined" | "expired";
   createdAt: string;
@@ -61,6 +65,8 @@ export interface SharedProject extends Project {
   _ownerEmail: string;
   _ownerName?: string;
   _myRole: CollaboratorRole;
+  /** How access was granted — leave behavior differs. */
+  _shareSource: "project" | "account";
 }
 
 export type ProjectListItem = Project | SharedProject;
@@ -147,8 +153,11 @@ export interface StorageAdapter {
   // Update a task in a shared project (editors only)
   updateSharedTask(task: Task, ownerId: string): Promise<void>;
   
-  // Leave a shared project
+  // Leave a shared project (project-level share only)
   leaveProject(projectId: string, ownerId: string): Promise<void>;
+
+  // Leave account-level access to another user's projects
+  leaveSharedAccount(ownerId: string): Promise<void>;
 
   // ── Account-Level Sharing ─────────────────────────────
   // Get users who have account-level access to all my projects

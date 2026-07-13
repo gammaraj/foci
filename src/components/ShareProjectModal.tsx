@@ -44,12 +44,30 @@ export default function ShareProjectModal({
     const load = async () => {
       setLoading(true);
       try {
-        const [collabs, invites] = await Promise.all([
+        const [collabsResult, invitesResult] = await Promise.allSettled([
           getProjectCollaborators(project.id),
           getSentInvites(project.id),
         ]);
-        setCollaborators(collabs);
-        setPendingInvites(invites);
+
+        if (collabsResult.status === "fulfilled") {
+          setCollaborators(collabsResult.value);
+        } else {
+          console.error("[Foci] Failed to load collaborators:", collabsResult.reason);
+          setCollaborators([]);
+        }
+
+        if (invitesResult.status === "fulfilled") {
+          setPendingInvites(invitesResult.value);
+        } else {
+          console.error("[Foci] Failed to load invites:", invitesResult.reason);
+          setPendingInvites([]);
+        }
+
+        if (collabsResult.status === "rejected" && invitesResult.status === "rejected") {
+          showToast("Failed to load collaborators", "error");
+        } else if (collabsResult.status === "rejected" || invitesResult.status === "rejected") {
+          showToast("Some sharing settings could not be loaded", "error");
+        }
       } catch (err) {
         console.error("[Foci] Failed to load collaborators:", err);
         showToast("Failed to load collaborators", "error");
@@ -120,7 +138,7 @@ export default function ShareProjectModal({
     }
 
     // Check if already invited
-    if (pendingInvites.some((i) => i.ownerEmail.toLowerCase() === email)) {
+    if (pendingInvites.some((i) => (i.inviteeEmail ?? "").toLowerCase() === email)) {
       showToast("An invite has already been sent to this email", "error");
       return;
     }
@@ -275,7 +293,7 @@ export default function ShareProjectModal({
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-900 dark:text-white">
-                            {invite.ownerEmail}
+                            {invite.inviteeEmail || "Invite pending"}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">
                             {invite.role === "editor" ? "Can edit" : "Can view"} • Expires {new Date(invite.expiresAt).toLocaleDateString()}

@@ -34,12 +34,18 @@ export default function CollaborationInvitesButton() {
 
     setLoading(true);
     try {
-      const [projectReceived, accountReceived] = await Promise.all([
+      const [projectResult, accountResult] = await Promise.allSettled([
         getReceivedInvites(),
         getReceivedAccountInvites(),
       ]);
-      setProjectInvites(projectReceived);
-      setAccountInvites(accountReceived);
+      setProjectInvites(projectResult.status === "fulfilled" ? projectResult.value : []);
+      setAccountInvites(accountResult.status === "fulfilled" ? accountResult.value : []);
+      if (projectResult.status === "rejected") {
+        console.error("[Foci] Failed to load project invites:", projectResult.reason);
+      }
+      if (accountResult.status === "rejected") {
+        console.error("[Foci] Failed to load account invites:", accountResult.reason);
+      }
     } catch (err) {
       console.error("[Foci] Failed to load invites:", err);
     } finally {

@@ -721,7 +721,7 @@ export default function ProjectManageView({
                     onClick={() => onLeaveShared(sp)}
                     className="text-xs text-red-500 hover:underline shrink-0"
                   >
-                    Leave
+                    {sp._shareSource === "account" ? "Leave account" : "Leave"}
                   </button>
                 </div>
               ))}

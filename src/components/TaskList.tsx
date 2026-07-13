@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -468,6 +468,7 @@ export default function TaskList({
   }, [showToast]);
 
   const selectProject = (id: string) => {
+    setSelectedSharedProject(null);
     setSelectedProjectId(id);
     saveSelectedProjectId(id).catch((err) => {
       console.error("[Foci] Failed to save selected project:", err);
@@ -513,13 +514,15 @@ export default function TaskList({
     setSelectedSharedProject(shared);
     setSelectedProjectId(`shared:${shared._ownerId}:${shared.id}`);
     closeProjectManage();
+    setViewMode("list");
+    persistTaskView("list");
     
     // Load tasks for this shared project if not already loaded
     const key = `${shared._ownerId}:${shared.id}`;
     if (!sharedTasks[key]) {
       try {
-        const tasks = await loadSharedProjectTasks(shared.id, shared._ownerId);
-        setSharedTasks((prev) => ({ ...prev, [key]: tasks }));
+        const loaded = await loadSharedProjectTasks(shared.id, shared._ownerId);
+        setSharedTasks((prev) => ({ ...prev, [key]: loaded }));
       } catch (err) {
         console.error("[Foci] Failed to load shared project tasks:", err);
         showToast("Failed to load shared project tasks", "error");
@@ -527,24 +530,38 @@ export default function TaskList({
     }
   };
 
-  // Leave a shared project
+  // Leave a shared project (or entire account share)
   const handleLeaveSharedProject = async (shared: SharedProject) => {
+    const isAccountShare = shared._shareSource === "account";
     setPendingConfirm({
-      title: "Leave project",
-      message: `Are you sure you want to leave "${shared.name}"? You will lose access to this project and its tasks.`,
+      title: isAccountShare ? "Leave shared account" : "Leave project",
+      message: isAccountShare
+        ? `Leave all projects from ${shared._ownerName || shared._ownerEmail}? You will lose access to every project they share with you.`
+        : `Are you sure you want to leave "${shared.name}"? You will lose access to this project and its tasks.`,
       confirmLabel: "Leave",
       onConfirm: async () => {
         try {
-          await leaveProject(shared.id, shared._ownerId);
-          setSharedProjects((prev) => prev.filter((p) => !(p.id === shared.id && p._ownerId === shared._ownerId)));
-          // Clear selected if it was the shared project
-          if (selectedSharedProject?.id === shared.id && selectedSharedProject?._ownerId === shared._ownerId) {
+          if (isAccountShare) {
+            await leaveSharedAccount(shared._ownerId);
+            setSharedProjects((prev) => prev.filter((p) => p._ownerId !== shared._ownerId || p._shareSource !== "account"));
+          } else {
+            await leaveProject(shared.id, shared._ownerId);
+            setSharedProjects((prev) => prev.filter((p) => !(p.id === shared.id && p._ownerId === shared._ownerId)));
+          }
+          // Clear selected if it was this shared project (or any from that account)
+          if (
+            selectedSharedProject &&
+            (isAccountShare
+              ? selectedSharedProject._ownerId === shared._ownerId
+              : selectedSharedProject.id === shared.id && selectedSharedProject._ownerId === shared._ownerId)
+          ) {
             setSelectedSharedProject(null);
             setSelectedProjectId(TODAY_FILTER_ID);
           }
-          showToast("Left shared project", "success");
+          showToast(isAccountShare ? "Left shared account" : "Left shared project", "success");
         } catch (err) {
-          showToast("Failed to leave project", "error");
+          const message = err instanceof Error ? err.message : "Failed to leave";
+          showToast(message, "error");
         }
         setPendingConfirm(null);
       },
@@ -571,7 +588,28 @@ export default function TaskList({
   const currentSharedProjectTasks = selectedSharedProject
     ? sharedTasks[`${selectedSharedProject._ownerId}:${selectedSharedProject.id}`] || []
     : [];
+  const canEditSharedProject = selectedSharedProject?._myRole === "editor";
 
+  const assertCanEditShared = (): boolean => {
+    if (!isViewingSharedProject || !selectedSharedProject) return true;
+    if (canEditSharedProject) return true;
+    showToast("You have view-only access to this project", "error");
+    return false;
+  };
+
+  /** Apply a task mutation to either own tasks or the open shared project. */
+  const mutateActiveTask = (taskId: string, map: (task: Task) => Task) => {
+    if (isViewingSharedProject && selectedSharedProject) {
+      if (!assertCanEditShared()) return;
+      const task = currentSharedProjectTasks.find((t) => t.id === taskId);
+      if (!task) return;
+      void updateTaskInSharedProject(map(task), selectedSharedProject._ownerId);
+      return;
+    }
+    const updated = tasks.map((t) => (t.id === taskId ? map(t) : t));
+    const changed = updated.find((t) => t.id === taskId);
+    if (changed) persistOne(updated, changed);
+  };
   const addProject = () => {
     const name = newProjectName.trim().slice(0, MAX_PROJECT_NAME);
     if (!name) return;
@@ -698,6 +736,10 @@ export default function TaskList({
   };
 
   const addTaskWithTitle = (titleRaw: string, dueDateOverride?: string, projectIdOverride?: string) => {
+    if (isViewingSharedProject) {
+      showToast("You can't add tasks to a shared project", "error");
+      return;
+    }
     const title = titleRaw.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
 
@@ -758,8 +800,11 @@ export default function TaskList({
   const addTask = () => addTaskWithTitle(newTaskTitle, undefined, newTaskProjectId);
 
   const toggleComplete = (id: string) => {
-    const task = tasks.find((t) => t.id === id);
+    const sourceTasks = isViewingSharedProject ? currentSharedProjectTasks : tasks;
+    const task = sourceTasks.find((t) => t.id === id);
     if (!task) return;
+    if (!assertCanEditShared()) return;
+
     const isCompleting = !task.completed;
     // If completing the active task, stop timer and save elapsed time
     let elapsed = 0;
@@ -767,7 +812,7 @@ export default function TaskList({
       elapsed = onCompleteTask(id);
     }
     const now = Date.now();
-    let updated = tasks.map((t) => {
+    let updated = sourceTasks.map((t) => {
       if (t.id !== id) return t;
       if (isCompleting) {
         return {
@@ -785,6 +830,24 @@ export default function TaskList({
       };
     });
     const changed = updated.find((t) => t.id === id)!;
+
+    if (isViewingSharedProject && selectedSharedProject) {
+      // Shared editors can update but not insert recurring follow-ups.
+      void updateTaskInSharedProject(changed, selectedSharedProject._ownerId);
+      if (isCompleting) {
+        trackTaskCompleted(changed.timeSpent || 0);
+        showToast(
+          doneTodayToastMessage(
+            updated.filter((t) => isDoneToday(t)).length,
+            { recurring: !!task.recurrence },
+          ),
+          "success",
+        );
+      }
+      if (activeTaskId === id) onSelectTask(null);
+      return;
+    }
+
     if (isCompleting) {
       trackTaskCompleted((changed.timeSpent || 0));
       const snapshot = tasks;
@@ -830,6 +893,10 @@ export default function TaskList({
   };
 
   const deleteTask = async (id: string) => {
+    if (isViewingSharedProject) {
+      showToast("You can't delete tasks in a shared project", "error");
+      return;
+    }
     const task = tasks.find((t) => t.id === id);
     setPendingConfirm({
       title: "Delete task",
@@ -851,6 +918,13 @@ export default function TaskList({
   };
 
   const setDueDate = (id: string, date: string | undefined) => {
+    if (isViewingSharedProject && selectedSharedProject) {
+      if (!assertCanEditShared()) return;
+      const task = currentSharedProjectTasks.find((t) => t.id === id);
+      if (!task) return;
+      void updateTaskInSharedProject({ ...task, dueDate: date }, selectedSharedProject._ownerId);
+      return;
+    }
     const updated = tasks.map((t) => (t.id === id ? { ...t, dueDate: date } : t));
     const changed = updated.find((t) => t.id === id)!;
     persistOne(updated, changed);
@@ -869,6 +943,14 @@ export default function TaskList({
   const saveEdit = (id: string) => {
     const title = editTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
+    if (isViewingSharedProject && selectedSharedProject) {
+      if (!assertCanEditShared()) return;
+      const task = currentSharedProjectTasks.find((t) => t.id === id);
+      if (!task) return;
+      void updateTaskInSharedProject({ ...task, title }, selectedSharedProject._ownerId);
+      setEditingId(null);
+      return;
+    }
     const updated = tasks.map((t) =>
       t.id === id ? { ...t, title } : t
     );
@@ -999,38 +1081,25 @@ export default function TaskList({
     const title = newSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) return;
     const subtask: Subtask = { id: crypto.randomUUID(), title, completed: false };
-    const updated = tasks.map((t) =>
-      t.id === taskId ? { ...t, subtasks: [...(t.subtasks || []), subtask] } : t
-    );
-    const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    mutateActiveTask(taskId, (t) => ({ ...t, subtasks: [...(t.subtasks || []), subtask] }));
     setNewSubtaskTitle("");
     setExpandedTaskId(taskId);
   };
 
   const toggleSubtask = (taskId: string, subtaskId: string) => {
-    const updated = tasks.map((t) =>
-      t.id === taskId
-        ? {
-            ...t,
-            subtasks: (t.subtasks || []).map((s) =>
-              s.id === subtaskId ? { ...s, completed: !s.completed } : s
-            ),
-          }
-        : t
-    );
-    const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    mutateActiveTask(taskId, (t) => ({
+      ...t,
+      subtasks: (t.subtasks || []).map((s) =>
+        s.id === subtaskId ? { ...s, completed: !s.completed } : s
+      ),
+    }));
   };
 
   const deleteSubtask = (taskId: string, subtaskId: string) => {
-    const updated = tasks.map((t) =>
-      t.id === taskId
-        ? { ...t, subtasks: (t.subtasks || []).filter((s) => s.id !== subtaskId) }
-        : t
-    );
-    const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    mutateActiveTask(taskId, (t) => ({
+      ...t,
+      subtasks: (t.subtasks || []).filter((s) => s.id !== subtaskId),
+    }));
   };
 
   const startEditingSubtask = (sub: Subtask) => {
@@ -1041,34 +1110,22 @@ export default function TaskList({
   const saveSubtaskEdit = (taskId: string, subtaskId: string) => {
     const title = editSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
     if (!title) { setEditingSubtaskId(null); return; }
-    const updated = tasks.map((t) =>
-      t.id === taskId
-        ? {
-            ...t,
-            subtasks: (t.subtasks || []).map((s) =>
-              s.id === subtaskId ? { ...s, title } : s
-            ),
-          }
-        : t
-    );
-    const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    mutateActiveTask(taskId, (t) => ({
+      ...t,
+      subtasks: (t.subtasks || []).map((s) =>
+        s.id === subtaskId ? { ...s, title } : s
+      ),
+    }));
     setEditingSubtaskId(null);
   };
 
   const setSubtaskDueDate = (taskId: string, subtaskId: string, date: string | undefined) => {
-    const updated = tasks.map((t) =>
-      t.id === taskId
-        ? {
-            ...t,
-            subtasks: (t.subtasks || []).map((s) =>
-              s.id === subtaskId ? { ...s, dueDate: date } : s
-            ),
-          }
-        : t
-    );
-    const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    mutateActiveTask(taskId, (t) => ({
+      ...t,
+      subtasks: (t.subtasks || []).map((s) =>
+        s.id === subtaskId ? { ...s, dueDate: date } : s
+      ),
+    }));
   };
 
   const startEditingDesc = (task: Task) => {
@@ -1078,15 +1135,15 @@ export default function TaskList({
 
   const saveDesc = (id: string) => {
     const desc = editDesc.trim();
-    const updated = tasks.map((t) =>
-      t.id === id ? { ...t, description: desc || undefined } : t
-    );
-    const changed = updated.find((t) => t.id === id)!;
-    persistOne(updated, changed);
+    mutateActiveTask(id, (t) => ({ ...t, description: desc || undefined }));
     setEditingDescId(null);
   };
 
   const moveTaskToProject = (taskId: string, newProjectId: string) => {
+    if (isViewingSharedProject) {
+      showToast("You can't move tasks out of a shared project", "error");
+      return;
+    }
     const updated = tasks.map((t) =>
       t.id === taskId ? { ...t, projectId: newProjectId } : t
     );
@@ -1107,21 +1164,15 @@ export default function TaskList({
   };
 
   const setTaskRecurrence = (taskId: string, recurrence: RecurrenceType | undefined) => {
-    const updated = tasks.map((t) =>
-      t.id === taskId ? { ...t, recurrence } : t
-    );
-    const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    mutateActiveTask(taskId, (t) => ({ ...t, recurrence }));
   };
 
   const setTaskPriority = (taskId: string, priority: TaskPriority | undefined) => {
-    const updated = tasks.map((t) => (t.id === taskId ? { ...t, priority } : t));
-    persist(updated);
+    mutateActiveTask(taskId, (t) => ({ ...t, priority }));
   };
 
   const setTaskKind = (taskId: string, kind: TaskKind | undefined) => {
-    const updated = tasks.map((t) => {
-      if (t.id !== taskId) return t;
+    mutateActiveTask(taskId, (t) => {
       if (!kind || kind === "task") {
         const next = { ...t };
         delete next.kind;
@@ -1129,26 +1180,21 @@ export default function TaskList({
       }
       return { ...t, kind };
     });
-    persist(updated);
   };
 
   const setTaskBlocked = (taskId: string, blocked: boolean) => {
-    const updated = tasks.map((t) => {
-      if (t.id !== taskId) return t;
+    mutateActiveTask(taskId, (t) => {
       if (blocked) return { ...t, blocked: true, someday: false };
       return { ...t, blocked: false };
     });
-    persist(updated);
     if (blocked) showToast("Marked as waiting");
   };
 
   const setTaskSomeday = (taskId: string, someday: boolean) => {
-    const updated = tasks.map((t) => {
-      if (t.id !== taskId) return t;
+    mutateActiveTask(taskId, (t) => {
       if (someday) return { ...t, someday: true, blocked: false, dueDate: undefined };
       return { ...t, someday: false };
     });
-    persist(updated);
     if (someday) showToast("Moved to Someday");
   };
 
@@ -1199,6 +1245,56 @@ export default function TaskList({
   };
 
   const saveAndCloseTaskDetail = (taskId: string) => {
+    if (isViewingSharedProject && selectedSharedProject) {
+      if (!assertCanEditShared()) {
+        closeTaskDetail();
+        return;
+      }
+      let next = currentSharedProjectTasks;
+      let changed: Task | null = null;
+
+      if (editingDescId === taskId) {
+        const desc = editDesc.trim();
+        next = next.map((t) =>
+          t.id === taskId ? { ...t, description: desc || undefined } : t
+        );
+        changed = next.find((t) => t.id === taskId) ?? null;
+        setEditingDescId(null);
+      }
+
+      if (editingSubtaskId) {
+        const title = editSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
+        if (title) {
+          next = next.map((t) =>
+            t.id === taskId
+              ? {
+                  ...t,
+                  subtasks: (t.subtasks || []).map((s) =>
+                    s.id === editingSubtaskId ? { ...s, title } : s
+                  ),
+                }
+              : t
+          );
+          changed = next.find((t) => t.id === taskId) ?? null;
+        }
+        setEditingSubtaskId(null);
+      }
+
+      const pendingSub = newSubtaskTitle.trim().slice(0, MAX_TASK_TITLE);
+      if (pendingSub) {
+        const subtask: Subtask = { id: crypto.randomUUID(), title: pendingSub, completed: false };
+        next = next.map((t) =>
+          t.id === taskId ? { ...t, subtasks: [...(t.subtasks || []), subtask] } : t
+        );
+        changed = next.find((t) => t.id === taskId) ?? null;
+        setNewSubtaskTitle("");
+      }
+
+      if (changed) void updateTaskInSharedProject(changed, selectedSharedProject._ownerId);
+      closeTaskDetail();
+      return;
+    }
+
     let next = tasks;
     let changed: Task | null = null;
 
@@ -1352,9 +1448,11 @@ export default function TaskList({
           : [];
   const timeScopedTasks = isTimeFilter
     ? [...timeScopedDatedTasks, ...undatedOpenTasks, ...somedayOpenTasks]
-    : isAllProjects
-      ? tasks.filter((t) => !t.archivedAt)
-      : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
+    : isViewingSharedProject
+      ? currentSharedProjectTasks.filter((t) => !t.archivedAt)
+      : isAllProjects
+        ? tasks.filter((t) => !t.archivedAt)
+        : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
   const projectTasks =
     isTimeFilter && projectFilterId !== ALL_PROJECTS_ID
       ? timeScopedTasks.filter((t) => t.projectId === projectFilterId)
@@ -1518,6 +1616,9 @@ export default function TaskList({
 
   // Done today must ignore time filters (those scopes are open-task-only).
   const listCompletedScope = (() => {
+    if (isViewingSharedProject) {
+      return currentSharedProjectTasks.filter((t) => !t.archivedAt);
+    }
     const scopeId = isTimeFilter ? projectFilterId : selectedProjectId;
     if (scopeId === ALL_PROJECTS_ID) {
       return tasks.filter((t) => !t.archivedAt);
@@ -1527,12 +1628,18 @@ export default function TaskList({
   const completedTasks = listCompletedScope.filter((t) => t.completed);
   const doneTodayTasks = getDoneTodayTasks(listCompletedScope);
   const earlierCompletedTasks = getEarlierCompletedTasks(listCompletedScope);
-  const archivedTasks = isAllProjects
-    ? tasks.filter((t) => t.archivedAt)
-    : tasks.filter((t) => t.projectId === selectedProjectId && t.archivedAt);
-  const currentProject = projects.find((p) => p.id === selectedProjectId);
+  const archivedTasks = isViewingSharedProject
+    ? currentSharedProjectTasks.filter((t) => t.archivedAt)
+    : isAllProjects
+      ? tasks.filter((t) => t.archivedAt)
+      : tasks.filter((t) => t.projectId === selectedProjectId && t.archivedAt);
+  const currentProject = isViewingSharedProject
+    ? selectedSharedProject ?? undefined
+    : projects.find((p) => p.id === selectedProjectId);
   const getProjectName = (projectId: string) =>
-    projects.find((p) => p.id === projectId)?.name ?? "General";
+    projects.find((p) => p.id === projectId)?.name
+    ?? sharedProjects.find((p) => p.id === projectId)?.name
+    ?? "General";
 
   const doneTodayByProject = new Map<string, Task[]>();
   for (const project of sortedProjects) {
@@ -2421,7 +2528,41 @@ export default function TaskList({
       )}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
+      {!isFocusMode && !projectManageOpen && viewMode === "list" && isViewingSharedProject && selectedSharedProject && (
+        <div className="px-3 sm:px-4 pt-2 pb-2 border-b border-slate-200/90 dark:border-[#243350]/80 no-print">
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/20 px-3 py-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                {selectedSharedProject.name}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                Shared by {selectedSharedProject._ownerName || selectedSharedProject._ownerEmail}
+                {" · "}
+                {selectedSharedProject._myRole === "editor" ? "Can edit" : "View only"}
+                {selectedSharedProject._shareSource === "account" ? " · Full account access" : ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => selectProject(TODAY_FILTER_ID)}
+              className="shrink-0 text-xs font-medium text-slate-600 dark:text-slate-300 hover:underline"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => handleLeaveSharedProject(selectedSharedProject)}
+              className="shrink-0 text-xs font-medium text-red-500 hover:underline"
+            >
+              Leave
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
+      {!isViewingSharedProject && (
       <div className="px-3 sm:px-4 pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
@@ -2757,10 +2898,11 @@ export default function TaskList({
         )}
 
       </div>
+      )}
 
       <div className="task-list-composer no-print px-3 sm:px-4 py-2 space-y-1.5">
         {/* Project description */}
-        {!isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
+        {!isViewingSharedProject && !isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">
             {/* Due date */}
             {currentProject.dueDate && (
@@ -2808,6 +2950,13 @@ export default function TaskList({
         )}
 
         {/* Add task input */}
+        {isViewingSharedProject ? (
+          <p className="text-xs text-slate-500 dark:text-slate-400 py-1">
+            {canEditSharedProject
+              ? "You can edit and complete tasks. Adding new tasks isn’t supported on shared projects."
+              : "View-only access — you can browse tasks but not make changes."}
+          </p>
+        ) : (
         <div className="flex flex-col gap-1.5">
         <form
           onSubmit={(e) => {
@@ -2912,6 +3061,7 @@ export default function TaskList({
           </div>
         )}
         </div>
+        )}
       </div>
 
         <div className="task-list-body px-3 sm:px-4 pt-2 pb-1.5 space-y-1.5">

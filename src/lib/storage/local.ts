@@ -371,6 +371,10 @@ export class LocalStorageAdapter implements StorageAdapter {
     throw new Error("Sign in to leave projects");
   }
 
+  async leaveSharedAccount(_ownerId: string): Promise<void> {
+    throw new Error("Sign in to leave shared accounts");
+  }
+
   // ── Account-Level Sharing (requires auth) ─────────────────
 
   async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {

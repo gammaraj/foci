@@ -131,20 +131,26 @@ export default function AccountSharingModal({
       return;
     }
 
+    // Check if already invited
+    if (pendingInvites.some((i) => (i.inviteeEmail ?? "").toLowerCase() === email)) {
+      showToast("An invite has already been sent to this email", "error");
+      return;
+    }
+
     setInviting(true);
     try {
       const storage = getStorage();
       await storage.inviteAccountCollaborator(email, inviteRole);
-      showToast(`${email} now has access to all your projects`, "success");
+      showToast(`Invite sent to ${email}`, "success");
       setInviteEmail("");
       
       // Refresh list
-      const [collabs, invites] = await Promise.all([
+      const [collabsResult, invitesResult] = await Promise.allSettled([
         storage.getAccountCollaborators(),
         storage.getSentAccountInvites(),
       ]);
-      setCollaborators(collabs);
-      setPendingInvites(invites);
+      if (collabsResult.status === "fulfilled") setCollaborators(collabsResult.value);
+      if (invitesResult.status === "fulfilled") setPendingInvites(invitesResult.value);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to send invite";
       showToast(message, "error");
@@ -229,7 +235,7 @@ export default function AccountSharingModal({
         {/* Invite form */}
         <form onSubmit={handleInvite} className="mb-6">
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Grant full account access
+            Invite to full account access
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
             <input
@@ -256,12 +262,12 @@ export default function AccountSharingModal({
               disabled={inviting || !inviteEmail.trim()}
               className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors touch-target-sm"
             >
-              {inviting ? "..." : "Add"}
+              {inviting ? "..." : "Invite"}
             </button>
             </div>
           </div>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            They&apos;ll see ALL your projects, including ones you create in the future.
+            They&apos;ll get an invite. Once accepted, they&apos;ll see ALL your projects, including ones you create later.
           </p>
           <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
             💡 Want to share <strong>just one project</strong>? See Individual Projects below.
@@ -294,7 +300,7 @@ export default function AccountSharingModal({
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-900 dark:text-white">
-                            Invite pending
+                            {invite.inviteeEmail || "Invite pending"}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">
                             {invite.role === "editor" ? "Can edit" : "Can view"} • Expires {new Date(invite.expiresAt).toLocaleDateString()}

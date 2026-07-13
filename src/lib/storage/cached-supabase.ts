@@ -314,6 +314,10 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     return this.remote.leaveProject(projectId, ownerId);
   }
 
+  async leaveSharedAccount(ownerId: string): Promise<void> {
+    return this.remote.leaveSharedAccount(ownerId);
+  }
+
   // ── Account-Level Sharing ─────────────────────────────────
 
   async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {

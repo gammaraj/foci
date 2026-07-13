@@ -519,14 +519,16 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async getProjectCollaborators(projectId: string): Promise<CollaboratorInfo[]> {
     const userId = await this.getUserId();
-    
-    const { data, error } = await this.supabase
+
+    // Prefer the canonical FK from 20260514000000. Fall back without embed if
+    // PostgREST can't resolve the relationship (duplicate/legacy FK names).
+    const embedded = await this.supabase
       .from("project_collaborators")
       .select(`
         collaborator_id,
         role,
         created_at,
-        user_profiles!project_collaborators_collaborator_profile_fkey (
+        user_profiles!project_collaborators_collaborator_id_fkey (
           email,
           display_name,
           avatar_url
@@ -534,17 +536,54 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       `)
       .eq("project_id", projectId)
       .eq("owner_id", userId);
-      
+
+    if (!embedded.error && embedded.data) {
+      return embedded.data.map((row) => {
+        const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+        return {
+          userId: row.collaborator_id,
+          email: profile?.email ?? "",
+          displayName: profile?.display_name ?? undefined,
+          avatarUrl: profile?.avatar_url ?? undefined,
+          role: row.role as CollaboratorRole,
+          addedAt: row.created_at,
+        };
+      });
+    }
+
+    if (embedded.error) {
+      console.warn(
+        "[Foci] getProjectCollaborators embed failed, falling back:",
+        embedded.error.message,
+      );
+    }
+
+    const { data, error } = await this.supabase
+      .from("project_collaborators")
+      .select("collaborator_id, role, created_at")
+      .eq("project_id", projectId)
+      .eq("owner_id", userId);
+
     if (error) {
       console.error("[Foci] getProjectCollaborators error:", error);
       console.error("[Foci] getProjectCollaborators error details:", JSON.stringify(error, null, 2));
       throw new Error(error.message);
     }
-    
-    if (!data) return [];
-    
+
+    if (!data || data.length === 0) return [];
+
+    const ids = data.map((row) => row.collaborator_id);
+    const { data: profiles } = await this.supabase
+      .from("user_profiles")
+      .select("user_id, email, display_name, avatar_url")
+      .in("user_id", ids);
+
+    const byId = new Map(
+      (profiles ?? []).map((p) => [p.user_id, p] as const),
+    );
+
     return data.map((row) => {
-      const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+      const profile = byId.get(row.collaborator_id);
       return {
         userId: row.collaborator_id,
         email: profile?.email ?? "",
@@ -647,7 +686,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .from("user_profiles")
       .select("email, display_name")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
     
     return data.map((row) => {
       const project = Array.isArray(row.projects) ? row.projects[0] : row.projects;
@@ -658,6 +697,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         ownerEmail: profile?.email ?? "",
         ownerName: profile?.display_name ?? undefined,
         ownerId: userId,
+        inviteeEmail: row.invitee_email ?? undefined,
         role: row.role as CollaboratorRole,
         status: row.status as "pending" | "accepted" | "declined" | "expired",
         createdAt: row.created_at,
@@ -683,15 +723,16 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async getReceivedInvites(): Promise<CollaborationInvite[]> {
     const userId = await this.getUserId();
-    
-    // Get user's email to match invites
+
+    // Prefer auth email (matches account invites); fall back to profile email.
+    const { data: { user } } = await this.supabase.auth.getUser();
     const { data: profile } = await this.supabase
       .from("user_profiles")
       .select("email")
       .eq("user_id", userId)
-      .single();
-      
-    if (!profile) return [];
+      .maybeSingle();
+
+    const userEmail = (user?.email ?? profile?.email)?.toLowerCase() ?? null;
 
     // Run two separate queries (by invitee_id and by invitee_email) to avoid
     // interpolating email into a PostgREST filter string, which could be
@@ -716,8 +757,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const [{ data: byId, error: err1 }, { data: byEmail, error: err2 }] = await Promise.all([
       this.supabase.from("collaboration_invites").select(selectClause)
         .eq("invitee_id", userId).eq("status", "pending"),
-      this.supabase.from("collaboration_invites").select(selectClause)
-        .ilike("invitee_email", profile.email).eq("status", "pending"),
+      ...(userEmail
+        ? [this.supabase.from("collaboration_invites").select(selectClause)
+            .eq("invitee_email", userEmail).eq("status", "pending")]
+        : [Promise.resolve({ data: [], error: null })]
+      ),
     ]);
 
     if (err1) { console.error("[Foci] getReceivedInvites (byId) error:", err1); throw new Error(err1.message); }
@@ -773,21 +817,23 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .from("collaboration_invites")
       .select("invitee_id, invitee_email")
       .eq("id", inviteId)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !invite) throw new Error("Invite not found");
 
+    const { data: { user } } = await this.supabase.auth.getUser();
     const { data: profile } = await this.supabase
       .from("user_profiles")
       .select("email")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
 
+    const callerEmail = (user?.email ?? profile?.email)?.toLowerCase() ?? null;
     const isRecipient =
       invite.invitee_id === userId ||
       (invite.invitee_email != null &&
-        profile?.email != null &&
-        invite.invitee_email.toLowerCase() === profile.email.toLowerCase());
+        callerEmail != null &&
+        invite.invitee_email.toLowerCase() === callerEmail);
 
     if (!isRecipient) throw new Error("Unauthorized");
 
@@ -875,6 +921,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           _ownerEmail: profile?.email ?? "",
           _ownerName: profile?.display_name ?? undefined,
           _myRole: row.role as CollaboratorRole,
+          _shareSource: "project",
         });
       }
     }
@@ -916,6 +963,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
               _ownerEmail: profile?.email ?? "",
               _ownerName: profile?.display_name ?? undefined,
               _myRole: accountRow.role as CollaboratorRole,
+              _shareSource: "account",
             });
           }
         }
@@ -961,16 +1009,41 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   async leaveProject(projectId: string, ownerId: string): Promise<void> {
     const userId = await this.getUserId();
     
-    const { error } = await this.supabase
+    const { data, error } = await this.supabase
       .from("project_collaborators")
       .delete()
       .eq("project_id", projectId)
       .eq("owner_id", ownerId)
-      .eq("collaborator_id", userId);
+      .eq("collaborator_id", userId)
+      .select("id");
       
     if (error) {
       console.error("[Foci] leaveProject error:", error);
       throw new Error(error.message);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("Could not leave project. You may have account-level access instead.");
+    }
+  }
+
+  async leaveSharedAccount(ownerId: string): Promise<void> {
+    const userId = await this.getUserId();
+
+    const { data, error } = await this.supabase
+      .from("account_collaborators")
+      .delete()
+      .eq("owner_id", ownerId)
+      .eq("collaborator_id", userId)
+      .select("id");
+
+    if (error) {
+      console.error("[Foci] leaveSharedAccount error:", error);
+      throw new Error(error.message);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("Could not leave shared account");
     }
   }
 
@@ -1054,44 +1127,37 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async inviteAccountCollaborator(email: string, role: CollaboratorRole): Promise<void> {
     const userId = await this.getUserId();
+    const normalizedEmail = email.toLowerCase();
 
     const { data: inviteeId } = await this.supabase.rpc("resolve_invitee_id", {
-      invitee_email: email.toLowerCase(),
+      invitee_email: normalizedEmail,
     });
 
     if (inviteeId) {
+      if (inviteeId === userId) {
+        throw new Error("You can't share your account with yourself");
+      }
+
       const { data: existing } = await this.supabase
         .from("account_collaborators")
         .select("id")
         .eq("owner_id", userId)
         .eq("collaborator_id", inviteeId)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         throw new Error("This user already has access to your account");
       }
-
-      const { error } = await this.supabase
-        .from("account_collaborators")
-        .insert({
-          owner_id: userId,
-          collaborator_id: inviteeId,
-          role,
-        });
-
-      if (error) {
-        console.error("[Foci] inviteAccountCollaborator direct add error:", error);
-        throw new Error(error.message);
-      }
-      return;
     }
-    
-    // Create invite for non-existing user
+
+    // Always create a pending invite so the recipient can accept (existing users
+    // included). Previously we auto-inserted collaborators for known emails.
     const { error } = await this.supabase
       .from("account_invites")
       .insert({
         owner_id: userId,
-        invitee_email: email.toLowerCase(),
+        invitee_email: normalizedEmail,
+        invitee_id: inviteeId ?? null,
         role,
       });
       
@@ -1162,6 +1228,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       ownerEmail: profile?.email ?? "",
       ownerName: profile?.display_name ?? undefined,
       ownerId: userId,
+      inviteeEmail: row.invitee_email ?? undefined,
       role: row.role as CollaboratorRole,
       status: row.status as "pending" | "accepted" | "declined" | "expired",
       createdAt: row.created_at,
@@ -1211,7 +1278,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .eq("invitee_id", userId).eq("status", "pending"),
       ...(userEmail
         ? [this.supabase.from("account_invites").select(selectClause)
-            .ilike("invitee_email", userEmail).eq("status", "pending")]
+            .eq("invitee_email", userEmail).eq("status", "pending")]
         : [Promise.resolve({ data: [], error: null })]
       ),
     ]);
@@ -1264,21 +1331,23 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .from("account_invites")
       .select("invitee_id, invitee_email")
       .eq("id", inviteId)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !invite) throw new Error("Invite not found");
 
+    const { data: { user } } = await this.supabase.auth.getUser();
     const { data: profile } = await this.supabase
       .from("user_profiles")
       .select("email")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
 
+    const callerEmail = (user?.email ?? profile?.email)?.toLowerCase() ?? null;
     const isRecipient =
       invite.invitee_id === userId ||
       (invite.invitee_email != null &&
-        profile?.email != null &&
-        invite.invitee_email.toLowerCase() === profile.email.toLowerCase());
+        callerEmail != null &&
+        invite.invitee_email.toLowerCase() === callerEmail);
 
     if (!isRecipient) throw new Error("Unauthorized");
 

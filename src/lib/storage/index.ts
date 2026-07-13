@@ -195,6 +195,8 @@ export const updateSharedTask = (...args: Parameters<StorageAdapter["updateShare
   currentAdapter.updateSharedTask(...args);
 export const leaveProject = (...args: Parameters<StorageAdapter["leaveProject"]>) =>
   currentAdapter.leaveProject(...args);
+export const leaveSharedAccount = (...args: Parameters<StorageAdapter["leaveSharedAccount"]>) =>
+  currentAdapter.leaveSharedAccount(...args);
 
 // ── Account-Level Sharing API ─────────────────────────────
 export const getAccountCollaborators = () => currentAdapter.getAccountCollaborators();
