@@ -518,6 +518,35 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   // ── Collaboration ─────────────────────────────────────
 
   async getProjectCollaborators(projectId: string): Promise<CollaboratorInfo[]> {
+    const { data, error } = await this.supabase.rpc("list_my_project_collaborators", {
+      p_project_id: projectId,
+    });
+
+    if (!error && data) {
+      return data.map((row: {
+        collaborator_id: string;
+        role: string;
+        created_at: string;
+        email: string | null;
+        display_name: string | null;
+        avatar_url: string | null;
+      }) => ({
+        userId: row.collaborator_id,
+        email: row.email ?? "",
+        displayName: row.display_name ?? undefined,
+        avatarUrl: row.avatar_url ?? undefined,
+        role: row.role as CollaboratorRole,
+        addedAt: row.created_at,
+      }));
+    }
+
+    if (error) {
+      console.warn(
+        "[Foci] list_my_project_collaborators RPC failed, falling back:",
+        error.message,
+      );
+    }
+
     const userId = await this.getUserId();
 
     // Prefer the canonical FK from 20260514000000. Fall back without embed if
@@ -538,7 +567,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("owner_id", userId);
 
     if (!embedded.error && embedded.data) {
-      return embedded.data.map((row) => {
+      const mapped = embedded.data.map((row) => {
         const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
         return {
           userId: row.collaborator_id,
@@ -549,6 +578,26 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           addedAt: row.created_at,
         };
       });
+      if (mapped.every((c) => c.email)) return mapped;
+      const missing = mapped.filter((c) => !c.email).map((c) => c.userId);
+      if (missing.length > 0) {
+        const { data: profiles } = await this.supabase
+          .from("user_profiles")
+          .select("user_id, email, display_name, avatar_url")
+          .in("user_id", missing);
+        const byId = new Map((profiles ?? []).map((p) => [p.user_id, p] as const));
+        return mapped.map((c) => {
+          if (c.email) return c;
+          const profile = byId.get(c.userId);
+          return {
+            ...c,
+            email: profile?.email ?? c.email,
+            displayName: profile?.display_name ?? c.displayName,
+            avatarUrl: profile?.avatar_url ?? c.avatarUrl,
+          };
+        });
+      }
+      return mapped;
     }
 
     if (embedded.error) {
@@ -558,21 +607,21 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       );
     }
 
-    const { data, error } = await this.supabase
+    const { data: rows, error: rowsError } = await this.supabase
       .from("project_collaborators")
       .select("collaborator_id, role, created_at")
       .eq("project_id", projectId)
       .eq("owner_id", userId);
 
-    if (error) {
-      console.error("[Foci] getProjectCollaborators error:", error);
-      console.error("[Foci] getProjectCollaborators error details:", JSON.stringify(error, null, 2));
-      throw new Error(error.message);
+    if (rowsError) {
+      console.error("[Foci] getProjectCollaborators error:", rowsError);
+      console.error("[Foci] getProjectCollaborators error details:", JSON.stringify(rowsError, null, 2));
+      throw new Error(rowsError.message);
     }
 
-    if (!data || data.length === 0) return [];
+    if (!rows || rows.length === 0) return [];
 
-    const ids = data.map((row) => row.collaborator_id);
+    const ids = rows.map((row) => row.collaborator_id);
     const { data: profiles } = await this.supabase
       .from("user_profiles")
       .select("user_id, email, display_name, avatar_url")
@@ -582,7 +631,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       (profiles ?? []).map((p) => [p.user_id, p] as const),
     );
 
-    return data.map((row) => {
+    return rows.map((row) => {
       const profile = byId.get(row.collaborator_id);
       return {
         userId: row.collaborator_id,
@@ -1050,6 +1099,33 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   // ── Account-Level Sharing ─────────────────────────────────────
 
   async getAccountCollaborators(): Promise<AccountCollaboratorInfo[]> {
+    const { data, error } = await this.supabase.rpc("list_my_account_collaborators");
+
+    if (!error && data) {
+      return data.map((row: {
+        collaborator_id: string;
+        role: string;
+        created_at: string;
+        email: string | null;
+        display_name: string | null;
+        avatar_url: string | null;
+      }) => ({
+        userId: row.collaborator_id,
+        email: row.email ?? "",
+        displayName: row.display_name ?? undefined,
+        avatarUrl: row.avatar_url ?? undefined,
+        role: row.role as CollaboratorRole,
+        addedAt: row.created_at,
+      }));
+    }
+
+    if (error) {
+      console.warn(
+        "[Foci] list_my_account_collaborators RPC failed, falling back:",
+        error.message,
+      );
+    }
+
     const userId = await this.getUserId();
 
     // Prefer the canonical FK from 20260514000000. Fall back without embed if
@@ -1069,7 +1145,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("owner_id", userId);
 
     if (!embedded.error && embedded.data) {
-      return embedded.data.map((row) => {
+      const mapped = embedded.data.map((row) => {
         const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
         return {
           userId: row.collaborator_id,
@@ -1080,6 +1156,27 @@ export class SupabaseStorageAdapter implements StorageAdapter {
           addedAt: row.created_at,
         };
       });
+      // Embed can "succeed" with null nested profiles under RLS — fill gaps.
+      if (mapped.every((c) => c.email)) return mapped;
+      const missing = mapped.filter((c) => !c.email).map((c) => c.userId);
+      if (missing.length > 0) {
+        const { data: profiles } = await this.supabase
+          .from("user_profiles")
+          .select("user_id, email, display_name, avatar_url")
+          .in("user_id", missing);
+        const byId = new Map((profiles ?? []).map((p) => [p.user_id, p] as const));
+        return mapped.map((c) => {
+          if (c.email) return c;
+          const profile = byId.get(c.userId);
+          return {
+            ...c,
+            email: profile?.email ?? c.email,
+            displayName: profile?.display_name ?? c.displayName,
+            avatarUrl: profile?.avatar_url ?? c.avatarUrl,
+          };
+        });
+      }
+      return mapped;
     }
 
     if (embedded.error) {
@@ -1089,20 +1186,20 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       );
     }
 
-    const { data, error } = await this.supabase
+    const { data: rows, error: rowsError } = await this.supabase
       .from("account_collaborators")
       .select("collaborator_id, role, created_at")
       .eq("owner_id", userId);
 
-    if (error) {
-      console.error("[Foci] getAccountCollaborators error:", error);
-      console.error("[Foci] getAccountCollaborators error details:", JSON.stringify(error, null, 2));
-      throw new Error(error.message);
+    if (rowsError) {
+      console.error("[Foci] getAccountCollaborators error:", rowsError);
+      console.error("[Foci] getAccountCollaborators error details:", JSON.stringify(rowsError, null, 2));
+      throw new Error(rowsError.message);
     }
 
-    if (!data || data.length === 0) return [];
+    if (!rows || rows.length === 0) return [];
 
-    const ids = data.map((row) => row.collaborator_id);
+    const ids = rows.map((row) => row.collaborator_id);
     const { data: profiles } = await this.supabase
       .from("user_profiles")
       .select("user_id, email, display_name, avatar_url")
@@ -1112,7 +1209,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       (profiles ?? []).map((p) => [p.user_id, p] as const),
     );
 
-    return data.map((row) => {
+    return rows.map((row) => {
       const profile = byId.get(row.collaborator_id);
       return {
         userId: row.collaborator_id,

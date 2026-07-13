@@ -58,8 +58,18 @@ export default function AccountSharingModal({
               ? collabsResult.reason.message
               : "Unknown error";
           showToast(`Failed to load account sharing settings: ${message}`, "error");
-        } else if (collabsResult.status === "rejected" || invitesResult.status === "rejected") {
-          showToast("Some sharing settings could not be loaded", "error");
+        } else if (collabsResult.status === "rejected") {
+          const message =
+            collabsResult.reason instanceof Error
+              ? collabsResult.reason.message
+              : "Unknown error";
+          showToast(`Failed to load collaborators: ${message}`, "error");
+        } else if (invitesResult.status === "rejected") {
+          const message =
+            invitesResult.reason instanceof Error
+              ? invitesResult.reason.message
+              : "Unknown error";
+          showToast(`Failed to load pending invites: ${message}`, "error");
         }
       } catch (err) {
         console.error("[Foci] Failed to load account collaborators:", err);
@@ -341,13 +351,13 @@ export default function AccountSharingModal({
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                              {(collab.displayName || collab.email).charAt(0).toUpperCase()}
+                              {(collab.displayName || collab.email || "?").charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
                         <div>
                           <p className="text-sm font-medium text-slate-900 dark:text-white">
-                            {collab.displayName || collab.email}
+                            {collab.displayName || collab.email || "Unknown user"}
                           </p>
                           {collab.displayName && (
                             <p className="text-xs text-slate-500 dark:text-slate-400">
