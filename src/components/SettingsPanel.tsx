@@ -22,6 +22,56 @@ interface SettingsPanelProps {
   onTasksImported?: () => void;
 }
 
+type SettingsTab = "timer" | "experience" | "sharing" | "data";
+
+const TABS: { id: SettingsTab; label: string; signedInOnly?: boolean }[] = [
+  { id: "timer", label: "Timer" },
+  { id: "experience", label: "Experience" },
+  { id: "sharing", label: "Sharing", signedInOnly: true },
+  { id: "data", label: "Data" },
+];
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-xs text-red-500 mt-1">{message}</p>;
+}
+
+function ToggleRow({
+  id,
+  label,
+  description,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: (next: boolean) => void;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4 py-3.5">
+      <div className="min-w-0">
+        <label htmlFor={id} className="text-sm font-medium text-slate-800 dark:text-slate-100">
+          {label}
+        </label>
+        {description && (
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+            {description}
+          </p>
+        )}
+      </div>
+      <input
+        type="checkbox"
+        id={id}
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 border-slate-300 dark:border-[#3a5070] rounded"
+      />
+    </div>
+  );
+}
+
 export default function SettingsPanel({
   settings,
   onSave,
@@ -29,28 +79,29 @@ export default function SettingsPanel({
   onTasksImported,
 }: SettingsPanelProps) {
   const { user } = useAuth();
+  const [tab, setTab] = useState<SettingsTab>("timer");
   const [showAccountSharing, setShowAccountSharing] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [shareModalProject, setShareModalProject] = useState<Project | null>(null);
-  const [workMin, setWorkMin] = useState(
-    Math.floor(settings.workDuration / 60000)
-  );
-  const [breakMin, setBreakMin] = useState(
-    Math.floor(settings.breakDuration / 60000)
-  );
+  const [workMin, setWorkMin] = useState(Math.floor(settings.workDuration / 60000));
+  const [breakMin, setBreakMin] = useState(Math.floor(settings.breakDuration / 60000));
   const [inactivityMin, setInactivityMin] = useState(
-    Math.floor(settings.inactivityThreshold / 60000)
+    Math.floor(settings.inactivityThreshold / 60000),
   );
   const [dailyGoal, setDailyGoal] = useState(settings.dailyGoal);
   const [autoStart, setAutoStart] = useState(settings.autoStartEnabled);
-  const [notifications, setNotifications] = useState(
-    settings.notificationsEnabled
-  );
+  const [notifications, setNotifications] = useState(settings.notificationsEnabled);
   const [focusModeAuto, setFocusModeAutoState] = useState(false);
   const [startTimerOnFocus, setStartTimerOnFocusState] = useState(true);
   const [defaultTaskView, setDefaultTaskViewState] = useState<DefaultTaskView>("card");
   const [browserPerm, setBrowserPerm] = useState<NotificationPermission>("default");
+  const [saved, setSaved] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [dirty, setDirty] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const visibleTabs = TABS.filter((t) => !t.signedInOnly || user);
 
   useEffect(() => {
     setFocusModeAutoState(getFocusModeAuto());
@@ -66,12 +117,6 @@ export default function SettingsPanel({
     }
   }, []);
 
-  const requestPermission = async () => {
-    const result = await Notification.requestPermission();
-    setBrowserPerm(result);
-  };
-
-  // Auto-request browser permission when the user enables notifications
   useEffect(() => {
     if (
       notifications &&
@@ -79,58 +124,64 @@ export default function SettingsPanel({
       "Notification" in window &&
       Notification.permission === "default"
     ) {
-      Notification.requestPermission().then((result) => {
-        setBrowserPerm(result);
-      });
+      Notification.requestPermission().then((result) => setBrowserPerm(result));
     }
   }, [notifications]);
 
-  // Load projects for project sharing section
   useEffect(() => {
-    if (!user) return;
-    
+    if (!user || tab !== "sharing") return;
     const loadProjectsData = async () => {
       setLoadingProjects(true);
       try {
         const allProjects = await loadProjects();
-        // Filter out archived and general project
-        setProjects(allProjects.filter(p => !p.archived && p.id !== "__general__"));
+        setProjects(allProjects.filter((p) => !p.archived && p.id !== "__general__"));
       } catch (err) {
         console.error("[Foci] Failed to load projects:", err);
       } finally {
         setLoadingProjects(false);
       }
     };
-
     loadProjectsData();
-  }, [user]);
+  }, [user, tab]);
 
-  const [saved, setSaved] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const panelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (tab === "sharing" && !user) setTab("timer");
+  }, [tab, user]);
 
-  // Focus trap + ESC to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { onClose(); return; }
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
       if (e.key === "Tab" && panelRef.current) {
         const focusable = panelRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
         );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey) {
-          if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
-        } else {
-          if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last?.focus();
+          }
+        } else if (document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
         }
       }
     };
     document.addEventListener("keydown", handleKeyDown);
-    // Focus the panel on open
     panelRef.current?.focus();
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
+
+  const markDirty = () => setDirty(true);
+
+  const requestPermission = async () => {
+    const result = await Notification.requestPermission();
+    setBrowserPerm(result);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,18 +192,20 @@ export default function SettingsPanel({
     if (inactivityMin <= 0) errors.inactivityMin = "Must be > 0";
     if (dailyGoal <= 0 || dailyGoal > 20) errors.dailyGoal = "Must be 1–20";
     setValidationErrors(errors);
-    if (Object.keys(errors).length > 0) return;
+    if (Object.keys(errors).length > 0) {
+      setTab("timer");
+      return;
+    }
 
-    const newSettings: Settings = {
+    onSave({
       workDuration: workMin * 60 * 1000,
       breakDuration: breakMin * 60 * 1000,
       inactivityThreshold: inactivityMin * 60 * 1000,
       dailyGoal,
       autoStartEnabled: autoStart,
       notificationsEnabled: notifications,
-    };
-
-    onSave(newSettings);
+    });
+    setDirty(false);
     setSaved(true);
     setTimeout(() => {
       onClose();
@@ -162,483 +215,453 @@ export default function SettingsPanel({
 
   return (
     <>
-      {/* Overlay */}
       <div className="settings-overlay" onClick={onClose} />
 
-      {/* Panel */}
-      <div className="settings-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Settings" tabIndex={-1}>
-        {/* Header */}
-        <div
-          className="section-header-gradient px-4 sm:px-6 py-3 sm:py-4 text-slate-700 dark:text-white flex justify-between items-center sm:rounded-t-[20px]"
-        >
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Settings
-          </h3>
+      <div
+        className="settings-panel"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Settings"
+        tabIndex={-1}
+      >
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-200 dark:border-[#243350]">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Settings</h2>
           <button
+            type="button"
             onClick={onClose}
-            className="hover:text-slate-900 dark:text-white dark:hover:text-slate-200 transition p-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/20"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition"
             aria-label="Close settings"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Content */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 max-h-[88vh] overflow-y-auto">
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-5">
-          {/* Quick Presets */}
-          <div>
-            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2" />
-              Quick Presets
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {TIMER_PRESETS.map((preset) => {
-                const isActive = workMin === preset.workMin && breakMin === preset.breakMin;
-                return (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => {
-                      setWorkMin(preset.workMin);
-                      setBreakMin(preset.breakMin);
-                    }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-medium border transition-all ${
-                      isActive
-                        ? "bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200 ring-1 ring-blue-200 dark:ring-blue-800"
-                        : "bg-slate-50 dark:bg-[#131d30] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-                    }`}
-                    title={preset.description}
-                  >
-                    <span>{preset.emoji}</span>
-                    <span>{preset.label}</span>
-                    <span className="text-sm text-slate-400 dark:text-slate-500">{preset.workMin}/{preset.breakMin}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row min-h-0 flex-1">
+          {/* Nav */}
+          <nav
+            className="settings-nav flex sm:flex-col gap-1 p-2 sm:p-3 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-[#243350] overflow-x-auto shrink-0"
+            aria-label="Settings sections"
+          >
+            {visibleTabs.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTab(t.id)}
+                className={`whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
+                  tab === t.id
+                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                }`}
+                aria-current={tab === t.id ? "page" : undefined}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
 
-          {/* Timer Settings */}
-          <div>
-            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
-              Timer Settings
-            </h4>
-            <div className="grid grid-cols-2 gap-3">
-              {/* Work Duration */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-                <label
-                  htmlFor="workDuration"
-                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
-                >
-                  <span className="mr-1.5">⏱️</span> Work (min)
-                </label>
-                <input
-                  type="number"
-                  id="workDuration"
-                  min={1}
-                  max={120}
-                  value={workMin}
-                  onChange={(e) => { setWorkMin(Number(e.target.value)); setValidationErrors((v) => { const { workMin: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.workMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
-                />
-                {validationErrors.workMin && <p className="text-xs text-red-500 mt-1">{validationErrors.workMin}</p>}
-              </div>
+          {/* Content */}
+          <div className="flex-1 min-w-0 flex flex-col min-h-0">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-6">
+              {tab === "timer" && (
+                <>
+                  <section>
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                      Presets
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      One tap to set work and break lengths.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {TIMER_PRESETS.map((preset) => {
+                        const isActive =
+                          workMin === preset.workMin && breakMin === preset.breakMin;
+                        return (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => {
+                              setWorkMin(preset.workMin);
+                              setBreakMin(preset.breakMin);
+                              markDirty();
+                            }}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                              isActive
+                                ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
+                                : "bg-white dark:bg-[#0a1628] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
+                            }`}
+                            title={preset.description}
+                          >
+                            {preset.label}
+                            <span className="ml-1.5 text-xs opacity-60">
+                              {preset.workMin}/{preset.breakMin}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
 
-              {/* Break Duration */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-                <label
-                  htmlFor="breakDuration"
-                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
-                >
-                  <span className="mr-1.5">🛏️</span> Break (min)
-                </label>
-                <input
-                  type="number"
-                  id="breakDuration"
-                  min={1}
-                  max={60}
-                  value={breakMin}
-                  onChange={(e) => { setBreakMin(Number(e.target.value)); setValidationErrors((v) => { const { breakMin: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.breakMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
-                />
-                {validationErrors.breakMin && <p className="text-xs text-red-500 mt-1">{validationErrors.breakMin}</p>}
-              </div>
+                  <section>
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+                      Durations
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor="workDuration" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                          Work (min)
+                        </label>
+                        <input
+                          type="number"
+                          id="workDuration"
+                          min={1}
+                          max={120}
+                          value={workMin}
+                          onChange={(e) => {
+                            setWorkMin(Number(e.target.value));
+                            markDirty();
+                            setValidationErrors((v) => {
+                              const { workMin: _, ...rest } = v;
+                              return rest;
+                            });
+                          }}
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                            validationErrors.workMin
+                              ? "border-red-400"
+                              : "border-slate-200 dark:border-[#243350]"
+                          }`}
+                        />
+                        <FieldError message={validationErrors.workMin} />
+                      </div>
+                      <div>
+                        <label htmlFor="breakDuration" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                          Break (min)
+                        </label>
+                        <input
+                          type="number"
+                          id="breakDuration"
+                          min={1}
+                          max={60}
+                          value={breakMin}
+                          onChange={(e) => {
+                            setBreakMin(Number(e.target.value));
+                            markDirty();
+                            setValidationErrors((v) => {
+                              const { breakMin: _, ...rest } = v;
+                              return rest;
+                            });
+                          }}
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                            validationErrors.breakMin
+                              ? "border-red-400"
+                              : "border-slate-200 dark:border-[#243350]"
+                          }`}
+                        />
+                        <FieldError message={validationErrors.breakMin} />
+                      </div>
+                      <div>
+                        <label htmlFor="inactivityThreshold" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                          Inactivity pause (min)
+                        </label>
+                        <input
+                          type="number"
+                          id="inactivityThreshold"
+                          min={1}
+                          value={inactivityMin}
+                          onChange={(e) => {
+                            setInactivityMin(Number(e.target.value));
+                            markDirty();
+                            setValidationErrors((v) => {
+                              const { inactivityMin: _, ...rest } = v;
+                              return rest;
+                            });
+                          }}
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                            validationErrors.inactivityMin
+                              ? "border-red-400"
+                              : "border-slate-200 dark:border-[#243350]"
+                          }`}
+                        />
+                        <FieldError message={validationErrors.inactivityMin} />
+                      </div>
+                      <div>
+                        <label htmlFor="dailyGoal" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                          Daily goal (sessions)
+                        </label>
+                        <input
+                          type="number"
+                          id="dailyGoal"
+                          min={1}
+                          max={20}
+                          value={dailyGoal}
+                          onChange={(e) => {
+                            setDailyGoal(Number(e.target.value));
+                            markDirty();
+                            setValidationErrors((v) => {
+                              const { dailyGoal: _, ...rest } = v;
+                              return rest;
+                            });
+                          }}
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                            validationErrors.dailyGoal
+                              ? "border-red-400"
+                              : "border-slate-200 dark:border-[#243350]"
+                          }`}
+                        />
+                        <FieldError message={validationErrors.dailyGoal} />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      {GOAL_PRESETS.map((gp) => (
+                        <button
+                          key={gp.label}
+                          type="button"
+                          onClick={() => {
+                            setDailyGoal(gp.sessions);
+                            markDirty();
+                          }}
+                          className={`px-2.5 py-1 text-xs rounded-md border transition-colors ${
+                            dailyGoal === gp.sessions
+                              ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
+                              : "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                          }`}
+                          title={gp.description}
+                        >
+                          {gp.label} · {gp.sessions}
+                        </button>
+                      ))}
+                    </div>
+                  </section>
 
-              {/* Inactivity Threshold */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-                <label
-                  htmlFor="inactivityThreshold"
-                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
-                >
-                  <span className="mr-1.5">⏸️</span> Inactivity (min)
-                </label>
-                <input
-                  type="number"
-                  id="inactivityThreshold"
-                  min={1}
-                  value={inactivityMin}
-                  onChange={(e) => { setInactivityMin(Number(e.target.value)); setValidationErrors((v) => { const { inactivityMin: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.inactivityMin ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
-                />
-                {validationErrors.inactivityMin && <p className="text-xs text-red-500 mt-1">{validationErrors.inactivityMin}</p>}
-                <div className="text-[0.9rem] text-slate-500 dark:text-slate-400 mt-1">
-                  Auto-pause when inactive
-                </div>
-              </div>
+                  <section className="border-t border-slate-100 dark:border-[#243350] divide-y divide-slate-100 dark:divide-[#243350]">
+                    <ToggleRow
+                      id="autoStart"
+                      label="Auto-start next session"
+                      description="Begin the next work or break session automatically when one ends."
+                      checked={autoStart}
+                      onChange={(next) => {
+                        setAutoStart(next);
+                        markDirty();
+                      }}
+                    />
+                  </section>
+                </>
+              )}
 
-              {/* Daily Goal */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-                <label
-                  htmlFor="dailyGoal"
-                  className="flex text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5 items-center"
-                >
-                  <span className="mr-1.5">🎯</span> Goal (sessions)
-                </label>
-                <input
-                  type="number"
-                  id="dailyGoal"
-                  min={1}
-                  max={20}
-                  value={dailyGoal}
-                  onChange={(e) => { setDailyGoal(Number(e.target.value)); setValidationErrors((v) => { const { dailyGoal: _, ...rest } = v; return rest; }); }}
-                  className={`w-full px-3 py-2 border rounded-lg text-base bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 ${validationErrors.dailyGoal ? 'border-red-400' : 'border-slate-300 dark:border-[#243350]'}`}
-                />
-                {validationErrors.dailyGoal && <p className="text-xs text-red-500 mt-1">{validationErrors.dailyGoal}</p>}
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {GOAL_PRESETS.map((gp) => (
+              {tab === "experience" && (
+                <>
+                  <section className="divide-y divide-slate-100 dark:divide-[#243350]">
+                    <ToggleRow
+                      id="focusModeAuto"
+                      label="Enter focus mode when timer starts"
+                      description="Hides distractions and simplifies the task panel while you work."
+                      checked={focusModeAuto}
+                      onChange={(next) => {
+                        setFocusModeAutoState(next);
+                        setFocusModeAuto(next);
+                      }}
+                    />
+                    <ToggleRow
+                      id="startTimerOnFocus"
+                      label="Start timer when I focus a task"
+                      description="Clicking Focus on a task starts the countdown immediately."
+                      checked={startTimerOnFocus}
+                      onChange={(next) => {
+                        setStartTimerOnFocusState(next);
+                        setStartTimerOnFocus(next);
+                      }}
+                    />
+                    <ToggleRow
+                      id="notifications"
+                      label="Motivational quotes after sessions"
+                      description="Show an inspirational browser notification when a work session ends."
+                      checked={notifications}
+                      onChange={(next) => {
+                        setNotifications(next);
+                        markDirty();
+                      }}
+                    />
+                  </section>
+
+                  <section>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <label
+                          htmlFor="defaultTaskView"
+                          className="text-sm font-medium text-slate-800 dark:text-slate-100"
+                        >
+                          Default task view
+                        </label>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          Used on first visit. Your last view is remembered while browsing.
+                        </p>
+                      </div>
+                      <select
+                        id="defaultTaskView"
+                        value={defaultTaskView}
+                        onChange={async (e) => {
+                          const view = e.target.value as DefaultTaskView;
+                          setDefaultTaskViewState(view);
+                          try {
+                            await saveTaskViewPreferences({
+                              defaultTaskView: view,
+                              lastTaskView: view,
+                              taskViewExplicit: true,
+                            });
+                            window.dispatchEvent(
+                              new CustomEvent(DEFAULT_VIEW_CHANGED_EVENT, { detail: view }),
+                            );
+                          } catch (err) {
+                            console.error("[Foci] Failed to save task view preference:", err);
+                          }
+                        }}
+                        className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+                      >
+                        {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </section>
+
+                  <section className="rounded-lg border border-slate-200 dark:border-[#243350] px-3 py-2.5">
+                    {browserPerm === "granted" ? (
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                        Browser notifications are enabled
+                      </p>
+                    ) : browserPerm === "denied" ? (
+                      <p className="text-xs text-red-500 dark:text-red-400">
+                        Notifications are blocked in your browser site settings
+                      </p>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={requestPermission}
+                        className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Allow browser notifications
+                      </button>
+                    )}
+                  </section>
+                </>
+              )}
+
+              {tab === "sharing" && user && (
+                <>
+                  <section>
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                      Share everything
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Give someone access to all current and future projects.
+                    </p>
                     <button
-                      key={gp.label}
                       type="button"
-                      onClick={() => setDailyGoal(gp.sessions)}
-                      className={`flex-1 text-base py-1.5 rounded-lg border transition-all ${
-                        dailyGoal === gp.sessions
-                        ? "bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200"
-                        : "bg-white dark:bg-[#131d30] border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-                      }`}
-                      title={gp.description}
+                      onClick={() => setShowAccountSharing(true)}
+                      className="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                     >
-                      {gp.emoji} {gp.label}
+                      Manage account sharing
                     </button>
-                  ))}
-                </div>
-              </div>
+                  </section>
 
-              {/* Auto-start toggle */}
-              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
-                <div className="flex items-center">
-                  <span className="text-base mr-2">🚀</span>
-                  <label
-                    htmlFor="autoStart"
-                    className="text-base font-medium text-slate-700 dark:text-slate-200"
-                  >
-                    Auto-start sessions
-                  </label>
-                </div>
-                <input
-                  type="checkbox"
-                  id="autoStart"
-                  checked={autoStart}
-                  onChange={(e) => setAutoStart(e.target.checked)}
-                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
-                />
-              </div>
-
-              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
-                <div className="flex flex-col">
-                  <label htmlFor="focusModeAuto" className="text-base font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                    <span>🎯</span> Focus mode when timer starts
-                  </label>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Hides distractions and simplifies the task panel</span>
-                </div>
-                <input
-                  type="checkbox"
-                  id="focusModeAuto"
-                  checked={focusModeAuto}
-                  onChange={(e) => {
-                    setFocusModeAutoState(e.target.checked);
-                    setFocusModeAuto(e.target.checked);
-                  }}
-                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
-                />
-              </div>
-
-              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
-                <div className="flex flex-col">
-                  <label htmlFor="startTimerOnFocus" className="text-base font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                    <span>▶️</span> Start timer when I pick a task
-                  </label>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Clicking Focus on a task starts the countdown immediately</span>
-                </div>
-                <input
-                  type="checkbox"
-                  id="startTimerOnFocus"
-                  checked={startTimerOnFocus}
-                  onChange={(e) => {
-                    setStartTimerOnFocusState(e.target.checked);
-                    setStartTimerOnFocus(e.target.checked);
-                  }}
-                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
-                />
-              </div>
-              <div className="col-span-2 flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 rounded-xl border border-slate-200 dark:border-[#243350]">
-                <div className="flex flex-col min-w-0 flex-1 pr-3">
-                  <label htmlFor="defaultTaskView" className="text-base font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                    <span>📋</span> Default task view
-                  </label>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Opens when you first visit. Your last view is remembered while you browse.
-                  </span>
-                </div>
-                <select
-                  id="defaultTaskView"
-                  value={defaultTaskView}
-                  onChange={async (e) => {
-                    const view = e.target.value as DefaultTaskView;
-                    setDefaultTaskViewState(view);
-                    try {
-                      await saveTaskViewPreferences({
-                        defaultTaskView: view,
-                        lastTaskView: view,
-                        taskViewExplicit: true,
-                      });
-                      window.dispatchEvent(new CustomEvent(DEFAULT_VIEW_CHANGED_EVENT, { detail: view }));
-                    } catch (err) {
-                      console.error("[Foci] Failed to save task view preference:", err);
-                    }
-                  }}
-                  className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
-                >
-                  {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          </div>
-          {/* Right Column */}
-          <div className="space-y-5">
-
-          {/* Notifications */}
-          <div>
-            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <span className="text-base mr-2">🔔</span>
-              Notifications
-            </h4>
-            <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-              <div className="flex items-center justify-between p-3 bg-white dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
-                <div className="flex items-center">
-                  <span className="text-base mr-2">💬</span>
-                  <label
-                    htmlFor="notifications"
-                    className="text-base font-medium text-slate-700 dark:text-slate-200"
-                  >
-                    Show motivational quotes
-                  </label>
-                </div>
-                <input
-                  type="checkbox"
-                  id="notifications"
-                  checked={notifications}
-                  onChange={(e) => setNotifications(e.target.checked)}
-                  className="h-5 w-5 text-blue-600 border-slate-300 rounded"
-                />
-              </div>
-              <p className="text-[0.9rem] text-slate-500 dark:text-slate-300 mt-2 px-2">
-                Get inspirational quotes as browser notifications after each work
-                session
-              </p>
-
-              {/* Browser permission status */}
-              <div className="mt-2 px-2">
-                {browserPerm === "granted" ? (
-                  <span className="inline-flex items-center gap-1.5 text-[0.9rem] font-medium text-green-600 dark:text-green-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    Browser notifications enabled
-                  </span>
-                ) : browserPerm === "denied" ? (
-                  <span className="text-[0.9rem] text-red-500 dark:text-red-400">
-                    Notifications blocked — please enable them in your browser&apos;s site settings
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={requestPermission}
-                    className="text-[0.9rem] font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    Allow browser notifications →
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Import / Export */}
-          <div>
-            <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <span className="text-base mr-2">📦</span>
-              Import &amp; Export Tasks
-            </h4>
-            <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-              <TaskImportExport onTasksImported={onTasksImported} />
-            </div>
-          </div>
-
-          {/* Sharing */}
-          {user && (
-            <div>
-              <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-                <span className="text-base mr-2">👥</span>
-                Sharing
-              </h4>
-              
-              {/* Account-level Sharing */}
-              <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350] mb-3">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 mb-1">
-                      Share All Projects
+                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                      Share one project
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Invite collaborators to a specific project only.
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Give someone access to every project (current and future)
-                    </p>
+                    {loadingProjects ? (
+                      <div className="flex justify-center py-6">
+                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    ) : projects.length === 0 ? (
+                      <p className="text-sm text-slate-500 dark:text-slate-400 py-2">
+                        No projects to share yet.
+                      </p>
+                    ) : (
+                      <ul className="divide-y divide-slate-100 dark:divide-[#243350] border border-slate-200 dark:border-[#243350] rounded-lg overflow-hidden">
+                        {projects.map((project) => (
+                          <li key={project.id}>
+                            <button
+                              type="button"
+                              onClick={() => setShareModalProject(project)}
+                              className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-[#152340] transition-colors"
+                            >
+                              <span className="truncate text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                {project.color && (
+                                  <span
+                                    className="w-2 h-2 rounded-full shrink-0"
+                                    style={{ backgroundColor: project.color }}
+                                  />
+                                )}
+                                {project.name}
+                              </span>
+                              <span className="text-xs font-medium text-blue-600 dark:text-blue-400 shrink-0">
+                                Share
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                </>
+              )}
+
+              {tab === "data" && (
+                <section>
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                    Import &amp; export
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                    Back up your tasks or bring them in from another tool.
+                  </p>
+                  <div className="rounded-lg border border-slate-200 dark:border-[#243350] p-3">
+                    <TaskImportExport onTasksImported={onTasksImported} />
                   </div>
-                </div>
+                </section>
+              )}
+            </div>
+
+            {/* Footer — save only matters for timer/notification fields */}
+            <div className="shrink-0 border-t border-slate-200 dark:border-[#243350] px-4 sm:px-5 py-3 flex items-center justify-between gap-3 bg-slate-50/80 dark:bg-[#0a1628]/50">
+              <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
+                {dirty
+                  ? "You have unsaved changes"
+                  : tab === "timer" || tab === "experience"
+                    ? "Save applies timer & notification preferences"
+                    : "Sharing and data actions apply immediately"}
+              </p>
+              <div className="flex gap-2 ml-auto">
                 <button
                   type="button"
-                  onClick={() => setShowAccountSharing(true)}
-                  className="w-full px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                  </svg>
-                  Manage Account Sharing
+                  {dirty ? "Cancel" : "Close"}
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                >
+                  {saved ? "Saved" : "Save"}
                 </button>
               </div>
-
-              {/* Project-level Sharing */}
-              <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl p-3 border border-slate-200 dark:border-[#243350]">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 mb-1">
-                      Share Individual Projects
-                    </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Share specific projects with different collaborators
-                    </p>
-                  </div>
-                </div>
-                {loadingProjects ? (
-                  <div className="flex items-center justify-center py-4">
-                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                ) : projects.length === 0 ? (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 py-2 text-center">
-                    No projects to share
-                  </p>
-                ) : (
-                  <div className="space-y-2 mt-3">
-                    {projects.map((project) => (
-                      <button
-                        key={project.id}
-                        type="button"
-                        onClick={() => setShareModalProject(project)}
-                        className="w-full px-3 py-2 text-sm text-left bg-white dark:bg-[#0a1628] hover:bg-slate-100 dark:hover:bg-[#152340] border border-slate-200 dark:border-[#243350] rounded-lg transition-colors flex items-center justify-between group"
-                      >
-                        <span className="text-slate-800 dark:text-slate-100 truncate">
-                          {project.name}
-                        </span>
-                        <svg className="w-4 h-4 text-slate-400 group-hover:text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
-          )}
-
           </div>
-          </div>
-          {/* Save Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center text-base"
-          >
-            {saved ? (
-              <>
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Saved!
-              </>
-            ) : (
-              <>
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Save Settings
-              </>
-            )}
-          </button>
         </form>
       </div>
 
-      {/* Account Sharing Modal */}
       <AccountSharingModal
         isOpen={showAccountSharing}
         onClose={() => setShowAccountSharing(false)}
       />
 
-      {/* Project Sharing Modal */}
       {shareModalProject && (
         <ShareProjectModal
           project={shareModalProject}
