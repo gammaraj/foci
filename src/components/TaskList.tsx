@@ -1650,17 +1650,15 @@ export default function TaskList({
     );
   };
 
-  /** Desktop+: inline subtasks under card/bucket rows. Mobile uses a count badge on the row. */
+  /** Inline subtasks under card/bucket rows (all breakpoints). */
   const renderGridSubtasks = (task: Task) => {
     if (!(task.subtasks?.length)) return null;
     return (
-      <div className="hidden sm:block">
-        <TaskSubtaskSection
-          {...taskSubtaskSectionProps(task)}
-          showAddForm={false}
-          compact
-        />
-      </div>
+      <TaskSubtaskSection
+        {...taskSubtaskSectionProps(task)}
+        showAddForm={false}
+        compact
+      />
     );
   };
 
@@ -1670,19 +1668,15 @@ export default function TaskList({
     const subtasks = task.subtasks || [];
     const hasSubtasks = subtasks.length > 0;
     const isExpanded = expandedTaskId === task.id;
-    const collapseSubtasksInGrid = viewMode === "list";
 
-    if (collapseSubtasksInGrid) {
-      if (!isExpanded) return null;
-    } else if (!hasSubtasks && !isExpanded) {
-      return null;
-    }
+    // Always show existing subtasks inline; detail panel still expands on Details.
+    if (!hasSubtasks && !isExpanded) return null;
 
     return (
       <div className="overflow-hidden">
         <TaskSubtaskSection
           {...taskSubtaskSectionProps(task)}
-          showAddForm={isExpanded || (hasSubtasks && !collapseSubtasksInGrid)}
+          showAddForm={isExpanded || hasSubtasks}
           compact={compact}
         />
         {isExpanded && (
