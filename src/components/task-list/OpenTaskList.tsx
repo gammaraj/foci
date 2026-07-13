@@ -18,6 +18,8 @@ export interface OpenTaskListProps {
   activeTaskId: string | null;
   isTimerRunning: boolean;
   expandedTaskId: string | null;
+  /** Task whose subtasks are expanded inline (badge), separate from Details. */
+  expandedSubtasksTaskId?: string | null;
   editingId: string | null;
   editTitle: string;
   dragTaskId: string | null;
@@ -40,6 +42,7 @@ export interface OpenTaskListProps {
   onEditTitleChange: (value: string) => void;
   onCancelEdit: () => void;
   onToggleTaskDetail: (id: string) => void;
+  onToggleSubtasks?: (id: string) => void;
   onStartTask: (id: string) => void;
   onSelectTask: (id: string | null) => void;
   onDeleteTask: (id: string) => void;
@@ -59,6 +62,7 @@ export default function OpenTaskList({
   activeTaskId,
   isTimerRunning,
   expandedTaskId,
+  expandedSubtasksTaskId = null,
   editingId,
   editTitle,
   dragTaskId,
@@ -80,6 +84,7 @@ export default function OpenTaskList({
   onEditTitleChange,
   onCancelEdit,
   onToggleTaskDetail,
+  onToggleSubtasks,
   onStartTask,
   onSelectTask,
   onDeleteTask,
@@ -148,11 +153,12 @@ export default function OpenTaskList({
 
   const renderTaskCard = (task: Task) => {
     const isExpanded = expandedTaskId === task.id;
+    const subtasksExpanded = expandedSubtasksTaskId === task.id;
     const isOverdue = isActionableOverdue(task);
     const isBlocked = !!task.blocked;
     const subtaskCount = task.subtasks?.length ?? 0;
     const completedSubtaskCount = task.subtasks?.filter((s) => s.completed).length ?? 0;
-    const spansFullWidth = twoColumn && isExpanded;
+    const spansFullWidth = twoColumn && (isExpanded || subtasksExpanded);
 
     return (
       <div
@@ -299,17 +305,29 @@ export default function OpenTaskList({
                   {task.recurrence}
                 </span>
               )}
-              {subtaskCount > 0 && !isExpanded && (
+              {subtaskCount > 0 && (
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onToggleTaskDetail(task.id);
+                    // Details already shows subtasks inline — badge closes the panel.
+                    if (isExpanded) onToggleTaskDetail(task.id);
+                    else (onToggleSubtasks ?? onToggleTaskDetail)(task.id);
                   }}
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
-                  title="Open task details"
+                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
+                    subtasksExpanded || isExpanded
+                      ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
+                      : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
+                  }`}
+                  title={
+                    subtasksExpanded || isExpanded
+                      ? `Hide subtasks (${completedSubtaskCount}/${subtaskCount})`
+                      : `Show subtasks (${completedSubtaskCount}/${subtaskCount})`
+                  }
+                  aria-expanded={subtasksExpanded || isExpanded}
+                  aria-label={`${completedSubtaskCount} of ${subtaskCount} subtasks complete. ${subtasksExpanded || isExpanded ? "Hide" : "Show"} subtasks.`}
                 >
-                  {completedSubtaskCount}/{subtaskCount} subtasks
+                  {completedSubtaskCount}/{subtaskCount}
                 </button>
               )}
             </div>

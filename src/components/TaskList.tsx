@@ -139,6 +139,8 @@ export default function TaskList({
   const [editingProjectDescId, setEditingProjectDescId] = useState<string | null>(null);
   const [editProjectDesc, setEditProjectDesc] = useState("");
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  /** Inline subtasks under a row (card/bucket/list) — separate from the Details pane. */
+  const [expandedSubtasksTaskId, setExpandedSubtasksTaskId] = useState<string | null>(null);
   const [noDueDateExpanded, setNoDueDateExpanded] = useState(false);
   const [somedayExpanded, setSomedayExpanded] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
@@ -211,6 +213,7 @@ export default function TaskList({
     setViewMode(mode);
     setListReturnView(null);
     setExpandedTaskId(null);
+    setExpandedSubtasksTaskId(null);
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
     if (mode !== "plan") {
@@ -1291,6 +1294,14 @@ export default function TaskList({
     });
   };
 
+  const toggleSubtasksExpanded = (taskId: string) => {
+    setExpandedSubtasksTaskId((current) => {
+      const next = current === taskId ? null : taskId;
+      if (next !== current) setNewSubtaskTitle("");
+      return next;
+    });
+  };
+
   const closeTaskDetail = () => {
     dismissDatePicker();
     setExpandedTaskId(null);
@@ -1810,10 +1821,10 @@ export default function TaskList({
     );
   };
 
-  /** Inline subtasks under card/bucket rows — only when the task is expanded. */
+  /** Inline subtasks under card/bucket rows — toggled by the N/M badge, not Details. */
   const renderGridSubtasks = (task: Task) => {
     if (!(task.subtasks?.length)) return null;
-    if (expandedTaskId !== task.id) return null;
+    if (expandedSubtasksTaskId !== task.id) return null;
     return (
       <TaskSubtaskSection
         {...taskSubtaskSectionProps(task)}
@@ -1826,34 +1837,37 @@ export default function TaskList({
   const renderTaskInlineExpansion = (task: Task, compact = false) => {
     if (compact) return null;
 
-    const isExpanded = expandedTaskId === task.id;
-    if (!isExpanded) return null;
+    const detailOpen = expandedTaskId === task.id;
+    const subtasksOpen = expandedSubtasksTaskId === task.id || detailOpen;
+    if (!detailOpen && !subtasksOpen) return null;
 
     const subtasks = task.subtasks || [];
     const hasSubtasks = subtasks.length > 0;
 
     return (
       <div className="overflow-hidden">
-        {hasSubtasks && (
+        {hasSubtasks && subtasksOpen && (
           <TaskSubtaskSection
             {...taskSubtaskSectionProps(task)}
             showAddForm
             compact={compact}
           />
         )}
-        <TaskDetailPanel
-          task={task}
-          variant="inline"
-          hideSubtasks={hasSubtasks}
-          {...taskDetailPanelProps(task)}
-          onDeleteTask={() => {
-            deleteTask(task.id);
-            closeTaskDetail();
-          }}
-          onStartTask={() => onStartTask(task.id)}
-          onDeselectTask={() => onSelectTask(null)}
-          onSave={() => saveAndCloseTaskDetail(task.id)}
-        />
+        {detailOpen && (
+          <TaskDetailPanel
+            task={task}
+            variant="inline"
+            hideSubtasks={hasSubtasks}
+            {...taskDetailPanelProps(task)}
+            onDeleteTask={() => {
+              deleteTask(task.id);
+              closeTaskDetail();
+            }}
+            onStartTask={() => onStartTask(task.id)}
+            onDeselectTask={() => onSelectTask(null)}
+            onSave={() => saveAndCloseTaskDetail(task.id)}
+          />
+        )}
       </div>
     );
   };
@@ -1864,6 +1878,7 @@ export default function TaskList({
       activeTaskId={activeTaskId}
       isTimerRunning={isTimerRunning}
       expandedTaskId={expandedTaskId}
+      expandedSubtasksTaskId={expandedSubtasksTaskId}
       editingId={editingId}
       editTitle={editTitle}
       dragTaskId={dragTaskId}
@@ -1874,6 +1889,7 @@ export default function TaskList({
       onEditTitleChange={setEditTitle}
       onCancelEdit={() => setEditingId(null)}
       onToggleTaskDetail={toggleTaskDetail}
+      onToggleSubtasks={toggleSubtasksExpanded}
       onStartTask={onStartTask}
       onSelectTask={onSelectTask}
       onDeleteTask={deleteTask}
@@ -2389,6 +2405,8 @@ export default function TaskList({
           onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate)}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
+          expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
+          onToggleSubtasks={toggleSubtasksExpanded}
           renderBelowTask={preparingPrint ? () => null : renderTaskInlineExpansion}
         />
       )}
@@ -2511,7 +2529,9 @@ export default function TaskList({
           onCancelEdit={() => setEditingId(null)}
           onSetDueDate={setDueDate}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
+          expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
           onToggleTaskDetail={toggleTaskDetail}
+          onToggleSubtasks={toggleSubtasksExpanded}
           onBucketDrop={handleBucketDrop}
           scrollToProjectId={bucketJumpProjectId || null}
           scrollToProjectToken={bucketScrollToken}
@@ -2569,6 +2589,8 @@ export default function TaskList({
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleComplete={toggleComplete}
           onToggleTaskDetail={toggleTaskDetail}
+          onToggleSubtasks={toggleSubtasksExpanded}
+          expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
           renderBelowTask={preparingPrint ? () => null : renderGridSubtasks}
           hideEmptyProjects={hideEmptyCardProjects}
           onToggleHideEmptyProjects={toggleHideEmptyCardProjects}
@@ -3198,6 +3220,7 @@ export default function TaskList({
           activeTaskId={activeTaskId}
           isTimerRunning={isTimerRunning}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
+          expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
           editingId={editingId}
           editTitle={editTitle}
           dragTaskId={dragTaskId}
@@ -3219,6 +3242,7 @@ export default function TaskList({
           onEditTitleChange={setEditTitle}
           onCancelEdit={() => setEditingId(null)}
           onToggleTaskDetail={toggleTaskDetail}
+          onToggleSubtasks={toggleSubtasksExpanded}
           onStartTask={onStartTask}
           onSelectTask={onSelectTask}
           onDeleteTask={deleteTask}

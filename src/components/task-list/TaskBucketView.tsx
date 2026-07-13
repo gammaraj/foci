@@ -74,6 +74,8 @@ interface TaskBucketViewProps {
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
+  expandedSubtasksTaskId?: string | null;
+  onToggleSubtasks?: (taskId: string) => void;
   onBucketDrop?: (draggedTaskId: string, target: BucketDropTarget) => void;
   renderBelowTask?: (task: Task, compact?: boolean) => React.ReactNode;
   /** When set, scroll the matching column into view (use scrollToProjectToken to re-trigger). */
@@ -243,6 +245,8 @@ function BucketTaskCard({
   onSetDueDate,
   isDetailOpen,
   onToggleTaskDetail,
+  subtasksExpanded = false,
+  onToggleSubtasks,
   onDragStart,
   onDragOver,
   onDrop,
@@ -266,6 +270,8 @@ function BucketTaskCard({
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   isDetailOpen?: boolean;
   onToggleTaskDetail?: (taskId: string) => void;
+  subtasksExpanded?: boolean;
+  onToggleSubtasks?: (taskId: string) => void;
   onDragStart?: () => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: () => void;
@@ -489,13 +495,24 @@ function BucketTaskCard({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleTaskDetail?.(task.id);
+                // Details pane already includes subtasks — badge closes it.
+                if (isDetailOpen) onToggleTaskDetail?.(task.id);
+                else (onToggleSubtasks ?? onToggleTaskDetail)?.(task.id);
               }}
-              className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
-              title={`${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length} subtasks — open details`}
-              aria-label={`${task.subtasks!.filter((s) => s.completed).length} of ${task.subtasks!.length} subtasks complete. Open task details.`}
+              className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
+                subtasksExpanded || isDetailOpen
+                  ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
+                  : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
+              }`}
+              title={
+                subtasksExpanded || isDetailOpen
+                  ? `Hide subtasks (${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length})`
+                  : `Show subtasks (${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length})`
+              }
+              aria-expanded={subtasksExpanded || !!isDetailOpen}
+              aria-label={`${task.subtasks!.filter((s) => s.completed).length} of ${task.subtasks!.length} subtasks complete. ${subtasksExpanded || isDetailOpen ? "Hide" : "Show"} subtasks.`}
             >
-              {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length} subtasks
+              {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length}
             </button>
           )}
         </div>
@@ -531,6 +548,8 @@ function BucketColumn({
   onSetDueDate,
   expandedTaskId,
   onToggleTaskDetail,
+  expandedSubtasksTaskId,
+  onToggleSubtasks,
   onDragStart,
   onDragOverTask,
   onDragOverLane,
@@ -565,6 +584,8 @@ function BucketColumn({
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
+  expandedSubtasksTaskId?: string | null;
+  onToggleSubtasks?: (taskId: string) => void;
   onDragStart: (taskId: string) => void;
   onDragOverTask: (taskId: string) => void;
   onDragOverLane: (swimlaneId: BucketSwimlaneId) => void;
@@ -851,6 +872,8 @@ function BucketColumn({
                       onSetDueDate={onSetDueDate}
                       isDetailOpen={expandedTaskId === task.id}
                       onToggleTaskDetail={onToggleTaskDetail}
+                      subtasksExpanded={expandedSubtasksTaskId === task.id}
+                      onToggleSubtasks={onToggleSubtasks}
                       onDragStart={() => onDragStart(task.id)}
                       onDragOver={() => onDragOverTask(task.id)}
                       onDrop={() => onDropOnTask(task.id, swimlaneId)}
@@ -906,6 +929,8 @@ export default function TaskBucketView({
   onSetDueDate,
   expandedTaskId = null,
   onToggleTaskDetail,
+  expandedSubtasksTaskId = null,
+  onToggleSubtasks,
   onBucketDrop,
   renderBelowTask,
   scrollToProjectId = null,
@@ -1006,6 +1031,8 @@ export default function TaskBucketView({
             onSetDueDate={onSetDueDate}
             expandedTaskId={expandedTaskId}
             onToggleTaskDetail={onToggleTaskDetail}
+            expandedSubtasksTaskId={expandedSubtasksTaskId}
+            onToggleSubtasks={onToggleSubtasks}
             onDragStart={setDragTaskId}
             onDragOverTask={setDragOverTaskId}
             onDragOverLane={(swimlaneId) =>

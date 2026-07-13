@@ -47,6 +47,7 @@ interface TaskCardViewProps {
   activeTaskId: string | null;
   isTimerRunning?: boolean;
   expandedTaskId?: string | null;
+  expandedSubtasksTaskId?: string | null;
   editingTaskId?: string | null;
   editTitle?: string;
   dragProjectId?: string | null;
@@ -64,6 +65,7 @@ interface TaskCardViewProps {
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleComplete?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
+  onToggleSubtasks?: (taskId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
@@ -216,6 +218,7 @@ function CardTaskRow({
   activeTaskId,
   isTimerRunning,
   isExpanded,
+  subtasksExpanded = false,
   isEditing,
   editTitle,
   dragTaskId,
@@ -226,6 +229,7 @@ function CardTaskRow({
   onTaskDragEnd,
   onToggleComplete,
   onToggleTaskDetail,
+  onToggleSubtasks,
   onStartEdit,
   onEditTitleChange,
   onSaveEdit,
@@ -237,6 +241,7 @@ function CardTaskRow({
   activeTaskId: string | null;
   isTimerRunning?: boolean;
   isExpanded?: boolean;
+  subtasksExpanded?: boolean;
   isEditing: boolean;
   editTitle: string;
   dragTaskId?: string | null;
@@ -247,6 +252,7 @@ function CardTaskRow({
   onTaskDragEnd?: () => void;
   onToggleComplete?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
+  onToggleSubtasks?: (taskId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
@@ -419,14 +425,24 @@ function CardTaskRow({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onToggleTaskDetail?.(task.id);
+                  // Details pane already includes subtasks — badge closes it.
+                  if (isExpanded) onToggleTaskDetail?.(task.id);
+                  else (onToggleSubtasks ?? onToggleTaskDetail)?.(task.id);
                 }}
-                className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
-                title={`${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length} subtasks — open details`}
-                aria-label={`${task.subtasks!.filter((s) => s.completed).length} of ${task.subtasks!.length} subtasks complete. Open task details.`}
+                className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
+                  subtasksExpanded || isExpanded
+                    ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
+                    : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
+                }`}
+                title={
+                  subtasksExpanded || isExpanded
+                    ? `Hide subtasks (${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length})`
+                    : `Show subtasks (${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length})`
+                }
+                aria-expanded={subtasksExpanded || !!isExpanded}
+                aria-label={`${task.subtasks!.filter((s) => s.completed).length} of ${task.subtasks!.length} subtasks complete. ${subtasksExpanded || isExpanded ? "Hide" : "Show"} subtasks.`}
               >
                 {task.subtasks!.filter((s) => s.completed).length}/{task.subtasks!.length}
-                <span className="hidden sm:inline ml-1 font-medium">subtasks</span>
               </button>
             )}
             {onToggleTaskDetail && (
@@ -497,6 +513,7 @@ function ProjectCard({
   activeTaskId,
   isTimerRunning,
   expandedTaskId,
+  expandedSubtasksTaskId,
   editingTaskId,
   editTitle,
   dragProjectId,
@@ -514,6 +531,7 @@ function ProjectCard({
   onTaskDragEnd,
   onToggleComplete,
   onToggleTaskDetail,
+  onToggleSubtasks,
   onStartEdit,
   onEditTitleChange,
   onSaveEdit,
@@ -537,6 +555,7 @@ function ProjectCard({
   activeTaskId: string | null;
   isTimerRunning?: boolean;
   expandedTaskId?: string | null;
+  expandedSubtasksTaskId?: string | null;
   editingTaskId?: string | null;
   editTitle?: string;
   dragProjectId?: string | null;
@@ -554,6 +573,7 @@ function ProjectCard({
   onTaskDragEnd?: () => void;
   onToggleComplete?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
+  onToggleSubtasks?: (taskId: string) => void;
   onQuickAdd: (title: string, projectId: string) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
@@ -781,6 +801,7 @@ function ProjectCard({
                     activeTaskId={activeTaskId}
                     isTimerRunning={isTimerRunning}
                     isExpanded={expandedTaskId === task.id}
+                    subtasksExpanded={expandedSubtasksTaskId === task.id}
                     isEditing={editingTaskId === task.id}
                     editTitle={editTitle ?? ""}
                     dragTaskId={dragTaskId}
@@ -791,6 +812,7 @@ function ProjectCard({
                     onTaskDragEnd={onTaskDragEnd}
                     onToggleComplete={onToggleComplete}
                     onToggleTaskDetail={onToggleTaskDetail}
+                    onToggleSubtasks={onToggleSubtasks}
                     onStartEdit={onStartEdit}
                     onEditTitleChange={onEditTitleChange}
                     onSaveEdit={onSaveEdit}
@@ -858,6 +880,7 @@ export default function TaskCardView({
   activeTaskId,
   isTimerRunning,
   expandedTaskId,
+  expandedSubtasksTaskId,
   editingTaskId,
   editTitle,
   dragProjectId,
@@ -883,6 +906,7 @@ export default function TaskCardView({
   onQuickAdd,
   onToggleComplete,
   onToggleTaskDetail,
+  onToggleSubtasks,
   onToggleProjectFavorite,
   renderBelowTask,
   hideEmptyProjects = true,
@@ -1011,6 +1035,7 @@ export default function TaskCardView({
               activeTaskId={activeTaskId}
               isTimerRunning={isTimerRunning}
               expandedTaskId={expandedTaskId}
+              expandedSubtasksTaskId={expandedSubtasksTaskId}
               editingTaskId={editingTaskId}
               editTitle={editTitle}
               dragProjectId={dragProjectId}
@@ -1028,6 +1053,7 @@ export default function TaskCardView({
               onTaskDragEnd={onTaskDragEnd}
               onToggleComplete={onToggleComplete}
               onToggleTaskDetail={onToggleTaskDetail}
+              onToggleSubtasks={onToggleSubtasks}
               onStartEdit={onStartEdit}
               onEditTitleChange={onEditTitleChange}
               onSaveEdit={onSaveEdit}

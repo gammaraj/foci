@@ -26,6 +26,8 @@ export interface TaskCalendarViewProps {
   onQuickAdd?: (title: string, dueDate: string) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
+  expandedSubtasksTaskId?: string | null;
+  onToggleSubtasks?: (taskId: string) => void;
   renderBelowTask?: (task: Task) => React.ReactNode;
 }
 
@@ -43,6 +45,8 @@ export default function TaskCalendarView({
   onQuickAdd,
   expandedTaskId = null,
   onToggleTaskDetail,
+  expandedSubtasksTaskId = null,
+  onToggleSubtasks,
   renderBelowTask,
 }: TaskCalendarViewProps) {
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS_ID);
@@ -81,6 +85,34 @@ export default function TaskCalendarView({
   const emptyCells = Array.from({ length: startingDow });
   const dayCells = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const selectedTasks = selectedDay ? (tasksByDate[selectedDay] ?? []) : [];
+
+  const renderSubtasksBadge = (task: Task, detailOpen: boolean) => {
+    const subtaskCount = task.subtasks?.length ?? 0;
+    if (subtaskCount === 0) return null;
+    const completed = task.subtasks!.filter((s) => s.completed).length;
+    const subtasksExpanded = expandedSubtasksTaskId === task.id;
+    const shown = subtasksExpanded || detailOpen;
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (detailOpen) onToggleTaskDetail?.(task.id);
+          else (onToggleSubtasks ?? onToggleTaskDetail)?.(task.id);
+        }}
+        className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
+          shown
+            ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
+            : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
+        }`}
+        title={shown ? `Hide subtasks (${completed}/${subtaskCount})` : `Show subtasks (${completed}/${subtaskCount})`}
+        aria-expanded={shown}
+        aria-label={`${completed} of ${subtaskCount} subtasks complete. ${shown ? "Hide" : "Show"} subtasks.`}
+      >
+        {completed}/{subtaskCount}
+      </button>
+    );
+  };
 
   return (
     <div className="p-4">
@@ -258,11 +290,13 @@ export default function TaskCalendarView({
             </div>
           ) : (
             <div className="space-y-1.5">
-              {selectedTasks.map((task) => (
+              {selectedTasks.map((task) => {
+                const detailOpen = expandedTaskId === task.id;
+                return (
                 <div key={task.id}>
                 <div
                   className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-colors ${
-                    expandedTaskId === task.id
+                    detailOpen
                       ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
                       : task.completed
                         ? "border-slate-100 dark:border-[#1e3050] opacity-60"
@@ -286,6 +320,7 @@ export default function TaskCalendarView({
                   >
                     {task.title}
                   </span>
+                  {renderSubtasksBadge(task, detailOpen)}
                   {!task.completed && (
                     <button
                       onClick={(e) => {
@@ -302,7 +337,7 @@ export default function TaskCalendarView({
                   )}
                   {onToggleTaskDetail && (
                     <TaskEditButton
-                      isOpen={expandedTaskId === task.id}
+                      isOpen={detailOpen}
                       taskTitle={task.title}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -325,7 +360,8 @@ export default function TaskCalendarView({
                 </div>
                 {renderBelowTask?.(task)}
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>
@@ -337,11 +373,13 @@ export default function TaskCalendarView({
             No due date ({unscheduledTasks.length})
           </h4>
           <div className="space-y-1">
-            {unscheduledTasks.slice(0, 8).map((task) => (
+            {unscheduledTasks.slice(0, 8).map((task) => {
+              const detailOpen = expandedTaskId === task.id;
+              return (
               <div key={task.id}>
               <div
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
-                  expandedTaskId === task.id
+                  detailOpen
                     ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15"
                     : "border-transparent hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                 }`}
@@ -349,9 +387,10 @@ export default function TaskCalendarView({
                 <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1" title={task.title}>
                   {task.title}
                 </span>
+                {renderSubtasksBadge(task, detailOpen)}
                 {onToggleTaskDetail && (
                   <TaskEditButton
-                    isOpen={expandedTaskId === task.id}
+                    isOpen={detailOpen}
                     taskTitle={task.title}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -375,7 +414,8 @@ export default function TaskCalendarView({
               </div>
               {renderBelowTask?.(task)}
               </div>
-            ))}
+            );
+            })}
             {unscheduledTasks.length > 8 && (
               <p className="text-xs text-slate-400 text-center">+{unscheduledTasks.length - 8} more</p>
             )}
