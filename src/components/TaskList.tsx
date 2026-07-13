@@ -1810,9 +1810,10 @@ export default function TaskList({
     );
   };
 
-  /** Inline subtasks under card/bucket rows (all breakpoints). */
+  /** Inline subtasks under card/bucket rows — only when the task is expanded. */
   const renderGridSubtasks = (task: Task) => {
     if (!(task.subtasks?.length)) return null;
+    if (expandedTaskId !== task.id) return null;
     return (
       <TaskSubtaskSection
         {...taskSubtaskSectionProps(task)}
@@ -1825,35 +1826,34 @@ export default function TaskList({
   const renderTaskInlineExpansion = (task: Task, compact = false) => {
     if (compact) return null;
 
+    const isExpanded = expandedTaskId === task.id;
+    if (!isExpanded) return null;
+
     const subtasks = task.subtasks || [];
     const hasSubtasks = subtasks.length > 0;
-    const isExpanded = expandedTaskId === task.id;
-
-    // Always show existing subtasks inline; detail panel still expands on Details.
-    if (!hasSubtasks && !isExpanded) return null;
 
     return (
       <div className="overflow-hidden">
-        <TaskSubtaskSection
-          {...taskSubtaskSectionProps(task)}
-          showAddForm={isExpanded || hasSubtasks}
-          compact={compact}
-        />
-        {isExpanded && (
-          <TaskDetailPanel
-            task={task}
-            variant="inline"
-            hideSubtasks
-            {...taskDetailPanelProps(task)}
-            onDeleteTask={() => {
-              deleteTask(task.id);
-              closeTaskDetail();
-            }}
-            onStartTask={() => onStartTask(task.id)}
-            onDeselectTask={() => onSelectTask(null)}
-            onSave={() => saveAndCloseTaskDetail(task.id)}
+        {hasSubtasks && (
+          <TaskSubtaskSection
+            {...taskSubtaskSectionProps(task)}
+            showAddForm
+            compact={compact}
           />
         )}
+        <TaskDetailPanel
+          task={task}
+          variant="inline"
+          hideSubtasks={hasSubtasks}
+          {...taskDetailPanelProps(task)}
+          onDeleteTask={() => {
+            deleteTask(task.id);
+            closeTaskDetail();
+          }}
+          onStartTask={() => onStartTask(task.id)}
+          onDeselectTask={() => onSelectTask(null)}
+          onSave={() => saveAndCloseTaskDetail(task.id)}
+        />
       </div>
     );
   };
