@@ -79,7 +79,15 @@ export default function SettingsPanel({
   onTasksImported,
 }: SettingsPanelProps) {
   const { user } = useAuth();
-  const [tab, setTab] = useState<SettingsTab>("timer");
+  const [tab, setTab] = useState<SettingsTab>(() => {
+    if (typeof window === "undefined") return "timer";
+    const pending = sessionStorage.getItem("foci-settings-tab");
+    if (pending === "sharing" || pending === "timer" || pending === "experience" || pending === "data") {
+      sessionStorage.removeItem("foci-settings-tab");
+      return pending;
+    }
+    return "timer";
+  });
   const [showAccountSharing, setShowAccountSharing] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);

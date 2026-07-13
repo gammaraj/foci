@@ -4,6 +4,7 @@ import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMe
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
+import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -529,6 +530,58 @@ export default function TaskList({
       }
     }
   };
+
+  const sharedProjectsRef = useRef(sharedProjects);
+  sharedProjectsRef.current = sharedProjects;
+  const selectSharedProjectRef = useRef(selectSharedProject);
+  selectSharedProjectRef.current = selectSharedProject;
+
+  // Open a shared project from the Sharing hub (navbar people icon)
+  useEffect(() => {
+    const openShared = (e: Event) => {
+      const detail = (e as CustomEvent<{ ownerId: string; projectId: string }>).detail;
+      if (!detail?.ownerId || !detail?.projectId) return;
+
+      const openFromList = (list: SharedProject[]) => {
+        const found = list.find(
+          (p) => p._ownerId === detail.ownerId && p.id === detail.projectId,
+        );
+        if (found) void selectSharedProjectRef.current(found);
+      };
+
+      if (sharedProjectsRef.current.length > 0) {
+        openFromList(sharedProjectsRef.current);
+        return;
+      }
+      getSharedProjects()
+        .then((list) => {
+          setSharedProjects(list);
+          openFromList(list);
+        })
+        .catch((err) => console.error("[Foci] Failed to open shared project:", err));
+    };
+
+    window.addEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
+    return () => window.removeEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
+  }, []);
+
+  // Pending open after navigating to /app from another page
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("foci-pending-shared-project");
+      if (!raw) return;
+      sessionStorage.removeItem("foci-pending-shared-project");
+      const pending = JSON.parse(raw) as { ownerId: string; projectId: string };
+      // Defer so the listener above is registered
+      queueMicrotask(() => {
+        window.dispatchEvent(
+          new CustomEvent(OPEN_SHARED_PROJECT_EVENT, { detail: pending }),
+        );
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // Leave a shared project (or entire account share)
   const handleLeaveSharedProject = async (shared: SharedProject) => {
@@ -2568,7 +2621,18 @@ export default function TaskList({
         <div className="flex sm:hidden items-center gap-1.5">
           <select
             value={isTimeFilter ? projectFilterId : selectedProjectId}
-            onChange={(e) => selectProjectScope(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.startsWith("shared:")) {
+                const [, ownerId, projectId] = value.split(":");
+                const match = sharedProjects.find(
+                  (p) => p._ownerId === ownerId && p.id === projectId,
+                );
+                if (match) void selectSharedProject(match);
+                return;
+              }
+              selectProjectScope(value);
+            }}
             className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-slate-100 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] outline-none focus:border-blue-400 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8"
           >
             <option value={ALL_PROJECTS_ID}>
@@ -2584,6 +2648,18 @@ export default function TaskList({
               </option>
             );
             })}
+            {sharedProjects.length > 0 && (
+              <optgroup label="Shared with me">
+                {sharedProjects.map((sp) => (
+                  <option
+                    key={`shared:${sp._ownerId}:${sp.id}`}
+                    value={`shared:${sp._ownerId}:${sp.id}`}
+                  >
+                    {sp.name} · {sp._ownerName || sp._ownerEmail.split("@")[0]}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
 
           {/* Focus on project button */}

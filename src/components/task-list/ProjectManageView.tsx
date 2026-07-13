@@ -573,6 +573,54 @@ export default function ProjectManageView({
   return (
     <div className="flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)]">
+        {user && sharedProjects.length > 0 && (
+          <div className="mb-4 pb-4 border-b border-slate-100 dark:border-[#243350]">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <p className="app-section-label text-slate-400">
+                Shared with me
+              </p>
+              <span className="text-[11px] text-slate-400">
+                {sharedProjects.length} project{sharedProjects.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="space-y-1">
+              {sharedProjects.map((sp) => (
+                <div
+                  key={`${sp._ownerId}:${sp.id}`}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-blue-100 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                >
+                  <button
+                    type="button"
+                    onClick={() => onSelectSharedProject(sp)}
+                    className="flex-1 min-w-0 text-left text-sm truncate"
+                  >
+                    {sp.color && (
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded-full mr-2"
+                        style={{ backgroundColor: sp.color }}
+                      />
+                    )}
+                    <span className="font-medium text-slate-900 dark:text-white">{sp.name}</span>
+                    <span className="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {sp._ownerName || sp._ownerEmail.split("@")[0]}
+                      {" · "}
+                      {sp._myRole === "editor" ? "Can edit" : "View only"}
+                      {sp._shareSource === "account" ? " · Full account" : ""}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onLeaveShared(sp)}
+                    className="text-xs text-red-500 hover:underline shrink-0"
+                  >
+                    {sp._shareSource === "account" ? "Leave account" : "Leave"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {sortedProjects.length >= 2 && (
           <>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 hidden sm:block">
@@ -689,45 +737,6 @@ export default function ProjectManageView({
           </div>
         )}
 
-        {user && sharedProjects.length > 0 && (
-          <div className="pt-3 border-t border-slate-100 dark:border-[#243350] md:col-span-2">
-            <p className="app-section-label text-slate-400 mb-2">
-              Shared with me
-            </p>
-            <div className="space-y-1">
-              {sharedProjects.map((sp) => (
-                <div
-                  key={`${sp._ownerId}:${sp.id}`}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-100 dark:border-[#243350] hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
-                >
-                  <button
-                    type="button"
-                    onClick={() => onSelectSharedProject(sp)}
-                    className="flex-1 min-w-0 text-left text-sm truncate"
-                  >
-                    {sp.color && (
-                      <span
-                        className="inline-block w-2.5 h-2.5 rounded-full mr-2"
-                        style={{ backgroundColor: sp.color }}
-                      />
-                    )}
-                    {sp.name}
-                    <span className="block text-xs text-slate-400">
-                      {sp._ownerName || sp._ownerEmail.split("@")[0]}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onLeaveShared(sp)}
-                    className="text-xs text-red-500 hover:underline shrink-0"
-                  >
-                    {sp._shareSource === "account" ? "Leave account" : "Leave"}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
         </div>
       </div>
 

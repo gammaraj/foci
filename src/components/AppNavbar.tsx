@@ -72,7 +72,14 @@ export default function AppNavbar({
   );
 
   useEffect(() => {
-    const open = () => setShowSettings(true);
+    const open = (e: Event) => {
+      const detail = (e as CustomEvent<{ tab?: string }>).detail;
+      if (detail?.tab === "sharing" || detail?.tab === "timer" || detail?.tab === "experience" || detail?.tab === "data") {
+        // SettingsPanel reads pending tab from sessionStorage on mount
+        sessionStorage.setItem("foci-settings-tab", detail.tab);
+      }
+      setShowSettings(true);
+    };
     const close = () => setShowSettings(false);
     window.addEventListener("foci-open-settings", open);
     window.addEventListener("foci-close-settings", close);
