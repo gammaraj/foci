@@ -48,13 +48,12 @@ export function TaskEditButton({
       <button
         type="button"
         onClick={onClick}
-        className={`shrink-0 inline-flex items-center gap-1 px-1.5 py-1 rounded-md border text-xs font-semibold transition-colors ${openBtnClass(!!isOpen)} ${revealClass} ${className}`}
+        className={`shrink-0 inline-flex items-center justify-center p-1 rounded-md border transition-colors ${openBtnClass(!!isOpen)} ${revealClass} ${className}`}
         aria-expanded={isOpen}
         aria-label={isOpen ? `Close task details${named}` : `Open task details${named}`}
         title={isOpen ? "Close details" : "Open details"}
       >
         <DetailsIcon className="w-3.5 h-3.5 shrink-0" />
-        <span className="hidden sm:inline">{label}</span>
       </button>
     );
   }
