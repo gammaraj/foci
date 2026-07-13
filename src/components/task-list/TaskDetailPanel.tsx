@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import type { Project, RecurrenceType, Subtask, Task, TaskKind, TaskPriority } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
@@ -113,12 +113,35 @@ export function TaskDetailPanel({
   const isFocused = activeTaskId === task.id;
   const isInProgress = isFocused && isTimerRunning;
 
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const detailsSummary = useMemo(() => {
+    const bits: string[] = [];
+    if (task.dueDate) {
+      bits.push(
+        !task.completed && isDueDateOverdue(task.dueDate)
+          ? `${formatDueDate(task.dueDate)} overdue`
+          : formatDueDate(task.dueDate),
+      );
+    }
+    if (task.priority === 1) bits.push("High");
+    else if (task.priority === 2) bits.push("Medium");
+    else if (task.priority === 3) bits.push("Low");
+    if (task.kind === "note") bits.push("Note");
+    else if (task.kind === "question") bits.push("Question");
+    if (task.blocked) bits.push("Waiting");
+    if (task.someday) bits.push("Someday");
+    if (task.recurrence) bits.push(task.recurrence);
+    if (task.description?.trim()) bits.push("Has description");
+    return bits;
+  }, [task]);
+
   const handleSave = () => {
     onSave?.();
   };
 
   const descriptionBlock = (
-    <div className={`${pad} ${isDrawer ? "pt-4 pb-3" : "pb-2"}`}>
+    <div className={isDrawer ? "pb-1" : ""}>
       {editingDesc ? (
         <textarea
           value={editDesc}
@@ -368,6 +391,66 @@ export function TaskDetailPanel({
     />
   ) : null;
 
+  const detailsGrid = isDrawer ? (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      {dueDateChip}
+      {priorityChip}
+      {focusChip}
+      {projectChip}
+      {kindChip}
+      {recurrenceChip}
+      {waitingChip}
+      {somedayChip}
+    </div>
+  ) : (
+    <div className="grid grid-cols-2 gap-2">
+      {dueDateChip}
+      {priorityChip}
+      {kindChip}
+      {waitingChip}
+      {somedayChip}
+      {recurrenceChip}
+      {projectChip}
+      {focusChip}
+    </div>
+  );
+
+  const moreDetailsBlock = (
+    <div className={`${pad} ${isDrawer ? "pt-2 pb-2" : "pb-1"}`}>
+      <button
+        type="button"
+        onClick={() => setDetailsOpen((open) => !open)}
+        className="w-full flex items-center gap-2 text-left py-1.5 rounded-lg hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]/60 transition-colors group"
+        aria-expanded={detailsOpen}
+      >
+        <svg
+          className={`w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform ${detailsOpen ? "rotate-90" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+          More details
+        </span>
+        {!detailsOpen && detailsSummary.length > 0 && (
+          <span className="min-w-0 flex-1 truncate text-xs text-slate-400 dark:text-slate-500 font-normal">
+            {detailsSummary.join(" · ")}
+          </span>
+        )}
+      </button>
+
+      {detailsOpen && (
+        <div className="mt-2 space-y-3">
+          {descriptionBlock}
+          {detailsGrid}
+        </div>
+      )}
+    </div>
+  );
+
   const footer =
     onDeleteTask || onSave ? (
       <div
@@ -405,50 +488,11 @@ export function TaskDetailPanel({
       </div>
     ) : null;
 
-  // Drawer: description → subtasks (primary) → compact details → sticky footer
-  if (isDrawer) {
-    return (
-      <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
-        {descriptionBlock}
-
-        {subtaskBlock}
-
-        <div className={`${pad} pt-4 pb-2`}>
-          <p className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2.5">Details</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {dueDateChip}
-            {priorityChip}
-            {focusChip}
-            {projectChip}
-            {kindChip}
-            {recurrenceChip}
-            {waitingChip}
-            {somedayChip}
-          </div>
-        </div>
-
-        {footer}
-      </div>
-    );
-  }
-
-  // Inline: keep prior order (description → chips → subtasks → footer)
+  // Subtasks first; description + meta stay collapsed under More details.
   return (
     <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
-      {descriptionBlock}
-
-      <div className={`${pad} pb-2 gap-2 grid grid-cols-2`}>
-        {dueDateChip}
-        {priorityChip}
-        {kindChip}
-        {waitingChip}
-        {somedayChip}
-        {recurrenceChip}
-        {projectChip}
-        {focusChip}
-      </div>
-
       {subtaskBlock}
+      {moreDetailsBlock}
       {footer}
     </div>
   );
