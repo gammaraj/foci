@@ -205,7 +205,11 @@ export default function CollaborationInvitesButton() {
     <div className="relative" ref={panelRef}>
       <button
         onClick={() => setShowPanel((prev) => !prev)}
-        className="relative nav-icon-btn p-2 rounded-full"
+        className={`relative nav-icon-btn rounded-lg sm:rounded-lg ${
+          showPanel
+            ? "bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white"
+            : ""
+        } p-2 sm:flex sm:items-center sm:gap-1.5 sm:px-2.5 sm:py-2 sm:border sm:border-transparent sm:hover:border-slate-200 dark:sm:hover:border-white/10`}
         aria-label={
           inviteCount > 0
             ? `Sharing: ${inviteCount} pending invite${inviteCount !== 1 ? "s" : ""}`
@@ -213,7 +217,8 @@ export default function CollaborationInvitesButton() {
               ? `Sharing: ${sharedCount} shared project${sharedCount !== 1 ? "s" : ""}`
               : "Sharing"
         }
-        title="Shared projects & invites"
+        aria-expanded={showPanel}
+        title="Sharing"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -221,6 +226,7 @@ export default function CollaborationInvitesButton() {
           viewBox="0 0 24 24"
           stroke="currentColor"
           className="w-5 h-5"
+          aria-hidden
         >
           <path
             strokeLinecap="round"
@@ -229,9 +235,10 @@ export default function CollaborationInvitesButton() {
             d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
           />
         </svg>
+        <span className="hidden sm:inline text-sm font-medium">Sharing</span>
 
         {badgeCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-blue-500 rounded-full px-1">
+          <span className="absolute -top-0.5 -right-0.5 sm:static sm:ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-blue-500 rounded-full px-1">
             {badgeCount > 9 ? "9+" : badgeCount}
           </span>
         )}
