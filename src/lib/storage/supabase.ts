@@ -651,6 +651,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       invitee_email: email.toLowerCase(),
     });
 
+    const { data: project } = await this.supabase
+      .from("projects")
+      .select("name")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
     const { error } = await this.supabase
       .from("collaboration_invites")
       .insert({
@@ -658,6 +665,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         owner_id: userId,
         invitee_email: email.toLowerCase(),
         invitee_id: inviteeId ?? null,
+        project_name: project?.name ?? null,
         role,
       });
       
@@ -771,6 +779,41 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async getReceivedInvites(): Promise<CollaborationInvite[]> {
+    const { data, error } = await this.supabase.rpc("list_my_received_project_invites");
+
+    if (!error && data) {
+      return data.map((row: {
+        id: string;
+        project_id: string;
+        project_name: string | null;
+        owner_id: string;
+        owner_email: string | null;
+        owner_display_name: string | null;
+        role: string;
+        status: string;
+        created_at: string;
+        expires_at: string;
+      }) => ({
+        id: row.id,
+        projectId: row.project_id,
+        projectName: row.project_name || "Project",
+        ownerEmail: row.owner_email ?? "",
+        ownerName: row.owner_display_name ?? undefined,
+        ownerId: row.owner_id,
+        role: row.role as CollaboratorRole,
+        status: row.status as "pending" | "accepted" | "declined" | "expired",
+        createdAt: row.created_at,
+        expiresAt: row.expires_at,
+      }));
+    }
+
+    if (error) {
+      console.warn(
+        "[Foci] list_my_received_project_invites RPC failed, falling back:",
+        error.message,
+      );
+    }
+
     const userId = await this.getUserId();
 
     // Prefer auth email (matches account invites); fall back to profile email.
@@ -789,6 +832,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const selectClause = `
         id,
         project_id,
+        project_name,
         owner_id,
         role,
         status,
@@ -818,7 +862,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
     // Merge and deduplicate by invite id
     const seen = new Set<string>();
-    const data = [...(byId ?? []), ...(byEmail ?? [])].filter((row) => {
+    const rows = [...(byId ?? []), ...(byEmail ?? [])].filter((row) => {
       if (seen.has(row.id)) return false;
       seen.add(row.id);
       return true;
@@ -826,17 +870,17 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     
     // Filter out expired invites
     const now = new Date();
-    return data
+    return rows
       .filter((row: { expires_at: string }) => new Date(row.expires_at) > now)
       .map((row) => {
         const project = Array.isArray(row.projects) ? row.projects[0] : row.projects;
-        const profile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
+        const ownerProfile = Array.isArray(row.user_profiles) ? row.user_profiles[0] : row.user_profiles;
         return {
           id: row.id,
           projectId: row.project_id,
-          projectName: project?.name ?? "Unknown Project",
-          ownerEmail: profile?.email ?? "",
-          ownerName: profile?.display_name ?? undefined,
+          projectName: row.project_name || project?.name || "Project",
+          ownerEmail: ownerProfile?.email ?? "",
+          ownerName: ownerProfile?.display_name ?? undefined,
           ownerId: row.owner_id,
           role: row.role as CollaboratorRole,
           status: row.status as "pending" | "accepted" | "declined" | "expired",
