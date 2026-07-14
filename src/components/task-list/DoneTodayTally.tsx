@@ -52,11 +52,11 @@ export function DoneTodayTally({
       >
         <span className="hidden sm:inline">
           {" "}
-          · {weekCount} week · {monthCount} month
+          · {weekCount} this week · {monthCount} this month
         </span>
         <span className="sm:hidden">
           {" "}
-          · {weekCount}w · {monthCount}m
+          · {weekCount} this wk · {monthCount} this mo
         </span>
       </span>
     </button>
