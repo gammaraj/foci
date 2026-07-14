@@ -9,8 +9,10 @@ interface DoneTodaySectionProps {
   onToggleComplete: (taskId: string) => void;
   getProjectName?: (projectId: string) => string;
   showProject?: boolean;
-  /** Compact layout for bucket columns. */
+  /** Compact layout for bucket/card columns. */
   compact?: boolean;
+  /** Skip outer margin/border when the parent already provides a separator. */
+  flush?: boolean;
   /** Start collapsed (bucket defaults open so wins stay visible). */
   defaultCollapsed?: boolean;
 }
@@ -21,6 +23,7 @@ export function DoneTodaySection({
   getProjectName,
   showProject = false,
   compact = false,
+  flush = false,
   defaultCollapsed = false,
 }: DoneTodaySectionProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
@@ -31,9 +34,11 @@ export function DoneTodaySection({
     <div
       data-done-today-section
       className={
-        compact
-          ? "mt-3 pt-2 border-t border-emerald-200/60 dark:border-emerald-900/40"
-          : "pt-2 border-t border-emerald-200/70 dark:border-emerald-900/40"
+        flush
+          ? "pt-0"
+          : compact
+            ? "mt-2 pt-2 border-t border-emerald-200/60 dark:border-emerald-900/40"
+            : "pt-2 border-t border-emerald-200/70 dark:border-emerald-900/40"
       }
     >
       <button

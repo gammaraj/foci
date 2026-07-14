@@ -511,6 +511,12 @@ body {
 }
 
 /* Overdue rows / chips — cool berry, blue-tinted washes */
+.urgency-row--mild,
+.urgency-row--medium,
+.urgency-row--severe {
+  border-left-width: 3px;
+  border-left-style: solid;
+}
 .urgency-row--mild {
   background: var(--urgency-soft-bg);
   border-left-color: #fb7185;
@@ -533,25 +539,37 @@ body {
   background: color-mix(in srgb, #9f1239 14%, #eef2ff);
 }
 .dark .urgency-row--mild {
-  background: rgba(190, 24, 93, 0.12);
+  background: rgba(190, 24, 93, 0.08);
   border-left-color: #fb7185;
 }
 .dark .urgency-row--mild:hover {
-  background: rgba(190, 24, 93, 0.18);
+  background: rgba(190, 24, 93, 0.12);
 }
 .dark .urgency-row--medium {
-  background: rgba(190, 24, 93, 0.18);
+  background: rgba(190, 24, 93, 0.1);
   border-left-color: #fb7185;
 }
 .dark .urgency-row--medium:hover {
-  background: rgba(190, 24, 93, 0.24);
+  background: rgba(190, 24, 93, 0.14);
 }
 .dark .urgency-row--severe {
-  background: rgba(159, 18, 57, 0.28);
+  background: rgba(159, 18, 57, 0.14);
   border-left-color: #fb7185;
 }
 .dark .urgency-row--severe:hover {
-  background: rgba(159, 18, 57, 0.34);
+  background: rgba(159, 18, 57, 0.18);
+}
+
+/* Cards view — accent bar + chip only (no full wash) */
+.card-row--overdue {
+  border-left: 3px solid #fb7185;
+  background: transparent;
+}
+.card-row--overdue:hover {
+  background: rgba(190, 24, 93, 0.05);
+}
+.dark .card-row--overdue:hover {
+  background: rgba(190, 24, 93, 0.08);
 }
 
 .urgency-text--mild { color: #be185d; }
@@ -1002,14 +1020,24 @@ input:focus-visible {
     max-width: 0;
     overflow: hidden;
     pointer-events: none;
+    transition:
+      opacity 0.12s ease 0s,
+      max-width 0.12s ease 0s;
   }
   .group:hover .hover-reveal-desktop,
   .group\/row:hover .hover-reveal-desktop,
-  .group\/task:hover .hover-reveal-desktop,
+  .group\/task:hover .hover-reveal-desktop {
+    opacity: 1;
+    max-width: 6rem;
+    pointer-events: auto;
+    /* Appear after a short dwell so dense grids stay calm while scanning */
+    transition-delay: 0.35s, 0.35s;
+  }
   .hover-reveal-desktop:focus-within {
     opacity: 1;
     max-width: 6rem;
     pointer-events: auto;
+    transition-delay: 0s, 0s;
   }
 }
 

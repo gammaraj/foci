@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
+import type { Project, Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { sortCardTasks } from "@/components/task-list/bucket-order";
 import { getProjectsDragPreview } from "@/components/task-list/utils";
@@ -122,11 +122,9 @@ function overdueSeverity(daysLate: number): "mild" | "medium" | "severe" {
   return "mild";
 }
 
-function overdueRowClasses(daysLate: number): string {
-  const severity = overdueSeverity(daysLate);
-  if (severity === "severe") return "urgency-row--severe";
-  if (severity === "medium") return "urgency-row--medium";
-  return "urgency-row--mild";
+/** Cards view: left accent only — full washes overwhelm the grid. */
+function cardOverdueRowClass(): string {
+  return "card-row--overdue";
 }
 
 function overdueTitleClass(daysLate: number): string {
@@ -149,34 +147,27 @@ function CardDuePrefix({ task }: { task: Task }) {
 
   const blocked = !!task.blocked;
   const overdue = !blocked && !task.someday && isDueDateOverdue(task.dueDate);
+  // Overdue cards already show the Nd chip — skip duplicate [date] prefix.
+  if (overdue) return null;
+
   const isToday = task.dueDate === getToday();
-  const daysLate = overdue ? getDaysOverdue(task.dueDate) : 0;
   const label = formatDueDate(task.dueDate);
-  const severity = overdue ? overdueSeverity(daysLate) : null;
 
   return (
     <span
       className={`shrink-0 font-semibold tabular-nums text-xs ${
-        overdue
-          ? severity === "severe"
-            ? "urgency-text--severe"
-            : severity === "medium"
-              ? "urgency-text--medium"
-              : "urgency-text--mild"
-          : blocked
+        blocked
+          ? "text-amber-700 dark:text-amber-300"
+          : isToday
             ? "text-amber-700 dark:text-amber-300"
-            : isToday
-              ? "text-amber-700 dark:text-amber-300"
-              : "text-slate-500 dark:text-slate-400"
+            : "text-slate-500 dark:text-slate-400"
       }`}
       title={
         blocked
           ? "Waiting on external blocker"
-          : overdue
-            ? `Overdue by ${daysLate} day${daysLate === 1 ? "" : "s"} (due ${label})`
-            : isToday
-              ? "Due today"
-              : `Due ${label}`
+          : isToday
+            ? "Due today"
+            : `Due ${label}`
       }
     >
       [{label}]
@@ -323,7 +314,7 @@ function CardTaskRow({
           : isExpanded
             ? "bg-violet-50/50 dark:bg-violet-900/15"
             : overdue
-              ? overdueRowClasses(daysLate)
+              ? cardOverdueRowClass()
               : blocked
                 ? "bg-amber-50/40 dark:bg-amber-950/20"
                 : "hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
@@ -406,14 +397,14 @@ function CardTaskRow({
             </span>
             {(isTruncated || titleExpanded) && (
               <span
-                className={`shrink-0 self-center text-[10px] font-bold uppercase tracking-wide ${
+                className={`shrink-0 self-center text-[10px] font-medium normal-case tracking-normal ${
                   titleExpanded
                     ? "text-slate-400 dark:text-slate-500"
-                    : "text-blue-600 dark:text-blue-400"
+                    : "text-slate-400 dark:text-slate-500 opacity-70 group-hover/title:opacity-100"
                 }`}
                 aria-hidden
               >
-                {titleExpanded ? "less" : "more"}
+                {titleExpanded ? "less" : "…"}
               </span>
             )}
           </button>
@@ -466,7 +457,6 @@ function CardTaskRow({
                     onStartEdit(task);
                   }}
                   className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-                  title={`Rename "${task.title}"`}
                   aria-label={`Rename task ${task.title}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -487,7 +477,6 @@ function CardTaskRow({
                     onDeleteTask(task.id);
                   }}
                   className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                  title={`Delete "${task.title}"`}
                   aria-label={`Delete task ${task.title}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -594,7 +583,6 @@ function ProjectCard({
   const topTasks = sortCardTasks(tasks, activeTaskId).slice(0, 5);
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
-  const isPersonal = project.id === DEFAULT_PROJECT_ID;
   const accentColor = resolveProjectColor(project);
   const canReorder = projectCount >= 2 && !!onProjectDragStart;
   const isDragging = dragProjectId === project.id;
@@ -625,7 +613,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-[colors,box-shadow] duration-300 border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card h-full rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-[colors,box-shadow] duration-300 border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""} ${
         highlighted
@@ -764,11 +752,6 @@ function ProjectCard({
           >
             {project.name}
           </button>
-          {isPersonal && (
-            <span className="app-caption font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 shrink-0">
-              Personal
-            </span>
-          )}
           <CardHeaderCounts
             open={tasks.length}
             completed={completedCount}
@@ -789,7 +772,7 @@ function ProjectCard({
         </button>
       ) : (
         <>
-          <div className="flex flex-col gap-0 sm:gap-0.5">
+          <div className="flex-1 flex flex-col gap-0 sm:gap-0.5 min-h-0">
             {topTasks.length === 0 ? (
               <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
             ) : (
@@ -825,47 +808,50 @@ function ProjectCard({
             )}
           </div>
 
-          {onToggleComplete && (
-            <DoneTodaySection
-              tasks={doneTodayTasks.slice(0, 5)}
-              onToggleComplete={onToggleComplete}
-              compact
-            />
-          )}
+          <div className="mt-auto pt-2 border-t border-slate-200/60 dark:border-[#243350]/70 space-y-1.5">
+            {onToggleComplete && doneTodayTasks.length > 0 ? (
+              <DoneTodaySection
+                tasks={doneTodayTasks.slice(0, 5)}
+                onToggleComplete={onToggleComplete}
+                compact
+                flush
+              />
+            ) : null}
 
-          <div className="no-print flex items-center gap-2 pt-0 sm:pt-0.5">
-            {remaining > 0 && onExpandProject && (
-              <button
-                type="button"
-                onClick={() => onExpandProject(project.id)}
-                className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline shrink-0"
-              >
-                View all ({remaining} more)
-              </button>
-            )}
-            {!showAdd && (
-              <button
-                type="button"
-                onClick={() => setShowAdd(true)}
-                className="text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                + Add
-              </button>
+            <div className="no-print flex items-center gap-2">
+              {remaining > 0 && onExpandProject && (
+                <button
+                  type="button"
+                  onClick={() => onExpandProject(project.id)}
+                  className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+                >
+                  View all ({remaining} more)
+                </button>
+              )}
+              {!showAdd && (
+                <button
+                  type="button"
+                  onClick={() => setShowAdd(true)}
+                  className="text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  + Add
+                </button>
+              )}
+            </div>
+
+            {showAdd && (
+              <div className="no-print">
+                <QuickAddForm
+                  draft={draft}
+                  onDraftChange={setDraft}
+                  onSubmit={submitQuickAdd}
+                  inputRef={addInputRef}
+                  compact
+                  className="shrink-0"
+                />
+              </div>
             )}
           </div>
-
-          {showAdd && (
-            <div className="no-print">
-              <QuickAddForm
-                draft={draft}
-                onDraftChange={setDraft}
-                onSubmit={submitQuickAdd}
-                inputRef={addInputRef}
-                compact
-                className="shrink-0"
-              />
-            </div>
-          )}
         </>
       )}
     </article>
