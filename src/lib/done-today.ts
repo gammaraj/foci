@@ -1,5 +1,10 @@
 import type { Task } from "./types";
-import { getToday, timestampToLocalDate } from "./dates";
+import {
+  getStartOfMonth,
+  getStartOfWeek,
+  getToday,
+  timestampToLocalDate,
+} from "./dates";
 
 /** Non-archived tasks completed on the given local calendar day. */
 export function isDoneToday(task: Task, today: string = getToday()): boolean {
@@ -39,6 +44,32 @@ export function summarizeDoneToday(
     sessions: done.reduce((sum, t) => sum + (t.sessions || 0), 0),
     timeSpent: done.reduce((sum, t) => sum + (t.timeSpent || 0), 0),
   };
+}
+
+export interface DoneProgressSummary {
+  today: number;
+  week: number;
+  month: number;
+}
+
+/** Today / this week (Mon–Sun) / this month completion counts for the header tally. */
+export function summarizeDoneProgress(
+  tasks: Task[],
+  today: string = getToday(),
+): DoneProgressSummary {
+  const weekStart = getStartOfWeek(new Date(`${today}T12:00:00`));
+  const monthStart = getStartOfMonth(new Date(`${today}T12:00:00`));
+  let todayCount = 0;
+  let weekCount = 0;
+  let monthCount = 0;
+  for (const task of tasks) {
+    if (!task.completed || task.archivedAt || task.completedAt == null) continue;
+    const day = timestampToLocalDate(task.completedAt);
+    if (day === today) todayCount += 1;
+    if (day >= weekStart) weekCount += 1;
+    if (day >= monthStart) monthCount += 1;
+  }
+  return { today: todayCount, week: weekCount, month: monthCount };
 }
 
 /** Per-task focus meta for Done rows, e.g. "25m · 1 session". */

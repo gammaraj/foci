@@ -30,6 +30,8 @@ interface MobileTaskToolbarProps {
   onManageProjects: () => void;
   overdueCount: number;
   doneTodayCount?: number;
+  doneWeekCount?: number;
+  doneMonthCount?: number;
   onDoneTodayClick?: () => void;
   projects?: Project[];
   projectJumpId?: string;
@@ -73,6 +75,8 @@ export function MobileTaskToolbar({
   onManageProjects,
   overdueCount,
   doneTodayCount = 0,
+  doneWeekCount = 0,
+  doneMonthCount = 0,
   onDoneTodayClick,
   projects = [],
   projectJumpId = "",
@@ -102,7 +106,12 @@ export function MobileTaskToolbar({
           <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID, overdueCount)}</option>
         </select>
 
-        <DoneTodayTally count={doneTodayCount} onClick={onDoneTodayClick} />
+        <DoneTodayTally
+          count={doneTodayCount}
+          weekCount={doneWeekCount}
+          monthCount={doneMonthCount}
+          onClick={onDoneTodayClick}
+        />
 
         <label className="sr-only" htmlFor="mobile-view-mode">
           View mode

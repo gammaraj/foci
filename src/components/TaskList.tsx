@@ -20,6 +20,7 @@ import {
   isDoneToday,
   markDayRecapSeen,
   shouldShowDayRecap,
+  summarizeDoneProgress,
   summarizeDoneToday,
 } from "@/lib/done-today";
 import TaskPanelMenu from "@/components/TaskPanelMenu";
@@ -1713,6 +1714,7 @@ export default function TaskList({
     );
   }
   const globalDoneTodaySummary = summarizeDoneToday(tasks);
+  const doneProgress = summarizeDoneProgress(tasks);
   const scrollToDoneToday = useCallback(() => {
     const el = document.querySelector<HTMLElement>("[data-done-today-section]");
     if (!el) return;
@@ -2230,7 +2232,9 @@ export default function TaskList({
                 Year
               </button>
               <DoneTodayTally
-                count={globalDoneTodaySummary.count}
+                count={doneProgress.today}
+                weekCount={doneProgress.week}
+                monthCount={doneProgress.month}
                 pulse={tallyPulse}
                 onClick={scrollToDoneToday}
                 className="ml-1"
@@ -2301,7 +2305,9 @@ export default function TaskList({
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
           overdueCount={overdueTasks.length}
-          doneTodayCount={globalDoneTodaySummary.count}
+          doneTodayCount={doneProgress.today}
+          doneWeekCount={doneProgress.week}
+          doneMonthCount={doneProgress.month}
           onDoneTodayClick={scrollToDoneToday}
           projects={sortedProjects}
           projectJumpId={bucketJumpProjectId}

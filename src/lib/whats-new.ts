@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-07-b";
+export const WHATS_NEW_VERSION = "2026-07-c";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -17,8 +17,8 @@ export interface FeatureTourStep {
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
-    title: "Done today tally",
-    description: "See ✓ N done today in the Tasks header — tap to jump to your win reel. Soft recap after 3 completions.",
+    title: "Done progress tally",
+    description: "The Tasks header always shows today, this week, and this month — even at 0 — so progress stays visible.",
   },
   {
     title: "Done today",

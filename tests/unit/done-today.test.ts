@@ -9,8 +9,10 @@ import {
   isDoneToday,
   markDayRecapSeen,
   shouldShowDayRecap,
+  summarizeDoneProgress,
   summarizeDoneToday,
 } from "@/lib/done-today";
+import { formatDateLocal, getStartOfMonth, getStartOfWeek } from "@/lib/dates";
 
 function makeTask(overrides: Partial<Task> = {}): Task {
   return {
@@ -77,6 +79,36 @@ describe("done-today", () => {
       sessions: 3,
       timeSpent: 35 * 60000,
     });
+  });
+
+  it("summarizeDoneProgress counts today week and month", () => {
+    const today = formatDateLocal(todayStart);
+    const weekStart = getStartOfWeek(todayStart);
+    const monthStart = getStartOfMonth(todayStart);
+    const olderThanWeek = new Date(`${weekStart}T12:00:00`);
+    olderThanWeek.setDate(olderThanWeek.getDate() - 1);
+    const olderThanMonth = new Date(`${monthStart}T12:00:00`);
+    olderThanMonth.setDate(olderThanMonth.getDate() - 1);
+
+    const tasks = [
+      makeTask({ id: "today", completed: true, completedAt: todayTs }),
+      makeTask({ id: "yesterday", completed: true, completedAt: yesterdayTs }),
+      makeTask({ id: "last-week", completed: true, completedAt: olderThanWeek.getTime() }),
+      makeTask({ id: "last-month", completed: true, completedAt: olderThanMonth.getTime() }),
+      makeTask({ id: "open", completed: false, completedAt: todayTs }),
+    ];
+
+    const progress = summarizeDoneProgress(tasks, today);
+    expect(progress.today).toBe(1);
+    expect(progress.week).toBeGreaterThanOrEqual(1);
+    expect(progress.month).toBeGreaterThanOrEqual(progress.week);
+    expect(progress.month).toBe(
+      tasks.filter((t) => {
+        if (!t.completed || t.completedAt == null) return false;
+        const day = formatDateLocal(new Date(t.completedAt));
+        return day >= monthStart && day <= today;
+      }).length,
+    );
   });
 
   it("formatDoneTaskMeta joins time and sessions", () => {
