@@ -2202,14 +2202,6 @@ export default function TaskList({
                   aria-label="Due today or earlier"
                 >
                   Today
-                  {overdueTasks.length > 0 && (
-                    <span
-                      className={`ml-1.5 inline-flex items-center gap-1 text-xs font-semibold ${isTodayFilter ? "text-white/95" : "urgency-text--mild"}`}
-                    >
-                      <span className="tabular-nums">{overdueTasks.length}</span>
-                      <span>late</span>
-                    </span>
-                  )}
                 </button>
                 <button
                   onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
@@ -2309,7 +2301,6 @@ export default function TaskList({
           viewMode={viewMode}
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
-          overdueCount={overdueTasks.length}
           doneTodayCount={doneProgress.today}
           doneWeekCount={doneProgress.week}
           doneMonthCount={doneProgress.month}

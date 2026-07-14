@@ -28,7 +28,6 @@ interface MobileTaskToolbarProps {
   viewMode: TaskViewMode;
   onSelectViewMode: (mode: TaskViewMode) => void;
   onManageProjects: () => void;
-  overdueCount: number;
   doneTodayCount?: number;
   doneWeekCount?: number;
   doneMonthCount?: number;
@@ -48,10 +47,10 @@ const VIEW_OPTIONS: { mode: TaskViewMode; label: string }[] = [
   { mode: "calendar", label: "Cal" },
 ];
 
-function scopeLabel(id: TimeScopeId, overdueCount: number): string {
+function scopeLabel(id: TimeScopeId): string {
   switch (id) {
     case TODAY_FILTER_ID:
-      return overdueCount > 0 ? `Today · ${overdueCount} late` : "Today";
+      return "Today";
     case THIS_WEEK_FILTER_ID:
       return "Week";
     case THIS_MONTH_FILTER_ID:
@@ -73,7 +72,6 @@ export function MobileTaskToolbar({
   viewMode,
   onSelectViewMode,
   onManageProjects,
-  overdueCount,
   doneTodayCount = 0,
   doneWeekCount = 0,
   doneMonthCount = 0,
@@ -99,11 +97,11 @@ export function MobileTaskToolbar({
           className={`${SELECT_CLASS} flex-[1.1]`}
           aria-label="Filter tasks by due date"
         >
-          <option value={ALL_PROJECTS_ID}>{scopeLabel(ALL_PROJECTS_ID, overdueCount)}</option>
-          <option value={TODAY_FILTER_ID}>{scopeLabel(TODAY_FILTER_ID, overdueCount)}</option>
-          <option value={THIS_WEEK_FILTER_ID}>{scopeLabel(THIS_WEEK_FILTER_ID, overdueCount)}</option>
-          <option value={THIS_MONTH_FILTER_ID}>{scopeLabel(THIS_MONTH_FILTER_ID, overdueCount)}</option>
-          <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID, overdueCount)}</option>
+          <option value={ALL_PROJECTS_ID}>{scopeLabel(ALL_PROJECTS_ID)}</option>
+          <option value={TODAY_FILTER_ID}>{scopeLabel(TODAY_FILTER_ID)}</option>
+          <option value={THIS_WEEK_FILTER_ID}>{scopeLabel(THIS_WEEK_FILTER_ID)}</option>
+          <option value={THIS_MONTH_FILTER_ID}>{scopeLabel(THIS_MONTH_FILTER_ID)}</option>
+          <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID)}</option>
         </select>
 
         <DoneTodayTally
