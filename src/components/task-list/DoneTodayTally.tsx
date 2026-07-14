@@ -31,7 +31,7 @@ export function DoneTodayTally({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs sm:text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${
+      className={`inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${
         pulse ? "ring-2 ring-emerald-400/60 scale-[1.03]" : ""
       } ${className}`}
       title="Jump to Done today"

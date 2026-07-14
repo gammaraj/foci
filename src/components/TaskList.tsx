@@ -2185,7 +2185,7 @@ export default function TaskList({
         {/* Scope + view controls — own row so filters aren’t jammed into the title */}
         {!focusMode && !projectManageOpen && (
           <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-blue-400/25 dark:border-blue-400/15 min-w-0">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-stretch gap-2 min-w-0">
               <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
                 <button
                   onClick={() => selectProject(ALL_PROJECTS_ID)}
