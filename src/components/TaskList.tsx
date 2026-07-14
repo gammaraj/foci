@@ -2185,62 +2185,64 @@ export default function TaskList({
         {/* Scope + view controls — own row so filters aren’t jammed into the title */}
         {!focusMode && !projectManageOpen && (
           <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-blue-400/25 dark:border-blue-400/15 min-w-0">
-            <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
-              <button
-                onClick={() => selectProject(ALL_PROJECTS_ID)}
-                className={`${SEG_TAB_PAD} ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="All open tasks — every project"
-                aria-label="All tasks"
-              >
-                All
-              </button>
-              <button
-                onClick={() => selectProject(TODAY_FILTER_ID)}
-                className={`${SEG_TAB_PAD} ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue · ${dueExactlyTodayCount} due today` : "Tasks with a due date of today or earlier"}
-                aria-label="Due today or earlier"
-              >
-                Today
-                {overdueTasks.length > 0 && (
-                  <span
-                    className={`ml-1.5 inline-flex items-center gap-1 text-xs font-semibold ${isTodayFilter ? "text-white/95" : "urgency-text--mild"}`}
-                  >
-                    <span className="tabular-nums">{overdueTasks.length}</span>
-                    <span>late</span>
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                className={`${SEG_TAB_PAD} ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Tasks with a due date this week or earlier"
-                aria-label="Due this week or earlier"
-              >
-                Week
-              </button>
-              <button
-                onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                className={`${SEG_TAB_PAD} ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Tasks with a due date this month or earlier"
-                aria-label="Due this month or earlier"
-              >
-                Month
-              </button>
-              <button
-                onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                className={`${SEG_TAB_PAD} ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                title="Tasks with a due date this year or earlier"
-                aria-label="Due this year or earlier"
-              >
-                Year
-              </button>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
+                <button
+                  onClick={() => selectProject(ALL_PROJECTS_ID)}
+                  className={`${SEG_TAB_PAD} ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="All open tasks — every project"
+                  aria-label="All tasks"
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => selectProject(TODAY_FILTER_ID)}
+                  className={`${SEG_TAB_PAD} ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue · ${dueExactlyTodayCount} due today` : "Tasks with a due date of today or earlier"}
+                  aria-label="Due today or earlier"
+                >
+                  Today
+                  {overdueTasks.length > 0 && (
+                    <span
+                      className={`ml-1.5 inline-flex items-center gap-1 text-xs font-semibold ${isTodayFilter ? "text-white/95" : "urgency-text--mild"}`}
+                    >
+                      <span className="tabular-nums">{overdueTasks.length}</span>
+                      <span>late</span>
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
+                  className={`${SEG_TAB_PAD} ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Tasks with a due date this week or earlier"
+                  aria-label="Due this week or earlier"
+                >
+                  Week
+                </button>
+                <button
+                  onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
+                  className={`${SEG_TAB_PAD} ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Tasks with a due date this month or earlier"
+                  aria-label="Due this month or earlier"
+                >
+                  Month
+                </button>
+                <button
+                  onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
+                  className={`${SEG_TAB_PAD} ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Tasks with a due date this year or earlier"
+                  aria-label="Due this year or earlier"
+                >
+                  Year
+                </button>
+              </div>
               <DoneTodayTally
                 count={doneProgress.today}
                 weekCount={doneProgress.week}
                 monthCount={doneProgress.month}
                 pulse={tallyPulse}
                 onClick={scrollToDoneToday}
-                className="ml-1"
+                className="shrink-0"
               />
             </div>
 
