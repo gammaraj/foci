@@ -88,6 +88,114 @@ interface TaskCardViewProps {
   highlightProjectId?: string | null;
 }
 
+function CardTaskMoreMenu({
+  taskTitle,
+  canRename,
+  canDelete,
+  onRename,
+  onDelete,
+}: {
+  taskTitle: string;
+  canRename: boolean;
+  canDelete: boolean;
+  onRename?: () => void;
+  onDelete?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: Event) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("touchstart", close, { passive: true });
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("touchstart", close);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  if (!canRename && !canDelete) return null;
+
+  const toggleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setOpenUp(window.innerHeight - rect.bottom < 140);
+    }
+    setOpen((v) => !v);
+  };
+
+  return (
+    <div className="relative shrink-0" ref={menuRef}>
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={toggleOpen}
+        className={`inline-flex items-center justify-center p-1 rounded-md border transition-colors ${
+          open
+            ? "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#1a2d4a] border-slate-300 dark:border-[#3a5070]"
+            : "text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-[#2a3f5f]/80 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-[#1a2d4a]"
+        }`}
+        aria-label={`More actions for "${taskTitle}"`}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        title="More"
+      >
+        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          className={`absolute right-0 z-40 min-w-[8.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-lg ${
+            openUp ? "bottom-full mb-1" : "top-full mt-1"
+          }`}
+          role="menu"
+        >
+          {canRename && onRename && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(false);
+                onRename();
+              }}
+              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            >
+              Rename
+            </button>
+          )}
+          {canDelete && onDelete && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(false);
+                onDelete();
+              }}
+              className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+            >
+              Delete
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GripIcon() {
   return (
     <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
@@ -448,43 +556,13 @@ function CardTaskRow({
                 }}
               />
             )}
-            <div className="hidden sm:flex items-center hover-reveal-desktop focus-within:opacity-100">
-              {onStartEdit && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStartEdit(task);
-                  }}
-                  className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-                  aria-label={`Rename task ${task.title}`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-              )}
-              {onDeleteTask && !(isTimerRunning && isActive) && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteTask(task.id);
-                  }}
-                  className="p-0.5 rounded text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                  aria-label={`Delete task ${task.title}`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
+            <CardTaskMoreMenu
+              taskTitle={task.title}
+              canRename={!!onStartEdit}
+              canDelete={!!onDeleteTask && !(isTimerRunning && isActive)}
+              onRename={onStartEdit ? () => onStartEdit(task) : undefined}
+              onDelete={onDeleteTask ? () => onDeleteTask(task.id) : undefined}
+            />
           </div>
         )}
       </div>
