@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     absolute: "Foci – Free Pomodoro Timer, Tasks & Focus App",
   },
   description:
-    "Foci (usefoci.com) — free Pomodoro timer with tasks, brown noise, lo-fi, and session tracking. Flowtime, 52/17, and Pomodoro presets. No signup, works in your browser.",
+    "Free Pomodoro timer with tasks, brown noise, lo-fi, and streaks. Flowtime, 52/17, and Pomodoro presets — no signup. Open Foci in your browser at usefoci.com.",
   alternates: { canonical: "/" },
 };
 

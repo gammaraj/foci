@@ -13,44 +13,44 @@ export const BLOG_POST_META_OVERRIDES: Record<
   { title?: string; description?: string }
 > = {
   "best-free-pomodoro-apps-2026": {
-    title: "Best Free Pomodoro App 2026 (7 Tested & Ranked)",
+    title: "Best Free Pomodoro Apps 2026 — Ranked (No Signup)",
     description:
-      "Best free Pomodoro app in 2026 — 7 timers tested for tasks, ads, and sounds. Foci ranks #1 with no signup. Compare Pomofocus, Forest, and Focus To-Do.",
+      "7 free Pomodoro apps tested for ads, tasks & sounds. Foci ranks #1 — timer + tasks + brown noise, no account. Full ranking inside.",
   },
   "foci-vs-focusatwill": {
-    title: "Foci vs Focus@Will (2026): Free App vs $10/Month",
+    title: "Foci vs Focus@Will (2026): Free App or $10/mo Music?",
     description:
-      "Foci vs Focus@Will — free Pomodoro timer, tasks, and built-in lo-fi vs a $9.99/month music subscription. Feature table and which to pick for daily focus.",
+      "Foci vs Focus@Will — free Pomodoro, tasks, and lo-fi vs a $9.99/month music subscription. Feature table and who should pay.",
   },
   "foci-vs-todoist": {
-    title: "Foci vs Todoist (2026): Focus Timer + Tasks vs Task Manager",
+    title: "Foci vs Todoist (2026): Free Focus Timer + Tasks?",
     description:
-      "Foci vs Todoist for productivity — Pomodoro timer and task tracking in one free app vs a premium task manager. See when to use each or both together.",
+      "Foci vs Todoist — Pomodoro timer and task tracking in one free app vs a premium task manager. When to use each (or both).",
   },
   "foci-vs-forest-app": {
     title: "Foci vs Forest App (2026): Free Alternative That Does More",
     description:
-      "Foci vs Forest app — free timer, tasks, and ambient sounds vs paid gamified tree planting. Compare features, pricing, and which fits serious work.",
+      "Foci vs Forest — free timer, tasks, and ambient sounds vs paid gamified trees. Feature and pricing comparison for real work sessions.",
   },
   "best-music-for-studying-and-focus": {
-    title: "Best Music for Studying & Focus (2026 Guide)",
+    title: "What Music Helps You Focus? Best Study Sounds (2026)",
     description:
-      "What music helps you focus? Lo-fi, brown noise, classical, and rain ranked for studying and deep work — with free sounds built into Foci.",
+      "What type of music helps you focus? Brown noise, lo-fi, rain & classical ranked for studying — free built-in sounds in Foci.",
   },
   "52-17-rule-guide": {
-    title: "52/17 Rule: Work 52 Min, Break 17 (2026 Guide)",
+    title: "52/17 Rule Explained (2026) — Work 52, Break 17",
     description:
       "What is the 52/17 rule? DeskTime research, vs Pomodoro, and the Francesco Cirillo myth debunked. Try the 52/17 preset free in Foci.",
   },
   "pomodoro-vs-flowtime-vs-52-17": {
-    title: "Flowtime vs Pomodoro vs 52/17: Which Wins? (2026)",
+    title: "Flowtime vs Pomodoro vs 52/17 — Which Should You Use?",
     description:
-      "Flowtime technique vs Pomodoro vs 52/17 compared with pros, cons, and a clear verdict for studying and coding — plus a free timer for any method.",
+      "Flowtime technique vs Pomodoro vs 52/17 compared. Clear verdict for studying, coding & deep work — plus a free timer for all three.",
   },
   "flowtime-technique-guide": {
-    title: "Flowtime Technique: Complete Guide (2026)",
+    title: "What Is the Flowtime Technique? Complete Guide (2026)",
     description:
-      "What is the Flowtime technique? How flowmodoro works, break ratios, vs Pomodoro, and when to use it — start free in Foci today.",
+      "What is Flowtime (flowmodoro)? How it works, break ratios, vs Pomodoro, and when to use it — start free in Foci today.",
   },
 };
 
@@ -128,13 +128,13 @@ export const GUIDE_HUB_LINKS: GuideLink[] = [
   },
   {
     slug: "best-free-pomodoro-apps-2026",
-    label: "Best free Pomodoro app 2026",
-    description: "7 timers tested and ranked — Foci #1, no signup, built-in sounds.",
+    label: "Best free Pomodoro apps 2026",
+    description: "7 timers ranked — Foci #1 with no signup, tasks, and built-in sounds.",
   },
   {
     slug: "best-music-for-studying-and-focus",
     label: "What music helps you focus?",
-    description: "Best study music and noise — lo-fi, brown noise, classical, and more.",
+    description: "Best study sounds ranked — brown noise, lo-fi, rain, classical, and more.",
   },
   {
     slug: "brown-noise-for-studying-and-focus",
@@ -217,6 +217,11 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
       question: "What is flowtime?",
       answer:
         "Flowtime (or flowmodoro) is a focus method without fixed timer intervals. You work until concentration fades, log the duration, then rest proportionally. It is designed for deep work where Pomodoro's 25-minute alarm would interrupt flow.",
+    },
+    {
+      question: "Is Flowtime good?",
+      answer:
+        "Yes for deep creative work, programming, and writing where a 25-minute Pomodoro alarm would interrupt flow. It is less ideal when you need external structure to start or finish short tasks — use Pomodoro then.",
     },
     {
       question: "Flowtime vs Pomodoro: what's the difference?",
