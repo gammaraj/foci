@@ -111,7 +111,8 @@ export function TaskUrgencySummary({
               worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "urgency-chip--mid"
             }`}
           >
-            {worstOverdue.daysLate}d
+            <span className="tabular-nums">{worstOverdue.daysLate}</span>
+            <span className="ml-0.5 font-semibold">d</span>
           </span>
           <span className="leading-none truncate min-w-0">
             {compact ? worstLabel : (

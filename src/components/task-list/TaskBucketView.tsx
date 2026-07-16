@@ -199,7 +199,10 @@ function DueBadge({
       )}
       {label}
       {overdue && daysLate > 1 && (
-        <span className="opacity-75 font-medium">{daysLate}d</span>
+        <span className="opacity-75 font-medium">
+          <span className="tabular-nums">{daysLate}</span>
+          <span className="ml-0.5">d</span>
+        </span>
       )}
     </>
   );

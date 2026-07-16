@@ -487,7 +487,8 @@ function CardTaskRow({
                 title={overdueLabel ?? "Overdue"}
                 aria-label={overdueLabel ?? "Overdue"}
               >
-                {daysLate}d
+                <span className="tabular-nums">{daysLate}</span>
+                <span className="ml-0.5">d</span>
               </span>
             )}
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
