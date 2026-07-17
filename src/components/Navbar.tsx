@@ -14,14 +14,12 @@ import {
   FOCI_TAGLINE_ON_LIGHT,
   FOCI_WORDMARK_NAV,
 } from "@/lib/logo-brand";
-import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
-
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
   onOpenSettings?: () => void;
   /** Extra actions shown before theme toggle (e.g. invites, notifications on /app). */
   toolbarSlot?: ReactNode;
-  /** Optional center content between logo and nav links (defaults to cross-promo banner). */
+  /** Optional center content between logo and nav links (kept empty by default — promo belongs outside the task workspace). */
   centerSlot?: ReactNode;
 }
 
@@ -150,9 +148,13 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             </div>
           </Link>
 
-          <div className="hidden lg:flex flex-1 min-w-0 items-center justify-center px-3">
-            {centerSlot ?? <FilantusCrossPromoBanner />}
-          </div>
+          {centerSlot ? (
+            <div className="hidden lg:flex flex-1 min-w-0 items-center justify-center px-3">
+              {centerSlot}
+            </div>
+          ) : (
+            <div className="hidden lg:block flex-1 min-w-0" aria-hidden />
+          )}
 
           <div className="hidden sm:flex items-center gap-6 flex-shrink-0 ml-auto">
             {navLinks.map((link) => renderNavLink(link))}

@@ -218,7 +218,13 @@ export default function CollaborationInvitesButton() {
               : "Sharing"
         }
         aria-expanded={showPanel}
-        title="Sharing"
+        title={
+          inviteCount > 0
+            ? `${inviteCount} pending invite${inviteCount !== 1 ? "s" : ""}`
+            : sharedCount > 0
+              ? `${sharedCount} shared project${sharedCount !== 1 ? "s" : ""}`
+              : "Invites and shared projects"
+        }
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

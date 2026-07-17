@@ -183,7 +183,7 @@ function DueBadge({
     blocked
       ? "Waiting on external blocker"
       : overdue
-        ? `${daysLate}d overdue${interactive ? " — click to change" : ""}`
+        ? `${daysLate}d late${interactive ? " — click to change" : ""}`
         : isToday
           ? "Due today"
           : interactive
@@ -192,17 +192,18 @@ function DueBadge({
 
   const badgeContent = (
     <>
-      {!compact && (
+      {!compact && !overdue && (
         <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       )}
-      {label}
-      {overdue && daysLate > 1 && (
-        <span className="opacity-75 font-medium">
+      {overdue ? (
+        <>
           <span className="tabular-nums">{daysLate}</span>
-          <span className="ml-0.5">d</span>
-        </span>
+          <span>d late</span>
+        </>
+      ) : (
+        label
       )}
     </>
   );
@@ -653,14 +654,14 @@ function BucketColumn({
             className={`flex-shrink-0 touch-target-sm p-0.5 rounded transition-colors ${
               project.favorite
                 ? "text-amber-400 hover:text-amber-500"
-                : "text-slate-300 dark:text-slate-600 opacity-100 sm:opacity-0 sm:group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
+                : "text-slate-400 dark:text-slate-500 opacity-70 hover:opacity-100 hover:text-amber-400"
             }`}
             title={
               project.favorite
                 ? "Pinned — click to unpin (pinned columns appear first)"
-                : "Pin project — show this column first"
+                : "Pin — keep this project at the top"
             }
-            aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name}`}
+            aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name} to top`}
             aria-pressed={!!project.favorite}
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={project.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={project.favorite ? 0 : 1.5}>
@@ -682,8 +683,8 @@ function BucketColumn({
         <span
           className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
           style={{ backgroundColor: accentColor }}
-          title={`${project.name} color`}
-          aria-hidden
+          title={`${project.name} color — change in Projects`}
+          aria-label={`${project.name} color`}
         />
         <BucketColumnTitle project={project} />
         {isPersonal && (

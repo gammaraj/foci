@@ -99,7 +99,7 @@ function FavoriteButton({
           ? "text-amber-400 hover:text-amber-500 bg-amber-50/80 dark:bg-amber-900/20"
           : "text-slate-300 dark:text-slate-600 hover:text-amber-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
       }`}
-      title={active ? "Pinned — click to unpin (pinned projects appear first)" : "Pin project — show this project first"}
+      title={active ? "Pinned — click to unpin (pinned projects appear first)" : "Pin — keep this project at the top"}
       aria-label={active ? `Unpin ${label}` : `Pin ${label} to front`}
       aria-pressed={active}
     >

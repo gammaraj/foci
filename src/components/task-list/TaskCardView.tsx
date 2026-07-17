@@ -136,7 +136,7 @@ function CardTaskMoreMenu({
   };
 
   return (
-    <div className="relative shrink-0" ref={menuRef}>
+    <div className={`relative shrink-0 ${open ? "" : "hover-reveal-desktop"}`} ref={menuRef}>
       <button
         ref={buttonRef}
         type="button"
@@ -219,7 +219,7 @@ function ProjectDragPlaceholder({
         e.preventDefault();
         if (dragOverProjectId) onProjectDrop?.(dragOverProjectId);
       }}
-      className="rounded-lg border-2 border-dashed border-blue-400/60 dark:border-blue-500/50 bg-blue-50/30 dark:bg-blue-900/10 min-h-[8rem] transition-[opacity,transform] duration-150 ease-out"
+      className="rounded-lg border-2 border-dashed border-blue-400/60 dark:border-blue-500/50 bg-blue-50/30 dark:bg-blue-900/10 min-h-[8rem] break-inside-avoid mb-2.5 sm:mb-3.5 transition-[opacity,transform] duration-150 ease-out"
     />
   );
 }
@@ -476,12 +476,12 @@ function CardTaskRow({
           >
             {overdue && (
               <span
-                className={`shrink-0 inline-flex items-center justify-center min-w-[1.5rem] h-4 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${overdueDayChipClass(daysLate)}`}
+                className={`shrink-0 inline-flex items-center justify-center gap-0.5 min-w-[1.5rem] h-4 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${overdueDayChipClass(daysLate)}`}
                 title={overdueLabel ?? "Overdue"}
                 aria-label={overdueLabel ?? "Overdue"}
               >
                 <span className="tabular-nums">{daysLate}</span>
-                <span className="ml-0.5">d</span>
+                <span>d late</span>
               </span>
             )}
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
@@ -492,7 +492,7 @@ function CardTaskRow({
               className={`min-w-0 ${
                 titleExpanded
                   ? "whitespace-normal break-words"
-                  : "line-clamp-2 sm:line-clamp-1 sm:truncate break-words"
+                  : "line-clamp-2 break-words"
               }`}
             >
               {task.title}
@@ -541,7 +541,7 @@ function CardTaskRow({
             {onToggleTaskDetail && (
               <TaskEditButton
                 compact
-                revealOnHover={false}
+                revealOnHover
                 isOpen={isExpanded}
                 taskTitle={task.title}
                 onClick={(e) => {
@@ -685,7 +685,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card h-full rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 transition-[colors,box-shadow] duration-300 border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 break-inside-avoid mb-2.5 sm:mb-3.5 transition-[colors,box-shadow] duration-300 border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""} ${
         highlighted
@@ -790,14 +790,14 @@ function ProjectCard({
               className={`flex-shrink-0 p-0.5 sm:touch-target-sm rounded transition-colors ${
                 project.favorite
                   ? "text-amber-400 hover:text-amber-500"
-                  : "text-slate-300 dark:text-slate-600 opacity-100 sm:opacity-0 sm:group-hover/card:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-amber-400"
+                  : "text-slate-400 dark:text-slate-500 opacity-70 hover:opacity-100 hover:text-amber-400"
               }`}
               title={
                 project.favorite
                   ? "Pinned — click to unpin (pinned cards appear first)"
-                  : "Pin project — show this card first"
+                  : "Pin — keep this project at the top"
               }
-              aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name}`}
+              aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name} to top`}
               aria-pressed={!!project.favorite}
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={project.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={project.favorite ? 0 : 1.5} aria-hidden>
@@ -814,7 +814,8 @@ function ProjectCard({
           <span
             className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
             style={{ backgroundColor: accentColor }}
-            aria-hidden
+            title={`${project.name} color — change in Projects`}
+            aria-label={`${project.name} color`}
           />
           <button
             type="button"
@@ -1069,7 +1070,7 @@ export default function TaskCardView({
         </div>
       ) : null}
 
-      <div className="px-3 sm:px-4 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 print:grid-cols-2 gap-2.5 sm:gap-3.5">
+      <div className="px-3 sm:px-4 columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3.5">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (
