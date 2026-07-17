@@ -457,7 +457,7 @@ export function FilantusCrossPromoBanner({
   const href = bannerHref(ad.id, ad.url)
 
   return (
-    <div id="filantus-banner" className={`hidden lg:block shrink-0 w-[380px] ${className}`.trim()}>
+    <div id="filantus-banner" className={`hidden lg:block shrink min-w-0 max-w-[380px] ${className}`.trim()}>
       <a
         href={href}
         target="_blank"
@@ -473,7 +473,7 @@ export function FilantusCrossPromoBanner({
             })
           }
         }}
-        className="flex items-center gap-2 w-[380px] h-9 box-border px-3 rounded-xl border border-slate-200/90 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 transition-[border-color] overflow-hidden bg-white/90 dark:bg-slate-900/40"
+        className="flex items-center gap-2 w-full max-w-[380px] h-9 box-border px-3 rounded-xl border border-slate-200/90 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 transition-[border-color] overflow-hidden bg-white/90 dark:bg-slate-900/40"
         style={{ textDecoration: 'none' }}
         title={`${ad.headline} — ${ad.sub}`}
       >
