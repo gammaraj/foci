@@ -224,22 +224,15 @@ function ProjectDragPlaceholder({
   );
 }
 
-function overdueSeverity(daysLate: number): "mild" | "medium" | "severe" {
-  if (daysLate >= 5) return "severe";
-  if (daysLate >= 3) return "medium";
-  return "mild";
-}
-
 /** Cards view: left accent only — full washes overwhelm the grid. */
 function cardOverdueRowClass(): string {
   return "card-row--overdue";
 }
 
+/** Chip + left rail carry urgency; titles stay readable slate. */
 function overdueTitleClass(daysLate: number): string {
-  const severity = overdueSeverity(daysLate);
-  if (severity === "severe") return "urgency-text--severe font-semibold";
-  if (severity === "medium") return "urgency-text--medium font-medium";
-  return "urgency-text--mild font-medium";
+  if (daysLate >= 5) return "text-slate-800 dark:text-slate-100 font-semibold";
+  return "text-slate-700 dark:text-slate-200 font-medium";
 }
 
 /** Intensity ramp: soft outline at 1d → berry fill at 5d+. */
