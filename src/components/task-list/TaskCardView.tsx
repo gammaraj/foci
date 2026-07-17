@@ -7,6 +7,8 @@ import { sortCardTasks } from "@/components/task-list/bucket-order";
 import { getProjectsDragPreview } from "@/components/task-list/utils";
 import {
   formatDueDate,
+  formatOverdueChip,
+  formatOverdueLabel,
   getDaysOverdue,
   isDueDateOverdue,
   MAX_TASK_TITLE,
@@ -361,9 +363,7 @@ function CardTaskRow({
   const isDragging = dragTaskId === task.id;
   const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
   const daysLate = overdue && task.dueDate ? getDaysOverdue(task.dueDate) : 0;
-  const overdueLabel = overdue
-    ? `Overdue by ${daysLate} day${daysLate === 1 ? "" : "s"}`
-    : null;
+  const overdueLabel = overdue ? formatOverdueLabel(daysLate) : null;
   const titleTooltip = [overdueLabel, task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null, task.title]
     .filter(Boolean)
     .join(" — ");
@@ -476,12 +476,11 @@ function CardTaskRow({
           >
             {overdue && (
               <span
-                className={`shrink-0 inline-flex items-center justify-center gap-0.5 min-w-[1.5rem] h-4 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${overdueDayChipClass(daysLate)}`}
+                className={`shrink-0 inline-flex items-center justify-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${overdueDayChipClass(daysLate)}`}
                 title={overdueLabel ?? "Overdue"}
                 aria-label={overdueLabel ?? "Overdue"}
               >
-                <span className="tabular-nums">{daysLate}</span>
-                <span>d late</span>
+                {formatOverdueChip(daysLate)}
               </span>
             )}
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}

@@ -149,6 +149,16 @@ export function getDaysOverdue(iso: string): number {
   return Math.round((now.getTime() - due.getTime()) / 86_400_000);
 }
 
+/** Compact overdue chip — minus sign means past due (e.g. "−7d"). */
+export function formatOverdueChip(daysLate: number): string {
+  return `−${daysLate}d`;
+}
+
+/** Accessible / tooltip label for overdue chips. */
+export function formatOverdueLabel(daysLate: number): string {
+  return `${daysLate} day${daysLate === 1 ? "" : "s"} late`;
+}
+
 export function openDatePicker(input: HTMLInputElement | null) {
   if (!input) return;
   try {

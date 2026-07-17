@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, resolveProjectColor } from "@/components/task-list/utils";
+import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
@@ -183,7 +183,7 @@ function DueBadge({
     blocked
       ? "Waiting on external blocker"
       : overdue
-        ? `${daysLate}d late${interactive ? " — click to change" : ""}`
+        ? `${formatOverdueLabel(daysLate)}${interactive ? " — click to change" : ""}`
         : isToday
           ? "Due today"
           : interactive
@@ -198,10 +198,7 @@ function DueBadge({
         </svg>
       )}
       {overdue ? (
-        <>
-          <span className="tabular-nums">{daysLate}</span>
-          <span>d late</span>
-        </>
+        <span className="tabular-nums tracking-normal whitespace-nowrap">{formatOverdueChip(daysLate)}</span>
       ) : (
         label
       )}
