@@ -87,7 +87,7 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
 const FILTER_TAB_ACTIVE =
   "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
 const FILTER_TAB_INACTIVE =
-  "text-slate-700 dark:text-white/85 hover:text-blue-800 dark:hover:text-white hover:bg-white/75 dark:hover:bg-white/10";
+  "text-slate-700 dark:text-white/85 hover:text-blue-800 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
@@ -2130,7 +2130,7 @@ export default function TaskList({
               <button
                 type="button"
                 onClick={handlePrint}
-                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-blue-800/80 dark:text-blue-200/80 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10 transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
                 title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
                 aria-label="Print current view"
                 data-tour="print-tasks"
@@ -2169,7 +2169,7 @@ export default function TaskList({
             {onToggleFullscreen && (
               <button
                 onClick={onToggleFullscreen}
-                className={`no-print p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-blue-700/70 dark:text-blue-200/60 hover:text-blue-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/10"}`}
+                className={`no-print p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
                 title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
                 aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
               >
@@ -2189,7 +2189,7 @@ export default function TaskList({
 
         {/* Scope + view controls — own row so filters aren’t jammed into the title */}
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-blue-400/25 dark:border-blue-400/15 min-w-0">
+          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-slate-200/90 dark:border-blue-400/15 min-w-0">
             <div className="flex items-stretch gap-2 min-w-0">
               <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
                 <button
