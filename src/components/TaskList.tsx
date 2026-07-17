@@ -24,7 +24,7 @@ import {
   summarizeDoneToday,
 } from "@/lib/done-today";
 import TaskPanelMenu from "@/components/TaskPanelMenu";
-import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
+import TaskPanelQuote from "@/components/TaskPanelQuote";
 import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
 
@@ -2120,8 +2120,8 @@ export default function TaskList({
             )}
           </div>
 
-          <div className="no-print hidden lg:flex flex-1 min-w-0 items-center justify-center px-2">
-            <FilantusCrossPromoBanner />
+          <div className="no-print hidden md:flex flex-1 min-w-0 items-center justify-center px-2">
+            <TaskPanelQuote variant="navbar" />
           </div>
 
           {/* Utilities — keep out of the filter/view cluster */}
