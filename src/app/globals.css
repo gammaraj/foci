@@ -12,12 +12,12 @@
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
   /* Light mode — cool gray with a soft electric-blue cast */
-  --page-bg: #e4e9f2;
-  --surface-border: #c5d0e0;
+  --page-bg: #dce4f2;
+  --surface-border: #b8c9e6;
   --surface-bg: #ffffff;
-  --panel-header-bg: #f8fafc;
-  --seg-track-bg: #e8edf5;
-  --surface-muted: #eef2f8;
+  --panel-header-bg: #ffffff;
+  --seg-track-bg: #e4eaf4;
+  --surface-muted: #e8eef8;
   /* Cool berry urgency — late signal that sits with brand blue (not warm fire-engine red) */
   --urgency: #be185d;
   --urgency-strong: #9f1239;
@@ -46,12 +46,12 @@ body {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
-/* Site chrome — light bar in light mode, ink bar in dark */
+/* Site chrome — page-blue wash in light mode, ink bar in dark */
 .nav-chrome {
-  background: #fbfcff;
+  background: var(--page-bg);
   border-bottom: 1px solid var(--surface-border);
   padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 0 rgba(37, 99, 235, 0.05);
 }
 .dark .nav-chrome {
   background: #070b16;
@@ -187,17 +187,17 @@ body {
   border-bottom: 1px solid #243350;
 }
 
-/* Status strip below navbar — bridges chrome to page content */
+/* Status strip below navbar — continues the page-blue wash; white cards sit on top */
 .status-strip {
   border-bottom: 1px solid var(--surface-border);
-  box-shadow: 0 6px 16px -14px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 6px 16px -14px rgba(37, 99, 235, 0.12);
 }
 :root:not(.dark) .status-strip {
   background: linear-gradient(
     180deg,
-    #e8eef6 0%,
-    #eef2f8 55%,
-    #f3f6fb 100%
+    var(--page-bg) 0%,
+    #e4ebf6 55%,
+    #eaf0f8 100%
   );
 }
 .dark .status-strip {
@@ -208,11 +208,11 @@ body {
 
 /* Focus strip card — weather | timer | music with clear zones */
 .status-strip-card {
-  border: 1px solid rgba(100, 116, 139, 0.22);
-  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  background: rgba(255, 255, 255, 0.92);
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 1px 2px rgba(37, 99, 235, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 .dark .status-strip-card {
   border-color: #243350;
@@ -223,27 +223,27 @@ body {
   background: transparent;
 }
 .status-strip-zone--side {
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(191, 212, 245, 0.28);
 }
 .dark .status-strip-zone--side {
   background: rgba(15, 23, 42, 0.35);
 }
 .status-strip-zone--focus {
   background: rgba(255, 255, 255, 0.98);
-  box-shadow: inset 0 0 0 1px rgba(100, 116, 139, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
 }
 .dark .status-strip-zone--focus {
   background: rgba(26, 45, 74, 0.55);
   box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.16);
 }
 .status-strip-divider {
-  border-color: rgba(148, 163, 184, 0.35);
+  border-color: rgba(37, 99, 235, 0.16);
 }
 .dark .status-strip-divider {
   border-color: rgba(58, 80, 112, 0.9);
 }
 
-/* Toolbar strip — neutral in light so the panel reads as content, not another blue band */
+/* Toolbar strip — white content surface on the blue page wash */
 .panel-header-calm {
   background: var(--panel-header-bg);
   border-bottom: 1px solid rgba(148, 163, 184, 0.28);
