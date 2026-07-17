@@ -111,6 +111,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
         { key: "try", href: "/app", label: "Try Foci", active: pathname === "/app" },
         { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" },
         { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
+        { key: "about", href: "/about", label: "About", active: pathname === "/about" },
       ];
 
   const logoHref = user ? "/app" : "/";

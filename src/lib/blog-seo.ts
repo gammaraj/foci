@@ -341,4 +341,117 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
         "No. Francesco Cirillo created the Pomodoro Technique (25-minute intervals). The 52/17 rule comes from a 2014 Draugiem Group / DeskTime study of employee productivity patterns.",
     },
   ],
+  "adhd-focus-strategies": [
+    {
+      question: "What are the best ADHD focus tools?",
+      answer:
+        "Tools that externalize time and working memory help most: a visible timer, a short task list, and steady sensory anchors like brown noise. Foci combines these in one free browser app with daily goals for visible momentum.",
+    },
+    {
+      question: "Does brown noise help ADHD focus?",
+      answer:
+        "Many people with ADHD prefer brown noise over white noise — it masks unpredictable sounds without high-frequency harshness. Foci includes offline brown noise via the Web Audio API.",
+    },
+    {
+      question: "Is the Pomodoro technique good for ADHD?",
+      answer:
+        "Yes for starting tasks and short work bursts. Rigid 25-minute alarms can interrupt hyperfocus — switch to Flowtime or longer presets when you are already in flow. Foci supports Pomodoro, Flowtime, and 52/17.",
+    },
+  ],
+  "brown-noise-for-studying-and-focus": [
+    {
+      question: "Is brown noise good for studying?",
+      answer:
+        "Yes. Brown noise masks irregular background sounds without the fatigue of white noise. It works especially well for reading, writing, coding, and long study sessions.",
+    },
+    {
+      question: "Where can I play brown noise free?",
+      answer:
+        "Foci includes a free brown noise generator that works offline in the browser — no signup or YouTube tab required. Open usefoci.com/app and start the ambient panel.",
+    },
+    {
+      question: "Brown noise vs white noise for focus?",
+      answer:
+        "White noise is brighter and can feel harsh over long sessions. Brown noise is deeper and warmer, so many students and ADHD users prefer it for sustained focus.",
+    },
+  ],
+  "forest-app-alternatives": [
+    {
+      question: "What are the best Forest App alternatives in 2026?",
+      answer:
+        "Strong Forest alternatives include Foci (free timer + tasks + ambient sounds), Flora (real-tree gamification), Tide (premium soundscapes), Be Focused (native Apple timer), and Pomofocus (minimal web timer).",
+    },
+    {
+      question: "Is there a free Forest alternative with tasks?",
+      answer:
+        "Foci is a free Forest alternative with Pomodoro timing, full task tracking, brown noise, streaks, and no virtual-tree paywall. Comparison: usefoci.com/blog/foci-vs-forest-app",
+    },
+  ],
+  "migrate-from-todoist-to-foci": [
+    {
+      question: "Can I import Todoist tasks into Foci?",
+      answer:
+        "Yes. Export a Todoist CSV, then open Foci Settings → Import & Export Tasks. Foci detects the format and lets you preview before importing.",
+    },
+    {
+      question: "Why switch from Todoist to Foci for focus sessions?",
+      answer:
+        "Todoist organizes work well but has no built-in focus timer or ambient sounds. Foci is built for the work session — Pomodoro timing, task logging, and sounds in one window.",
+    },
+  ],
+  "migrate-from-notion-to-foci": [
+    {
+      question: "Can I import Notion tasks into Foci?",
+      answer:
+        "Yes. Export your Notion database as CSV, then use Settings → Import & Export Tasks in Foci. Preview the import before confirming.",
+    },
+    {
+      question: "Is Foci a good Notion alternative for daily focus?",
+      answer:
+        "Notion is flexible for docs and databases. Foci is better when you need a timer, ambient focus sounds, and per-task session tracking without building a custom dashboard.",
+    },
+  ],
+  "migrate-from-asana-to-foci": [
+    {
+      question: "Can I import Asana tasks into Foci?",
+      answer:
+        "Yes. Export Asana as CSV and import via Foci Settings → Import & Export Tasks. Foci auto-detects common Asana CSV formats.",
+    },
+  ],
+  "migrate-from-google-tasks-to-foci": [
+    {
+      question: "Can I import Google Tasks into Foci?",
+      answer:
+        "Yes. Export Google Tasks as JSON (or use a CSV export) and import from Settings → Import & Export Tasks. Foci previews items before you confirm.",
+    },
+  ],
+  "pomodoro-technique-guide": [
+    {
+      question: "What is the Pomodoro technique?",
+      answer:
+        "The Pomodoro technique alternates focused work intervals (typically 25 minutes) with short breaks (typically 5 minutes). After four cycles, take a longer break. It helps start hard tasks and prevent burnout.",
+    },
+    {
+      question: "How long is a Pomodoro session?",
+      answer:
+        "The classic Pomodoro is 25 minutes of work and 5 minutes of break. Foci also includes Short Sprint (15/3), Deep Work (50/10), 52/17, and Ultra Focus (90/20) presets.",
+    },
+    {
+      question: "Where can I use a free Pomodoro timer with tasks?",
+      answer:
+        "Foci is a free Pomodoro app with task tracking, ambient sounds, and streaks — no signup required at usefoci.com/app.",
+    },
+  ],
+  "how-to-stop-procrastinating": [
+    {
+      question: "What is the best way to stop procrastinating?",
+      answer:
+        "Shrink the first step, set a short timer, and remove friction. A 15–25 minute Pomodoro with one clear task beats vague motivation. Foci’s Short Sprint and Classic Pomodoro presets help you start fast.",
+    },
+    {
+      question: "Does the Pomodoro technique help with procrastination?",
+      answer:
+        "Yes. Fixed short intervals lower the cost of starting. Once you are in flow, switch to Flowtime or a longer preset so the alarm does not interrupt deep work.",
+    },
+  ],
 };

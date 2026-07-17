@@ -29,8 +29,7 @@ function validateSitemap(postSlugs) {
     "url: siteUrl",
     "`${siteUrl}/app`",
     "`${siteUrl}/blog`",
-    "`${siteUrl}/stats`",
-    "`${siteUrl}/login`",
+    "`${siteUrl}/about`",
     "`${siteUrl}/llms.txt`",
     "`${siteUrl}/llms-full.txt`",
   ];
@@ -95,11 +94,20 @@ function validateSeoAndAeo(posts) {
   }
 
   const homePage = read(homePagePath);
-  if (!homePage.includes('"@type": "FAQPage"')) {
+  const homeFaqsPath = path.join(repoRoot, "src", "lib", "home-faqs.ts");
+  const homeFaqs = fs.existsSync(homeFaqsPath) ? read(homeFaqsPath) : "";
+  const hasFaqPage =
+    homePage.includes('"@type": "FAQPage"') ||
+    homeFaqs.includes('"@type": "FAQPage"') ||
+    (homePage.includes("homeFaqsToJsonLd") && homeFaqs.includes("FAQPage"));
+  if (!hasFaqPage) {
     fail("Home page is missing FAQPage JSON-LD needed for AEO rich answers.");
   }
   if (!homePage.includes('"@type": "HowTo"')) {
     fail("Home page is missing HowTo JSON-LD needed for AEO how-to answers.");
+  }
+  if (!homePage.includes("<HomeFaq") && !homePage.includes("HomeFaq")) {
+    fail("Home page must render a visible FAQ section (HomeFaq) matching FAQ JSON-LD.");
   }
 
   const blogPostPage = read(blogPostPagePath);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AppSeoShell from "@/components/AppSeoShell";
 import { absolutePageTitle } from "@/lib/site-metadata";
 
 const title = "Free Pomodoro Timer App — Tasks, Sounds & Streaks";
@@ -65,5 +66,5 @@ export default function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <AppSeoShell>{children}</AppSeoShell>;
 }

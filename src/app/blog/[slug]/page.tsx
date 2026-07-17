@@ -214,14 +214,22 @@ export default async function BlogPostPage({ params }: Props) {
                 Put these ideas into practice
               </h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Foci is a free focus timer and task manager — no sign-up required.
+                Free Pomodoro timer + tasks in one tab. Optional account syncs streaks across devices.
               </p>
-              <Link
-                href="/app"
-                className="inline-flex items-center justify-center mt-4 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-              >
-                Try Foci free
-              </Link>
+              <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Link
+                  href="/app"
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
+                >
+                  Try Foci free
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium text-blue-700 dark:text-blue-400 hover:underline"
+                >
+                  Create free account to sync →
+                </Link>
+              </div>
             </div>
           </div>
 
