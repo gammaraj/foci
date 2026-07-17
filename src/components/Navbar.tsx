@@ -149,11 +149,11 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           </Link>
 
           {centerSlot ? (
-            <div className="hidden lg:flex flex-1 min-w-0 items-center justify-center px-3">
+            <div className="hidden sm:flex flex-1 min-w-0 items-center justify-center px-2 sm:px-3">
               {centerSlot}
             </div>
           ) : (
-            <div className="hidden lg:block flex-1 min-w-0" aria-hidden />
+            <div className="hidden sm:block flex-1 min-w-0" aria-hidden />
           )}
 
           <div className="hidden sm:flex items-center gap-6 flex-shrink-0 ml-auto">

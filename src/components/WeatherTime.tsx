@@ -53,6 +53,8 @@ interface WeatherTimeProps {
   compact?: boolean;
   /** Inside the combined focus strip — no separate card border. */
   embedded?: boolean;
+  /** Quiet clock + condition for the navbar center. */
+  nav?: boolean;
 }
 
 function WeatherStat({
@@ -81,7 +83,7 @@ function WeatherStat({
   );
 }
 
-export default function WeatherTime({ compact = false, embedded = false }: WeatherTimeProps) {
+export default function WeatherTime({ compact = false, embedded = false, nav = false }: WeatherTimeProps) {
   const [now, setNow] = useState(new Date());
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -130,22 +132,58 @@ export default function WeatherTime({ compact = false, embedded = false }: Weath
   const greeting = getGreeting(now.getHours());
   const unitSuffix = weather?.unit === "celsius" ? "C" : "F";
 
+  const weatherTitle = weather
+    ? [
+        weather.description,
+        weather.city || null,
+        weather.low != null && weather.high != null ? `Low ${weather.low}° · High ${weather.high}°` : null,
+        weather.humidity != null ? `${weather.humidity}% humidity` : null,
+        weather.wind != null ? `${weather.wind} ${windLabel(weather.windUnit)} wind` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : "";
+
+  if (nav) {
+    return (
+      <div
+        className="flex items-center justify-center gap-2 min-w-0 max-w-full px-1"
+        title={weatherTitle || undefined}
+        aria-label={weatherTitle ? `Local time and weather: ${formatClock(now)}. ${weatherTitle}` : `Local time ${formatClock(now)}`}
+      >
+        <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap">
+          {formatClock(now)}
+        </span>
+        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:inline">
+          {formatShortWeekday(now)}
+        </span>
+        {weather && (
+          <>
+            <span className="h-4 w-px bg-slate-200 dark:bg-white/15 shrink-0" aria-hidden />
+            <span className="text-sm leading-none shrink-0" aria-hidden>
+              {weather.icon}
+            </span>
+            <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap">
+              {weather.temp}°{unitSuffix}
+            </span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden md:inline max-w-[7rem]">
+              {weather.description}
+            </span>
+            {weather.city && (
+              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 truncate min-w-0 hidden xl:inline max-w-[6rem]">
+                {weather.city}
+              </span>
+            )}
+          </>
+        )}
+      </div>
+    );
+  }
+
   if (compact) {
     const chrome = embedded
       ? "min-h-[2.75rem] min-w-0 w-full h-full py-0 overflow-visible"
       : "min-h-[2.75rem] min-w-0 w-full h-full px-2 sm:px-2.5 py-1 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90 shadow-sm overflow-hidden";
-
-    const weatherTitle = weather
-      ? [
-          weather.description,
-          weather.city || null,
-          weather.low != null && weather.high != null ? `Low ${weather.low}° · High ${weather.high}°` : null,
-          weather.humidity != null ? `${weather.humidity}% humidity` : null,
-          weather.wind != null ? `${weather.wind} ${windLabel(weather.windUnit)} wind` : null,
-        ]
-          .filter(Boolean)
-          .join(" · ")
-      : "";
 
     // Embedded strip: clock + condition + compact stats (city truncated).
     if (embedded) {

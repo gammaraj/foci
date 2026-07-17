@@ -7,6 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
 import NotificationBell from "@/components/NotificationBell";
 import WhatsNewBanner from "@/components/WhatsNewBanner";
+import WeatherTime from "@/components/WeatherTime";
 import { loadSettings, saveSettings as persistSettings } from "@/lib/storage";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/types";
 
@@ -92,6 +93,7 @@ export default function AppNavbar({
       <WhatsNewBanner focusMode={focusMode} headless />
       <Navbar
         onOpenSettings={() => setShowSettings(true)}
+        centerSlot={focusMode ? undefined : <WeatherTime nav />}
         toolbarSlot={
           user ? (
             <div className="flex items-center gap-0.5">
