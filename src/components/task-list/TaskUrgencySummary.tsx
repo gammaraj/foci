@@ -1,5 +1,7 @@
 "use client";
 
+import { formatOverdueChip, formatOverdueLabel } from "@/components/task-list/utils";
+
 export interface WorstOverdueHint {
   daysLate: number;
   title: string;
@@ -43,7 +45,7 @@ export function TaskUrgencySummary({
 
   const worstLabel = worstOverdue?.projectName ?? null;
   const worstTitle = worstOverdue
-    ? `Jump to ${worstOverdue.projectName}: “${worstOverdue.title}” (${worstOverdue.daysLate} day${worstOverdue.daysLate === 1 ? "" : "s"} overdue)`
+    ? `Jump to ${worstOverdue.projectName}: “${worstOverdue.title}” (${formatOverdueLabel(worstOverdue.daysLate)})`
     : undefined;
 
   const handleWorst = () => {
@@ -107,12 +109,11 @@ export function TaskUrgencySummary({
           title={worstTitle}
         >
           <span
-            className={`inline-flex items-center justify-center gap-0.5 min-w-[1.35rem] h-4 sm:h-5 px-1 rounded text-[10px] font-bold tabular-nums leading-none ${
+            className={`inline-flex items-center justify-center h-4 sm:h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${
               worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "urgency-chip--mid"
             }`}
           >
-            <span className="tabular-nums">{worstOverdue.daysLate}</span>
-            <span>d late</span>
+            {formatOverdueChip(worstOverdue.daysLate)}
           </span>
           <span className="leading-none truncate min-w-0">
             {compact ? worstLabel : (
