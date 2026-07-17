@@ -3,6 +3,7 @@ export const FEATURED_POST_SLUGS = [
   "flowtime-technique-guide",
   "pomodoro-vs-flowtime-vs-52-17",
   "best-free-pomodoro-apps-2026",
+  "best-focus-apps-for-students-2026",
   "best-music-for-studying-and-focus",
   "52-17-rule-guide",
 ] as const;
@@ -16,6 +17,21 @@ export const BLOG_POST_META_OVERRIDES: Record<
     title: "Best Free Pomodoro Apps 2026 — Ranked (No Signup)",
     description:
       "7 free Pomodoro apps tested for ads, tasks & sounds. Foci ranks #1 — timer + tasks + brown noise, no account. Full ranking inside.",
+  },
+  "best-focus-apps-for-students-2026": {
+    title: "Best Focus Apps for Students 2026 (Free Ranked)",
+    description:
+      "Free focus apps for students ranked — timer, tasks, brown noise, ADHD-friendly. Foci #1 for study sessions in one browser tab.",
+  },
+  "how-to-focus-while-working-from-home": {
+    title: "How to Focus Working From Home (2026 System)",
+    description:
+      "WFH focus system: Pomodoro/52/17 blocks, ambient sound, one task list, and communication windows — free timer stack inside.",
+  },
+  "white-noise-vs-brown-noise-for-focus": {
+    title: "White Noise vs Brown Noise for Focus (2026)",
+    description:
+      "White vs brown noise for studying — which masks distraction better, ADHD tips, and free offline generators in Foci.",
   },
   "foci-vs-focusatwill": {
     title: "Foci vs Focus@Will (2026): Free App or $10/mo Music?",
@@ -51,6 +67,41 @@ export const BLOG_POST_META_OVERRIDES: Record<
     title: "What Is the Flowtime Technique? Complete Guide (2026)",
     description:
       "What is Flowtime (flowmodoro)? How it works, break ratios, vs Pomodoro, and when to use it — start free in Foci today.",
+  },
+  "adhd-focus-strategies": {
+    title: "ADHD Focus Strategies That Actually Work (2026)",
+    description:
+      "ADHD focus tips: external timers, brown noise, task chunking, and streaks that work with your brain — free tools inside.",
+  },
+  "brown-noise-for-studying-and-focus": {
+    title: "Brown Noise for Studying: Why It Works (2026)",
+    description:
+      "Is brown noise good for studying? Science, vs white noise, ADHD tips, and free offline brown noise in Foci.",
+  },
+  "forest-app-alternatives": {
+    title: "5 Best Forest App Alternatives 2026 (Free & Paid)",
+    description:
+      "Best Forest alternatives ranked — free timer+tasks options, Flora, Tide, and when gamified trees still win.",
+  },
+  "how-to-stay-focused-while-studying": {
+    title: "How to Stay Focused While Studying (7 Strategies)",
+    description:
+      "7 evidence-based study focus strategies — time blocks, distraction removal, active recall, and a free timer stack.",
+  },
+  "how-to-stop-procrastinating": {
+    title: "How to Stop Procrastinating: Science + Fixes (2026)",
+    description:
+      "Why you procrastinate and what works: shrink the first step, short timers, and environment design — try free in Foci.",
+  },
+  "pomodoro-technique-guide": {
+    title: "Pomodoro Technique Guide (2026) — 25/5 Explained",
+    description:
+      "What is the Pomodoro technique? How 25/5 works, when to switch to Flowtime or 52/17, and a free timer with tasks.",
+  },
+  "deep-work-in-the-age-of-ai": {
+    title: "Deep Work in the Age of AI — Protect Focus (2026)",
+    description:
+      "AI makes work faster and focus harder. How to protect deep work with session structure, sound, and a calm timer.",
   },
 };
 
@@ -96,6 +147,36 @@ export const GSC_RELATED_LINKS: Record<string, readonly string[]> = {
     "best-free-pomodoro-apps-2026",
     "foci-vs-todoist",
   ],
+  "best-focus-apps-for-students-2026": [
+    "best-free-pomodoro-apps-2026",
+    "how-to-stay-focused-while-studying",
+    "adhd-focus-strategies",
+  ],
+  "how-to-focus-while-working-from-home": [
+    "deep-work-in-the-age-of-ai",
+    "pomodoro-vs-flowtime-vs-52-17",
+    "best-music-for-studying-and-focus",
+  ],
+  "white-noise-vs-brown-noise-for-focus": [
+    "brown-noise-for-studying-and-focus",
+    "best-music-for-studying-and-focus",
+    "adhd-focus-strategies",
+  ],
+  "adhd-focus-strategies": [
+    "brown-noise-for-studying-and-focus",
+    "flowtime-technique-guide",
+    "best-focus-apps-for-students-2026",
+  ],
+  "how-to-stay-focused-while-studying": [
+    "best-focus-apps-for-students-2026",
+    "best-music-for-studying-and-focus",
+    "pomodoro-technique-guide",
+  ],
+  "forest-app-alternatives": [
+    "foci-vs-forest-app",
+    "best-free-pomodoro-apps-2026",
+    "best-focus-apps-for-students-2026",
+  ],
 };
 
 export interface GuideLink {
@@ -130,6 +211,21 @@ export const GUIDE_HUB_LINKS: GuideLink[] = [
     slug: "best-free-pomodoro-apps-2026",
     label: "Best free Pomodoro apps 2026",
     description: "7 timers ranked — Foci #1 with no signup, tasks, and built-in sounds.",
+  },
+  {
+    slug: "best-focus-apps-for-students-2026",
+    label: "Best focus apps for students 2026",
+    description: "Free student focus apps ranked — timer, tasks, brown noise, ADHD-friendly.",
+  },
+  {
+    slug: "how-to-focus-while-working-from-home",
+    label: "How to focus while working from home",
+    description: "WFH focus system with timer blocks, ambient sound, and communication windows.",
+  },
+  {
+    slug: "white-noise-vs-brown-noise-for-focus",
+    label: "White noise vs brown noise",
+    description: "Which focus noise is better for studying — and when to use each.",
   },
   {
     slug: "best-music-for-studying-and-focus",
@@ -452,6 +548,42 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
       question: "Does the Pomodoro technique help with procrastination?",
       answer:
         "Yes. Fixed short intervals lower the cost of starting. Once you are in flow, switch to Flowtime or a longer preset so the alarm does not interrupt deep work.",
+    },
+  ],
+  "how-to-focus-while-working-from-home": [
+    {
+      question: "How do I stay focused while working from home?",
+      answer:
+        "Use a fixed session method (Pomodoro, 52/17, or Flowtime), keep tasks and the timer in one window, batch Slack outside focus blocks, and use brown noise or rain to mask home distractions.",
+    },
+    {
+      question: "What is the best focus app for remote work?",
+      answer:
+        "Pick a free system with timer + tasks + ambient sound so you are not Alt-Tabbing. Foci is built for that workflow in the browser with optional cloud sync.",
+    },
+  ],
+  "best-focus-apps-for-students-2026": [
+    {
+      question: "What is the best free focus app for students?",
+      answer:
+        "Foci ranks best overall for students who want a Pomodoro timer, task list, and brown noise in one free browser tab with no mandatory signup.",
+    },
+    {
+      question: "Do students need a paid Forest subscription?",
+      answer:
+        "Not if you want tasks and ambient sounds. Forest is strong for phone gamification; Foci covers timer + tasks + sounds for free. See also forest-app-alternatives.",
+    },
+  ],
+  "white-noise-vs-brown-noise-for-focus": [
+    {
+      question: "Is brown noise better than white noise for studying?",
+      answer:
+        "For most long study and coding sessions, yes — brown noise is deeper and less fatiguing. White noise masks a wider high-frequency range but can feel harsh over hours.",
+    },
+    {
+      question: "Should ADHD users choose white or brown noise?",
+      answer:
+        "Many ADHD users prefer brown noise as a sensory anchor. Test both for 5–10 minutes on a real task and keep the one that reduces distraction without ear fatigue.",
     },
   ],
 };

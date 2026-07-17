@@ -37,7 +37,7 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "taglines": {
       "certstud": {
         "headline": "Studying for your cert? Stay focused with Foci",
-        "sub": "Block distractions while you prep — free to start"
+        "sub": "Block distractions while you prep \u2014 free to start"
       },
       "collegedecider": {
         "headline": "Deep research sessions need deep focus",
@@ -67,7 +67,7 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "taglines": {
       "foci": {
         "headline": "Run study group tournaments? Try Brakto",
-        "sub": "Bracket any competition — free to start"
+        "sub": "Bracket any competition \u2014 free to start"
       },
       "certstud": {
         "headline": "Study groups & competitions? Try Brakto",
@@ -100,12 +100,12 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
         "sub": "Prep for 100+ certifications on CertStud"
       },
       "brakto": {
-        "headline": "Esports pros need certs too — try CertStud",
+        "headline": "Esports pros need certs too \u2014 try CertStud",
         "sub": "95% pass rate on 100+ IT & business certs"
       },
       "collegedecider": {
         "headline": "Boost your college app with certifications",
-        "sub": "CertStud helps students stand out — free access"
+        "sub": "CertStud helps students stand out \u2014 free access"
       },
       "wanderinghermit": {
         "headline": "Travel downtime? Study for your next cert",
@@ -113,7 +113,7 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
       },
       "boostlogik": {
         "headline": "Add a marketing cert to your SEO skills",
-        "sub": "CertStud — adaptive prep for 100+ certifications"
+        "sub": "CertStud \u2014 adaptive prep for 100+ certifications"
       }
     }
   },
@@ -127,11 +127,11 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "taglines": {
       "foci": {
         "headline": "Helping a student with college apps?",
-        "sub": "CollegeDecider — AI-matched to 5,000+ schools, free"
+        "sub": "CollegeDecider \u2014 AI-matched to 5,000+ schools, free"
       },
       "brakto": {
         "headline": "Student athletes need the right college",
-        "sub": "CollegeDecider finds your best match — free to use"
+        "sub": "CollegeDecider finds your best match \u2014 free to use"
       },
       "certstud": {
         "headline": "Choosing between college and certs?",
@@ -156,16 +156,16 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "W",
     "taglines": {
       "foci": {
-        "headline": "You earned that focus session — plan a trip",
+        "headline": "You earned that focus session \u2014 plan a trip",
         "sub": "WanderingHermit builds your perfect itinerary, free"
       },
       "brakto": {
         "headline": "Host international tournaments? Plan the trip too",
-        "sub": "WanderingHermit — AI travel planning, free to use"
+        "sub": "WanderingHermit \u2014 AI travel planning, free to use"
       },
       "certstud": {
         "headline": "Pass your cert? Celebrate with a trip",
-        "sub": "WanderingHermit plans it — 100+ destinations"
+        "sub": "WanderingHermit plans it \u2014 100+ destinations"
       },
       "collegedecider": {
         "headline": "Campus visits made easy with WanderingHermit",
@@ -191,19 +191,199 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
       },
       "brakto": {
         "headline": "Get your tournament found on Google & AI",
-        "sub": "BoostLogik — full SEO audit in 30 seconds, free"
+        "sub": "BoostLogik \u2014 full SEO audit in 30 seconds, free"
       },
       "certstud": {
         "headline": "Rank higher in AI-powered search results",
         "sub": "BoostLogik audits for ChatGPT & Claude visibility"
       },
       "collegedecider": {
-        "headline": "Help schools find you — optimize with BoostLogik",
+        "headline": "Help schools find you \u2014 optimize with BoostLogik",
         "sub": "50+ SEO checks, AI visibility, 30-second audit"
       },
       "wanderinghermit": {
         "headline": "Make your travel content AI-discoverable",
-        "sub": "BoostLogik — SEO + AI visibility audit, free to start"
+        "sub": "BoostLogik \u2014 SEO + AI visibility audit, free to start"
+      }
+    }
+  },
+  {
+    "id": "foci-blog-pomodoro",
+    "name": "Foci Guide",
+    "url": "https://usefoci.com/blog/best-free-pomodoro-apps-2026",
+    "color": "#0F6E56",
+    "iconBg": "#E1F5EE",
+    "iconText": "F",
+    "taglines": {
+      "certstud": {
+        "headline": "Best free Pomodoro apps ranked (2026)",
+        "sub": "Timer + tasks + brown noise \u2014 no signup"
+      },
+      "collegedecider": {
+        "headline": "Best free Pomodoro apps for deep research",
+        "sub": "Stay on task while comparing schools"
+      },
+      "wanderinghermit": {
+        "headline": "Best free Pomodoro apps for trip planning",
+        "sub": "Focused sessions while you research destinations"
+      },
+      "brakto": {
+        "headline": "Best free Pomodoro apps for organizers",
+        "sub": "Knock out tournament tasks in timed sprints"
+      },
+      "boostlogik": {
+        "headline": "Best free Pomodoro apps for SEO work",
+        "sub": "Protect deep work while you audit sites"
+      }
+    }
+  },
+  {
+    "id": "foci-blog-study",
+    "name": "Foci Guide",
+    "url": "https://usefoci.com/blog/how-to-stay-focused-while-studying",
+    "color": "#0F6E56",
+    "iconBg": "#E1F5EE",
+    "iconText": "F",
+    "taglines": {
+      "certstud": {
+        "headline": "How to stay focused while studying",
+        "sub": "7 strategies that work with cert prep"
+      },
+      "collegedecider": {
+        "headline": "How to stay focused while studying",
+        "sub": "Evidence-based tips for application season"
+      },
+      "wanderinghermit": {
+        "headline": "How to stay focused while studying",
+        "sub": "Use travel downtime for deep study blocks"
+      },
+      "brakto": {
+        "headline": "How to stay focused while studying",
+        "sub": "Study sprints between bracket rounds"
+      },
+      "boostlogik": {
+        "headline": "How to stay focused while studying",
+        "sub": "Protect attention when learning SEO"
+      }
+    }
+  },
+  {
+    "id": "foci-blog-adhd",
+    "name": "Foci Guide",
+    "url": "https://usefoci.com/blog/adhd-focus-strategies",
+    "color": "#0F6E56",
+    "iconBg": "#E1F5EE",
+    "iconText": "F",
+    "taglines": {
+      "certstud": {
+        "headline": "ADHD focus strategies that actually work",
+        "sub": "Timers, brown noise, and task chunking"
+      },
+      "collegedecider": {
+        "headline": "ADHD focus strategies for college apps",
+        "sub": "Systems that work with your brain"
+      },
+      "wanderinghermit": {
+        "headline": "ADHD focus strategies that actually work",
+        "sub": "External structure for planning and deep work"
+      },
+      "brakto": {
+        "headline": "ADHD focus strategies that actually work",
+        "sub": "External timers and task systems for organizers"
+      },
+      "boostlogik": {
+        "headline": "ADHD focus strategies that actually work",
+        "sub": "Build momentum on complex SEO tasks"
+      }
+    }
+  },
+  {
+    "id": "foci-blog-music",
+    "name": "Foci Guide",
+    "url": "https://usefoci.com/blog/best-music-for-studying-and-focus",
+    "color": "#0F6E56",
+    "iconBg": "#E1F5EE",
+    "iconText": "F",
+    "taglines": {
+      "certstud": {
+        "headline": "What music actually helps you focus?",
+        "sub": "Brown noise, lo-fi, rain \u2014 ranked for studying"
+      },
+      "collegedecider": {
+        "headline": "What music actually helps you focus?",
+        "sub": "Best study sounds for long research sessions"
+      },
+      "wanderinghermit": {
+        "headline": "What music actually helps you focus?",
+        "sub": "Focus sounds for planning and booking work"
+      },
+      "brakto": {
+        "headline": "What music actually helps you focus?",
+        "sub": "Ambient sounds for deep admin work"
+      },
+      "boostlogik": {
+        "headline": "What music actually helps you focus?",
+        "sub": "Brown noise & lo-fi for long audits"
+      }
+    }
+  },
+  {
+    "id": "foci-blog-students",
+    "name": "Foci Guide",
+    "url": "https://usefoci.com/blog/best-focus-apps-for-students-2026",
+    "color": "#0F6E56",
+    "iconBg": "#E1F5EE",
+    "iconText": "F",
+    "taglines": {
+      "certstud": {
+        "headline": "Best focus apps for students (2026)",
+        "sub": "Free timers ranked for cert prep & exams"
+      },
+      "collegedecider": {
+        "headline": "Best focus apps for students (2026)",
+        "sub": "Timer + tasks for application season"
+      },
+      "wanderinghermit": {
+        "headline": "Best focus apps for students (2026)",
+        "sub": "Study sprints while you plan campus visits"
+      },
+      "brakto": {
+        "headline": "Best focus apps for students (2026)",
+        "sub": "Free study timers ranked for organizers"
+      },
+      "boostlogik": {
+        "headline": "Best focus apps for students (2026)",
+        "sub": "Free deep-work tools ranked for learners"
+      }
+    }
+  },
+  {
+    "id": "foci-blog-noise",
+    "name": "Foci Guide",
+    "url": "https://usefoci.com/blog/white-noise-vs-brown-noise-for-focus",
+    "color": "#0F6E56",
+    "iconBg": "#E1F5EE",
+    "iconText": "F",
+    "taglines": {
+      "certstud": {
+        "headline": "White noise vs brown noise for focus",
+        "sub": "Which study sound wins \u2014 free offline in Foci"
+      },
+      "collegedecider": {
+        "headline": "White noise vs brown noise for focus",
+        "sub": "Pick the right sound for long research"
+      },
+      "wanderinghermit": {
+        "headline": "White noise vs brown noise for focus",
+        "sub": "Mask distractions while you plan trips"
+      },
+      "brakto": {
+        "headline": "White noise vs brown noise for focus",
+        "sub": "Best ambient noise for deep admin work"
+      },
+      "boostlogik": {
+        "headline": "White noise vs brown noise for focus",
+        "sub": "Protect long SEO sessions with the right noise"
       }
     }
   }
@@ -314,7 +494,7 @@ export function FilantusCrossPromoBanner({
           className="shrink-0 text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap"
           style={{ color: ad.color, border: `0.5px solid ${ad.color}44` }}
         >
-          Try free →
+          {ad.id.startsWith('foci-blog-') ? 'Read →' : 'Try free →'}
         </span>
       </a>
     </div>
