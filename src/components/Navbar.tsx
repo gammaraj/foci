@@ -21,7 +21,7 @@ interface NavbarProps {
   onOpenSettings?: () => void;
   /** Extra actions shown before theme toggle (e.g. invites, notifications on /app). */
   toolbarSlot?: ReactNode;
-  /** Center content between logo and nav links (e.g. daily quote on /app). */
+  /** Optional center content between logo and nav links (defaults to cross-promo banner). */
   centerSlot?: ReactNode;
 }
 
@@ -150,11 +150,9 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             </div>
           </Link>
 
-          {centerSlot ? (
-            <div className="hidden md:flex flex-1 min-w-0 items-center justify-center px-3 max-w-2xl mx-auto">
-              {centerSlot}
-            </div>
-          ) : null}
+          <div className="hidden lg:flex flex-1 min-w-0 items-center justify-center px-3">
+            {centerSlot ?? <FilantusCrossPromoBanner />}
+          </div>
 
           <div className="hidden sm:flex items-center gap-6 flex-shrink-0 ml-auto">
             {navLinks.map((link) => renderNavLink(link))}
@@ -217,10 +215,6 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
               )}
             </button>
           </div>
-        </div>
-
-        <div className="hidden lg:flex justify-end pt-1.5">
-          <FilantusCrossPromoBanner />
         </div>
 
         {menuOpen && (
