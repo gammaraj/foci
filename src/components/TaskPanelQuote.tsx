@@ -6,14 +6,14 @@ interface TaskPanelQuoteProps {
   variant?: "inline" | "hero" | "navbar";
 }
 
-/** Daily quote — shown in the tasks panel, not mixed with status utilities. */
+/** Daily quote — shown in the tasks panel header row. */
 export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuoteProps) {
   const { text, author } = parseQuote(getDailyQuote());
 
   if (variant === "navbar") {
     return (
       <p
-        className="text-xs sm:text-sm italic text-slate-600 dark:text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0"
+        className="text-xs sm:text-sm italic text-slate-600 dark:text-slate-300/90 leading-snug line-clamp-2 text-center min-w-0 max-w-xl"
         role="complementary"
         aria-label="Quote of the day"
         title={author ? `${text} — ${author}` : text}

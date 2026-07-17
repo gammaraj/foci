@@ -14,7 +14,6 @@ import {
   FOCI_TAGLINE_ON_LIGHT,
   FOCI_WORDMARK_NAV,
 } from "@/lib/logo-brand";
-import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
 
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
@@ -217,10 +216,6 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
               )}
             </button>
           </div>
-        </div>
-
-        <div className="hidden lg:flex justify-end pt-1.5">
-          <FilantusCrossPromoBanner />
         </div>
 
         {menuOpen && (

@@ -24,6 +24,7 @@ import {
   summarizeDoneToday,
 } from "@/lib/done-today";
 import TaskPanelMenu from "@/components/TaskPanelMenu";
+import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
 import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
 
@@ -2016,9 +2017,9 @@ export default function TaskList({
       <div
         className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
-        {/* Title + urgency + utilities — single compact row */}
+        {/* Title + quote + utilities — single compact row */}
         <div className="flex items-center justify-between min-w-0 gap-2">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 shrink">
             {projectManageOpen ? (
               <>
                 <button
@@ -2117,6 +2118,10 @@ export default function TaskList({
             </h2>
               </>
             )}
+          </div>
+
+          <div className="no-print hidden lg:flex flex-1 min-w-0 items-center justify-center px-2">
+            <FilantusCrossPromoBanner />
           </div>
 
           {/* Utilities — keep out of the filter/view cluster */}

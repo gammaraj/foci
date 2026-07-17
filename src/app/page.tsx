@@ -83,7 +83,7 @@ const jsonLd = {
     "Print the active task view (cards, list, or buckets)",
     "Project tab reorder: drag tabs or use Manage projects Tab order panel; pin favorites to the front",
     "Status bar flyouts for timer and music — compact strip with expandable panels",
-    "Daily motivational quote in the navbar on desktop",
+    "Daily motivational quotes after focus sessions",
     "Projects and subtasks for organized workflows",
     "Browser notifications and motivational quotes",
     "Installable PWA — works offline",
