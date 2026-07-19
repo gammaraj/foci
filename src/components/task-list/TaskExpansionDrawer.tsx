@@ -1,22 +1,41 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { Task } from "@/lib/types";
+import { MAX_TASK_TITLE } from "@/components/task-list/utils";
 import { handleOverlayDismiss } from "@/components/task-list/dismiss-overlays";
 
 export function TaskExpansionDrawer({
   task,
   onClose,
   children,
+  isEditingTitle = false,
+  editTitle = "",
+  onStartEditTitle,
+  onEditTitleChange,
+  onSaveTitle,
+  onCancelEditTitle,
 }: {
   task: Task | null;
   onClose: () => void;
   children: React.ReactNode;
+  isEditingTitle?: boolean;
+  editTitle?: string;
+  onStartEditTitle?: (task: Task) => void;
+  onEditTitleChange?: (title: string) => void;
+  onSaveTitle?: (taskId: string) => void;
+  onCancelEditTitle?: () => void;
 }) {
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
+  const canEditTitle = Boolean(onStartEditTitle && onEditTitleChange && onSaveTitle && onCancelEditTitle);
+
   useEffect(() => {
     if (!task) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (isEditingTitle) return;
+        onClose();
+      }
     };
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -25,9 +44,18 @@ export function TaskExpansionDrawer({
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKey);
     };
-  }, [task, onClose]);
+  }, [task, onClose, isEditingTitle]);
 
   if (!task) return null;
+
+  const focusTitle = () => {
+    if (!canEditTitle) return;
+    onStartEditTitle!(task);
+    requestAnimationFrame(() => {
+      titleInputRef.current?.focus();
+      titleInputRef.current?.select();
+    });
+  };
 
   return (
     <>
@@ -52,9 +80,61 @@ export function TaskExpansionDrawer({
             <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
               Task details
             </p>
-            <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">
-              {task.title}
-            </h3>
+            {canEditTitle ? (
+              <div className="group/title flex items-start gap-1.5 min-w-0">
+                <input
+                  ref={titleInputRef}
+                  type="text"
+                  value={isEditingTitle ? editTitle : task.title}
+                  onFocus={() => {
+                    if (!isEditingTitle) onStartEditTitle!(task);
+                  }}
+                  onChange={(e) => {
+                    if (!isEditingTitle) onStartEditTitle!(task);
+                    onEditTitleChange!(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (isEditingTitle) onSaveTitle!(task.id);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      (e.target as HTMLInputElement).blur();
+                    }
+                    if (e.key === "Escape") {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Cancel without blurring — blur would re-save the draft.
+                      onCancelEditTitle!();
+                    }
+                  }}
+                  maxLength={MAX_TASK_TITLE}
+                  aria-label="Task title"
+                  className={`flex-1 min-w-0 text-lg sm:text-xl font-semibold leading-snug outline-none transition-colors break-words [overflow-wrap:anywhere] ${
+                    isEditingTitle
+                      ? "rounded-md border border-blue-400 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white px-2 py-1 focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                      : "rounded-md border border-transparent bg-transparent text-slate-900 dark:text-white cursor-text px-2 py-1 -mx-2 hover:bg-slate-100/80 dark:hover:bg-white/[0.06]"
+                  }`}
+                />
+                {!isEditingTitle && (
+                  <button
+                    type="button"
+                    onClick={focusTitle}
+                    className="shrink-0 p-1.5 mt-0.5 rounded-md text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors opacity-100 sm:opacity-0 sm:group-hover/title:opacity-100 sm:focus-within:opacity-100"
+                    aria-label={`Edit task title "${task.title}"`}
+                    title="Edit title"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1.5 1.5 0 00-2.121-2.121L7.172 17.586A1 1 0 006.879 18.293L4 20z" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">
+                {task.title}
+              </h3>
+            )}
           </div>
           <button
             type="button"

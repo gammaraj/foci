@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import type { Task, Project } from "@/lib/types";
 import { ALL_PROJECTS_ID } from "@/lib/types";
-import { formatDueDate } from "./utils";
+import { formatDueDate, MAX_TASK_TITLE } from "./utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 
@@ -29,6 +29,12 @@ export interface TaskCalendarViewProps {
   expandedSubtasksTaskId?: string | null;
   onToggleSubtasks?: (taskId: string) => void;
   renderBelowTask?: (task: Task) => React.ReactNode;
+  editingId?: string | null;
+  editTitle?: string;
+  onStartEdit?: (task: Task) => void;
+  onEditTitleChange?: (title: string) => void;
+  onSaveEdit?: (id: string) => void;
+  onCancelEdit?: () => void;
 }
 
 export default function TaskCalendarView({
@@ -48,7 +54,14 @@ export default function TaskCalendarView({
   expandedSubtasksTaskId = null,
   onToggleSubtasks,
   renderBelowTask,
+  editingId = null,
+  editTitle = "",
+  onStartEdit,
+  onEditTitleChange,
+  onSaveEdit,
+  onCancelEdit,
 }: TaskCalendarViewProps) {
+  const canEditTitle = Boolean(onStartEdit && onEditTitleChange && onSaveEdit && onCancelEdit);
   const [projectFilter, setProjectFilter] = useState<string>(ALL_PROJECTS_ID);
   const [quickAddTitle, setQuickAddTitle] = useState("");
 
@@ -310,16 +323,39 @@ export default function TaskCalendarView({
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                     task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-[var(--urgency-chip)]" : "bg-blue-400"
                   }`} />
-                  <span
-                    className={`text-sm flex-1 truncate ${
-                      task.completed
-                        ? "line-through text-slate-400"
-                        : "text-slate-700 dark:text-slate-200 font-medium"
-                    }`}
-                    title={task.title}
-                  >
-                    {task.title}
-                  </span>
+                  {editingId === task.id && canEditTitle ? (
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => onEditTitleChange!(e.target.value)}
+                      onBlur={() => onSaveEdit!(task.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") onSaveEdit!(task.id);
+                        if (e.key === "Escape") onCancelEdit!();
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      maxLength={MAX_TASK_TITLE}
+                      className="flex-1 min-w-0 px-1.5 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                      autoFocus
+                      aria-label="Edit task title"
+                    />
+                  ) : (
+                    <span
+                      className={`text-sm flex-1 truncate ${
+                        task.completed
+                          ? "line-through text-slate-400"
+                          : "text-slate-700 dark:text-slate-200 font-medium"
+                      } ${canEditTitle && !task.completed ? "cursor-text" : ""}`}
+                      title={task.title}
+                      onDoubleClick={(e) => {
+                        if (!canEditTitle || task.completed) return;
+                        e.stopPropagation();
+                        onStartEdit!(task);
+                      }}
+                    >
+                      {task.title}
+                    </span>
+                  )}
                   {renderSubtasksBadge(task, detailOpen)}
                   {!task.completed && (
                     <button
@@ -384,9 +420,35 @@ export default function TaskCalendarView({
                     : "border-transparent hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                 }`}
               >
-                <span className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1" title={task.title}>
-                  {task.title}
-                </span>
+                {editingId === task.id && canEditTitle ? (
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => onEditTitleChange!(e.target.value)}
+                    onBlur={() => onSaveEdit!(task.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") onSaveEdit!(task.id);
+                      if (e.key === "Escape") onCancelEdit!();
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    maxLength={MAX_TASK_TITLE}
+                    className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                    autoFocus
+                    aria-label="Edit task title"
+                  />
+                ) : (
+                  <span
+                    className={`text-sm text-slate-600 dark:text-slate-300 truncate flex-1 ${canEditTitle ? "cursor-text" : ""}`}
+                    title={task.title}
+                    onDoubleClick={(e) => {
+                      if (!canEditTitle) return;
+                      e.stopPropagation();
+                      onStartEdit!(task);
+                    }}
+                  >
+                    {task.title}
+                  </span>
+                )}
                 {renderSubtasksBadge(task, detailOpen)}
                 {onToggleTaskDetail && (
                   <TaskEditButton

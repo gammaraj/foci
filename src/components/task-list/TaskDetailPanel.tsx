@@ -6,7 +6,6 @@ import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
-import { handleOverlayDismiss } from "@/components/task-list/dismiss-overlays";
 
 const chipBase =
   "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors text-left";
@@ -497,48 +496,6 @@ export function TaskDetailPanel({
       {subtaskBlock}
       {moreDetailsBlock}
       {footer}
-    </div>
-  );
-}
-
-interface TaskDetailDrawerProps {
-  task: Task;
-  onClose: () => void;
-  children: React.ReactNode;
-}
-
-export function TaskDetailDrawer({ task, onClose, children }: TaskDetailDrawerProps) {
-  return (
-    <div className="fixed inset-0 z-[60] flex justify-end" role="dialog" aria-label={`Edit task: ${task.title}`}>
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/40"
-        onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
-        aria-label="Close task details"
-      />
-      <aside className="relative w-full max-w-xl h-full min-w-0 bg-white dark:bg-[#111827] shadow-2xl border-l border-slate-200 dark:border-[#243350] flex flex-col overflow-hidden">
-        <header className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-[#243350] shrink-0 min-w-0">
-          <div className="min-w-0 flex-1 overflow-hidden">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              Task details
-            </p>
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 leading-snug break-words [overflow-wrap:anywhere]">
-              {task.title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] shrink-0 touch-target-sm"
-            aria-label="Close"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </header>
-        <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">{children}</div>
-      </aside>
     </div>
   );
 }

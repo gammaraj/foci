@@ -1321,6 +1321,15 @@ export default function TaskList({
       let next = currentSharedProjectTasks;
       let changed: Task | null = null;
 
+      if (editingId === taskId) {
+        const title = editTitle.trim().slice(0, MAX_TASK_TITLE);
+        if (title) {
+          next = next.map((t) => (t.id === taskId ? { ...t, title } : t));
+          changed = next.find((t) => t.id === taskId) ?? null;
+        }
+        setEditingId(null);
+      }
+
       if (editingDescId === taskId) {
         const desc = editDesc.trim();
         next = next.map((t) =>
@@ -1365,6 +1374,15 @@ export default function TaskList({
 
     let next = tasks;
     let changed: Task | null = null;
+
+    if (editingId === taskId) {
+      const title = editTitle.trim().slice(0, MAX_TASK_TITLE);
+      if (title) {
+        next = next.map((t) => (t.id === taskId ? { ...t, title } : t));
+        changed = next.find((t) => t.id === taskId) ?? null;
+      }
+      setEditingId(null);
+    }
 
     if (editingDescId === taskId) {
       const desc = editDesc.trim();
@@ -2417,6 +2435,12 @@ export default function TaskList({
           expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
           onToggleSubtasks={toggleSubtasksExpanded}
           renderBelowTask={preparingPrint ? () => null : renderTaskInlineExpansion}
+          editingId={editingId}
+          editTitle={editTitle}
+          onStartEdit={startEditing}
+          onEditTitleChange={setEditTitle}
+          onSaveEdit={saveEdit}
+          onCancelEdit={() => setEditingId(null)}
         />
       )}
 
@@ -3447,7 +3471,16 @@ export default function TaskList({
         const task = tasks.find((t) => t.id === expandedTaskId);
         if (!task) return null;
         return (
-          <TaskExpansionDrawer task={task} onClose={closeTaskDetail}>
+          <TaskExpansionDrawer
+            task={task}
+            onClose={closeTaskDetail}
+            isEditingTitle={editingId === task.id}
+            editTitle={editTitle}
+            onStartEditTitle={startEditing}
+            onEditTitleChange={setEditTitle}
+            onSaveTitle={saveEdit}
+            onCancelEditTitle={() => setEditingId(null)}
+          >
             {renderTaskExpansionContent(task, true)}
           </TaskExpansionDrawer>
         );
