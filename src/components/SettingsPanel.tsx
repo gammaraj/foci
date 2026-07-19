@@ -503,7 +503,7 @@ export default function SettingsPanel({
                           Default task view
                         </label>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          Used on first visit. Your last view is remembered while browsing.
+                          Opens in this view when you visit Tasks. Switching views in the toolbar also updates this.
                         </p>
                       </div>
                       <select

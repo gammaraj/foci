@@ -18,8 +18,13 @@ export function TaskExpansionDrawer({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [task, onClose]);
 
   if (!task) return null;
@@ -36,14 +41,18 @@ export function TaskExpansionDrawer({
         role="dialog"
         aria-modal="true"
         aria-label={`Task details: ${task.title}`}
-        className="fixed z-50 inset-x-0 bottom-0 sm:inset-x-auto sm:left-auto sm:right-3 sm:top-3 sm:bottom-3 sm:w-[min(calc(100%-1.5rem),40rem)] flex flex-col max-h-[min(94dvh,100%)] sm:max-h-none rounded-t-2xl sm:rounded-2xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-2xl shadow-slate-900/15 overflow-hidden"
+        className="fixed z-50 inset-x-0 bottom-0 w-full max-w-full min-w-0 box-border sm:inset-x-auto sm:left-auto sm:right-3 sm:top-3 sm:bottom-3 sm:w-[min(calc(100%-1.5rem),40rem)] flex flex-col max-h-[min(94dvh,100%)] sm:max-h-none rounded-t-2xl sm:rounded-2xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-2xl shadow-slate-900/15 overflow-hidden"
+        style={{
+          paddingLeft: "env(safe-area-inset-left, 0px)",
+          paddingRight: "env(safe-area-inset-right, 0px)",
+        }}
       >
-        <header className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200/80 dark:border-[#243350] shrink-0">
-          <div className="min-w-0 flex-1">
+        <header className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200/80 dark:border-[#243350] shrink-0 min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
               Task details
             </p>
-            <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3">
+            <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">
               {task.title}
             </h3>
           </div>
@@ -58,7 +67,9 @@ export function TaskExpansionDrawer({
             </svg>
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">{children}</div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain min-h-0 min-w-0">
+          {children}
+        </div>
       </aside>
     </>
   );

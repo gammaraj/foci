@@ -63,8 +63,8 @@ function scopeLabel(id: TimeScopeId): string {
 }
 
 /**
- * Single-row mobile toolbar: scope · view · projects.
- * Print lives in the ⋯ menu. Project jump only for bucket columns.
+ * Mobile toolbar: view mode stays visible; done tally sits on its own row
+ * so scope/view selects are not crushed to chevron-only.
  */
 export function MobileTaskToolbar({
   selectedScope,
@@ -86,7 +86,7 @@ export function MobileTaskToolbar({
 
   return (
     <div className="no-print sm:hidden mt-1.5 space-y-1.5" data-tour="time-filters">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 min-w-0">
         <label className="sr-only" htmlFor="mobile-time-scope">
           Time scope
         </label>
@@ -94,7 +94,7 @@ export function MobileTaskToolbar({
           id="mobile-time-scope"
           value={selectedScope}
           onChange={(e) => onSelectScope(e.target.value)}
-          className={`${SELECT_CLASS} flex-[1.1]`}
+          className={`${SELECT_CLASS} flex-1 min-w-[4.5rem]`}
           aria-label="Filter tasks by due date"
         >
           <option value={ALL_PROJECTS_ID}>{scopeLabel(ALL_PROJECTS_ID)}</option>
@@ -104,13 +104,6 @@ export function MobileTaskToolbar({
           <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID)}</option>
         </select>
 
-        <DoneTodayTally
-          count={doneTodayCount}
-          weekCount={doneWeekCount}
-          monthCount={doneMonthCount}
-          onClick={onDoneTodayClick}
-        />
-
         <label className="sr-only" htmlFor="mobile-view-mode">
           View mode
         </label>
@@ -118,7 +111,7 @@ export function MobileTaskToolbar({
           id="mobile-view-mode"
           value={viewMode === "plan" ? "card" : viewMode}
           onChange={(e) => onSelectViewMode(e.target.value as TaskViewMode)}
-          className={`${SELECT_CLASS} flex-1`}
+          className={`${SELECT_CLASS} flex-1 min-w-[5.25rem]`}
           aria-label="Task view mode"
           data-tour="view-modes"
         >
@@ -138,7 +131,7 @@ export function MobileTaskToolbar({
               id="mobile-project-jump"
               value={projectJumpId}
               onChange={(e) => onProjectJump?.(e.target.value)}
-              className={`${SELECT_CLASS} flex-[1.2]`}
+              className={`${SELECT_CLASS} flex-[1.2] min-w-[5rem]`}
               aria-label="Jump to project"
             >
               <option value="">Project…</option>
@@ -167,6 +160,14 @@ export function MobileTaskToolbar({
           </svg>
         </button>
       </div>
+
+      <DoneTodayTally
+        count={doneTodayCount}
+        weekCount={doneWeekCount}
+        monthCount={doneMonthCount}
+        onClick={onDoneTodayClick}
+        className="w-full justify-center"
+      />
     </div>
   );
 }

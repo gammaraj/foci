@@ -199,7 +199,7 @@ export default function OpenTaskList({
             aria-label={`Mark "${task.title}" complete`}
           />
           <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-medium break-words leading-snug text-slate-800 dark:text-slate-50">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-medium break-words [overflow-wrap:anywhere] leading-snug text-slate-800 dark:text-slate-50">
               {editingId === task.id ? (
                 <input
                   type="text"

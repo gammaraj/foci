@@ -9,13 +9,15 @@ import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { handleOverlayDismiss } from "@/components/task-list/dismiss-overlays";
 
 const chipBase =
-  "inline-flex w-full items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors text-left min-w-0";
+  "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors text-left";
 const chipBaseDrawer =
-  "inline-flex w-full items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-lg border transition-colors text-left min-w-0 min-h-[2.4rem]";
+  "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-lg border transition-colors text-left min-h-[2.4rem]";
 const chipIdle =
   "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30]";
 const chipEmpty =
   "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500";
+const selectControl =
+  "flex-1 w-full min-w-0 max-w-full bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer";
 
 export interface TaskDetailPanelProps {
   task: Task;
@@ -103,12 +105,12 @@ export function TaskDetailPanel({
   const iconSize = "w-3.5 h-3.5";
   const wrapperClass =
     variant === "inline"
-      ? `border border-t-0 rounded-b-xl py-3 space-y-2 ${
+      ? `border border-t-0 rounded-b-xl py-3 space-y-2 min-w-0 ${
           isLinked
             ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
             : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
         }`
-      : "flex flex-col min-h-full";
+      : "flex flex-col min-h-full min-w-0 w-full max-w-full overflow-x-hidden";
 
   const isFocused = activeTaskId === task.id;
   const isInProgress = isFocused && isTimerRunning;
@@ -222,7 +224,7 @@ export function TaskDetailPanel({
           const value = e.target.value;
           onSetPriority(value ? (parseInt(value, 10) as TaskPriority) : undefined);
         }}
-        className={`flex-1 min-w-0 ${selectText} bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer`}
+        className={`${selectControl} ${selectText}`}
         aria-label="Priority"
       >
         <option value="">No priority</option>
@@ -244,7 +246,7 @@ export function TaskDetailPanel({
           const value = e.target.value as TaskKind;
           onSetKind(value === "task" ? undefined : value);
         }}
-        className={`flex-1 min-w-0 ${selectText} bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer`}
+        className={`${selectControl} ${selectText}`}
         aria-label="Type"
         title="Mark as task, note, or question"
       >
@@ -262,7 +264,7 @@ export function TaskDetailPanel({
       className={`${chip} ${
         task.blocked
           ? "border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40"
-          : `${chipIdle} hover:border-amber-300 dark:hover:border-amber-700 hover:text-amber-700 dark:hover:text-amber-300`
+          : `${chipEmpty} hover:border-amber-300 dark:hover:border-amber-700 hover:text-amber-700 dark:hover:text-amber-300`
       }`}
       aria-pressed={!!task.blocked}
       title={task.blocked ? "Clear waiting status" : "Mark as waiting on something external"}
@@ -281,7 +283,7 @@ export function TaskDetailPanel({
       className={`${chip} ${
         task.someday
           ? "border-violet-300 dark:border-violet-700 text-violet-800 dark:text-violet-200 bg-violet-50 dark:bg-violet-950/40"
-          : `${chipIdle} hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-300`
+          : `${chipEmpty} hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-300`
       }`}
       aria-pressed={!!task.someday}
       title={task.someday ? "Return to active inbox" : "Defer to someday/maybe — clears due date"}
@@ -301,7 +303,7 @@ export function TaskDetailPanel({
       <select
         value={task.recurrence ?? ""}
         onChange={(e) => onSetRecurrence((e.target.value || undefined) as RecurrenceType | undefined)}
-        className={`flex-1 min-w-0 ${selectText} bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer`}
+        className={`${selectControl} ${selectText}`}
         aria-label="Recurrence"
       >
         <option value="">No repeat</option>
@@ -322,7 +324,7 @@ export function TaskDetailPanel({
         <select
           value={task.projectId}
           onChange={(e) => onMoveToProject(e.target.value)}
-          className={`flex-1 min-w-0 ${selectText} bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer truncate`}
+          className={`${selectControl} ${selectText} truncate`}
           aria-label="Move to project"
         >
           {activeProjects.map((p) => (
@@ -392,7 +394,7 @@ export function TaskDetailPanel({
   ) : null;
 
   const detailsGrid = isDrawer ? (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 min-w-0 w-full">
       {dueDateChip}
       {priorityChip}
       {focusChip}
@@ -403,7 +405,7 @@ export function TaskDetailPanel({
       {somedayChip}
     </div>
   ) : (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-2 min-w-0 w-full">
       {dueDateChip}
       {priorityChip}
       {kindChip}
@@ -454,9 +456,9 @@ export function TaskDetailPanel({
   const footer =
     onDeleteTask || onSave ? (
       <div
-        className={`flex items-center gap-2 ${pad} ${
+        className={`flex items-center gap-2 min-w-0 w-full ${pad} ${
           isDrawer
-            ? "pt-3 pb-3 sm:pb-4 safe-bottom sticky bottom-0 bg-white/95 dark:bg-[#131d30]/95 backdrop-blur-sm border-t border-slate-100 dark:border-[#243350] mt-auto"
+            ? "pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:pb-4 sticky bottom-0 bg-white/95 dark:bg-[#131d30]/95 backdrop-blur-sm border-t border-slate-100 dark:border-[#243350] mt-auto"
             : "pt-3 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2"
         }`}
       >
@@ -464,7 +466,7 @@ export function TaskDetailPanel({
           <button
             type="button"
             onClick={handleSave}
-            className={`flex-1 px-3 ${
+            className={`flex-1 min-w-0 px-3 ${
               isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-xs rounded-md"
             } font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors`}
           >
@@ -477,12 +479,13 @@ export function TaskDetailPanel({
             onClick={onDeleteTask}
             className={`px-3 ${
               isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-xs rounded-md"
-            } font-medium text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5 shrink-0`}
+            } font-medium text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-1.5 shrink-0`}
+            aria-label="Delete task"
           >
             <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            Delete
+            <span className={isDrawer ? "hidden sm:inline" : undefined}>Delete</span>
           </button>
         )}
       </div>
@@ -513,13 +516,15 @@ export function TaskDetailDrawer({ task, onClose, children }: TaskDetailDrawerPr
         onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
         aria-label="Close task details"
       />
-      <aside className="relative w-full max-w-xl h-full bg-white dark:bg-[#111827] shadow-2xl border-l border-slate-200 dark:border-[#243350] flex flex-col">
-        <header className="flex items-start justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-[#243350] shrink-0">
-          <div className="min-w-0">
+      <aside className="relative w-full max-w-xl h-full min-w-0 bg-white dark:bg-[#111827] shadow-2xl border-l border-slate-200 dark:border-[#243350] flex flex-col overflow-hidden">
+        <header className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-[#243350] shrink-0 min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Task details
             </p>
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 leading-snug">{task.title}</h2>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 leading-snug break-words [overflow-wrap:anywhere]">
+              {task.title}
+            </h2>
           </div>
           <button
             type="button"
@@ -532,7 +537,7 @@ export function TaskDetailDrawer({ task, onClose, children }: TaskDetailDrawerPr
             </svg>
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">{children}</div>
       </aside>
     </div>
   );

@@ -615,7 +615,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           collapsed
             ? "hidden"
             : stripEmbedded
-              ? "absolute right-0 top-[calc(100%+0.25rem)] z-50 w-[22rem] max-w-[calc(100vw-2rem)] space-y-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 shadow-lg shadow-slate-900/10"
+              ? "absolute right-0 top-[calc(100%+0.25rem)] z-50 w-[22rem] max-w-[calc(100%-2rem)] space-y-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 shadow-lg shadow-slate-900/10"
               : inline
                 ? "space-y-1.5"
                 : "space-y-2"

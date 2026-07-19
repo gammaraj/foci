@@ -87,7 +87,7 @@ export default function FeatureTour() {
         role="dialog"
         aria-modal="true"
         aria-label={step.title}
-        className="w-[calc(100vw-2rem)] max-w-[300px] bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-[9999]"
+        className="w-[calc(100%-2rem)] max-w-[300px] bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-[9999]"
       >
         <div className="flex items-center justify-between mb-1">
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">{step.title}</h3>

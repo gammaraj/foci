@@ -171,7 +171,7 @@ export default function TaskList({
     if (mode === "plan") return;
     saveTaskViewPreferences({
       lastTaskView: mode,
-      taskViewExplicit: explicit,
+      ...(explicit ? { defaultTaskView: mode, taskViewExplicit: true } : { taskViewExplicit: false }),
     }).catch((err) => console.error("[Foci] Failed to save task view preference:", err));
   }, []);
 
@@ -488,17 +488,16 @@ export default function TaskList({
       setListReturnView(viewMode);
     }
     selectProject(projectId);
+    // Temporary drill-in — don't overwrite the user's default view preference.
     setViewMode("list");
-    persistTaskView("list");
-  }, [viewMode, persistTaskView]);
+  }, [viewMode]);
 
   const backFromProjectList = useCallback(() => {
-    const returnTo = listReturnView ?? "bucket";
+    const returnTo = listReturnView ?? "card";
     selectProject(ALL_PROJECTS_ID);
     setViewMode(returnTo);
     setListReturnView(null);
-    persistTaskView(returnTo);
-  }, [listReturnView, persistTaskView]);
+  }, [listReturnView]);
 
   const selectProjectScope = (projectId: string) => {
     const timeScope =
@@ -520,8 +519,11 @@ export default function TaskList({
     setSelectedSharedProject(shared);
     setSelectedProjectId(`shared:${shared._ownerId}:${shared.id}`);
     closeProjectManage();
+    // Shared projects only support list layout for now — don't overwrite default view.
+    if (viewMode !== "list") {
+      setListReturnView(viewMode);
+    }
     setViewMode("list");
-    persistTaskView("list");
     
     // Load tasks for this shared project if not already loaded
     const key = `${shared._ownerId}:${shared.id}`;

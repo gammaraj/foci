@@ -383,14 +383,14 @@ function BucketTaskCard({
           <button
             type="button"
             onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-medium leading-snug line-clamp-2 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-800 dark:text-slate-100"
+            className="flex-1 min-w-0 text-left text-sm font-medium leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] hover:text-slate-900 dark:hover:text-white transition-colors text-slate-800 dark:text-slate-100"
             title={task.title}
           >
             {task.title}
           </button>
         ) : (
           <p
-            className="flex-1 min-w-0 text-sm font-medium leading-snug line-clamp-2 text-slate-800 dark:text-slate-100"
+            className="flex-1 min-w-0 text-sm font-medium leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] text-slate-800 dark:text-slate-100"
             title={task.title}
           >
             {task.title}

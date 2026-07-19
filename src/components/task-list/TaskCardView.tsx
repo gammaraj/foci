@@ -490,8 +490,8 @@ function CardTaskRow({
               ref={titleTextRef}
               className={`min-w-0 ${
                 titleExpanded
-                  ? "whitespace-normal break-words"
-                  : "line-clamp-2 break-words"
+                  ? "whitespace-normal break-words [overflow-wrap:anywhere]"
+                  : "line-clamp-2 break-words [overflow-wrap:anywhere]"
               }`}
             >
               {task.title}

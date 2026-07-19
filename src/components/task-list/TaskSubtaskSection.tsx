@@ -276,7 +276,7 @@ export function TaskSubtaskSection({
             e.preventDefault();
             onAddSubtask();
           }}
-          className={`flex items-stretch sm:items-center ${
+          className={`flex items-stretch sm:items-center min-w-0 w-full ${
             spacious ? "gap-2 sm:gap-2.5" : `gap-2 pt-1 ${indent} ${borderColor}`
           }`}
         >
@@ -295,16 +295,16 @@ export function TaskSubtaskSection({
             enterKeyHint="done"
             className={`flex-1 min-w-0 dark:text-white outline-none ${
               spacious
-                ? "px-3.5 py-3.5 sm:py-3 text-base sm:text-sm border border-slate-200 dark:border-[#243350] rounded-xl bg-white dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40 shadow-sm"
+                ? "px-3.5 py-3 text-base sm:text-sm border border-slate-200 dark:border-[#243350] rounded-xl bg-white dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40 shadow-sm"
                 : "px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] focus:border-blue-400"
             }`}
           />
           <button
             type="submit"
             disabled={!newSubtaskTitle.trim()}
-            className={`font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0 ${
+            className={`font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0 self-stretch flex items-center ${
               spacious
-                ? "px-5 py-3.5 sm:py-3 text-sm rounded-xl min-h-[3rem] sm:min-h-[2.75rem]"
+                ? "px-4 sm:px-5 text-sm rounded-xl"
                 : "px-2 py-1 text-xs rounded-md"
             }`}
           >

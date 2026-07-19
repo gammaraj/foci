@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { User } from "@supabase/supabase-js";
 
 const _supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const _supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -13,7 +14,9 @@ if (!_supabaseUrl || !_supabaseAnonKey) {
 const supabaseUrl: string = _supabaseUrl;
 const supabaseAnonKey: string = _supabaseAnonKey;
 
-export async function updateSession(request: NextRequest) {
+export async function updateSession(
+  request: NextRequest,
+): Promise<{ response: NextResponse; user: User | null }> {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -38,7 +41,9 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh the session so it doesn't expire
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return { response: supabaseResponse, user };
 }

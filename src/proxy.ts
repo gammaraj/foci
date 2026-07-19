@@ -9,6 +9,12 @@ function isLocalHost(host: string | null): boolean {
   return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
 }
 
+function copyCookies(from: NextResponse, to: NextResponse) {
+  from.cookies.getAll().forEach((cookie) => {
+    to.cookies.set(cookie.name, cookie.value);
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host");
   const proto = request.headers.get("x-forwarded-proto");
@@ -18,7 +24,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(dest, 301);
   }
 
-  const response = await updateSession(request);
+  const { response: sessionResponse, user } = await updateSession(request);
 
   // Generate a per-request nonce for CSP
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
@@ -35,10 +41,21 @@ export async function proxy(request: NextRequest) {
     `frame-ancestors 'none'`,
   ].join("; ");
 
-  response.headers.set("Content-Security-Policy", csp);
-  response.headers.set("x-nonce", nonce);
+  // Signed-in users skip the marketing homepage → go straight to the app
+  if (user && request.nextUrl.pathname === "/") {
+    const dest = request.nextUrl.clone();
+    dest.pathname = "/app";
+    const redirectResponse = NextResponse.redirect(dest);
+    copyCookies(sessionResponse, redirectResponse);
+    redirectResponse.headers.set("Content-Security-Policy", csp);
+    redirectResponse.headers.set("x-nonce", nonce);
+    return redirectResponse;
+  }
 
-  return response;
+  sessionResponse.headers.set("Content-Security-Policy", csp);
+  sessionResponse.headers.set("x-nonce", nonce);
+
+  return sessionResponse;
 }
 
 export const config = {

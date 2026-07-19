@@ -219,7 +219,7 @@ export default function AccountSharingModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="account-share-title"
-        className="fixed left-1/2 bottom-4 safe-bottom -translate-x-1/2 z-[9991] w-[calc(100vw-2rem)] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-5 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">

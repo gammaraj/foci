@@ -572,7 +572,7 @@ export default function ProjectManageView({
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overflow-x-visible px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)]">
         {user && sharedProjects.length > 0 && (
           <div className="mb-4 pb-4 border-b border-slate-100 dark:border-[#243350]">
             <div className="flex items-center justify-between gap-2 mb-2">

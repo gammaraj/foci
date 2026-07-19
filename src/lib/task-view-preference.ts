@@ -31,10 +31,7 @@ export function isDefaultTaskView(value: string | null | undefined): value is De
   return !!value && VALID_DEFAULTS.has(value as DefaultTaskView);
 }
 
-/** Pick the task view on load — last explicit choice, else user default. */
+/** Pick the task view on cold load — always the configured default (Cards out of the box). */
 export function resolveInitialTaskView(prefs: TaskViewPreferences): TaskViewMode {
-  if (prefs.taskViewExplicit && isDefaultTaskView(prefs.lastTaskView)) {
-    return prefs.lastTaskView;
-  }
   return prefs.defaultTaskView;
 }
