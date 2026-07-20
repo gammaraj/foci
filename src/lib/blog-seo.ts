@@ -14,9 +14,9 @@ export const BLOG_POST_META_OVERRIDES: Record<
   { title?: string; description?: string }
 > = {
   "best-free-pomodoro-apps-2026": {
-    title: "Best Free Pomodoro Apps 2026 — Ranked (No Signup)",
+    title: "Best Free Pomodoro App 2026 (7 Tested, No Signup)",
     description:
-      "7 free Pomodoro apps tested for ads, tasks & sounds. Foci ranks #1 — timer + tasks + brown noise, no account. Full ranking inside.",
+      "Looking for the best free Pomodoro app? We ranked 7 timers on ads, tasks, and sounds. Foci #1 — Pomodoro + tasks + brown noise, no account needed.",
   },
   "best-focus-apps-for-students-2026": {
     title: "Best Focus Apps for Students 2026 (Free Ranked)",
@@ -49,9 +49,9 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "Foci vs Forest — free timer, tasks, and ambient sounds vs paid gamified trees. Feature and pricing comparison for real work sessions.",
   },
   "best-music-for-studying-and-focus": {
-    title: "What Music Helps You Focus? Best Study Sounds (2026)",
+    title: "Best Music for Studying: What Actually Helps Focus",
     description:
-      "What type of music helps you focus? Brown noise, lo-fi, rain & classical ranked for studying — free built-in sounds in Foci.",
+      "What music is best for studying? Brown noise, lo-fi, rain, and classical ranked by task type — plus free built-in study sounds in Foci (no signup).",
   },
   "52-17-rule-guide": {
     title: "52/17 Rule Explained (2026) — Work 52, Break 17",
@@ -59,14 +59,14 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "What is the 52/17 rule? DeskTime research, vs Pomodoro, and the Francesco Cirillo myth debunked. Try the 52/17 preset free in Foci.",
   },
   "pomodoro-vs-flowtime-vs-52-17": {
-    title: "Flowtime vs Pomodoro vs 52/17 — Which Should You Use?",
+    title: "Flowtime vs Pomodoro vs 52/17: Which Is Better?",
     description:
-      "Flowtime technique vs Pomodoro vs 52/17 compared. Clear verdict for studying, coding & deep work — plus a free timer for all three.",
+      "Flowtime vs Pomodoro vs the 52/17 rule — side-by-side for studying, coding, and deep work, with a clear pick for each. Free timer for all three in Foci.",
   },
   "flowtime-technique-guide": {
-    title: "What Is the Flowtime Technique? Complete Guide (2026)",
+    title: "Flowtime Technique: How It Works (Complete Guide)",
     description:
-      "What is Flowtime (flowmodoro)? How it works, break ratios, vs Pomodoro, and when to use it — start free in Foci today.",
+      "Learn the Flowtime technique (flowmodoro): work until focus fades, take proportional breaks, and when to use it instead of Pomodoro. Free Flowtime timer in Foci.",
   },
   "adhd-focus-strategies": {
     title: "ADHD Focus Strategies That Actually Work (2026)",
@@ -189,13 +189,13 @@ export interface GuideLink {
 export const GUIDE_HUB_LINKS: GuideLink[] = [
   {
     slug: "flowtime-technique-guide",
-    label: "What is the Flowtime technique?",
-    description: "Complete 2026 guide — how Flowtime works, break ratios, and flowmodoro.",
+    label: "Flowtime technique guide",
+    description: "How Flowtime works, break ratios, flowmodoro, and when to use it.",
   },
   {
     slug: "pomodoro-vs-flowtime-vs-52-17",
     label: "Flowtime vs Pomodoro vs 52/17",
-    description: "Side-by-side comparison with a clear verdict for studying, coding, and deep work.",
+    description: "Side-by-side comparison with a clear pick for studying, coding, and deep work.",
   },
   {
     slug: "pomodoro-technique-guide",
@@ -209,8 +209,8 @@ export const GUIDE_HUB_LINKS: GuideLink[] = [
   },
   {
     slug: "best-free-pomodoro-apps-2026",
-    label: "Best free Pomodoro apps 2026",
-    description: "7 timers ranked — Foci #1 with no signup, tasks, and built-in sounds.",
+    label: "Best free Pomodoro app 2026",
+    description: "7 timers tested — Foci #1 with no signup, tasks, and built-in sounds.",
   },
   {
     slug: "best-focus-apps-for-students-2026",
@@ -229,8 +229,8 @@ export const GUIDE_HUB_LINKS: GuideLink[] = [
   },
   {
     slug: "best-music-for-studying-and-focus",
-    label: "What music helps you focus?",
-    description: "Best study sounds ranked — brown noise, lo-fi, rain, classical, and more.",
+    label: "Best music for studying",
+    description: "Brown noise, lo-fi, rain, and classical ranked by task type.",
   },
   {
     slug: "brown-noise-for-studying-and-focus",

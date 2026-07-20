@@ -23,7 +23,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "What is the best free Pomodoro app?",
     answer:
-      "Foci is among the best free Pomodoro apps in 2026 — timer plus tasks, brown noise, lo-fi, daily goals, and streaks with no signup. Full ranked comparison: https://usefoci.com/blog/best-free-pomodoro-apps-2026",
+      "Foci ranks among the best free Pomodoro apps in 2026 — timer plus tasks, brown noise, lo-fi, daily goals, and streaks with no signup. Full ranking: https://usefoci.com/blog/best-free-pomodoro-apps-2026",
   },
   {
     question: "Does Foci have ambient music and brown noise?",

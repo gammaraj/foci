@@ -277,13 +277,13 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 
 - https://usefoci.com/blog/52-17-rule-guide — What Is the 52/17 Rule? Work 52 Min, Break 17 (2026 Guide)
 - https://usefoci.com/blog/adhd-focus-strategies — ADHD Focus Strategies: How to Stay on Task When Your Brain Won't Cooperate
-- https://usefoci.com/blog/best-free-pomodoro-apps-2026 — Best Free Pomodoro App 2026: 7 Timers Tested & Ranked
+- https://usefoci.com/blog/best-free-pomodoro-apps-2026 — Best Free Pomodoro App 2026 (7 Tested, No Signup)
 - https://usefoci.com/blog/best-focus-apps-for-students-2026 — Best Focus Apps for Students 2026 (Free Options Ranked)
-- https://usefoci.com/blog/best-music-for-studying-and-focus — What Music Helps You Focus? Best Study Music & Noise (2026)
+- https://usefoci.com/blog/best-music-for-studying-and-focus — Best Music for Studying: What Actually Helps Focus
 - https://usefoci.com/blog/brown-noise-for-studying-and-focus — Brown Noise for Studying: Why It Works and How to Use It
 - https://usefoci.com/blog/deep-work-in-the-age-of-ai — Deep Work in the Age of AI: How to Stay Focused When Everything Is Instant
 - https://usefoci.com/blog/digital-detox-for-productivity — Digital Detox for Productivity: How to Reclaim Your Focus From Screens
-- https://usefoci.com/blog/flowtime-technique-guide — What Is the Flowtime Technique? Complete Guide (2026)
+- https://usefoci.com/blog/flowtime-technique-guide — Flowtime Technique: How It Works (Complete Guide)
 - https://usefoci.com/blog/foci-vs-focusatwill — Foci vs Focus@Will: Free All-in-One vs Paid Music Subscription
 - https://usefoci.com/blog/foci-vs-forest-app — Foci vs Forest App: The Free Alternative That Does More
 - https://usefoci.com/blog/foci-vs-todoist — Foci vs Todoist: Focus System vs Task Manager — Which Do You Need?
@@ -296,7 +296,7 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - https://usefoci.com/blog/migrate-from-notion-to-foci — How to Migrate from Notion to Foci
 - https://usefoci.com/blog/migrate-from-todoist-to-foci — How to Migrate from Todoist to Foci
 - https://usefoci.com/blog/pomodoro-technique-guide — What Is the Pomodoro Technique? A Complete Guide
-- https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17 — Flowtime Technique vs Pomodoro vs 52/17: Which Wins? (2026)
+- https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17 — Flowtime vs Pomodoro vs 52/17: Which Is Better?
 - https://usefoci.com/blog/plan-trip-with-wandering-hermit — Plan Your Trip in Focused Sessions (With Wandering Hermit + Foci)
 - https://usefoci.com/blog/productive-morning-routine — The Productive Morning Routine: How to Win Your Day Before 9 AM
 - https://usefoci.com/blog/stoicism-and-focus — Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind
@@ -363,7 +363,7 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 
 - [What Is the Pomodoro Technique? A Complete Guide](https://usefoci.com/blog/pomodoro-technique-guide) — 2026-03-01
 - [How to Stay Focused While Studying: 7 Proven Strategies](https://usefoci.com/blog/how-to-stay-focused-while-studying) — 2026-03-04
-- [Flowtime vs Pomodoro vs 52/17: Which Focus Method Wins?](https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-05-05
+- [Flowtime vs Pomodoro vs 52/17: Which Is Better?](https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-07-19
 - [How to Migrate from Google Tasks to Foci](https://usefoci.com/blog/migrate-from-google-tasks-to-foci) — 2026-03-15
 - [How to Migrate from Todoist to Foci](https://usefoci.com/blog/migrate-from-todoist-to-foci) — 2026-03-15
 - [How to Migrate from Asana to Foci](https://usefoci.com/blog/migrate-from-asana-to-foci) — 2026-03-15
@@ -378,9 +378,9 @@ Foci publishes articles about the Pomodoro technique, focus strategies, and time
 - [Digital Detox for Productivity: How to Reclaim Your Focus From Screens](https://usefoci.com/blog/digital-detox-for-productivity) — 2026-03-20
 - [Time Blocking: The Scheduling Method Used by the World's Most Productive People](https://usefoci.com/blog/time-blocking-method) — 2026-03-22
 - [ADHD Focus Strategies: How to Stay on Task When Your Brain Won't Cooperate](https://usefoci.com/blog/adhd-focus-strategies) — 2026-04-06
-- [Best Music for Studying and Focus: A Complete Guide (2026)](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-04-06
+- [Best Music for Studying: What Actually Helps Focus](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-07-19
 - [Foci vs Forest App: The Free Alternative That Does More](https://usefoci.com/blog/foci-vs-forest-app) — 2026-04-12
-- [Best Free Pomodoro App in 2026: 7 Timers Tested & Ranked](https://usefoci.com/blog/best-free-pomodoro-apps-2026) — 2026-04-12
+- [Best Free Pomodoro App 2026 (7 Tested, No Signup)](https://usefoci.com/blog/best-free-pomodoro-apps-2026) — 2026-07-19
 - [Foci vs Todoist: Focus System vs Task Manager](https://usefoci.com/blog/foci-vs-todoist) — 2026-04-12
 - [Foci vs Focus@Will: Free All-in-One vs Paid Music Subscription](https://usefoci.com/blog/foci-vs-focusatwill) — 2026-04-12
 - [5 Best Forest App Alternatives in 2026 (Free & Paid)](https://usefoci.com/blog/forest-app-alternatives) — 2026-04-12
