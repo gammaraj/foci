@@ -5,11 +5,12 @@ import {
   isDueDateOverdue,
   sortProjectsForDisplay,
   reorderProjects,
+  reorderSubtasks,
   getProjectsDragPreview,
   moveProjectInDisplayOrder,
   resolveProjectColor,
 } from "@/components/task-list/utils";
-import type { Project } from "@/lib/types";
+import type { Project, Subtask } from "@/lib/types";
 
 describe("task-list utils", () => {
   it("formatDuration shows hours and minutes", () => {
@@ -78,5 +79,16 @@ describe("task-list utils", () => {
     ];
     const updated = moveProjectInDisplayOrder(projects, "b", "down");
     expect(sortProjectsForDisplay(updated!).map((p) => p.id)).toEqual(["a", "c", "b"]);
+  });
+
+  it("reorderSubtasks moves a subtask by id", () => {
+    const subtasks: Subtask[] = [
+      { id: "a", title: "A", completed: false },
+      { id: "b", title: "B", completed: true },
+      { id: "c", title: "C", completed: false },
+    ];
+    expect(reorderSubtasks(subtasks, "c", "a")?.map((s) => s.id)).toEqual(["c", "a", "b"]);
+    expect(reorderSubtasks(subtasks, "a", "a")).toBeNull();
+    expect(reorderSubtasks(subtasks, "missing", "a")).toBeNull();
   });
 });

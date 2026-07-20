@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { Subtask, Task } from "@/lib/types";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
@@ -20,6 +20,7 @@ export interface TaskSubtaskSectionProps {
   onToggleSubtask: (subId: string) => void;
   onSetSubtaskDueDate: (subId: string, date: string | undefined) => void;
   onDeleteSubtask: (subId: string) => void;
+  onReorderSubtasks?: (draggedId: string, targetId: string) => void;
   /** Tighter layout for bucket/card columns */
   compact?: boolean;
   /** Roomier layout for the task details drawer */
@@ -41,6 +42,7 @@ export function TaskSubtaskSection({
   onToggleSubtask,
   onSetSubtaskDueDate,
   onDeleteSubtask,
+  onReorderSubtasks,
   compact = false,
   spacious = false,
 }: TaskSubtaskSectionProps) {
@@ -48,6 +50,9 @@ export function TaskSubtaskSection({
   const completedSubtasks = subtasks.filter((s) => s.completed).length;
   const hasSubtasks = subtasks.length > 0;
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const [dragSubtaskId, setDragSubtaskId] = useState<string | null>(null);
+  const [dragOverSubtaskId, setDragOverSubtaskId] = useState<string | null>(null);
+  const canReorder = Boolean(onReorderSubtasks) && subtasks.length > 1;
 
   if (!hasSubtasks && !showAddForm) return null;
 
@@ -64,6 +69,11 @@ export function TaskSubtaskSection({
     requestAnimationFrame(() => {
       inputRefs.current[sub.id]?.focus();
     });
+  };
+
+  const clearDrag = () => {
+    setDragSubtaskId(null);
+    setDragOverSubtaskId(null);
   };
 
   return (
@@ -124,17 +134,68 @@ export function TaskSubtaskSection({
         >
           {subtasks.map((sub) => {
             const isEditing = editingSubtaskId === sub.id;
+            const isDragging = dragSubtaskId === sub.id;
+            const isDropTarget = dragOverSubtaskId === sub.id && dragSubtaskId !== sub.id;
             return (
               <li
                 key={sub.id}
+                onDragOver={(e) => {
+                  if (!canReorder || !dragSubtaskId) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (dragOverSubtaskId !== sub.id) setDragOverSubtaskId(sub.id);
+                }}
+                onDrop={(e) => {
+                  if (!canReorder || !dragSubtaskId) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onReorderSubtasks!(dragSubtaskId, sub.id);
+                  clearDrag();
+                }}
+                onDragEnd={(e) => {
+                  e.stopPropagation();
+                  clearDrag();
+                }}
                 className={`group/sub flex items-center gap-1.5 ${
                   compact
                     ? "py-0.5"
                     : spacious
                       ? "gap-2 py-2 px-2.5 rounded-lg hover:bg-white dark:hover:bg-white/[0.04]"
                       : "py-1 gap-2"
-                } ${indent} ${borderColor}`}
+                } ${indent} ${borderColor} ${isDragging ? "opacity-50" : ""} ${
+                  isDropTarget ? "border-t-2 border-t-blue-500" : ""
+                }`}
               >
+                {canReorder && (
+                  <div
+                    draggable
+                    onDragStart={(e) => {
+                      e.stopPropagation();
+                      if (editingSubtaskId) onCancelEditSubtask();
+                      setDragSubtaskId(sub.id);
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", sub.id);
+                    }}
+                    className={`flex-shrink-0 flex items-center cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 touch-none ${
+                      spacious
+                        ? "opacity-100 p-0.5"
+                        : "opacity-100 sm:opacity-0 sm:group-hover/sub:opacity-100 p-0.5"
+                    }`}
+                    aria-label={`Drag to reorder subtask "${sub.title}"`}
+                    title="Drag to reorder"
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <svg
+                      className={compact ? "w-3 h-3" : "w-3.5 h-3.5"}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      aria-hidden
+                    >
+                      <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
+                    </svg>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => onToggleSubtask(sub.id)}

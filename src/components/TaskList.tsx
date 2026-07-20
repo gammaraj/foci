@@ -64,6 +64,7 @@ import {
   projectTabLabel,
   sortProjectsForDisplay,
   reorderProjects,
+  reorderSubtasks,
   moveProjectInDisplayOrder,
 } from "@/components/task-list/utils";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
@@ -1188,6 +1189,13 @@ export default function TaskList({
     }));
   };
 
+  const reorderTaskSubtasks = (taskId: string, draggedId: string, targetId: string) => {
+    mutateActiveTask(taskId, (t) => {
+      const next = reorderSubtasks(t.subtasks || [], draggedId, targetId);
+      return next ? { ...t, subtasks: next } : t;
+    });
+  };
+
   const startEditingDesc = (task: Task) => {
     setEditingDescId(task.id);
     setEditDesc(task.description ?? "");
@@ -1288,6 +1296,8 @@ export default function TaskList({
     onToggleSubtask: (subId: string) => toggleSubtask(task.id, subId),
     onSetSubtaskDueDate: (subId: string, date: string | undefined) => setSubtaskDueDate(task.id, subId, date),
     onDeleteSubtask: (subId: string) => deleteSubtask(task.id, subId),
+    onReorderSubtasks: (draggedId: string, targetId: string) =>
+      reorderTaskSubtasks(task.id, draggedId, targetId),
   });
 
   const toggleTaskDetail = (taskId: string) => {
@@ -1824,6 +1834,8 @@ export default function TaskList({
     onSetSubtaskDueDate: (subId: string, date: string | undefined) =>
       setSubtaskDueDate(task.id, subId, date),
     onDeleteSubtask: (subId: string) => deleteSubtask(task.id, subId),
+    onReorderSubtasks: (draggedId: string, targetId: string) =>
+      reorderTaskSubtasks(task.id, draggedId, targetId),
   });
 
   const renderTaskExpansionContent = (task: Task, compact = false) => {

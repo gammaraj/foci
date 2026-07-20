@@ -1,10 +1,26 @@
-import type { Project, RecurrenceType } from "@/lib/types";
+import type { Project, RecurrenceType, Subtask } from "@/lib/types";
 import { PROJECT_COLORS } from "@/lib/types";
 import { getToday, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
 export const MAX_VISIBLE_PROJECT_TABS = 3; // initial floor before width measurement
+
+/** Reorder subtasks by id. Returns a new array, or null when the move is invalid. */
+export function reorderSubtasks(
+  subtasks: Subtask[],
+  draggedId: string,
+  targetId: string,
+): Subtask[] | null {
+  if (draggedId === targetId) return null;
+  const fromIdx = subtasks.findIndex((s) => s.id === draggedId);
+  const toIdx = subtasks.findIndex((s) => s.id === targetId);
+  if (fromIdx === -1 || toIdx === -1) return null;
+  const next = [...subtasks];
+  const [moved] = next.splice(fromIdx, 1);
+  next.splice(toIdx, 0, moved);
+  return next;
+}
 
 /** Stable accent color for every project — uses saved color or a deterministic fallback. */
 export function resolveProjectColor(project: Pick<Project, "id" | "color">): string {

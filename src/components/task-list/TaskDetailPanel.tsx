@@ -50,6 +50,7 @@ export interface TaskDetailPanelProps {
   onToggleSubtask: (subId: string) => void;
   onSetSubtaskDueDate: (subId: string, date: string | undefined) => void;
   onDeleteSubtask: (subId: string) => void;
+  onReorderSubtasks?: (draggedId: string, targetId: string) => void;
   onDeleteTask?: () => void;
   onStartTask?: () => void;
   onDeselectTask?: () => void;
@@ -91,6 +92,7 @@ export function TaskDetailPanel({
   onToggleSubtask,
   onSetSubtaskDueDate,
   onDeleteSubtask,
+  onReorderSubtasks,
   onDeleteTask,
   onStartTask,
   onDeselectTask,
@@ -118,13 +120,6 @@ export function TaskDetailPanel({
 
   const detailsSummary = useMemo(() => {
     const bits: string[] = [];
-    if (task.dueDate) {
-      bits.push(
-        !task.completed && isDueDateOverdue(task.dueDate)
-          ? `${formatDueDate(task.dueDate)} overdue`
-          : formatDueDate(task.dueDate),
-      );
-    }
     if (task.priority === 1) bits.push("High");
     else if (task.priority === 2) bits.push("Medium");
     else if (task.priority === 3) bits.push("Low");
@@ -389,12 +384,12 @@ export function TaskDetailPanel({
       onToggleSubtask={onToggleSubtask}
       onSetSubtaskDueDate={onSetSubtaskDueDate}
       onDeleteSubtask={onDeleteSubtask}
+      onReorderSubtasks={onReorderSubtasks}
     />
   ) : null;
 
   const detailsGrid = isDrawer ? (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 min-w-0 w-full">
-      {dueDateChip}
       {priorityChip}
       {focusChip}
       {projectChip}
@@ -405,7 +400,6 @@ export function TaskDetailPanel({
     </div>
   ) : (
     <div className="grid grid-cols-2 gap-2 min-w-0 w-full">
-      {dueDateChip}
       {priorityChip}
       {kindChip}
       {waitingChip}
@@ -413,6 +407,12 @@ export function TaskDetailPanel({
       {recurrenceChip}
       {projectChip}
       {focusChip}
+    </div>
+  );
+
+  const dueDateBlock = (
+    <div className={`${pad} ${isDrawer ? "pt-3 pb-1" : "pb-1"}`}>
+      <div className="max-w-xs">{dueDateChip}</div>
     </div>
   );
 
@@ -490,9 +490,10 @@ export function TaskDetailPanel({
       </div>
     ) : null;
 
-  // Subtasks first; description + meta stay collapsed under More details.
+  // Due date stays visible; description + other meta stay under More details.
   return (
     <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
+      {dueDateBlock}
       {subtaskBlock}
       {moreDetailsBlock}
       {footer}
