@@ -1023,33 +1023,28 @@ input:focus-visible {
   min-height: 2.75rem;
 }
 
+/* Reserve layout space; fade in on hover so titles don't reflow. */
 .hover-reveal-desktop {
   opacity: 1;
 }
 @media (hover: hover) and (pointer: fine) {
   .hover-reveal-desktop {
     opacity: 0;
-    max-width: 0;
-    overflow: hidden;
     pointer-events: none;
-    transition:
-      opacity 0.12s ease 0s,
-      max-width 0.12s ease 0s;
+    transition: opacity 0.12s ease 0s;
   }
   .group:hover .hover-reveal-desktop,
   .group\/row:hover .hover-reveal-desktop,
   .group\/task:hover .hover-reveal-desktop {
     opacity: 1;
-    max-width: 6rem;
     pointer-events: auto;
     /* Appear after a short dwell so dense grids stay calm while scanning */
-    transition-delay: 0.35s, 0.35s;
+    transition-delay: 0.35s;
   }
   .hover-reveal-desktop:focus-within {
     opacity: 1;
-    max-width: 6rem;
     pointer-events: auto;
-    transition-delay: 0s, 0s;
+    transition-delay: 0s;
   }
 }
 
