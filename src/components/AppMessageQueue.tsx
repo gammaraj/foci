@@ -6,8 +6,8 @@ import { loadTasks } from "@/lib/storage";
 
 type MessageId = "signup" | "first-session" | "notification" | "pwa";
 
-// "notification" hidden until invite push reminders are implemented (due-date only is partial)
-const PRIORITY: MessageId[] = ["signup", "first-session", "pwa"];
+// Soft conversion: get them into a session first, then ask to sync streaks.
+const PRIORITY: MessageId[] = ["first-session", "signup", "pwa"];
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -19,20 +19,33 @@ interface AppMessageQueueProps {
   focusMode?: boolean;
 }
 
+function hasCompletedSession(): boolean {
+  return Boolean(
+    localStorage.getItem("foci_sessions_completed") ||
+      localStorage.getItem("tempo_sessions_completed")
+  );
+}
+
 export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProps) {
   const [activeId, setActiveId] = useState<MessageId | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState<Set<MessageId>>(() => new Set());
+  const [sessionTick, setSessionTick] = useState(0);
 
   const dismiss = useCallback((id: MessageId) => {
     setDismissed((prev) => new Set(prev).add(id));
     if (id === "signup") sessionStorage.setItem("foci_signup_dismissed", "1");
     if (id === "first-session") {
       localStorage.setItem("foci_first_session_nudge_dismissed", "1");
-      localStorage.setItem("foci_sessions_completed", "1");
     }
     if (id === "notification") sessionStorage.setItem("foci_notif_dismissed", "1");
     if (id === "pwa") localStorage.setItem("foci_pwa_dismissed", "1");
+  }, []);
+
+  useEffect(() => {
+    const onSessionComplete = () => setSessionTick((n) => n + 1);
+    window.addEventListener("tempo-session-complete", onSessionComplete);
+    return () => window.removeEventListener("tempo-session-complete", onSessionComplete);
   }, []);
 
   useEffect(() => {
@@ -45,19 +58,12 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
       for (const id of PRIORITY) {
         if (dismissed.has(id)) continue;
 
-        if (id === "signup") {
-          if (!user && !sessionStorage.getItem("foci_signup_dismissed")) {
-            setActiveId("signup");
-            return;
-          }
-        }
-
         if (id === "first-session") {
           const dismissedLocal =
             localStorage.getItem("foci_first_session_nudge_dismissed") ||
             localStorage.getItem("tempo_first_session_nudge_dismissed");
           if (dismissedLocal) continue;
-          if (localStorage.getItem("foci_sessions_completed")) continue;
+          if (hasCompletedSession()) continue;
           try {
             const tasks = await loadTasks();
             const hasActivity = tasks.some((t) => t.completed || (t.sessions || 0) > 0);
@@ -67,6 +73,18 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
             }
           } catch {
             setActiveId("first-session");
+            return;
+          }
+        }
+
+        if (id === "signup") {
+          // Soft prompt: only after the guest has completed a real focus session.
+          if (
+            !user &&
+            hasCompletedSession() &&
+            !sessionStorage.getItem("foci_signup_dismissed")
+          ) {
+            setActiveId("signup");
             return;
           }
         }
@@ -90,7 +108,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     };
 
     evaluate();
-  }, [user, dismissed, deferredPrompt, focusMode]);
+  }, [user, dismissed, deferredPrompt, focusMode, sessionTick]);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -108,8 +126,9 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm">
         <div className="app-container py-2 flex items-center justify-between gap-3">
           <p className="flex-1 min-w-0">
-            <span className="font-medium">Sign up free</span>
-            <span className="hidden sm:inline"> — sync tasks across devices</span>
+            <span className="font-medium">Nice session</span>
+            <span className="hidden sm:inline"> — create a free account to keep your streak across devices</span>
+            <span className="sm:hidden"> — sync your streak free</span>
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <Link href="/login" className="px-3 py-1.5 bg-white text-blue-700 font-semibold rounded-lg text-sm hover:bg-blue-50">
