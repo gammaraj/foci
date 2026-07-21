@@ -13,7 +13,7 @@ export interface TaskSubtaskSectionProps {
   onAddSubtask: () => void;
   editingSubtaskId: string | null;
   editSubtaskTitle: string;
-  onStartEditSubtask: (sub: Subtask) => void;
+  onStartEditSubtask: (sub: Subtask, titleOverride?: string) => void;
   onEditSubtaskTitleChange: (value: string) => void;
   onSaveSubtaskEdit: (subId: string) => void;
   onCancelEditSubtask: () => void;
@@ -230,8 +230,13 @@ export function TaskSubtaskSection({
                     if (!isEditing) onStartEditSubtask(sub);
                   }}
                   onChange={(e) => {
-                    if (!isEditing) onStartEditSubtask(sub);
-                    onEditSubtaskTitleChange(e.target.value);
+                    const next = e.target.value;
+                    if (!isEditing) {
+                      // Seed edit mode with the typed value so the first keystroke isn't lost.
+                      onStartEditSubtask(sub, next);
+                    } else {
+                      onEditSubtaskTitleChange(next);
+                    }
                   }}
                   onBlur={() => {
                     if (editingSubtaskId === sub.id) onSaveSubtaskEdit(sub.id);
@@ -243,8 +248,8 @@ export function TaskSubtaskSection({
                     }
                     if (e.key === "Escape") {
                       e.preventDefault();
+                      // Cancel without blurring — blur would re-save the draft.
                       onCancelEditSubtask();
-                      (e.target as HTMLInputElement).blur();
                     }
                   }}
                   aria-label={`Subtask title: ${sub.title}`}

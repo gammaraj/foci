@@ -21,7 +21,7 @@ export function TaskExpansionDrawer({
   children: React.ReactNode;
   isEditingTitle?: boolean;
   editTitle?: string;
-  onStartEditTitle?: (task: Task) => void;
+  onStartEditTitle?: (task: Task, titleOverride?: string) => void;
   onEditTitleChange?: (title: string) => void;
   onSaveTitle?: (taskId: string) => void;
   onCancelEditTitle?: () => void;
@@ -85,13 +85,20 @@ export function TaskExpansionDrawer({
                 <input
                   ref={titleInputRef}
                   type="text"
+                  // Always bind the draft once editing starts so the first keystroke
+                  // can't race with startEditing resetting to task.title.
                   value={isEditingTitle ? editTitle : task.title}
                   onFocus={() => {
                     if (!isEditingTitle) onStartEditTitle!(task);
                   }}
                   onChange={(e) => {
-                    if (!isEditingTitle) onStartEditTitle!(task);
-                    onEditTitleChange!(e.target.value);
+                    const next = e.target.value;
+                    if (!isEditingTitle) {
+                      // Seed edit mode with the typed value so the first keystroke isn't lost.
+                      onStartEditTitle!(task, next);
+                    } else {
+                      onEditTitleChange!(next);
+                    }
                   }}
                   onBlur={() => {
                     if (isEditingTitle) onSaveTitle!(task.id);

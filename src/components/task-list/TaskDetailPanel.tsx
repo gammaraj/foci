@@ -43,7 +43,7 @@ export interface TaskDetailPanelProps {
   onAddSubtask: () => void;
   editingSubtaskId: string | null;
   editSubtaskTitle: string;
-  onStartEditSubtask: (sub: Subtask) => void;
+  onStartEditSubtask: (sub: Subtask, titleOverride?: string) => void;
   onEditSubtaskTitleChange: (value: string) => void;
   onSaveSubtaskEdit: (subId: string) => void;
   onCancelEditSubtask: () => void;

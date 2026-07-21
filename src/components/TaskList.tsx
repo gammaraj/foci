@@ -996,9 +996,9 @@ export default function TaskList({
     showToast("Moved to today");
   };
 
-  const startEditing = (task: Task) => {
+  const startEditing = (task: Task, titleOverride?: string) => {
     setEditingId(task.id);
-    setEditTitle(task.title);
+    setEditTitle(titleOverride ?? task.title);
   };
 
   const saveEdit = (id: string) => {
@@ -1163,9 +1163,9 @@ export default function TaskList({
     }));
   };
 
-  const startEditingSubtask = (sub: Subtask) => {
+  const startEditingSubtask = (sub: Subtask, titleOverride?: string) => {
     setEditingSubtaskId(sub.id);
-    setEditSubtaskTitle(sub.title);
+    setEditSubtaskTitle(titleOverride ?? sub.title);
   };
 
   const saveSubtaskEdit = (taskId: string, subtaskId: string) => {
@@ -1860,6 +1860,8 @@ export default function TaskList({
   const renderGridSubtasks = (task: Task) => {
     if (!(task.subtasks?.length)) return null;
     if (expandedSubtasksTaskId !== task.id) return null;
+    // Drawer already shows subtasks — avoid dual controlled inputs fighting the caret.
+    if (expandedTaskId === task.id) return null;
     return (
       <TaskSubtaskSection
         {...taskSubtaskSectionProps(task)}
@@ -2566,7 +2568,10 @@ export default function TaskList({
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
           onToggleProjectFavorite={toggleProjectFavorite}
           onExpandProject={expandProjectToList}
-          editingTaskId={editingId}
+          // Drawer owns title edit — don't mount row autoFocus input (steals caret).
+          editingTaskId={
+            expandedTaskId != null && editingId === expandedTaskId ? null : editingId
+          }
           editTitle={editTitle}
           onStartEdit={startEditing}
           onEditTitleChange={setEditTitle}
@@ -2620,7 +2625,10 @@ export default function TaskList({
           onTaskDragOver={handleDragOver}
           onTaskDrop={handleCardTaskDrop}
           onTaskDragEnd={handleDragEnd}
-          editingTaskId={editingId}
+          // Drawer owns title edit — don't mount row autoFocus input (steals caret).
+          editingTaskId={
+            expandedTaskId != null && editingId === expandedTaskId ? null : editingId
+          }
           editTitle={editTitle}
           onStartEdit={startEditing}
           onEditTitleChange={setEditTitle}
