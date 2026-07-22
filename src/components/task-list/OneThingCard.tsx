@@ -19,7 +19,7 @@ export interface OneThingCardProps {
 }
 
 const strip =
-  "no-print mx-3 sm:mx-4 mt-1.5 mb-1 flex items-center gap-2.5 min-h-[2.5rem] min-w-0 rounded-lg border-2 px-3 py-1.5";
+  "no-print mx-3 sm:mx-4 mt-1.5 mb-1 flex items-center justify-center gap-2.5 min-h-[2.5rem] min-w-0 rounded-lg border-2 px-3 py-1.5";
 
 function StarIcon({ className }: { className?: string }) {
   return (
@@ -51,7 +51,7 @@ export function OneThingCard({
           <StarIcon className="w-3 h-3" />
           One Thing
         </span>
-        <p className="min-w-0 flex-1 truncate text-sm font-medium text-blue-950 dark:text-blue-50">
+        <p className="min-w-0 max-w-md truncate text-sm font-medium text-blue-950 dark:text-blue-50">
           {hasOpenTasks
             ? "What’s the one thing that would make today a success?"
             : "Add a task, then set it as your One Thing"}
@@ -86,7 +86,7 @@ export function OneThingCard({
           Done
         </span>
         <p
-          className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-950 dark:text-emerald-50 line-through decoration-emerald-600/50"
+          className="min-w-0 max-w-md truncate text-sm font-medium text-emerald-950 dark:text-emerald-50 line-through decoration-emerald-600/50"
           title={task.title}
         >
           {task.title}
@@ -115,7 +115,7 @@ export function OneThingCard({
           One Thing
         </span>
         <p
-          className="min-w-0 flex-1 truncate text-sm font-semibold text-blue-950 dark:text-white"
+          className="min-w-0 max-w-md truncate text-sm font-semibold text-blue-950 dark:text-white"
           title={projectName ? `${task.title} · ${projectName}` : task.title}
         >
           {task.title}
