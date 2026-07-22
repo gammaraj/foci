@@ -45,19 +45,19 @@ export function OneThingCard({
   if (status === "unset") {
     return (
       <div
-        className={`${strip} border-amber-400 dark:border-amber-500/80 bg-amber-100 dark:bg-amber-500/15 shadow-sm shadow-amber-500/10`}
+        className={`${strip} border-teal-400 dark:border-teal-400/70 bg-teal-50 dark:bg-teal-500/15 shadow-sm shadow-teal-500/10`}
       >
-        <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-amber-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+        <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-teal-600 dark:bg-teal-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
           <StarIcon className="w-3 h-3" />
           One Thing
         </span>
-        <p className="min-w-0 flex-1 truncate text-sm font-medium text-amber-950 dark:text-amber-50">
+        <p className="min-w-0 flex-1 truncate text-sm font-medium text-teal-950 dark:text-teal-50">
           {hasOpenTasks
             ? "What’s the one thing that would make today a success?"
             : "Add a task, then set it as your One Thing"}
         </p>
         {hasOpenTasks && (
-          <span className="hidden sm:inline shrink-0 text-xs font-semibold text-amber-800 dark:text-amber-200/90">
+          <span className="hidden sm:inline shrink-0 text-xs font-semibold text-teal-800 dark:text-teal-200/90">
             Open a task → Set as One Thing
           </span>
         )}
@@ -65,7 +65,7 @@ export function OneThingCard({
           <button
             type="button"
             onClick={onDismissEmpty}
-            className="shrink-0 p-1 rounded-md text-amber-700/70 dark:text-amber-200/60 hover:text-amber-950 dark:hover:text-amber-50 hover:bg-amber-200/50 dark:hover:bg-amber-500/20"
+            className="shrink-0 p-1 rounded-md text-teal-700/70 dark:text-teal-200/60 hover:text-teal-950 dark:hover:text-teal-50 hover:bg-teal-200/50 dark:hover:bg-teal-500/20"
             aria-label="Dismiss One Thing prompt"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -105,17 +105,17 @@ export function OneThingCard({
   if (status === "active" && task) {
     return (
       <div
-        className={`${strip} border-amber-400 dark:border-amber-500/80 bg-amber-100 dark:bg-amber-500/15 shadow-sm shadow-amber-500/10`}
+        className={`${strip} border-teal-400 dark:border-teal-400/70 bg-teal-50 dark:bg-teal-500/15 shadow-sm shadow-teal-500/10`}
       >
         <span
-          className="inline-flex items-center gap-1 shrink-0 rounded-md bg-amber-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white"
+          className="inline-flex items-center gap-1 shrink-0 rounded-md bg-teal-600 dark:bg-teal-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white"
           title={projectName ? `The One Thing · ${projectName}` : "The One Thing"}
         >
           <StarIcon className="w-3 h-3" />
           One Thing
         </span>
         <p
-          className="min-w-0 flex-1 truncate text-sm font-semibold text-amber-950 dark:text-white"
+          className="min-w-0 flex-1 truncate text-sm font-semibold text-teal-950 dark:text-white"
           title={projectName ? `${task.title} · ${projectName}` : task.title}
         >
           {task.title}
@@ -146,14 +146,14 @@ export function OneThingCard({
           <button
             type="button"
             onClick={onChange}
-            className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-amber-900 dark:text-amber-100 hover:underline"
+            className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-teal-900 dark:text-teal-100 hover:underline"
           >
             Change
           </button>
           <button
             type="button"
             onClick={onClear}
-            className="inline-flex items-center p-1 rounded-md text-amber-800/70 dark:text-amber-200/70 hover:text-amber-950 dark:hover:text-white hover:bg-amber-200/50 dark:hover:bg-amber-500/20"
+            className="inline-flex items-center p-1 rounded-md text-teal-800/70 dark:text-teal-200/70 hover:text-teal-950 dark:hover:text-white hover:bg-teal-200/50 dark:hover:bg-teal-500/20"
             aria-label="Clear One Thing"
             title="Clear"
           >
