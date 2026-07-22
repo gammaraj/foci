@@ -14,6 +14,7 @@ import {
   DEFAULT_TASK_VIEW_PREFERENCES,
   type TaskViewPreferences,
 } from "../task-view-preference";
+import type { OneThingPreference } from "../one-thing";
 import {
   Settings,
   DailyGoalData,
@@ -37,6 +38,7 @@ const CACHE_KEYS = {
   projects: `${CACHE_PREFIX}projects`,
   selectedProject: `${CACHE_PREFIX}selected_project`,
   taskViewPrefs: `${CACHE_PREFIX}task_view_prefs`,
+  oneThing: `${CACHE_PREFIX}one_thing`,
 } as const;
 
 function isBrowser(): boolean {
@@ -258,6 +260,21 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     const merged = { ...current, ...prefs };
     cacheSet(CACHE_KEYS.taskViewPrefs, merged);
     await this.remote.saveTaskViewPreferences(prefs);
+  }
+
+  async loadOneThing(): Promise<OneThingPreference | null> {
+    try {
+      const result = await this.remote.loadOneThing();
+      cacheSet(CACHE_KEYS.oneThing, result);
+      return result;
+    } catch {
+      return cacheGet<OneThingPreference | null>(CACHE_KEYS.oneThing) ?? null;
+    }
+  }
+
+  async saveOneThing(pref: OneThingPreference | null): Promise<void> {
+    cacheSet(CACHE_KEYS.oneThing, pref);
+    await this.remote.saveOneThing(pref);
   }
 
   // ── Collaboration (delegate to remote, no caching) ────────

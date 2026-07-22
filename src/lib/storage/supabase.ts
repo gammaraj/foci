@@ -19,6 +19,7 @@ import {
   isDefaultTaskView,
   type TaskViewPreferences,
 } from "../task-view-preference";
+import type { OneThingPreference } from "../one-thing";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 /** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
@@ -511,6 +512,32 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         default_task_view: merged.defaultTaskView,
         last_task_view: merged.lastTaskView,
         task_view_explicit: merged.taskViewExplicit,
+      })
+    );
+  }
+
+  async loadOneThing(): Promise<OneThingPreference | null> {
+    const userId = await this.getUserId();
+    const data = check(
+      await this.supabase
+        .from("user_preferences")
+        .select("one_thing_task_id, one_thing_date")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      { silent: true },
+    );
+
+    if (!data?.one_thing_task_id || !data?.one_thing_date) return null;
+    return { taskId: data.one_thing_task_id, date: data.one_thing_date };
+  }
+
+  async saveOneThing(pref: OneThingPreference | null): Promise<void> {
+    const userId = await this.getUserId();
+    check(
+      await this.supabase.from("user_preferences").upsert({
+        user_id: userId,
+        one_thing_task_id: pref?.taskId ?? null,
+        one_thing_date: pref?.date ?? null,
       })
     );
   }

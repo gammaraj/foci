@@ -6,6 +6,7 @@ import {
   Project,
 } from "../types";
 import type { TaskViewPreferences } from "../task-view-preference";
+import type { OneThingPreference } from "../one-thing";
 
 // ── Collaboration Types ─────────────────────────────────────
 
@@ -115,6 +116,8 @@ export interface StorageAdapter {
   saveSelectedProjectId(id: string): Promise<void>;
   loadTaskViewPreferences(): Promise<TaskViewPreferences>;
   saveTaskViewPreferences(prefs: Partial<TaskViewPreferences>): Promise<void>;
+  loadOneThing(): Promise<OneThingPreference | null>;
+  saveOneThing(pref: OneThingPreference | null): Promise<void>;
 
   // ── Collaboration ─────────────────────────────────────
   // Get collaborators for a project (owner only)

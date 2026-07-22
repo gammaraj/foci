@@ -19,6 +19,7 @@ import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+import { OneThingBadge } from "@/components/task-list/OneThingBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 
 const COLLAPSED_PROJECTS_KEY = "foci-collapsed-card-projects";
@@ -47,6 +48,8 @@ interface TaskCardViewProps {
   /** Tasks completed today per project (Done today reel). */
   doneTodayByProject?: Map<string, Task[]>;
   activeTaskId: string | null;
+  /** Today's One Thing task id (active pick only). */
+  oneThingTaskId?: string | null;
   isTimerRunning?: boolean;
   expandedTaskId?: string | null;
   expandedSubtasksTaskId?: string | null;
@@ -310,6 +313,7 @@ function CardTaskRow({
   task,
   projectId,
   activeTaskId,
+  isOneThing = false,
   isTimerRunning,
   isExpanded,
   subtasksExpanded = false,
@@ -333,6 +337,7 @@ function CardTaskRow({
   task: Task;
   projectId: string;
   activeTaskId: string | null;
+  isOneThing?: boolean;
   isTimerRunning?: boolean;
   isExpanded?: boolean;
   subtasksExpanded?: boolean;
@@ -484,6 +489,7 @@ function CardTaskRow({
               </span>
             )}
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
+            {isOneThing && <OneThingBadge size="compact" />}
             {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
             {task.dueDate && <CardDuePrefix task={task} />}
             <span
@@ -571,6 +577,7 @@ function ProjectCard({
   completedCount,
   doneTodayTasks = [],
   activeTaskId,
+  oneThingTaskId = null,
   isTimerRunning,
   expandedTaskId,
   expandedSubtasksTaskId,
@@ -613,6 +620,7 @@ function ProjectCard({
   completedCount: number;
   doneTodayTasks?: Task[];
   activeTaskId: string | null;
+  oneThingTaskId?: string | null;
   isTimerRunning?: boolean;
   expandedTaskId?: string | null;
   expandedSubtasksTaskId?: string | null;
@@ -854,6 +862,7 @@ function ProjectCard({
                     task={task}
                     projectId={project.id}
                     activeTaskId={activeTaskId}
+                    isOneThing={oneThingTaskId === task.id}
                     isTimerRunning={isTimerRunning}
                     isExpanded={expandedTaskId === task.id}
                     subtasksExpanded={expandedSubtasksTaskId === task.id}
@@ -936,6 +945,7 @@ export default function TaskCardView({
   completedCountByProject,
   doneTodayByProject,
   activeTaskId,
+  oneThingTaskId = null,
   isTimerRunning,
   expandedTaskId,
   expandedSubtasksTaskId,
@@ -1091,6 +1101,7 @@ export default function TaskCardView({
               completedCount={completedCountByProject?.get(project.id) ?? 0}
               doneTodayTasks={doneTodayByProject?.get(project.id) ?? []}
               activeTaskId={activeTaskId}
+              oneThingTaskId={oneThingTaskId}
               isTimerRunning={isTimerRunning}
               expandedTaskId={expandedTaskId}
               expandedSubtasksTaskId={expandedSubtasksTaskId}

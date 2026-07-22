@@ -12,10 +12,13 @@ import {
   TASK_LIST_SECTION_ORDER,
   type TaskListSection,
 } from "@/lib/task-status";
+import { OneThingBadge } from "@/components/task-list/OneThingBadge";
 
 export interface OpenTaskListProps {
   tasks: Task[];
   activeTaskId: string | null;
+  /** Today's One Thing task id (active pick only). */
+  oneThingTaskId?: string | null;
   isTimerRunning: boolean;
   expandedTaskId: string | null;
   /** Task whose subtasks are expanded inline (badge), separate from Details. */
@@ -60,6 +63,7 @@ export interface OpenTaskListProps {
 export default function OpenTaskList({
   tasks,
   activeTaskId,
+  oneThingTaskId = null,
   isTimerRunning,
   expandedTaskId,
   expandedSubtasksTaskId = null,
@@ -226,6 +230,7 @@ export default function OpenTaskList({
               {activeTaskId === task.id && isTimerRunning && (
                 <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
               )}
+              {oneThingTaskId === task.id && <OneThingBadge />}
               {isOverdue && (
                 <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded urgency-chip--soft">
                   OVERDUE

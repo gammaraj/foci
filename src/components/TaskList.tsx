@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import dynamic from "next/dynamic";
@@ -67,6 +67,12 @@ import {
   reorderSubtasks,
   moveProjectInDisplayOrder,
 } from "@/components/task-list/utils";
+import { OneThingCard } from "@/components/task-list/OneThingCard";
+import {
+  canBeOneThing,
+  resolveOneThing,
+  type OneThingPreference,
+} from "@/lib/one-thing";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 
@@ -158,6 +164,8 @@ export default function TaskList({
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<TaskViewMode>("card");
   const [preparingPrint, setPreparingPrint] = useState(false);
+  const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(null);
+  const [oneThingPromptDismissed, setOneThingPromptDismissed] = useState(false);
 
   useEffect(() => {
     const onDefaultViewChanged = (e: Event) => {
@@ -175,6 +183,35 @@ export default function TaskList({
       ...(explicit ? { defaultTaskView: mode, taskViewExplicit: true } : { taskViewExplicit: false }),
     }).catch((err) => console.error("[Foci] Failed to save task view preference:", err));
   }, []);
+
+  const persistOneThing = useCallback((pref: OneThingPreference | null) => {
+    setOneThingPref(pref);
+    if (pref) setOneThingPromptDismissed(false);
+    saveOneThing(pref).catch((err) => console.error("[Foci] Failed to save One Thing:", err));
+  }, []);
+
+  const setAsOneThing = useCallback(
+    (taskId: string) => {
+      const source = tasks.find((t) => t.id === taskId);
+      if (!source || !canBeOneThing(source)) {
+        showToast("Pick an open, actionable task", "error");
+        return;
+      }
+      persistOneThing({ taskId, date: getToday() });
+      showToast("Set as today’s One Thing");
+    },
+    [tasks, persistOneThing, showToast],
+  );
+
+  const clearOneThingPick = useCallback(() => {
+    persistOneThing(null);
+  }, [persistOneThing]);
+
+  const changeOneThingPick = useCallback(() => {
+    persistOneThing(null);
+    setOneThingPromptDismissed(false);
+    showToast("Pick another task as your One Thing");
+  }, [persistOneThing, showToast]);
 
   const viewBeforePlanRef = useRef<TaskViewMode>("card");
   const viewBeforeManageRef = useRef<TaskViewMode>("card");
@@ -334,13 +371,15 @@ export default function TaskList({
     // Load projects (and shared projects for logged-in users)
     const loadData = async () => {
       try {
-        const [existingProjects, existing, taskViewPrefs] = await Promise.all([
+        const [existingProjects, existing, taskViewPrefs, oneThing] = await Promise.all([
           loadProjects(),
           loadTasks(),
           loadTaskViewPreferences(),
+          loadOneThing(),
         ]);
         setProjects(existingProjects);
         setViewMode(resolveInitialTaskView(taskViewPrefs));
+        setOneThingPref(oneThing);
 
         // Seed sample tasks only for logged-out users with no tasks
         if (existing.length === 0 && !user) {
@@ -967,6 +1006,7 @@ export default function TaskList({
         setPendingConfirm(null);
         trackTaskDeleted();
         persist(tasks.filter((t) => t.id !== id));
+        if (oneThingPref?.taskId === id) clearOneThingPick();
         try {
           await removeTaskFromDB(id);
         } catch (err) {
@@ -1024,6 +1064,7 @@ export default function TaskList({
     const matchesProject = (t: Task) => isAllProjects || t.projectId === selectedProjectId;
     const toRemove = tasks.filter((t) => t.completed && matchesProject(t)).map((t) => t.id);
     persist(tasks.filter((t) => !(t.completed && matchesProject(t))));
+    if (oneThingPref?.taskId && toRemove.includes(oneThingPref.taskId)) clearOneThingPick();
     try {
       await removeTasksFromDB(toRemove);
     } catch (err) {
@@ -1034,12 +1075,16 @@ export default function TaskList({
   const archiveCompleted = () => {
     const now = Date.now();
     const matchesProject = (t: Task) => isAllProjects || t.projectId === selectedProjectId;
+    const archivedIds = tasks
+      .filter((t) => t.completed && matchesProject(t) && !t.archivedAt)
+      .map((t) => t.id);
     const updated = tasks.map((t) =>
       t.completed && matchesProject(t) && !t.archivedAt
         ? { ...t, archivedAt: now }
         : t
     );
     persist(updated);
+    if (oneThingPref?.taskId && archivedIds.includes(oneThingPref.taskId)) clearOneThingPick();
   };
 
   const unarchiveTask = (id: string) => {
@@ -1255,7 +1300,10 @@ export default function TaskList({
       if (blocked) return { ...t, blocked: true, someday: false };
       return { ...t, blocked: false };
     });
-    if (blocked) showToast("Marked as waiting");
+    if (blocked) {
+      showToast("Marked as waiting");
+      if (oneThingPref?.taskId === taskId) clearOneThingPick();
+    }
   };
 
   const setTaskSomeday = (taskId: string, someday: boolean) => {
@@ -1263,8 +1311,29 @@ export default function TaskList({
       if (someday) return { ...t, someday: true, blocked: false, dueDate: undefined };
       return { ...t, someday: false };
     });
-    if (someday) showToast("Moved to Someday");
+    if (someday) {
+      showToast("Moved to Someday");
+      if (oneThingPref?.taskId === taskId) clearOneThingPick();
+    }
   };
+
+  const oneThingResolved = useMemo(
+    () => resolveOneThing(oneThingPref, tasks),
+    [oneThingPref, tasks],
+  );
+
+  // Persist clear when stored pick is stale (wrong day / missing / archived)
+  useEffect(() => {
+    if (!tasksReady || !oneThingPref) return;
+    if (oneThingPref.date !== getToday()) {
+      persistOneThing(null);
+      return;
+    }
+    const task = tasks.find((t) => t.id === oneThingPref.taskId);
+    if (!task || task.archivedAt) {
+      persistOneThing(null);
+    }
+  }, [tasksReady, oneThingPref, tasks, persistOneThing]);
 
   const taskDetailPanelProps = (task: Task) => ({
     isLinked: activeTaskId === task.id,
@@ -1284,6 +1353,10 @@ export default function TaskList({
     onSetSomeday: (someday: boolean) => setTaskSomeday(task.id, someday),
     onSetRecurrence: (recurrence: RecurrenceType | undefined) => setTaskRecurrence(task.id, recurrence),
     onMoveToProject: (projectId: string) => moveTaskToProject(task.id, projectId),
+    isOneThing: oneThingResolved.pref?.taskId === task.id && oneThingResolved.status !== "unset",
+    canSetOneThing: canBeOneThing(task) && tasks.some((t) => t.id === task.id),
+    onSetOneThing: () => setAsOneThing(task.id),
+    onClearOneThing: clearOneThingPick,
     newSubtaskTitle,
     onNewSubtaskTitleChange: setNewSubtaskTitle,
     onAddSubtask: () => addSubtask(task.id),
@@ -1913,6 +1986,7 @@ export default function TaskList({
     <OpenTaskList
       tasks={taskList}
       activeTaskId={activeTaskId}
+      oneThingTaskId={oneThingResolved.status === "active" ? oneThingResolved.task?.id ?? null : null}
       isTimerRunning={isTimerRunning}
       expandedTaskId={expandedTaskId}
       expandedSubtasksTaskId={expandedSubtasksTaskId}
@@ -2475,6 +2549,37 @@ export default function TaskList({
         </div>
       )}
 
+      {/* The One Thing — daily critical task */}
+      {!isFocusMode && !projectManageOpen && viewMode !== "plan" && tasksReady && (
+        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
+          <OneThingCard
+            status={oneThingResolved.status}
+            task={oneThingResolved.task}
+            projectName={
+              oneThingResolved.task
+                ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
+                : undefined
+            }
+            hasOpenTasks={allOpenCount > 0}
+            isTimerRunning={isTimerRunning}
+            isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
+            onFocus={() => {
+              if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
+            }}
+            onComplete={() => {
+              if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
+            }}
+            onChange={changeOneThingPick}
+            onClear={clearOneThingPick}
+            onDismissEmpty={
+              oneThingResolved.status === "unset"
+                ? () => setOneThingPromptDismissed(true)
+                : undefined
+            }
+          />
+        )
+      )}
+
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
         <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
@@ -2560,6 +2665,7 @@ export default function TaskList({
           completedCountByProject={bucketCompletedCountByProject}
           doneTodayByProject={doneTodayByProject}
           activeTaskId={activeTaskId}
+          oneThingTaskId={oneThingResolved.status === "active" ? oneThingResolved.task?.id ?? null : null}
           isTimerRunning={isTimerRunning}
           datedLaneLabel={bucketDatedLaneLabel}
           onToggleComplete={toggleComplete}
@@ -2611,6 +2717,7 @@ export default function TaskList({
           completedCountByProject={bucketCompletedCountByProject}
           doneTodayByProject={doneTodayByProject}
           activeTaskId={activeTaskId}
+          oneThingTaskId={oneThingResolved.status === "active" ? oneThingResolved.task?.id ?? null : null}
           isTimerRunning={isTimerRunning}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           dragProjectId={dragProjectId}
@@ -3271,6 +3378,7 @@ export default function TaskList({
         <OpenTaskList
           tasks={pendingTasks}
           activeTaskId={activeTaskId}
+          oneThingTaskId={oneThingResolved.status === "active" ? oneThingResolved.task?.id ?? null : null}
           isTimerRunning={isTimerRunning}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}

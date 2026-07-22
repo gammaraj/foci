@@ -54,6 +54,12 @@ export interface TaskDetailPanelProps {
   onDeleteTask?: () => void;
   onStartTask?: () => void;
   onDeselectTask?: () => void;
+  /** Whether this task is today's One Thing. */
+  isOneThing?: boolean;
+  /** Whether Set as One Thing is available for this task. */
+  canSetOneThing?: boolean;
+  onSetOneThing?: () => void;
+  onClearOneThing?: () => void;
   /** Flush drafts and close the panel / drawer. */
   onSave?: () => void;
   /** When subtasks are shown inline below the task row */
@@ -96,6 +102,10 @@ export function TaskDetailPanel({
   onDeleteTask,
   onStartTask,
   onDeselectTask,
+  isOneThing = false,
+  canSetOneThing = false,
+  onSetOneThing,
+  onClearOneThing,
   onSave,
   hideSubtasks = false,
 }: TaskDetailPanelProps) {
@@ -120,6 +130,7 @@ export function TaskDetailPanel({
 
   const detailsSummary = useMemo(() => {
     const bits: string[] = [];
+    if (isOneThing) bits.push("One Thing");
     if (task.priority === 1) bits.push("High");
     else if (task.priority === 2) bits.push("Medium");
     else if (task.priority === 3) bits.push("Low");
@@ -130,7 +141,7 @@ export function TaskDetailPanel({
     if (task.recurrence) bits.push(task.recurrence);
     if (task.description?.trim()) bits.push("Has description");
     return bits;
-  }, [task]);
+  }, [task, isOneThing]);
 
   const handleSave = () => {
     onSave?.();
@@ -366,6 +377,34 @@ export function TaskDetailPanel({
     )
   ) : null;
 
+  const oneThingChip =
+    isOneThing && onClearOneThing ? (
+      <button
+        type="button"
+        onClick={onClearOneThing}
+        className={`${chip} border-amber-300/80 dark:border-amber-700/50 text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/25`}
+        title="Clear as today’s One Thing"
+        aria-pressed
+      >
+        <svg className={`${iconSize} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+        <span className="truncate">One Thing</span>
+      </button>
+    ) : canSetOneThing && onSetOneThing ? (
+      <button
+        type="button"
+        onClick={onSetOneThing}
+        className={`${chip} ${chipIdle} hover:border-amber-400 dark:hover:border-amber-600 hover:text-amber-700 dark:hover:text-amber-300`}
+        title="Set as today’s One Thing — the one outcome that would make today a success"
+      >
+        <svg className={`${iconSize} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+        <span className="truncate">Set as One Thing</span>
+      </button>
+    ) : null;
+
   const subtaskBlock = !hideSubtasks ? (
     <TaskSubtaskSection
       task={task}
@@ -391,6 +430,7 @@ export function TaskDetailPanel({
   const detailsGrid = isDrawer ? (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 min-w-0 w-full">
       {priorityChip}
+      {oneThingChip}
       {focusChip}
       {projectChip}
       {kindChip}
@@ -401,6 +441,7 @@ export function TaskDetailPanel({
   ) : (
     <div className="grid grid-cols-2 gap-2 min-w-0 w-full">
       {priorityChip}
+      {oneThingChip}
       {kindChip}
       {waitingChip}
       {somedayChip}

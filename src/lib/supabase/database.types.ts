@@ -351,6 +351,8 @@ export type Database = {
           default_task_view: string
           last_task_view: string | null
           task_view_explicit: boolean
+          one_thing_task_id: string | null
+          one_thing_date: string | null
         }
         Insert: {
           selected_project_id?: string
@@ -358,6 +360,8 @@ export type Database = {
           default_task_view?: string
           last_task_view?: string | null
           task_view_explicit?: boolean
+          one_thing_task_id?: string | null
+          one_thing_date?: string | null
         }
         Update: {
           selected_project_id?: string
@@ -365,6 +369,8 @@ export type Database = {
           default_task_view?: string
           last_task_view?: string | null
           task_view_explicit?: boolean
+          one_thing_task_id?: string | null
+          one_thing_date?: string | null
         }
         Relationships: []
       }

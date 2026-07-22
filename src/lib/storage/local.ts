@@ -15,6 +15,7 @@ import {
   isDefaultTaskView,
   type TaskViewPreferences,
 } from "../task-view-preference";
+import { parseOneThingPreference, type OneThingPreference } from "../one-thing";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
 
 const SETTINGS_KEY = "foci_settings";
@@ -24,6 +25,7 @@ const TASKS_KEY = "foci_tasks";
 const PROJECTS_KEY = "foci_projects";
 const SELECTED_PROJECT_KEY = "foci_selected_project";
 const TASK_VIEW_PREFS_KEY = "foci_task_view_prefs";
+const ONE_THING_KEY = "foci_one_thing";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -314,6 +316,28 @@ export class LocalStorageAdapter implements StorageAdapter {
     try {
       const current = await this.loadTaskViewPreferences();
       localStorage.setItem(TASK_VIEW_PREFS_KEY, JSON.stringify({ ...current, ...prefs }));
+    } catch { /* quota exceeded */ }
+  }
+
+  async loadOneThing(): Promise<OneThingPreference | null> {
+    if (!isBrowser()) return null;
+    try {
+      const raw = localStorage.getItem(ONE_THING_KEY);
+      if (!raw) return null;
+      return parseOneThingPreference(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  }
+
+  async saveOneThing(pref: OneThingPreference | null): Promise<void> {
+    if (!isBrowser()) return;
+    try {
+      if (!pref) {
+        localStorage.removeItem(ONE_THING_KEY);
+        return;
+      }
+      localStorage.setItem(ONE_THING_KEY, JSON.stringify(pref));
     } catch { /* quota exceeded */ }
   }
 

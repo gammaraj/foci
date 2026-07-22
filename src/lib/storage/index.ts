@@ -84,6 +84,15 @@ async function doActivateSupabase(): Promise<void> {
                 ...(legacyExplicit ? { taskViewExplicit: true } : {}),
               });
             }
+
+            const localOneThing = localStorage.getItem("foci_one_thing");
+            if (localOneThing) {
+              try {
+                const { parseOneThingPreference } = await import("../one-thing");
+                const pref = parseOneThingPreference(JSON.parse(localOneThing));
+                if (pref) await supabaseAdapter.saveOneThing(pref);
+              } catch { /* ignore bad local one-thing */ }
+            }
           }
         }
 
@@ -99,6 +108,7 @@ async function doActivateSupabase(): Promise<void> {
           "foci_default_task_view",
           "foci_task_view_mode",
           "foci_task_view_explicit",
+          "foci_one_thing",
           "tempo_settings",
           "tempo_daily_goal",
           "tempo_streak_history",
@@ -169,6 +179,9 @@ export const saveSelectedProjectId = (...args: Parameters<StorageAdapter["saveSe
 export const loadTaskViewPreferences = () => currentAdapter.loadTaskViewPreferences();
 export const saveTaskViewPreferences = (...args: Parameters<StorageAdapter["saveTaskViewPreferences"]>) =>
   currentAdapter.saveTaskViewPreferences(...args);
+export const loadOneThing = () => currentAdapter.loadOneThing();
+export const saveOneThing = (...args: Parameters<StorageAdapter["saveOneThing"]>) =>
+  currentAdapter.saveOneThing(...args);
 
 // ── Collaboration API ───────────────────────────────────
 export const getProjectCollaborators = (...args: Parameters<StorageAdapter["getProjectCollaborators"]>) =>

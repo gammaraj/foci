@@ -16,6 +16,7 @@ import {
 import { isActionableOverdue } from "@/lib/task-status";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+import { OneThingBadge } from "@/components/task-list/OneThingBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 
@@ -55,6 +56,8 @@ interface TaskBucketViewProps {
   /** Tasks completed today per project (Done today reel). */
   doneTodayByProject?: Map<string, Task[]>;
   activeTaskId: string | null;
+  /** Today's One Thing task id (active pick only). */
+  oneThingTaskId?: string | null;
   isTimerRunning: boolean;
   /** Label for the dated (in-scope) swimlane, e.g. "Due today". */
   datedLaneLabel?: string;
@@ -230,6 +233,7 @@ function DueBadge({
 function BucketTaskCard({
   task,
   isActive,
+  isOneThing = false,
   isTimerRunning,
   isEditing,
   editTitle,
@@ -255,6 +259,7 @@ function BucketTaskCard({
 }: {
   task: Task;
   isActive: boolean;
+  isOneThing?: boolean;
   isTimerRunning: boolean;
   isEditing: boolean;
   editTitle: string;
@@ -453,6 +458,7 @@ function BucketTaskCard({
       {!isEditing && (
         <div className="flex flex-wrap items-center gap-1.5 mt-1 pl-6 sm:pl-7">
           {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
+          {isOneThing && <OneThingBadge size="compact" />}
           {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
           {isOverdue && (
             <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded urgency-chip--soft">
@@ -525,6 +531,7 @@ function BucketColumn({
   doneTodayTasks = [],
   datedLaneLabel,
   activeTaskId,
+  oneThingTaskId = null,
   isTimerRunning,
   dragTaskId,
   dragOverTaskId,
@@ -561,6 +568,7 @@ function BucketColumn({
   doneTodayTasks?: Task[];
   datedLaneLabel: string;
   activeTaskId: string | null;
+  oneThingTaskId?: string | null;
   isTimerRunning: boolean;
   dragTaskId: string | null;
   dragOverTaskId: string | null;
@@ -853,6 +861,7 @@ function BucketColumn({
                     <BucketTaskCard
                       task={task}
                       isActive={activeTaskId === task.id}
+                      isOneThing={oneThingTaskId === task.id}
                       isTimerRunning={isTimerRunning}
                       isEditing={editingTaskId === task.id}
                       editTitle={editTitle}
@@ -909,6 +918,7 @@ export default function TaskBucketView({
   completedCountByProject,
   doneTodayByProject,
   activeTaskId,
+  oneThingTaskId = null,
   isTimerRunning,
   datedLaneLabel = "Scheduled",
   onToggleComplete,
@@ -1008,6 +1018,7 @@ export default function TaskBucketView({
             doneTodayTasks={doneTodayByProject?.get(project.id) ?? []}
             datedLaneLabel={datedLaneLabel}
             activeTaskId={activeTaskId}
+            oneThingTaskId={oneThingTaskId}
             isTimerRunning={isTimerRunning}
             dragTaskId={dragTaskId}
             dragOverTaskId={dragOverTaskId}
