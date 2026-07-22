@@ -2127,7 +2127,7 @@ export default function TaskList({
       >
         {/* Title + quote + utilities — single compact row */}
         <div className="flex items-center justify-between min-w-0 gap-2">
-          <div className="min-w-0 shrink">
+          <div className="min-w-0 shrink md:max-w-[46%]">
             {projectManageOpen ? (
               <>
                 <button
@@ -2228,7 +2228,7 @@ export default function TaskList({
             )}
           </div>
 
-          <div className="no-print hidden md:flex flex-1 min-w-0 items-center justify-center px-2">
+          <div className="no-print hidden md:flex flex-1 min-w-0 items-center justify-center px-1 lg:px-3">
             <TaskPanelQuote variant="navbar" />
           </div>
 

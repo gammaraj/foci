@@ -130,7 +130,6 @@ export function TaskDetailPanel({
 
   const detailsSummary = useMemo(() => {
     const bits: string[] = [];
-    if (isOneThing) bits.push("One Thing");
     if (task.priority === 1) bits.push("High");
     else if (task.priority === 2) bits.push("Medium");
     else if (task.priority === 3) bits.push("Low");
@@ -141,7 +140,7 @@ export function TaskDetailPanel({
     if (task.recurrence) bits.push(task.recurrence);
     if (task.description?.trim()) bits.push("Has description");
     return bits;
-  }, [task, isOneThing]);
+  }, [task]);
 
   const handleSave = () => {
     onSave?.();
@@ -430,7 +429,6 @@ export function TaskDetailPanel({
   const detailsGrid = isDrawer ? (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 min-w-0 w-full">
       {priorityChip}
-      {oneThingChip}
       {focusChip}
       {projectChip}
       {kindChip}
@@ -441,7 +439,6 @@ export function TaskDetailPanel({
   ) : (
     <div className="grid grid-cols-2 gap-2 min-w-0 w-full">
       {priorityChip}
-      {oneThingChip}
       {kindChip}
       {waitingChip}
       {somedayChip}
@@ -456,6 +453,12 @@ export function TaskDetailPanel({
       <div className="max-w-xs">{dueDateChip}</div>
     </div>
   );
+
+  const oneThingBlock = oneThingChip ? (
+    <div className={`${pad} ${isDrawer ? "pt-1 pb-1" : "pb-1"}`}>
+      <div className="max-w-xs">{oneThingChip}</div>
+    </div>
+  ) : null;
 
   const moreDetailsBlock = (
     <div className={`${pad} ${isDrawer ? "pt-2 pb-2" : "pb-1"}`}>
@@ -531,10 +534,11 @@ export function TaskDetailPanel({
       </div>
     ) : null;
 
-  // Due date stays visible; description + other meta stay under More details.
+  // Due date + One Thing stay visible; description + other meta stay under More details.
   return (
     <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
       {dueDateBlock}
+      {oneThingBlock}
       {subtaskBlock}
       {moreDetailsBlock}
       {footer}
