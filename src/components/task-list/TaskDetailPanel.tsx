@@ -381,7 +381,7 @@ export function TaskDetailPanel({
       <button
         type="button"
         onClick={onClearOneThing}
-        className={`${chip} border-teal-300/80 dark:border-teal-600/50 text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30`}
+        className={`${chip} border-blue-500/80 dark:border-blue-600/60 text-blue-900 dark:text-blue-200 bg-blue-50 dark:bg-blue-950/50`}
         title="Clear as today’s One Thing"
         aria-pressed
       >
@@ -394,7 +394,7 @@ export function TaskDetailPanel({
       <button
         type="button"
         onClick={onSetOneThing}
-        className={`${chip} ${chipIdle} hover:border-teal-400 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-300`}
+        className={`${chip} ${chipIdle} hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-800 dark:hover:text-blue-200`}
         title="Set as today’s One Thing — the one outcome that would make today a success"
       >
         <svg className={`${iconSize} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

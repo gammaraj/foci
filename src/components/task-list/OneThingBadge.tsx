@@ -6,7 +6,7 @@ export function OneThingBadge({ size = "default" }: { size?: "default" | "compac
         compact
           ? "px-1 py-0 text-[10px] leading-none tracking-wide"
           : "px-1.5 py-0.5 text-xs"
-      } bg-teal-50 dark:bg-teal-900/35 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-700/50`}
+      } bg-blue-50 dark:bg-blue-950/50 text-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700/60`}
       title="Today's One Thing"
     >
       One Thing
