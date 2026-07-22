@@ -9,7 +9,7 @@ export function OneThingBadge({ size = "default" }: { size?: "default" | "compac
       } bg-blue-50 dark:bg-blue-950/50 text-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700/60`}
       title="Today's One Thing"
     >
-      One Thing
+      Today&apos;s One Thing
     </span>
   );
 }

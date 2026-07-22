@@ -19,7 +19,7 @@ export interface OneThingCardProps {
 }
 
 const strip =
-  "no-print mx-3 sm:mx-4 mt-1.5 mb-1 flex items-center justify-center gap-2.5 min-h-[2.5rem] min-w-0 rounded-lg border-2 px-3 py-1.5";
+  "no-print mx-3 sm:mx-4 mt-1.5 mb-1 flex items-center gap-2.5 min-h-[2.5rem] min-w-0 rounded-lg border-2 px-3 py-1.5";
 
 function StarIcon({ className }: { className?: string }) {
   return (
@@ -47,32 +47,36 @@ export function OneThingCard({
       <div
         className={`${strip} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 shadow-sm shadow-blue-900/20`}
       >
-        <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
-          <StarIcon className="w-3 h-3" />
-          One Thing
-        </span>
-        <p className="min-w-0 max-w-md truncate text-sm font-medium text-blue-950 dark:text-blue-50">
-          {hasOpenTasks
-            ? "What’s the one thing that would make today a success?"
-            : "Add a task, then set it as your One Thing"}
-        </p>
-        {hasOpenTasks && (
-          <span className="hidden sm:inline shrink-0 text-xs font-semibold text-blue-800 dark:text-blue-200/90">
-            Open a task → Set as One Thing
+        <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">
+          <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+            <StarIcon className="w-3 h-3" />
+            Today&apos;s One Thing
           </span>
-        )}
-        {onDismissEmpty && (
-          <button
-            type="button"
-            onClick={onDismissEmpty}
-            className="shrink-0 p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
-            aria-label="Dismiss One Thing prompt"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
+          <p className="min-w-0 max-w-md truncate text-sm font-medium text-blue-950 dark:text-blue-50">
+            {hasOpenTasks
+              ? "What’s the one thing that would make today a success?"
+              : "Add a task, then set it as your One Thing"}
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {hasOpenTasks && (
+            <span className="hidden sm:inline text-xs font-semibold text-blue-800 dark:text-blue-200/90">
+              Open a task → Set as Today&apos;s One Thing
+            </span>
+          )}
+          {onDismissEmpty && (
+            <button
+              type="button"
+              onClick={onDismissEmpty}
+              className="p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
+              aria-label="Dismiss One Thing prompt"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -82,15 +86,17 @@ export function OneThingCard({
       <div
         className={`${strip} border-emerald-400 dark:border-emerald-500/70 bg-emerald-100 dark:bg-emerald-500/15`}
       >
-        <span className="inline-flex items-center shrink-0 rounded-md bg-emerald-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
-          Done
-        </span>
-        <p
-          className="min-w-0 max-w-md truncate text-sm font-medium text-emerald-950 dark:text-emerald-50 line-through decoration-emerald-600/50"
-          title={task.title}
-        >
-          {task.title}
-        </p>
+        <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">
+          <span className="inline-flex items-center shrink-0 rounded-md bg-emerald-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+            Done
+          </span>
+          <p
+            className="min-w-0 max-w-md truncate text-sm font-medium text-emerald-950 dark:text-emerald-50 line-through decoration-emerald-600/50"
+            title={task.title}
+          >
+            {task.title}
+          </p>
+        </div>
         <button
           type="button"
           onClick={onClear}
@@ -107,19 +113,21 @@ export function OneThingCard({
       <div
         className={`${strip} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 shadow-sm shadow-blue-900/20`}
       >
-        <span
-          className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white"
-          title={projectName ? `The One Thing · ${projectName}` : "The One Thing"}
-        >
-          <StarIcon className="w-3 h-3" />
-          One Thing
-        </span>
-        <p
-          className="min-w-0 max-w-md truncate text-sm font-semibold text-blue-950 dark:text-white"
-          title={projectName ? `${task.title} · ${projectName}` : task.title}
-        >
-          {task.title}
-        </p>
+        <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">
+          <span
+            className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white"
+            title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
+          >
+            <StarIcon className="w-3 h-3" />
+            Today&apos;s One Thing
+          </span>
+          <p
+            className="min-w-0 max-w-md truncate text-sm font-semibold text-blue-950 dark:text-white"
+            title={projectName ? `${task.title} · ${projectName}` : task.title}
+          >
+            {task.title}
+          </p>
+        </div>
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
