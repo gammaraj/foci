@@ -268,7 +268,7 @@ export function FocusDockToolbar({
       >
         <span className="text-sm font-semibold leading-none">?</span>
         {showShortcutHint && (
-          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-blue-500" aria-hidden />
+          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-blue-500 ring-2 ring-blue-500/30" aria-hidden />
         )}
       </button>
     ) : null;

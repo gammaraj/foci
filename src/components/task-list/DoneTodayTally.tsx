@@ -25,18 +25,23 @@ export function DoneTodayTally({
   const empty = count <= 0;
   const todayNumClass = empty
     ? "text-orange-500 dark:text-orange-400"
-    : "text-emerald-700 dark:text-emerald-300";
-  const periodNumClass = "text-emerald-600 dark:text-emerald-400";
+    : "text-emerald-950 dark:text-emerald-200";
+  const periodNumClass = empty
+    ? "text-slate-500 dark:text-slate-400"
+    : "text-emerald-900 dark:text-emerald-300";
+  const periodLabelClass = empty
+    ? "font-medium text-slate-500 dark:text-slate-400"
+    : "font-medium text-emerald-900 dark:text-emerald-300/90";
   const tone = empty
     ? "border-slate-300/90 dark:border-[#2a3f5f] bg-slate-50/90 dark:bg-[#131d30]/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-    : "border-emerald-300/80 dark:border-emerald-700/80 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50";
+    : "border-emerald-600 dark:border-emerald-600/80 bg-emerald-300 dark:bg-emerald-950/55 text-emerald-950 dark:text-emerald-200 hover:bg-emerald-400 dark:hover:bg-emerald-900/60";
 
   return (
     <button
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${
-        pulse ? "ring-2 ring-emerald-400/60 scale-[1.03]" : ""
+        pulse ? "ring-2 ring-emerald-500/50 dark:ring-emerald-400/60 scale-[1.03]" : ""
       } ${className}`}
       title="Jump to Done today"
       aria-label={ariaLabel}
@@ -51,7 +56,7 @@ export function DoneTodayTally({
       <span className="sm:hidden">
         <span className={todayNumClass}>{count}</span> done
       </span>
-      <span className="font-medium text-slate-500 dark:text-slate-400">
+      <span className={periodLabelClass}>
         <span className="hidden sm:inline">
           {" "}
           · <span className={periodNumClass}>{weekCount}</span> this week ·{" "}

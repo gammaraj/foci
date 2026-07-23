@@ -300,6 +300,56 @@ select {
     0 8px 24px -10px rgba(0, 0, 0, 0.55);
 }
 
+/* Project cards/columns — lift off the near-black page in dark mode */
+.project-surface {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+.dark .project-surface {
+  background: #16233a;
+  border-color: #334863;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 28px -12px rgba(0, 0, 0, 0.65);
+}
+
+/* Project accent stripe — lighten in dark so teal/purple still read */
+.project-accent-edge {
+  --project-accent-display: var(--project-accent);
+  border-top-width: 2px;
+  border-top-color: var(--project-accent-display);
+}
+.dark .project-accent-edge {
+  --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
+  border-top-width: 3px;
+}
+
+.project-accent-swatch {
+  --project-accent-display: var(--project-accent);
+  background-color: var(--project-accent-display);
+}
+.dark .project-accent-swatch {
+  --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.project-accent-wash {
+  --project-accent-display: var(--project-accent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--project-accent-display) 14%, transparent),
+    transparent 72%
+  );
+}
+.dark .project-accent-wash {
+  --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--project-accent-display) 22%, transparent),
+    transparent 72%
+  );
+}
+
 /*
  * /app typography — readable minimums (avoid 10–11px UI copy)
  * Base 15px mobile / 16px desktop; captions ≥13px; body UI ≥14px
@@ -580,8 +630,11 @@ select {
 .card-row--overdue:hover {
   background: color-mix(in srgb, var(--urgency) 5%, transparent);
 }
+.dark .card-row--overdue {
+  border-left-color: #fb7185;
+}
 .dark .card-row--overdue:hover {
-  background: rgba(176, 23, 92, 0.08);
+  background: rgba(244, 63, 94, 0.12);
 }
 
 .urgency-text--mild { color: var(--urgency); }
@@ -606,12 +659,19 @@ select {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--urgency-strong) 35%, transparent);
 }
 .dark .urgency-chip--soft {
-  background: rgba(176, 23, 92, 0.2);
-  color: #fbcfe8;
-  border-color: rgba(244, 114, 182, 0.35);
+  background: rgba(244, 63, 94, 0.28);
+  color: #fecdd3;
+  border-color: rgba(251, 113, 133, 0.55);
 }
-.dark .urgency-chip--mid { background: #db2777; }
-.dark .urgency-chip--strong { background: #be185d; box-shadow: 0 0 0 1px rgba(244, 114, 182, 0.3); }
+.dark .urgency-chip--mid {
+  background: #f43f5e;
+  box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.45), 0 0 10px -2px rgba(244, 63, 94, 0.55);
+}
+.dark .urgency-chip--strong {
+  background: #fb7185;
+  color: #1f0510;
+  box-shadow: 0 0 0 1px rgba(253, 164, 175, 0.55), 0 0 12px -1px rgba(251, 113, 133, 0.65);
+}
 
 .urgency-pill {
   border: 1px solid var(--urgency-border);

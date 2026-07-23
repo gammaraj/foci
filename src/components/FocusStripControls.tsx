@@ -59,10 +59,8 @@ export function miniResetButtonClass(dock = false) {
   return "w-8 h-8 rounded-full flex items-center justify-center touch-target-sm border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-[#243350] hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-400/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60";
 }
 
-/** Shortcuts / secondary dock actions — matches reset ghost style. */
-export function miniDockGhostButtonClass(active = false) {
-  if (active) {
-    return `${DOCK_BTN} relative text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30`;
-  }
+/** Shortcuts / secondary dock actions — matches reset ghost style.
+ *  Hint state stays visually neutral (blue dot only) so it doesn’t look selected. */
+export function miniDockGhostButtonClass(_active = false) {
   return `${DOCK_BTN} relative text-slate-500 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200`;
 }

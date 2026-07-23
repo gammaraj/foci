@@ -643,13 +643,11 @@ function BucketColumn({
   return (
     <div
       data-bucket-project={project.id}
-      className={`${BUCKET_COLUMN_CLASS} flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm bg-white/95 dark:bg-[#131d30]/90 border border-slate-200/80 dark:border-[#243350]/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_12px_28px_-8px_rgba(15,23,42,0.1)] dark:shadow-none ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
+      className={`${BUCKET_COLUMN_CLASS} project-surface flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
+      style={{ ["--project-accent" as string]: accentColor } as React.CSSProperties}
     >
       <div
-        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-200/60 dark:border-[#243350]/60"
-        style={{
-          background: `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 12%, transparent), transparent 72%)`,
-        }}
+        className="group/col project-accent-wash flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-200/60 dark:border-[#334863]/80"
         title={project.description?.trim() || project.name}
       >
         {onToggleProjectFavorite ? (
@@ -686,8 +684,7 @@ function BucketColumn({
           </span>
         ) : null}
         <span
-          className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-          style={{ backgroundColor: accentColor }}
+          className="project-accent-swatch w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
           title={`${project.name} color — change in Projects`}
           aria-label={`${project.name} color`}
         />

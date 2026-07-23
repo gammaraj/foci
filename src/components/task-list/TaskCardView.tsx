@@ -692,17 +692,14 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card rounded-lg border px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 break-inside-avoid mb-2.5 sm:mb-3.5 transition-[colors,box-shadow] duration-300 border-slate-200/90 dark:border-[#243350] bg-white/90 dark:bg-[#0f1729]/80 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card project-surface project-accent-edge rounded-lg px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 break-inside-avoid mb-2.5 sm:mb-3.5 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
-      } ${collapsed ? "bg-slate-50/90 dark:bg-[#0c1422]/90 border-dashed opacity-95" : ""} ${
+      } ${collapsed ? "bg-slate-50/90 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
         highlighted
           ? "ring-2 ring-[var(--urgency-chip)] dark:ring-rose-400 shadow-[0_0_0_4px_color-mix(in_srgb,var(--urgency-chip)_22%,transparent)]"
           : ""
       }`}
-      style={{
-        borderTopWidth: 2,
-        borderTopColor: accentColor,
-      }}
+      style={{ ["--project-accent" as string]: accentColor } as React.CSSProperties}
       data-collapsed={collapsed ? "true" : "false"}
     >
       <header
@@ -819,8 +816,7 @@ function ProjectCard({
             </span>
           ) : null}
           <span
-            className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-            style={{ backgroundColor: accentColor }}
+            className="project-accent-swatch w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
             title={`${project.name} color — change in Projects`}
             aria-label={`${project.name} color`}
           />
