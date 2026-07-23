@@ -2297,8 +2297,8 @@ export default function TaskList({
 
         {/* Scope + view controls — own row so filters aren’t jammed into the title */}
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-slate-200/90 dark:border-blue-400/15 min-w-0">
-            <div className="flex items-stretch gap-2 min-w-0">
+          <div className="no-print hidden sm:grid grid-cols-[1fr_auto_1fr] items-center gap-3 mt-1.5 pt-1.5 border-t border-slate-200/90 dark:border-blue-400/15 min-w-0">
+            <div className="flex items-stretch justify-start min-w-0">
               <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
                 <button
                   onClick={() => selectProject(ALL_PROJECTS_ID)}
@@ -2341,17 +2341,18 @@ export default function TaskList({
                   Year
                 </button>
               </div>
-              <DoneTodayTally
-                count={doneProgress.today}
-                weekCount={doneProgress.week}
-                monthCount={doneProgress.month}
-                pulse={tallyPulse}
-                onClick={scrollToDoneToday}
-                className="shrink-0"
-              />
             </div>
 
-            <div className="flex items-center gap-2 shrink-0" data-tour="view-modes">
+            <DoneTodayTally
+              count={doneProgress.today}
+              weekCount={doneProgress.week}
+              monthCount={doneProgress.month}
+              pulse={tallyPulse}
+              onClick={scrollToDoneToday}
+              className="justify-self-center shrink-0"
+            />
+
+            <div className="flex items-center justify-end gap-2 shrink-0" data-tour="view-modes">
               <span className="hidden md:inline app-section-label leading-none self-center text-blue-800/60 dark:text-blue-200/55 shrink-0">
                 View
               </span>
