@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { Project, RecurrenceType, Subtask, Task, TaskKind, TaskPriority } from "@/lib/types";
 import { getToday } from "@/lib/dates";
 import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
@@ -114,6 +114,17 @@ export function TaskDetailPanel({
   const chip = isDrawer ? chipBaseDrawer : chipBase;
   const selectText = "text-xs";
   const iconSize = "w-3.5 h-3.5";
+  const saveButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  // After Add opens the panel, focus Save so Enter flushes drafts and closes.
+  useEffect(() => {
+    if (!onSave || editingDesc) return;
+    const id = window.setTimeout(() => {
+      saveButtonRef.current?.focus();
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [task.id, onSave, editingDesc]);
+
   const wrapperClass =
     variant === "inline"
       ? `border border-t-0 rounded-b-xl py-3 space-y-2 min-w-0 ${
@@ -507,11 +518,12 @@ export function TaskDetailPanel({
       >
         {onSave && (
           <button
+            ref={saveButtonRef}
             type="button"
             onClick={handleSave}
             className={`flex-1 min-w-0 px-3 ${
               isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-xs rounded-md"
-            } font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors`}
+            } font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#131d30]`}
           >
             Save
           </button>

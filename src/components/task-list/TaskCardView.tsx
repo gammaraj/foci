@@ -909,9 +909,10 @@ function ProjectCard({
                 <button
                   type="button"
                   onClick={() => setShowAdd(true)}
-                  className="text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border border-blue-300/90 dark:border-blue-600/60 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:border-blue-400 dark:hover:border-blue-500 transition-colors shadow-sm"
                 >
-                  + Add
+                  <span aria-hidden>+</span>
+                  Add
                 </button>
               )}
             </div>

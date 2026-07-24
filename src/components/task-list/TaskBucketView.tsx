@@ -752,9 +752,10 @@ function BucketColumn({
                   <button
                     type="button"
                     onClick={focusAddInput}
-                    className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border border-blue-300/90 dark:border-blue-600/60 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                   >
-                    + Add
+                    <span aria-hidden>+</span>
+                    Add
                   </button>
                 </>
               )}

@@ -253,8 +253,6 @@ interface AmbientSoundsProps {
 
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
-const FOCUS_STRIP_VALUE =
-  "text-xs sm:text-sm font-medium leading-tight text-slate-700 dark:text-slate-200";
 
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const stripEmbedded = inline && embedded;
@@ -426,6 +424,62 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     if (mode === "lofi" && !showYt) setShowYt(true);
   };
 
+  const modeTabs = [
+    {
+      id: "sounds" as const,
+      onClick: () => {
+        setMode("sounds");
+        setShowYt(false);
+        setCollapsed(true);
+      },
+      label: "Sounds",
+      icon: <span className="text-sm leading-none shrink-0" aria-hidden>🎧</span>,
+    },
+    {
+      id: "spotify" as const,
+      onClick: () => {
+        setMode("spotify");
+        setCollapsed(false);
+      },
+      label: "Spotify",
+      icon: (
+        <svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+        </svg>
+      ),
+    },
+    {
+      id: "soundcloud" as const,
+      onClick: () => {
+        setMode("soundcloud");
+        setCollapsed(false);
+      },
+      label: "Cloud",
+      labelWide: "SoundCloud",
+      icon: <span className="text-sm leading-none shrink-0" aria-hidden>☁️</span>,
+    },
+    {
+      id: "lofi" as const,
+      onClick: () => {
+        setMode("lofi");
+        setCollapsed(false);
+      },
+      label: "Lo-fi",
+      icon: <span className="text-sm leading-none shrink-0" aria-hidden>📺</span>,
+    },
+  ] as const;
+
+  const cyclePlaylist = (dir: -1 | 1) => {
+    if (mode === "spotify") {
+      setSpotifyIdx((i) => (i + dir + SPOTIFY_PLAYLISTS.length) % SPOTIFY_PLAYLISTS.length);
+    } else if (mode === "soundcloud") {
+      setScIdx((i) => (i + dir + SOUNDCLOUD_PLAYLISTS.length) % SOUNDCLOUD_PLAYLISTS.length);
+    } else if (mode === "lofi") {
+      setYtStreamIdx((i) => (i + dir + YOUTUBE_STREAMS.length) % YOUTUBE_STREAMS.length);
+      setShowYt(false);
+    }
+  };
+
   return (
     <div
       id="ambient-sounds"
@@ -438,22 +492,158 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       }
     >
       {/* Mini player bar (always visible) */}
+      {stripEmbedded ? (
+        <div className="flex flex-col gap-1.5 w-full min-w-0 py-1.5">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0 hidden lg:inline">
+              Music
+            </span>
+            <div className="flex items-center gap-0.5 min-w-0 flex-1 overflow-x-auto rounded-lg bg-slate-100/90 dark:bg-[#0f172a]/70 p-0.5 border border-slate-200/80 dark:border-[#243350]">
+              {modeTabs.map((tab) => {
+                const active = mode === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={tab.onClick}
+                    className={`shrink-0 inline-flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
+                      active
+                        ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
+                    }`}
+                    title={"labelWide" in tab ? tab.labelWide : tab.label}
+                    aria-pressed={active}
+                  >
+                    {tab.icon}
+                    <span className="hidden xl:inline truncate">
+                      {"labelWide" in tab ? tab.labelWide : tab.label}
+                    </span>
+                    <span className="xl:hidden truncate">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={handleMiniPlayPause}
+              className={`flex-shrink-0 ${miniPlayButtonClass(
+                !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
+                true
+              )}`}
+              aria-label={
+                mode === "sounds"
+                  ? activeSound
+                    ? `Pause ${activeSoundMeta?.label}`
+                    : "Play ambient sound"
+                  : mode === "soundcloud"
+                    ? "Play or pause SoundCloud"
+                    : "Open player"
+              }
+              title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
+            >
+              <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5 min-w-0">
+            {mode === "sounds" ? (
+              <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
+                {SOUNDS.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => playSound(s.id)}
+                    className={`shrink-0 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                      activeSound === s.id
+                        ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
+                        : "bg-white/80 dark:bg-[#1a2d4a]/80 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350] border border-slate-200/80 dark:border-[#243350]"
+                    }`}
+                    aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
+                    aria-pressed={activeSound === s.id}
+                  >
+                    <span aria-hidden>{s.emoji}</span>
+                    <span className="hidden sm:inline">{s.label}</span>
+                  </button>
+                ))}
+                {activeSound && (
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={volume}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hidden md:block w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0 ml-1"
+                    aria-label="Volume"
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => cyclePlaylist(-1)}
+                  className={FOCUS_STRIP_ICON_BTN}
+                  aria-label="Previous option"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCollapsed(false)}
+                  className="min-w-0 flex-1 text-left truncate text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
+                  title={nowPlayingLabel}
+                >
+                  {nowPlayingLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => cyclePlaylist(1)}
+                  className={FOCUS_STRIP_ICON_BTN}
+                  aria-label="Next option"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCollapsed((c) => !c)}
+                  className={`flex-shrink-0 touch-target-sm flex items-center gap-0.5 ${FOCUS_STRIP_ICON_BTN}`}
+                  aria-label={collapsed ? "Show player" : "Hide player"}
+                  aria-expanded={!collapsed}
+                  title={collapsed ? "Show player" : "Hide player"}
+                >
+                  <svg
+                    className="w-4 h-4 transition-transform duration-200"
+                    style={{ transform: collapsed ? "rotate(0deg)" : "rotate(180deg)" }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
       <div
         className={`flex items-center gap-1.5 transition-colors ${
-          stripEmbedded
-            ? "w-full min-w-0 flex-1 min-h-[2.75rem] px-0 py-0 justify-between"
-            : inline
-              ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
-              : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
+          inline
+            ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
+            : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
         } ${
-          stripEmbedded
-            ? ""
-            : activeSound || (mode === "soundcloud") || showYt
-              ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
-              : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
+          activeSound || (mode === "soundcloud") || showYt
+            ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
+            : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
       >
-        {!stripEmbedded && (
         <button
           type="button"
           onClick={handleMiniPlayPause}
@@ -473,7 +663,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         >
           <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
         </button>
-        )}
 
         {mode === "soundcloud" && collapsed && (
           <>
@@ -499,26 +688,17 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className={`min-w-0 ${stripEmbedded ? "flex-1 max-w-[11rem]" : "flex-1 max-w-[8rem] sm:max-w-[10rem]"} text-left`}
+          className="min-w-0 flex-1 max-w-[8rem] sm:max-w-[10rem] text-left"
           aria-label={collapsed ? "Expand music panel" : "Music and sounds"}
         >
-          {stripEmbedded ? (
-            <span className="flex items-baseline gap-1.5 min-w-0">
-              <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0">
-                Music
-              </span>
-              <span className={`${FOCUS_STRIP_VALUE} truncate min-w-0`}>{nowPlayingLabel}</span>
+          <>
+            <span className="app-section-label text-slate-500 dark:text-slate-400">
+              {collapsed ? "Music" : "Now playing"}
             </span>
-          ) : (
-            <>
-              <span className="app-section-label text-slate-500 dark:text-slate-400">
-                {collapsed ? "Music" : "Now playing"}
-              </span>
-              <span className="block text-sm font-medium text-slate-800 dark:text-slate-100 truncate leading-tight">
-                {nowPlayingLabel}
-              </span>
-            </>
-          )}
+            <span className="block text-sm font-medium text-slate-800 dark:text-slate-100 truncate leading-tight">
+              {nowPlayingLabel}
+            </span>
+          </>
         </button>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -531,49 +711,19 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
             onClick={(e) => e.stopPropagation()}
-            className={`${stripEmbedded ? "hidden sm:block w-12" : ""} w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0`}
+            className="w-14 sm:w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0"
             aria-label="Volume"
           />
-        )}
-
-        {stripEmbedded && (
-          <button
-            type="button"
-            onClick={handleMiniPlayPause}
-            className={`flex-shrink-0 ${miniPlayButtonClass(
-              !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
-              true
-            )}`}
-            aria-label={
-              mode === "sounds"
-                ? activeSound
-                  ? `Pause ${activeSoundMeta?.label}`
-                  : "Play ambient sound"
-                : mode === "soundcloud"
-                  ? "Play or pause SoundCloud"
-                  : "Open player"
-            }
-            title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
-          >
-            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
-          </button>
         )}
 
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className={`flex-shrink-0 touch-target-sm flex items-center gap-0.5 ${
-            stripEmbedded ? FOCUS_STRIP_ICON_BTN : "p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
-          }`}
+          className="flex-shrink-0 touch-target-sm flex items-center gap-0.5 p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
           aria-label={collapsed ? "Expand music library" : "Collapse music library"}
           aria-expanded={!collapsed}
           title={collapsed ? "Expand music library" : "Collapse music library"}
         >
-          {stripEmbedded && (
-            <svg className="w-3 h-3 opacity-60" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M9 3v10.55A4 4 0 1 0 11 17V7h4V3H9z"/>
-            </svg>
-          )}
           <svg
             className="w-4 h-4 transition-transform duration-200"
             style={{ transform: collapsed ? "rotate(0deg)" : "rotate(180deg)" }}
@@ -587,6 +737,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         </button>
         </div>
       </div>
+      )}
 
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}
       {mode === "soundcloud" && (
@@ -615,54 +766,18 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           collapsed
             ? "hidden"
             : stripEmbedded
-              ? "absolute right-0 top-[calc(100%+0.25rem)] z-50 w-[22rem] max-w-[calc(100%-2rem)] space-y-1.5 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 shadow-lg shadow-slate-900/10"
+              ? "space-y-1.5 pb-2 border-t border-slate-200/80 dark:border-[#243350] pt-1.5"
               : inline
                 ? "space-y-1.5"
                 : "space-y-2"
         }
       >
-      {/* Mode toggle — single-line icon + label (SoundCloud must not wrap) */}
+      {/* Mode toggle — single-line icon + label (SoundCloud must not wrap). Hidden in strip: modes live in the bar. */}
+      {!stripEmbedded && (
       <div className="flex items-stretch gap-0.5 sm:gap-1 bg-slate-100 dark:bg-[#131d30] rounded-lg p-0.5 border border-slate-200 dark:border-[#243350]">
-        {(
-          [
-            {
-              id: "sounds" as const,
-              onClick: () => {
-                setMode("sounds");
-                setShowYt(false);
-              },
-              label: "Sounds",
-              icon: <span className="text-sm leading-none shrink-0" aria-hidden>🎧</span>,
-            },
-            {
-              id: "spotify" as const,
-              onClick: () => setMode("spotify"),
-              label: "Spotify",
-              icon: (
-                <svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                </svg>
-              ),
-            },
-            {
-              id: "soundcloud" as const,
-              onClick: () => setMode("soundcloud"),
-              label: "Cloud",
-              labelWide: "SoundCloud",
-              icon: <span className="text-sm leading-none shrink-0" aria-hidden>☁️</span>,
-            },
-            {
-              id: "lofi" as const,
-              onClick: () => setMode("lofi"),
-              label: "Lo-fi",
-              icon: <span className="text-sm leading-none shrink-0" aria-hidden>📺</span>,
-            },
-          ] as const
-        ).map((tab) => {
+        {modeTabs.map((tab) => {
           const active = mode === tab.id;
-          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 ${
-            stripEmbedded ? "py-2" : "py-1.5"
-          } text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
+          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
             active
               ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
               : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
@@ -688,9 +803,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           );
         })}
       </div>
+      )}
 
-      {/* Ambient Sounds mode */}
-      {mode === "sounds" && (
+      {/* Ambient Sounds mode — options already shown in strip bar */}
+      {mode === "sounds" && !stripEmbedded && (
         <div
           className={`bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350] ${
             stripEmbedded ? "px-2 py-2" : inline ? "px-2 py-2" : "px-3 py-3"

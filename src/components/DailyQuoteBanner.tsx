@@ -16,7 +16,7 @@ interface AppStatusBarProps {
 }
 
 /**
- * Focus strip: timer + ambient music side by side.
+ * Focus strip: music (primary) + timer side by side.
  * Weather lives in the navbar so it doesn’t compete with focus controls.
  */
 export default function DailyQuoteBanner({
@@ -31,30 +31,26 @@ export default function DailyQuoteBanner({
   return (
     <div className="status-strip" role="status" aria-label="Focus timer and music">
       <div className="app-container py-0.5 sm:py-1">
-        <div className="status-strip-card w-full min-w-0 flex flex-col rounded-lg overflow-visible">
+        <div className="status-strip-card w-full min-w-0 flex flex-col overflow-visible">
           <div
             className={`grid min-w-0 ${
               hasMusic
-                ? "grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] sm:divide-x status-strip-divider"
+                ? "grid-cols-1 sm:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] sm:divide-x status-strip-divider"
                 : "grid-cols-1"
             }`}
           >
-            <div
-              className={`status-strip-zone status-strip-zone--focus min-w-0 flex flex-col px-2.5 sm:px-3 ${
-                hasMusic ? "border-b sm:border-b-0 status-strip-divider" : ""
-              }`}
-            >
+            {hasMusic && (
+              <div className="status-strip-zone status-strip-zone--side min-w-0 flex flex-col px-2.5 sm:px-3 justify-center border-b sm:border-b-0 status-strip-divider">
+                {musicToolbar}
+              </div>
+            )}
+
+            <div className="status-strip-zone status-strip-zone--focus min-w-0 flex flex-col px-2.5 sm:px-3">
               <div className="flex items-center min-h-[2.75rem] w-full min-w-0">
                 <div className="flex-1 min-w-0">{timerToolbar}</div>
               </div>
               {timerPanel}
             </div>
-
-            {hasMusic && (
-              <div className="status-strip-zone status-strip-zone--side min-w-0 flex flex-col px-2.5 sm:px-3 justify-center">
-                {musicToolbar}
-              </div>
-            )}
           </div>
 
           {timerPanelExpanded && onCollapseAll && (
