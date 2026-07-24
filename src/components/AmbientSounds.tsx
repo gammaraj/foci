@@ -493,144 +493,144 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
-        <div className="flex flex-col gap-1.5 w-full min-w-0 py-1.5">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0 hidden lg:inline">
-              Music
-            </span>
-            <div className="flex items-center gap-0.5 min-w-0 flex-1 overflow-x-auto rounded-lg bg-slate-100/90 dark:bg-[#0f172a]/70 p-0.5 border border-slate-200/80 dark:border-[#243350]">
-              {modeTabs.map((tab) => {
-                const active = mode === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={tab.onClick}
-                    className={`shrink-0 inline-flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
-                      active
-                        ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
-                        : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
-                    }`}
-                    title={"labelWide" in tab ? tab.labelWide : tab.label}
-                    aria-pressed={active}
-                  >
-                    {tab.icon}
-                    <span className="hidden xl:inline truncate">
-                      {"labelWide" in tab ? tab.labelWide : tab.label}
-                    </span>
-                    <span className="xl:hidden truncate">{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <button
-              type="button"
-              onClick={handleMiniPlayPause}
-              className={`flex-shrink-0 ${miniPlayButtonClass(
-                !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
-                true
-              )}`}
-              aria-label={
-                mode === "sounds"
-                  ? activeSound
-                    ? `Pause ${activeSoundMeta?.label}`
-                    : "Play ambient sound"
-                  : mode === "soundcloud"
-                    ? "Play or pause SoundCloud"
-                    : "Open player"
-              }
-              title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
-            >
-              <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
-            </button>
+        <div className="flex items-center gap-1.5 w-full min-w-0 min-h-[2.75rem]">
+          <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0 hidden lg:inline">
+            Music
+          </span>
+          <div className="flex items-center gap-0.5 shrink-0 overflow-x-auto rounded-lg bg-slate-100/90 dark:bg-[#0f172a]/70 p-0.5 border border-slate-200/80 dark:border-[#243350]">
+            {modeTabs.map((tab) => {
+              const active = mode === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={tab.onClick}
+                  className={`shrink-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
+                    active
+                      ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
+                      : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
+                  }`}
+                  title={"labelWide" in tab ? tab.labelWide : tab.label}
+                  aria-pressed={active}
+                >
+                  {tab.icon}
+                  <span className="hidden xl:inline truncate">
+                    {"labelWide" in tab ? tab.labelWide : tab.label}
+                  </span>
+                  <span className="xl:hidden truncate">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="flex items-center gap-1.5 min-w-0">
-            {mode === "sounds" ? (
-              <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
-                {SOUNDS.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => playSound(s.id)}
-                    className={`shrink-0 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                      activeSound === s.id
-                        ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                        : "bg-white/80 dark:bg-[#1a2d4a]/80 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350] border border-slate-200/80 dark:border-[#243350]"
-                    }`}
-                    aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
-                    aria-pressed={activeSound === s.id}
-                  >
-                    <span aria-hidden>{s.emoji}</span>
-                    <span className="hidden sm:inline">{s.label}</span>
-                  </button>
-                ))}
-                {activeSound && (
-                  <input
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.05}
-                    value={volume}
-                    onChange={(e) => setVolume(parseFloat(e.target.value))}
-                    onClick={(e) => e.stopPropagation()}
-                    className="hidden md:block w-16 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0 ml-1"
-                    aria-label="Volume"
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 flex-1 min-w-0">
+          <div className="w-px h-5 bg-slate-200 dark:bg-[#243350] shrink-0" aria-hidden />
+
+          {mode === "sounds" ? (
+            <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
+              {SOUNDS.map((s) => (
                 <button
+                  key={s.id}
                   type="button"
-                  onClick={() => cyclePlaylist(-1)}
-                  className={FOCUS_STRIP_ICON_BTN}
-                  aria-label="Previous option"
+                  onClick={() => playSound(s.id)}
+                  className={`shrink-0 inline-flex items-center gap-1 rounded-md px-1.5 sm:px-2 py-1 text-xs font-medium transition-colors ${
+                    activeSound === s.id
+                      ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
+                      : "bg-white/80 dark:bg-[#1a2d4a]/80 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350] border border-slate-200/80 dark:border-[#243350]"
+                  }`}
+                  aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
+                  aria-pressed={activeSound === s.id}
+                  title={s.label}
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                  </svg>
+                  <span aria-hidden>{s.emoji}</span>
+                  <span className="hidden 2xl:inline">{s.label}</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setCollapsed(false)}
-                  className="min-w-0 flex-1 text-left truncate text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
-                  title={nowPlayingLabel}
+              ))}
+              {activeSound && (
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hidden lg:block w-14 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0"
+                  aria-label="Volume"
+                />
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-0.5 flex-1 min-w-0">
+              <button
+                type="button"
+                onClick={() => cyclePlaylist(-1)}
+                className={FOCUS_STRIP_ICON_BTN}
+                aria-label="Previous option"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCollapsed(false)}
+                className="min-w-0 flex-1 text-left truncate text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
+                title={nowPlayingLabel}
+              >
+                {nowPlayingLabel}
+              </button>
+              <button
+                type="button"
+                onClick={() => cyclePlaylist(1)}
+                className={FOCUS_STRIP_ICON_BTN}
+                aria-label="Next option"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCollapsed((c) => !c)}
+                className={`flex-shrink-0 touch-target-sm flex items-center ${FOCUS_STRIP_ICON_BTN}`}
+                aria-label={collapsed ? "Show player" : "Hide player"}
+                aria-expanded={!collapsed}
+                title={collapsed ? "Show player" : "Hide player"}
+              >
+                <svg
+                  className="w-4 h-4 transition-transform duration-200"
+                  style={{ transform: collapsed ? "rotate(0deg)" : "rotate(180deg)" }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
                 >
-                  {nowPlayingLabel}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => cyclePlaylist(1)}
-                  className={FOCUS_STRIP_ICON_BTN}
-                  aria-label="Next option"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCollapsed((c) => !c)}
-                  className={`flex-shrink-0 touch-target-sm flex items-center gap-0.5 ${FOCUS_STRIP_ICON_BTN}`}
-                  aria-label={collapsed ? "Show player" : "Hide player"}
-                  aria-expanded={!collapsed}
-                  title={collapsed ? "Show player" : "Hide player"}
-                >
-                  <svg
-                    className="w-4 h-4 transition-transform duration-200"
-                    style={{ transform: collapsed ? "rotate(0deg)" : "rotate(180deg)" }}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-            )}
-          </div>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleMiniPlayPause}
+            className={`flex-shrink-0 ${miniPlayButtonClass(
+              !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
+              true
+            )}`}
+            aria-label={
+              mode === "sounds"
+                ? activeSound
+                  ? `Pause ${activeSoundMeta?.label}`
+                  : "Play ambient sound"
+                : mode === "soundcloud"
+                  ? "Play or pause SoundCloud"
+                  : "Open player"
+            }
+            title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
+          >
+            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
+          </button>
         </div>
       ) : (
       <div
