@@ -117,13 +117,25 @@ export function TaskDetailPanel({
   const saveButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // After Add opens the panel, focus Save so Enter flushes drafts and closes.
+  // Depend only on task.id: including onSave re-ran this on every parent re-render
+  // (title keystrokes) and stole focus from the title input.
   useEffect(() => {
-    if (!onSave || editingDesc) return;
+    if (!onSave) return;
     const id = window.setTimeout(() => {
+      const active = document.activeElement;
+      if (
+        active instanceof HTMLElement &&
+        (active.tagName === "INPUT" ||
+          active.tagName === "TEXTAREA" ||
+          active.isContentEditable)
+      ) {
+        return;
+      }
       saveButtonRef.current?.focus();
     }, 50);
     return () => window.clearTimeout(id);
-  }, [task.id, onSave, editingDesc]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on open/task switch
+  }, [task.id]);
 
   const wrapperClass =
     variant === "inline"
