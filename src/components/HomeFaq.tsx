@@ -8,7 +8,7 @@ export default function HomeFaq() {
         Frequently asked questions
       </h2>
       <p className="text-center text-base text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto">
-        Straight answers about Foci — free forever, no signup required, available worldwide.
+        Straight answers about Foci — free to use, available worldwide.
       </p>
       <dl className="space-y-3">
         {HOME_FAQS.map((faq) => (

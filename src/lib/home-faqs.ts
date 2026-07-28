@@ -8,22 +8,22 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "What is Foci?",
     answer:
-      "Foci (usefoci.com) is a free all-in-one focus app that combines a Pomodoro timer, task tracking, daily goals, streak stats, and built-in ambient music — everything you need to stay productive in one browser window.",
+      "Foci (usefoci.com) is a free task manager and focus app: projects, Smart Plan scheduling, daily goals, streak stats, ambient music, and an optional focus timer — everything in one calm browser window.",
   },
   {
     question: "Is Foci free to use?",
     answer:
-      "Yes. Foci is completely free with no sign-up required. All data is stored locally in your browser. You can optionally create a free account to sync data across devices.",
+      "Yes. Foci is free to use. Create a free account to sync tasks, settings, and streaks across devices. No credit card required.",
   },
   {
-    question: "Can I use Foci without creating an account?",
+    question: "Do I need an account to use Foci?",
     answer:
-      'Absolutely. Click "Try Foci — free" on the homepage and start immediately. Your settings, tasks, and progress are saved locally. Create a free account only when you want cloud sync and streaks across devices.',
+      "Yes. A free account is required so your tasks, projects, Smart Plan, and streaks stay with you across devices. Create one at usefoci.com/login — it takes under a minute.",
   },
   {
     question: "What is the best free Pomodoro app?",
     answer:
-      "Foci ranks among the best free Pomodoro apps in 2026 — timer plus tasks, brown noise, lo-fi, daily goals, and streaks with no signup. Full ranking: https://usefoci.com/blog/best-free-pomodoro-apps-2026",
+      "Foci ranks among the best free Pomodoro apps in 2026 — tasks plus an optional timer, brown noise, lo-fi, daily goals, and streaks. Full ranking: https://usefoci.com/blog/best-free-pomodoro-apps-2026",
   },
   {
     question: "Does Foci have ambient music and brown noise?",
@@ -33,12 +33,12 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Where is Foci available?",
     answer:
-      "Foci is a free web app available worldwide in English. Open usefoci.com/app in Chrome, Firefox, Safari, or Edge on desktop or mobile — no geographic restrictions. Install as a PWA for offline tasks and ambient sounds.",
+      "Foci is a free web app available worldwide in English. Open usefoci.com in Chrome, Firefox, Safari, or Edge on desktop or mobile — no geographic restrictions. Install as a PWA for offline tasks and ambient sounds.",
   },
   {
     question: "How is Foci different from a simple Pomodoro timer?",
     answer:
-      "A simple Pomodoro timer only counts down time. Foci combines a Pomodoro timer with per-task time tracking, daily session goals, streak tracking, built-in ambient music, and optional cloud sync — all in one window. No tab-switching required.",
+      "A simple Pomodoro timer only counts down time. Foci is a task manager first — projects, Smart Plan, per-task time tracking, streaks, and ambient music — with an optional focus timer when you need a session.",
   },
   {
     question: "Can I import tasks from Todoist, Notion, Asana, or Google Tasks?",
@@ -48,7 +48,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "What are the best ADHD focus tools?",
     answer:
-      "Foci is designed to work with ADHD brains: the timer externalizes time perception, task tracking reduces working-memory load, brown noise provides sensory anchoring, and daily goals create visible momentum. Guide: https://usefoci.com/blog/adhd-focus-strategies",
+      "Foci is designed to work with ADHD brains: task tracking reduces working-memory load, the optional timer externalizes time perception, brown noise provides sensory anchoring, and daily goals create visible momentum. Guide: https://usefoci.com/blog/adhd-focus-strategies",
   },
   {
     question: "Is Foci a good Forest App alternative?",
@@ -63,7 +63,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Does Foci work offline?",
     answer:
-      "Yes. Foci is a Progressive Web App (PWA). Tasks, settings, and progress stay in local storage. Built-in ambient sounds also work offline via the Web Audio API.",
+      "Yes. Foci is a Progressive Web App (PWA). After you sign in, tasks, settings, and progress stay available offline. Built-in ambient sounds also work offline via the Web Audio API.",
   },
 ];
 

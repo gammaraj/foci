@@ -56,9 +56,9 @@ export default function TermsPage() {
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">The service</h2>
             <p>
-              Foci is a free focus productivity web app (timer, tasks, ambient sounds, and related
-              features). Core features work without an account. Optional free accounts enable cloud
-              sync across devices.
+              Foci is a free focus productivity web app (tasks, Smart Plan, ambient sounds, optional
+              timer, and related features). A free account is required to use the product and sync
+              across devices.
             </p>
           </section>
 
@@ -75,9 +75,9 @@ export default function TermsPage() {
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Your content</h2>
             <p>
-              You retain ownership of tasks and other content you enter. Guest data stays in your
-              browser. Account-synced data is stored so you can use Foci across devices. You are
-              responsible for backing up important data (export is available in the app).
+              You retain ownership of tasks and other content you enter. Account data is stored so
+              you can use Foci across devices. You are responsible for backing up important data
+              (export is available in the app).
             </p>
           </section>
 

@@ -79,13 +79,13 @@ export default function AboutPage() {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Why we built Foci</h2>
             <p>
               Most “focus” tools are either a bare countdown or a heavy task manager. Switching
-              between them breaks concentration. Foci puts a Pomodoro-style timer, task list,
-              Smart Plan scheduling, and offline ambient sounds (including brown noise) in one
+              between them breaks concentration. Foci puts a task list, Smart Plan scheduling,
+              offline ambient sounds (including brown noise), and an optional focus timer in one
               browser tab so you can start work in seconds.
             </p>
             <p>
-              Guests can use everything locally with no account. Optional free signup syncs
-              tasks and streaks across devices — useful when you move between laptop and phone.
+              A free account keeps tasks, settings, and streaks synced across devices — useful
+              when you move between laptop and phone.
             </p>
           </section>
 
@@ -102,8 +102,8 @@ export default function AboutPage() {
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Privacy by default</h2>
             <p>
-              Data stays in your browser unless you create an account. No ads. No selling
-              personal focus data. Cloud sync uses Supabase only when you opt in. Read the{" "}
+              Your account data syncs via Supabase. No ads. No selling personal focus data.
+              Read the{" "}
               <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
                 Privacy Policy
               </Link>{" "}

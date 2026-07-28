@@ -17,7 +17,7 @@ const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 const siteUrl = "https://usefoci.com";
 const title = "Foci – Free Task Manager & Focus App";
 const description =
-  "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer — no signup. Open Foci in your browser at usefoci.com.";
+  "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer. Create a free account at usefoci.com.";
 
 export const viewport: Viewport = {
   width: "device-width",

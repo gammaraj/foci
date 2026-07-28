@@ -6,21 +6,19 @@ test.describe("Landing Page", () => {
   });
 
   test("renders hero headline and subtitle", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText(
-      "A free task manager built for deep focus",
-    );
-    await expect(page.getByText("Foci — deep work, one calm window")).toBeVisible();
+    await expect(page.locator("h1")).toContainText("Plan your day. Finish your tasks.");
+    await expect(page.getByText("Free · Syncs across devices")).toBeVisible();
     await expect(
-      page.getByText("Projects, Smart Plan, and streaks"),
+      page.getByText("Create a free account to get started"),
     ).toBeVisible();
   });
 
   test("renders primary and secondary CTA buttons", async ({ page }) => {
-    const primaryCTA = page.getByRole("link", { name: "Try Foci — free" }).first();
+    const primaryCTA = page.getByRole("link", { name: "Create free account" }).first();
     await expect(primaryCTA).toBeVisible();
-    await expect(primaryCTA).toHaveAttribute("href", "/app");
+    await expect(primaryCTA).toHaveAttribute("href", "/login");
 
-    const secondaryCTA = page.getByRole("link", { name: "Create free account to sync →" });
+    const secondaryCTA = page.getByRole("link", { name: "Sign in →" }).first();
     await expect(secondaryCTA).toBeVisible();
     await expect(secondaryCTA).toHaveAttribute("href", "/login");
   });
@@ -33,11 +31,10 @@ test.describe("Landing Page", () => {
   });
 
   test("renders social proof section", async ({ page }) => {
-    await expect(page.getByText("No sign-up required")).toBeVisible();
+    await expect(page.getByText("Free to start")).toBeVisible();
+    await expect(page.getByText("Sync across devices")).toBeVisible();
     await expect(page.getByText("Import Todoist & Notion")).toBeVisible();
     await expect(page.getByText("Works offline (PWA)")).toBeVisible();
-    await expect(page.locator("span").filter({ hasText: "Built-in ambient music" })).toBeVisible();
-    await expect(page.getByText("100% free")).toBeVisible();
   });
 
   test("renders How Foci works section with 3 steps", async ({ page }) => {
@@ -68,9 +65,9 @@ test.describe("Landing Page", () => {
 
   test("renders final CTA section", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Ready to focus?" })).toBeVisible();
-    const finalCTA = page.getByRole("link", { name: "Try Foci — free" }).last();
+    const finalCTA = page.getByRole("link", { name: "Create free account" }).last();
     await expect(finalCTA).toBeVisible();
-    await expect(finalCTA).toHaveAttribute("href", "/app");
+    await expect(finalCTA).toHaveAttribute("href", "/login");
   });
 
   test("renders footer with legal links", async ({ page }) => {
@@ -79,13 +76,8 @@ test.describe("Landing Page", () => {
     await expect(page.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms");
   });
 
-  test("primary CTA navigates to app", async ({ page }) => {
-    await page.getByRole("link", { name: "Try Foci — free" }).first().click();
-    await expect(page).toHaveURL(/\/app/);
-  });
-
-  test("secondary CTA navigates to login", async ({ page }) => {
-    await page.getByRole("link", { name: "Create free account to sync →" }).click();
+  test("primary CTA navigates to login", async ({ page }) => {
+    await page.getByRole("link", { name: "Create free account" }).first().click();
     await expect(page).toHaveURL(/\/login/);
   });
 

@@ -275,7 +275,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       <footer className="mt-auto py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
         <GuideLinkHub variant="footer" className="mb-4" />
-        <p className="text-xs text-slate-400 dark:text-slate-600">Built for focus. Free forever.</p>
+        <p className="text-xs text-slate-400 dark:text-slate-600">Built for focus.</p>
       </footer>
     </div>
   );

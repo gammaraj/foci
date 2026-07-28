@@ -10,7 +10,7 @@ import BoostLogikInboundRedirect from "@/components/BoostLogikInboundRedirect";
 import WanderingHermitInboundRedirect from "@/components/WanderingHermitInboundRedirect";
 import HomeAppMockup from "@/components/HomeAppMockup";
 import HomeFaq from "@/components/HomeFaq";
-import { FOCI_HERO_HEADLINE, FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
+import { FOCI_HERO_HEADLINE } from "@/lib/logo-brand";
 import { homeFaqsToJsonLd } from "@/lib/home-faqs";
 
 const siteUrl = "https://usefoci.com";
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     absolute: "Foci – Free Task Manager & Focus App",
   },
   description:
-    "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer — no signup. Open Foci in your browser at usefoci.com.",
+    "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer. Create a free account at usefoci.com.",
   alternates: { canonical: "/" },
 };
 
@@ -120,7 +120,7 @@ const howToJsonLd = {
   name: "How to Use Foci to Stay Focused and Productive",
   description: "A step-by-step guide to using Foci — a free all-in-one focus system with a Pomodoro timer, task tracking, ambient music, daily goals, and streak stats.",
   step: [
-    { "@type": "HowToStep", name: "Try Foci", text: "Visit usefoci.com and click \"Try Foci — free\" to start instantly, or sign up for free to sync across devices." },
+    { "@type": "HowToStep", name: "Create your free account", text: "Visit usefoci.com and create a free account to sync tasks, settings, and streaks across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
     { "@type": "HowToStep", name: "Set your preferences", text: "Open Settings to configure work duration (default 25 min), break duration (default 5 min), daily session goal, and notification preferences." },
     { "@type": "HowToStep", name: "Pick a task and start", text: "Select a task from Today or a project tab. Start highlights when a task is selected. Turn on ambient music or lo-fi if you like, then press Start. The circular timer counts down your work session." },
@@ -164,36 +164,32 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center app-container">
         <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-3xl mx-auto w-full">
-          {/* Proof badge */}
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200/70 dark:border-blue-700/40 text-xs font-semibold text-blue-700 dark:text-blue-300 tracking-wide uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden />
-              Free · No signup · Works instantly
+              Free · Syncs across devices
             </span>
           </div>
 
-          <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 tracking-wide mb-3">
-            Foci — {FOCI_TAGLINE_CALM}
-          </p>
           <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.12]">
             {FOCI_HERO_HEADLINE}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Projects, Smart Plan, and streaks in one calm browser window — with ambient sound and an optional focus timer. No account required.
+            Projects, Smart Plan, and streaks in one calm window — with ambient sound and an optional focus timer. Create a free account to get started.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
-              href="/app"
+              href="/login"
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-base transition-colors shadow-lg shadow-blue-700/25 dark:shadow-blue-600/20"
             >
-              Try Foci — free
+              Create free account
             </Link>
             <Link
               href="/login"
               className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
             >
-              Create free account to sync →
+              Sign in →
             </Link>
           </div>
         </section>
@@ -210,7 +206,13 @@ export default function LandingPage() {
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>No sign-up required</span>
+              <span>Free to start</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Sync across devices</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -229,12 +231,6 @@ export default function LandingPage() {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span>Works offline (PWA)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>100% free</span>
             </div>
           </div>
         </section>
@@ -422,14 +418,14 @@ export default function LandingPage() {
           <GuideLinkHub />
         </section>
 
-        {/* Sync conversion — guest-first product still needs a clear account value prop */}
+        {/* Account CTA */}
         <section className="w-full max-w-3xl mx-auto pb-12 sm:pb-16">
           <div className="rounded-2xl border border-blue-200/80 dark:border-blue-800/50 bg-blue-50/80 dark:bg-blue-950/30 px-6 py-8 sm:px-10 sm:py-10 text-center">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              Keep your streak when you switch devices
+              Your tasks, synced everywhere
             </h2>
             <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-              Guest mode keeps everything in this browser. A free account syncs tasks, settings, and streaks to the cloud — optional, anytime.
+              A free Foci account keeps projects, Smart Plan, settings, and streaks with you on every device.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -439,10 +435,10 @@ export default function LandingPage() {
                 Create free account
               </Link>
               <Link
-                href="/app"
+                href="/login"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-sm hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
-                Continue as guest →
+                Sign in →
               </Link>
             </div>
           </div>
@@ -503,20 +499,20 @@ export default function LandingPage() {
             Ready to focus?
           </h2>
           <p className="text-slate-500 dark:text-slate-400 mb-6">
-            No credit card. No setup. Add a task and start.
+            Create an account and add your first task.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
-              href="/app"
+              href="/login"
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-base transition-colors shadow-lg shadow-blue-700/25 dark:shadow-blue-600/20"
             >
-              Try Foci — free
+              Create free account
             </Link>
             <Link
               href="/login"
               className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
             >
-              Sync across devices →
+              Sign in →
             </Link>
           </div>
         </section>

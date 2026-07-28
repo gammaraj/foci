@@ -57,9 +57,8 @@ export function getFociLogoShadow(surface: "dark" | "light"): string {
 export const FOCI_TAGLINE_FOCUS = "FOCUS · FLOW · FINISH";
 export const FOCI_TAGLINE_CALM = "deep work, one calm window";
 
-/** Homepage H1 — tasks first; keep FOCI_TAGLINE_CALM as supporting brand line. */
-export const FOCI_HERO_HEADLINE =
-  "A free task manager built for deep focus";
+/** Homepage H1 — tasks first; account required. */
+export const FOCI_HERO_HEADLINE = "Plan your day. Finish your tasks.";
 
 /** Wordmark typography — clearly dominant over the all-caps tagline. */
 export const FOCI_WORDMARK_NAV =

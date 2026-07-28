@@ -96,7 +96,7 @@ export default function AppNavbar({
         onOpenSettings={() => setShowSettings(true)}
         centerSlot={
           focusMode ? undefined : (
-            <div className="flex items-center justify-center gap-5 sm:gap-6 min-w-0 w-full max-w-3xl">
+            <div className="flex items-center justify-center gap-10 sm:gap-12 min-w-0 w-full max-w-3xl">
               <div className="min-w-0 shrink">
                 <WeatherTime nav />
               </div>

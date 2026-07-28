@@ -46,26 +46,17 @@ export default function PrivacyPage() {
             Last updated: {lastUpdated}
           </p>
           <p className="mt-5 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            Foci is local-first. You can use the app without an account. This policy explains what
-            data stays on your device, what optional cloud sync stores, and what we do not do.
+            Foci requires a free account. This policy explains what data we store when you
+            sign in, how cloud sync works, and what we do not do.
           </p>
 
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Guest mode (no account)</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Your account &amp; sync</h2>
             <p>
-              Without signing in, tasks, settings, session history, and preferences are stored in
-              your browser (local storage / IndexedDB as applicable). That data stays on your
-              device unless you export it or clear your browser storage.
-            </p>
-          </section>
-
-          <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Optional accounts &amp; sync</h2>
-            <p>
-              If you create a free account, Foci uses Supabase for authentication and optional cloud
+              When you create a free account, Foci uses Supabase for authentication and cloud
               sync of tasks, settings, and streak/session data so you can use Foci across devices.
               Email (or other auth provider details you choose) is used to sign you in and protect
-              your account.
+              your account. The app may also keep a local cache on your device for offline use.
             </p>
           </section>
 
@@ -83,7 +74,7 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-2">
               <li>No ads in the Foci product UI</li>
               <li>No selling of personal focus or task data</li>
-              <li>No requirement to create an account to use core features</li>
+              <li>No paid plan required for core features</li>
             </ul>
           </section>
 
