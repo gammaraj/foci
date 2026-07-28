@@ -418,7 +418,7 @@ export function FilantusCrossPromoBanner({
           >
             {ad.name}
           </span>
-          <span className="block text-[11px] font-medium text-slate-700 dark:text-slate-200 truncate leading-tight">
+          <span className="block text-[11px] font-medium truncate leading-tight text-slate-700">
             {ad.headline}
           </span>
         </span>
