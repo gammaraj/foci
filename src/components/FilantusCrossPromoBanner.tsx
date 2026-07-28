@@ -408,8 +408,8 @@ export function FilantusCrossPromoBanner({
         title={`${ad.headline} — ${ad.sub}`}
       >
         <span
-          className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold text-white shadow-sm"
-          style={{ backgroundColor: HOST_THEME_COLOR }}
+          className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold bg-transparent"
+          style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
           aria-hidden="true"
         >
           {ad.name.replace(/[^A-Za-z]/g, "").slice(0, 2)}
@@ -425,8 +425,8 @@ export function FilantusCrossPromoBanner({
           </span>
         </span>
         <span
-          className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap text-white shadow-sm"
-          style={{ backgroundColor: HOST_THEME_COLOR }}
+          className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap bg-transparent"
+          style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
         >
           Try free →
         </span>
