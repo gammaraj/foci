@@ -23,11 +23,12 @@ test.describe("Landing Page", () => {
     await expect(secondaryCTA).toHaveAttribute("href", "/login");
   });
 
-  test("renders app mockup with timer and tasks", async ({ page }) => {
-    await expect(page.getByText("22:30")).toBeVisible();
-    await expect(page.getByText("FOCUS · FLOW · FINISH")).toBeVisible();
-    await expect(page.getByText("Research API integration")).toBeVisible();
-    await expect(page.getByText("Draft design mockups")).toBeVisible();
+  test("renders app preview screenshot", async ({ page }) => {
+    const preview = page.getByRole("img", {
+      name: /Foci app showing projects as cards/i,
+    });
+    await expect(preview).toBeVisible();
+    await expect(preview).toHaveAttribute("src", "/home-app-preview.webp");
   });
 
   test("renders social proof section", async ({ page }) => {
