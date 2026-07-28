@@ -394,11 +394,10 @@ export function FilantusCrossPromoBanner({
             })
           }
         }}
-        className="group flex items-center gap-2.5 w-[420px] h-11 box-border pl-1.5 pr-2 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+        className="group flex items-center gap-2.5 w-[420px] h-11 box-border pl-1.5 pr-2 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
         style={{
           textDecoration: 'none',
-          borderColor: `${ad.color}66`,
-          backgroundColor: '#ffffff',
+          borderColor: `${ad.color}99`,
         }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
@@ -418,7 +417,7 @@ export function FilantusCrossPromoBanner({
           >
             {ad.name}
           </span>
-          <span className="block text-[11px] font-medium truncate leading-tight text-slate-700">
+          <span className="block text-[11px] font-medium truncate leading-tight text-slate-700 dark:text-slate-300">
             {ad.headline}
           </span>
         </span>
