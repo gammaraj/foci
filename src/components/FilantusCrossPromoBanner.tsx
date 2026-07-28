@@ -382,7 +382,7 @@ export function FilantusCrossPromoBanner({
   const href = bannerHref(ad.id, ad.url)
 
   return (
-    <div id="filantus-banner" className={`hidden lg:block shrink-0 w-[420px] ${className}`.trim()}>
+    <div id="filantus-banner" className={`hidden lg:block shrink-0 w-[320px] ${className}`.trim()}>
       <a
         href={href}
         target="_blank"
@@ -398,7 +398,7 @@ export function FilantusCrossPromoBanner({
             })
           }
         }}
-        className="group flex items-center gap-2.5 w-[420px] h-11 box-border pl-1.5 pr-2 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
+        className="group flex items-center gap-1.5 w-[320px] h-11 box-border pl-2.5 pr-1.5 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
         style={{
           textDecoration: 'none',
           borderColor: `${HOST_THEME_COLOR}99`,
@@ -407,13 +407,6 @@ export function FilantusCrossPromoBanner({
         onMouseLeave={() => setPaused(false)}
         title={`${ad.headline} — ${ad.sub}`}
       >
-        <span
-          className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold bg-transparent"
-          style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
-          aria-hidden="true"
-        >
-          {ad.name.replace(/[^A-Za-z]/g, "").slice(0, 2)}
-        </span>
         <span className="flex-1 min-w-0">
           <span
             className="block text-[13px] font-bold tracking-tight truncate leading-tight text-slate-900 dark:text-white"
@@ -425,10 +418,10 @@ export function FilantusCrossPromoBanner({
           </span>
         </span>
         <span
-          className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap bg-transparent"
+          className="shrink-0 text-[11px] font-bold px-2 py-1 rounded-full whitespace-nowrap bg-transparent"
           style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
         >
-          Try free →
+          Try →
         </span>
       </a>
     </div>
