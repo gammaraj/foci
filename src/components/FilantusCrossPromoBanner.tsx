@@ -70,11 +70,11 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "B",
     "taglines": {
       "foci": {
-        "headline": "Run study group tournaments? Try Brakto",
+        "headline": "Run study group tournaments?",
         "sub": "Bracket any competition — free to start"
       },
       "certstud": {
-        "headline": "Study groups & competitions? Try Brakto",
+        "headline": "Study groups & competitions?",
         "sub": "Organize cert study brackets with your team"
       },
       "collegedecider": {
@@ -104,7 +104,7 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
         "sub": "Prep for 100+ certifications on CertStud"
       },
       "brakto": {
-        "headline": "Esports pros need certs too — try CertStud",
+        "headline": "Esports pros need certs too",
         "sub": "95% pass rate on 100+ IT & business certs"
       },
       "collegedecider": {
