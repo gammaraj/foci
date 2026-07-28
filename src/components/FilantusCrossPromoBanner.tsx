@@ -335,6 +335,7 @@ export function FilantusCrossPromoBanner({
 }) {
   const [ads, setAds] = useState<FilantusAd[]>(FALLBACK_ADS)
   const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
     if (FALLBACK_ADS.length === 0) return
@@ -364,11 +365,12 @@ export function FilantusCrossPromoBanner({
 
   useEffect(() => {
     if (ads.length <= 1) return
+    if (paused) return
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % ads.length)
-    }, 5000)
+    }, 12000)
     return () => clearInterval(timer)
-  }, [ads.length])
+  }, [ads.length, paused])
 
   const ad = ads[index] || ads[0]
   if (!ad || hidden || ads.length === 0) return null
@@ -376,7 +378,7 @@ export function FilantusCrossPromoBanner({
   const href = bannerHref(ad.id, ad.url)
 
   return (
-    <div id="filantus-banner" className={`hidden lg:block shrink min-w-0 max-w-[22rem] ${className}`.trim()}>
+    <div id="filantus-banner" className={`hidden lg:block shrink min-w-0 max-w-[26rem] ${className}`.trim()}>
       <a
         href={href}
         target="_blank"
@@ -392,22 +394,37 @@ export function FilantusCrossPromoBanner({
             })
           }
         }}
-        className="nav-chrome-promo flex items-center gap-2 w-full max-w-[22rem] h-9 box-border px-3 rounded-lg overflow-hidden"
-        style={{ textDecoration: 'none' }}
+        className="group flex items-center gap-2.5 w-full h-11 box-border pl-1.5 pr-2 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+        style={{
+          textDecoration: 'none',
+          borderColor: `${ad.color}66`,
+          background: `linear-gradient(90deg, ${ad.color}22 0%, #ffffff 52%)`,
+        }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
         title={`${ad.headline} — ${ad.sub}`}
       >
         <span
-          className="shrink-0 max-w-[5.5rem] text-[0.8125rem] font-bold tracking-tight truncate"
-          style={{ color: ad.color }}
+          className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold text-white shadow-sm"
+          style={{ backgroundColor: ad.color }}
+          aria-hidden="true"
         >
-          {ad.name}
+          {ad.name.replace(/[^A-Za-z]/g, "").slice(0, 2)}
         </span>
-        <span className="flex-1 min-w-0 text-[0.8125rem] font-medium text-slate-600 dark:text-slate-300 truncate tracking-tight">
-          {ad.headline}
+        <span className="flex-1 min-w-0">
+          <span
+            className="block text-[13px] font-bold tracking-tight truncate leading-tight"
+            style={{ color: ad.color }}
+          >
+            {ad.name}
+          </span>
+          <span className="block text-[11px] font-medium text-slate-700 dark:text-slate-200 truncate leading-tight">
+            {ad.headline}
+          </span>
         </span>
         <span
-          className="shrink-0 text-[0.6875rem] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap"
-          style={{ color: ad.color, backgroundColor: `${ad.color}14` }}
+          className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap text-white shadow-sm"
+          style={{ backgroundColor: ad.color }}
         >
           Try free →
         </span>
