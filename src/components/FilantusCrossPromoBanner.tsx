@@ -416,8 +416,7 @@ export function FilantusCrossPromoBanner({
         </span>
         <span className="flex-1 min-w-0">
           <span
-            className="block text-[13px] font-bold tracking-tight truncate leading-tight"
-            style={{ color: HOST_THEME_COLOR }}
+            className="block text-[13px] font-bold tracking-tight truncate leading-tight text-slate-900 dark:text-white"
           >
             {ad.name}
           </span>
