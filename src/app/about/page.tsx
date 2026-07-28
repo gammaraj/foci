@@ -86,7 +86,6 @@ export default function AboutPage() {
             <p>
               Guests can use everything locally with no account. Optional free signup syncs
               tasks and streaks across devices — useful when you move between laptop and phone.
-              Over 129 people already sync with Foci.
             </p>
           </section>
 
@@ -104,8 +103,15 @@ export default function AboutPage() {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Privacy by default</h2>
             <p>
               Data stays in your browser unless you create an account. No ads. No selling
-              personal focus data. Cloud sync uses Supabase only when you opt in. Foci is
-              available worldwide in English at{" "}
+              personal focus data. Cloud sync uses Supabase only when you opt in. Read the{" "}
+              <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Privacy Policy
+              </Link>{" "}
+              and{" "}
+              <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Terms of Use
+              </Link>
+              . Foci is available worldwide in English at{" "}
               <a href={siteUrl} className="text-blue-600 dark:text-blue-400 hover:underline">
                 usefoci.com
               </a>
@@ -170,6 +176,14 @@ export default function AboutPage() {
         <p className="text-sm text-slate-400 dark:text-slate-600">
           <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400">
             Home
+          </Link>
+          {" · "}
+          <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Privacy
+          </Link>
+          {" · "}
+          <Link href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Terms
           </Link>
           {" · "}
           Built for focus.

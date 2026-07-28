@@ -6,8 +6,13 @@ test.describe("Landing Page", () => {
   });
 
   test("renders hero headline and subtitle", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText("deep work, one calm window");
-    await expect(page.getByText("Free Pomodoro timer, tasks, session tracking")).toBeVisible();
+    await expect(page.locator("h1")).toContainText(
+      "Free Pomodoro timer with tasks & focus sounds",
+    );
+    await expect(page.getByText("Foci — deep work, one calm window")).toBeVisible();
+    await expect(
+      page.getByText("Timer, tasks, Smart Plan, and ambient sound"),
+    ).toBeVisible();
   });
 
   test("renders primary and secondary CTA buttons", async ({ page }) => {
@@ -15,7 +20,7 @@ test.describe("Landing Page", () => {
     await expect(primaryCTA).toBeVisible();
     await expect(primaryCTA).toHaveAttribute("href", "/app");
 
-    const secondaryCTA = page.getByRole("link", { name: "Sign in to sync →" });
+    const secondaryCTA = page.getByRole("link", { name: "Create free account to sync →" });
     await expect(secondaryCTA).toBeVisible();
     await expect(secondaryCTA).toHaveAttribute("href", "/login");
   });
@@ -29,9 +34,9 @@ test.describe("Landing Page", () => {
 
   test("renders social proof section", async ({ page }) => {
     await expect(page.getByText("No sign-up required")).toBeVisible();
-    await expect(page.getByText("Installable PWA")).toBeVisible();
+    await expect(page.getByText("Import Todoist & Notion")).toBeVisible();
+    await expect(page.getByText("Works offline (PWA)")).toBeVisible();
     await expect(page.locator("span").filter({ hasText: "Built-in ambient music" })).toBeVisible();
-    await expect(page.getByText("Syncs across devices")).toBeVisible();
     await expect(page.getByText("100% free")).toBeVisible();
   });
 
@@ -44,12 +49,23 @@ test.describe("Landing Page", () => {
 
   test("renders comparison section", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "Why not just use a browser timer?" })
+      page.getByRole("heading", { name: "More than just a countdown timer" }),
     ).toBeVisible();
     await expect(page.getByText("Timer + tasks, same screen")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Built-in ambient music" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Built-in ambient sound" })).toBeVisible();
     await expect(page.getByText("Automatic time logging")).toBeVisible();
     await expect(page.getByText("Streaks that stick")).toBeVisible();
+    await expect(page.getByText("Smart Plan scheduling")).toBeVisible();
+    await expect(page.getByText("Import from your tools")).toBeVisible();
+  });
+
+  test("renders differentiator section", async ({ page }) => {
+    await expect(
+      page.getByRole("heading", { name: "Built for how you already work" }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Smart Plan" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Import Todoist & Notion" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Flowtime & 52/17 presets" })).toBeVisible();
   });
 
   test("renders final CTA section", async ({ page }) => {
@@ -59,8 +75,10 @@ test.describe("Landing Page", () => {
     await expect(finalCTA).toHaveAttribute("href", "/app");
   });
 
-  test("renders footer", async ({ page }) => {
+  test("renders footer with legal links", async ({ page }) => {
     await expect(page.getByText("Built for focus.")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
+    await expect(page.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms");
   });
 
   test("primary CTA navigates to app", async ({ page }) => {
@@ -69,7 +87,7 @@ test.describe("Landing Page", () => {
   });
 
   test("secondary CTA navigates to login", async ({ page }) => {
-    await page.getByRole("link", { name: "Sign in to sync →" }).click();
+    await page.getByRole("link", { name: "Create free account to sync →" }).click();
     await expect(page).toHaveURL(/\/login/);
   });
 

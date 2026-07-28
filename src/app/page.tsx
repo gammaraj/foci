@@ -10,12 +10,10 @@ import BoostLogikInboundRedirect from "@/components/BoostLogikInboundRedirect";
 import WanderingHermitInboundRedirect from "@/components/WanderingHermitInboundRedirect";
 import HomeAppMockup from "@/components/HomeAppMockup";
 import HomeFaq from "@/components/HomeFaq";
-import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
+import { FOCI_HERO_HEADLINE, FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
 import { homeFaqsToJsonLd } from "@/lib/home-faqs";
 
 const siteUrl = "https://usefoci.com";
-/** Real signed-in users (cloud sync) — keep honest; update when the count moves. */
-const SIGNED_USER_COUNT = 129;
 
 export const metadata: Metadata = {
   title: {
@@ -68,7 +66,7 @@ const jsonLd = {
   image: `${siteUrl}/opengraph-image`,
   inLanguage: "en-US",
   areaServed: { "@type": "Place", name: "Worldwide" },
-  dateModified: "2026-07-17",
+  dateModified: "2026-07-27",
   featureList: [
     "Pomodoro focus timer with customizable work and break durations",
     "Task tracking with automatic per-task time logging",
@@ -174,14 +172,14 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.12]">
-            {FOCI_TAGLINE_CALM}
-          </h1>
-          <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Free Pomodoro timer, tasks, session tracking, and ambient sound — the focus app at usefoci.com, no signup required.
+          <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 tracking-wide mb-3">
+            Foci — {FOCI_TAGLINE_CALM}
           </p>
-          <p className="mt-3 text-sm text-slate-500 dark:text-slate-500">
-            {SIGNED_USER_COUNT}+ people sync streaks across devices
+          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-slate-900 dark:text-white tracking-tight leading-[1.12]">
+            {FOCI_HERO_HEADLINE}
+          </h1>
+          <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+            Timer, tasks, Smart Plan, and ambient sound in one calm browser window — start in seconds, no account required.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -218,7 +216,7 @@ export default function LandingPage() {
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>{SIGNED_USER_COUNT}+ synced accounts</span>
+              <span>Import Todoist &amp; Notion</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -299,13 +297,13 @@ export default function LandingPage() {
         </section>
 
         {/* Why Foci vs. others */}
-        <section className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
+        <section id="features" className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             More than just a countdown timer
           </h2>
           <p className="text-center text-base sm:text-lg text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto">
-            A simple timer counts down and beeps. Foci gives you tasks, time tracking, ambient
-            music, and streaks — so you actually stay focused and see your progress.
+            A simple timer counts down and beeps. Foci gives you tasks, Smart Plan scheduling,
+            ambient music, imports, and streaks — so you actually stay focused and see your progress.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
@@ -341,6 +339,38 @@ export default function LandingPage() {
                 ),
                 iconClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30",
               },
+              {
+                title: "Smart Plan scheduling",
+                desc: "Day-by-day task plan from due dates and daily goals — no AI required.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                ),
+                iconClass: "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30",
+              },
+              {
+                title: "Import from your tools",
+                desc: "Bring tasks from Todoist, Notion, Asana, or Google Tasks in a few clicks.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                ),
+                iconClass: "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30",
+              },
+              {
+                title: "Pomodoro, Flowtime & 52/17",
+                desc: "Presets for Classic Pomodoro, Deep Work, 52/17, Short Sprint, and Ultra Focus.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                ),
+                iconClass: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30",
+              },
+              {
+                title: "Cards, list & kanban",
+                desc: "Switch between card, list, and bucket board views with drag-and-drop reorder.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                ),
+                iconClass: "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30",
+              },
             ].map((item) => (
               <div key={item.title} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0f1b33] border border-slate-200 dark:border-[#1e3355]">
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${item.iconClass}`}>
@@ -357,6 +387,36 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* High-intent differentiators */}
+        <section className="w-full max-w-5xl mx-auto pb-12 sm:pb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            Built for how you already work
+          </h2>
+          <p className="text-center text-base sm:text-lg text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto">
+            The features people search for — scheduling, migration, and focus methods — are in the product, not buried in settings.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+            <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Smart Plan</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                Turns due dates and daily goals into a day-by-day execution plan. Flags overdue and at-risk work automatically.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Import Todoist &amp; Notion</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                Migrate from Todoist, Notion, Asana, or Google Tasks via Settings → Import &amp; Export. Preview before you confirm.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Flowtime &amp; 52/17 presets</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                Switch between Classic Pomodoro, Flowtime-friendly custom lengths, 52/17, Deep Work, and Ultra Focus in one tap.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Focus guides hub — internal links for SEO */}
         <section className="w-full max-w-6xl mx-auto pb-12 sm:pb-16 px-0">
           <GuideLinkHub />
@@ -369,7 +429,7 @@ export default function LandingPage() {
               Keep your streak when you switch devices
             </h2>
             <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-              Guest mode keeps everything in this browser. A free account syncs tasks, settings, and streaks to the cloud — join {SIGNED_USER_COUNT}+ people already syncing.
+              Guest mode keeps everything in this browser. A free account syncs tasks, settings, and streaks to the cloud — optional, anytime.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -490,6 +550,14 @@ export default function LandingPage() {
         <p className="text-sm text-slate-400 dark:text-slate-600">
           <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400">
             About
+          </Link>
+          {" · "}
+          <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Privacy
+          </Link>
+          {" · "}
+          <Link href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Terms
           </Link>
           {" · "}
           Built for focus.

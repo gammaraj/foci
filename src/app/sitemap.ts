@@ -4,7 +4,7 @@ import { getAllPosts } from "@/lib/blog";
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = "https://usefoci.com";
   const now = new Date();
-  const productRefresh = new Date("2026-07-17");
+  const productRefresh = new Date("2026-07-27");
 
   const allPosts = getAllPosts();
   const mostRecentPostDate = allPosts.length > 0
@@ -73,6 +73,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
       images: [`${siteUrl}/opengraph-image`],
+    },
+    {
+      url: `${siteUrl}/privacy`,
+      lastModified: siteContentDate,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${siteUrl}/terms`,
+      lastModified: siteContentDate,
+      changeFrequency: "yearly",
+      priority: 0.4,
     },
     {
       url: `${siteUrl}/llms.txt`,

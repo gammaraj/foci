@@ -147,30 +147,30 @@ export default function WeatherTime({ compact = false, embedded = false, nav = f
   if (nav) {
     return (
       <div
-        className="flex items-center justify-center gap-2 min-w-0 max-w-full px-1"
+        className="nav-chrome-meta flex items-center justify-center gap-1.5 min-w-0 max-w-full"
         title={weatherTitle || undefined}
         aria-label={weatherTitle ? `Local time and weather: ${formatClock(now)}. ${weatherTitle}` : `Local time ${formatClock(now)}`}
       >
-        <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap">
+        <span className="text-[0.875rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
           {formatClock(now)}
         </span>
-        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:inline">
+        <span className="text-[0.75rem] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:inline">
           {formatShortWeekday(now)}
         </span>
         {weather && (
           <>
-            <span className="h-4 w-px bg-slate-200 dark:bg-white/15 shrink-0" aria-hidden />
-            <span className="text-sm leading-none shrink-0" aria-hidden>
+            <span className="h-3.5 w-px bg-slate-200/90 dark:bg-white/10 shrink-0 mx-0.5" aria-hidden />
+            <span className="text-[0.875rem] leading-none shrink-0" aria-hidden>
               {weather.icon}
             </span>
-            <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap">
+            <span className="text-[0.875rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
               {weather.temp}°{unitSuffix}
             </span>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden md:inline max-w-[7rem]">
+            <span className="text-[0.75rem] font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden lg:inline max-w-[7rem]">
               {weather.description}
             </span>
             {weather.city && (
-              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 truncate min-w-0 hidden xl:inline max-w-[6rem]">
+              <span className="text-[0.75rem] font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden xl:inline max-w-[6rem]">
                 {weather.city}
               </span>
             )}

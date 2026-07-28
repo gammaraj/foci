@@ -151,20 +151,42 @@ export default function HomeAppMockup() {
       </div>
 
       <div className="dark bg-[#0b1121] rounded-b-2xl border border-[#1e3355] border-t-0 overflow-hidden shadow-2xl shadow-black/40">
-        {/* Nav chrome */}
-        <div className="px-3 sm:px-4 pt-2.5 pb-2 border-b border-white/[0.06]">
-          <div className="flex items-center gap-2.5">
+        {/* Nav chrome — mirrors live product bar */}
+        <div className="px-3 sm:px-4 pt-2.5 pb-2.5 border-b border-white/[0.08] bg-[#070b16]/90">
+          <div className="flex items-center gap-2.5 min-h-[2.5rem]">
             <FociLogoMark
               size={32}
               idPrefix="mockup-nav"
               surface="dark"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex-shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-[0.65rem] flex-shrink-0"
             />
-            <div className="flex flex-col items-start gap-1 min-w-0">
+            <div className="flex flex-col items-start gap-1.5 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_MOCKUP} tone="dark" />
               <p className={`${FOCI_TAGLINE_MOCKUP} ${FOCI_TAGLINE_ON_DARK} whitespace-nowrap`}>
                 {FOCI_TAGLINE_FOCUS}
               </p>
+            </div>
+            <div className="hidden sm:flex flex-1 min-w-0 items-center justify-center gap-2 px-2">
+              <span className="text-[0.8125rem] font-semibold tabular-nums text-slate-200 whitespace-nowrap">
+                8:55 PM
+              </span>
+              <span className="text-[0.75rem] font-semibold text-slate-400 whitespace-nowrap">Mon</span>
+              <span className="h-3.5 w-px bg-white/10 shrink-0" aria-hidden />
+              <span className="text-[0.8125rem] leading-none" aria-hidden>
+                ⛅
+              </span>
+              <span className="text-[0.8125rem] font-semibold tabular-nums text-slate-200 whitespace-nowrap">
+                77°F
+              </span>
+              <span className="hidden md:inline text-[0.75rem] font-medium text-slate-400 truncate">
+                Partly cloudy
+              </span>
+            </div>
+            <div className="ml-auto hidden sm:flex items-center gap-2 shrink-0">
+              <span className="text-[0.8125rem] font-semibold text-slate-300 px-2 py-1">Settings</span>
+              <span className="text-[0.8125rem] font-bold text-white bg-blue-600 px-3 py-1.5 rounded-xl">
+                Log in
+              </span>
             </div>
           </div>
         </div>
@@ -174,9 +196,9 @@ export default function HomeAppMockup() {
           <div className="grid min-w-0 grid-cols-1 sm:grid-cols-[2.2fr_3fr_3.2fr] sm:items-stretch rounded-xl border border-[#243350] bg-[#131d30]/90 overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-[#243350]/80">
             <div className="min-w-0 px-3 py-2.5 flex items-center">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-100 tabular-nums leading-none">2:57 PM</p>
+                <p className="text-sm font-semibold text-slate-100 tabular-nums leading-none">8:55 PM</p>
                 <p className="mt-1 text-[11px] text-slate-400 truncate">
-                  <span aria-hidden>☀️</span> 72° · Partly cloudy
+                  <span aria-hidden>⛅</span> 77° · Partly cloudy
                 </p>
               </div>
             </div>

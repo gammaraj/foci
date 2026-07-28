@@ -376,7 +376,7 @@ export function FilantusCrossPromoBanner({
   const href = bannerHref(ad.id, ad.url)
 
   return (
-    <div id="filantus-banner" className={`hidden lg:block shrink min-w-0 max-w-[380px] ${className}`.trim()}>
+    <div id="filantus-banner" className={`hidden lg:block shrink min-w-0 max-w-[22rem] ${className}`.trim()}>
       <a
         href={href}
         target="_blank"
@@ -392,26 +392,22 @@ export function FilantusCrossPromoBanner({
             })
           }
         }}
-        className="flex items-center gap-2 w-full max-w-[380px] h-9 box-border px-3 rounded-xl border border-slate-200/90 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600 transition-[border-color] overflow-hidden bg-white/90 dark:bg-slate-900/40"
+        className="nav-chrome-promo flex items-center gap-2 w-full max-w-[22rem] h-9 box-border px-3 rounded-lg overflow-hidden"
         style={{ textDecoration: 'none' }}
         title={`${ad.headline} — ${ad.sub}`}
       >
         <span
-          className="shrink-0 w-[7.25rem] text-[13px] font-bold tracking-tight truncate"
-          style={{
-            color: ad.color,
-            fontFamily:
-              "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif",
-          }}
+          className="shrink-0 max-w-[5.5rem] text-[0.8125rem] font-bold tracking-tight truncate"
+          style={{ color: ad.color }}
         >
           {ad.name}
         </span>
-        <span className="flex-1 min-w-0 text-[12px] text-slate-500 dark:text-slate-400 truncate">
+        <span className="flex-1 min-w-0 text-[0.8125rem] font-medium text-slate-600 dark:text-slate-300 truncate tracking-tight">
           {ad.headline}
         </span>
         <span
-          className="shrink-0 text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap"
-          style={{ color: ad.color, border: `0.5px solid ${ad.color}44` }}
+          className="shrink-0 text-[0.6875rem] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap"
+          style={{ color: ad.color, backgroundColor: `${ad.color}14` }}
         >
           Try free →
         </span>

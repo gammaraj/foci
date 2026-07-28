@@ -58,55 +58,67 @@ select {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
-/* Site chrome — page-blue wash in light mode, ink bar in dark */
+/* Site chrome — bright bar so brand/CTAs don't go muddy against page wash */
 .nav-chrome {
-  background: var(--page-bg);
-  border-bottom: 1px solid var(--surface-border);
-  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-  box-shadow: 0 1px 0 rgba(37, 99, 235, 0.05);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding-top: max(0.65rem, env(safe-area-inset-top, 0px));
+  box-shadow: none;
 }
 .dark .nav-chrome {
-  background: #070b16;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(7, 11, 22, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: none;
 }
 
 .nav-chrome-link {
-  color: #64748b;
-  transition: color 0.15s ease;
+  color: #475569;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
 }
 .nav-chrome-link:hover {
   color: #0f172a;
+  background-color: rgba(15, 23, 42, 0.04);
 }
 .nav-chrome-link-active {
   color: #1d4ed8;
-  font-weight: 600;
+  font-weight: 700;
+  background-color: rgba(37, 99, 235, 0.1);
 }
 .dark .nav-chrome-link {
   color: #cbd5e1;
+  font-weight: 600;
 }
 .dark .nav-chrome-link:hover {
-  color: #fff;
+  color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 .dark .nav-chrome-link-active {
-  color: #fff;
-  font-weight: 500;
+  color: #93c5fd;
+  font-weight: 700;
+  background-color: rgba(59, 130, 246, 0.14);
 }
 
 .nav-chrome-btn {
-  color: #64748b;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  color: #475569;
+  font-weight: 600;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 .nav-chrome-btn:hover {
   color: #0f172a;
-  background-color: rgba(15, 23, 42, 0.06);
+  background-color: rgba(15, 23, 42, 0.05);
 }
 .dark .nav-chrome-btn {
   color: #cbd5e1;
 }
 .dark .nav-chrome-btn:hover {
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .nav-icon-btn {
@@ -115,21 +127,21 @@ select {
 }
 .nav-icon-btn:hover {
   color: #0f172a;
-  background-color: rgba(15, 23, 42, 0.06);
+  background-color: rgba(15, 23, 42, 0.05);
 }
 .dark .nav-icon-btn {
-  color: #cbd5e1;
+  color: #94a3b8;
 }
 .dark .nav-icon-btn:hover {
-  color: #fff;
+  color: #f8fafc;
   background-color: rgba(255, 255, 255, 0.08);
 }
 
 .nav-chrome-divider {
-  background: rgba(15, 23, 42, 0.12);
+  background: rgba(15, 23, 42, 0.1);
 }
 .dark .nav-chrome-divider {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .nav-chrome-menu {
@@ -140,18 +152,52 @@ select {
 }
 
 .nav-chrome-login {
-  background: #2563eb;
+  background: #1d4ed8;
   color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  box-shadow: 0 1px 2px rgba(29, 78, 216, 0.25);
 }
 .nav-chrome-login:hover {
-  background: #1d4ed8;
+  background: #1e40af;
 }
 .dark .nav-chrome-login {
-  background: #fff;
-  color: #0f172a;
+  background: #3b82f6;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .dark .nav-chrome-login:hover {
+  background: #60a5fa;
+  color: #070b16;
+}
+
+/* Quiet meta cluster (clock / weather) in nav center */
+.nav-chrome-meta {
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+.dark .nav-chrome-meta {
+  color: #94a3b8;
+}
+
+/* Partner promo chip — subordinate to brand + CTAs */
+.nav-chrome-promo {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+  box-shadow: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.nav-chrome-promo:hover {
+  border-color: rgba(15, 23, 42, 0.14);
   background: #f1f5f9;
+}
+.dark .nav-chrome-promo {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+.dark .nav-chrome-promo:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Landing page hero warm gradient — light and dark */

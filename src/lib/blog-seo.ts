@@ -586,4 +586,152 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
         "Many ADHD users prefer brown noise as a sensory anchor. Test both for 5–10 minutes on a real task and keep the one that reduces distraction without ear fatigue.",
     },
   ],
+  "deep-work-in-the-age-of-ai": [
+    {
+      question: "What is deep work in the age of AI?",
+      answer:
+        "Deep work is sustained, distraction-free focus on cognitively demanding tasks. AI tools speed drafting and research but can fragment attention if you constantly context-switch between prompts. Protecting long focus blocks matters more as routine cognition is automated.",
+    },
+    {
+      question: "How do I protect deep work when using ChatGPT or AI tools?",
+      answer:
+        "Batch AI queries into dedicated windows, keep timer + tasks in one tab, and use longer presets (Deep Work 50/10, 52/17, or Flowtime) so prompt-hopping does not replace thinking. Foci keeps sessions and tasks together for that workflow.",
+    },
+    {
+      question: "Does Pomodoro still work for deep work with AI?",
+      answer:
+        "Yes for starting and containing shallow AI-assisted tasks. For original analysis or complex debugging, switch to Flowtime or Ultra Focus so a 25-minute alarm does not interrupt flow.",
+    },
+  ],
+  "digital-detox-for-productivity": [
+    {
+      question: "What is a digital detox for productivity?",
+      answer:
+        "A digital detox resets your relationship with screens — fewer notifications, batched messaging, and protected focus blocks — so you can concentrate when working and rest when not. It is not about abandoning technology entirely.",
+    },
+    {
+      question: "How do I reduce phone distractions while working?",
+      answer:
+        "Silence non-essential notifications, keep your phone out of reach during sessions, and use a desktop focus timer with tasks in one window. Ambient brown noise or rain can mask household noise without opening social apps.",
+    },
+    {
+      question: "Can a Pomodoro timer help with digital detox?",
+      answer:
+        "Yes. Short timed sessions make it easier to delay checking your phone until a break. Foci’s Classic Pomodoro and Short Sprint presets pair well with notification-free focus blocks.",
+    },
+  ],
+  "how-to-stay-focused-while-studying": [
+    {
+      question: "How do I stay focused while studying?",
+      answer:
+        "Pick one task, use a timer (Pomodoro or 52/17), remove phone distractions, and add steady ambient sound like brown noise. Track sessions so progress is visible — Foci combines timer, tasks, and sounds in one browser tab.",
+    },
+    {
+      question: "What is the best study timer method?",
+      answer:
+        "Pomodoro (25/5) works well for starting and shorter assignments. Use 52/17 or Deep Work presets for longer reading and problem sets. Match the method to task length and energy.",
+    },
+    {
+      question: "Is brown noise good for studying?",
+      answer:
+        "Yes for many students — brown noise masks irregular sounds without high-frequency fatigue. Foci includes offline brown noise alongside rain, café, and white noise.",
+    },
+  ],
+  "plan-trip-with-wandering-hermit": [
+    {
+      question: "What is Wandering Hermit?",
+      answer:
+        "Wandering Hermit is a trip-planning partner product referenced from Foci. Use it when you need itinerary and travel planning alongside your focus workflow.",
+    },
+    {
+      question: "Can I plan a trip while staying productive in Foci?",
+      answer:
+        "Yes. Use Foci’s Trip Planning task template and timer for trip-prep sessions, then open Wandering Hermit for deeper itinerary planning when you are ready.",
+    },
+  ],
+  "productive-morning-routine": [
+    {
+      question: "What makes a productive morning routine?",
+      answer:
+        "A productive morning routine protects deep work early: wake consistently, avoid inbox-first habits, block one high-priority task, and use a short timer to start. Foci’s Morning Routine template and daily goals help lock this in.",
+    },
+    {
+      question: "Should I check email first thing in the morning?",
+      answer:
+        "Usually no — email pulls you into other people’s priorities. Complete one focused session on your top task first, then batch communication.",
+    },
+    {
+      question: "How can Foci help with morning focus?",
+      answer:
+        "Open Foci, pick your top task, choose Short Sprint or Classic Pomodoro, and optionally enable ambient sound. Hit your daily session goal to build a morning streak.",
+    },
+  ],
+  "stoicism-and-focus": [
+    {
+      question: "How does Stoicism help with focus?",
+      answer:
+        "Stoicism emphasizes controlling attention and response — not every distraction deserves a reaction. Practices like negative visualization and focusing on what you can control support sustained deep work.",
+    },
+    {
+      question: "What Stoic habits improve productivity?",
+      answer:
+        "Morning intention-setting, journaling briefly, accepting imperfect starts, and treating interruptions as expected rather than catastrophic. Pair that mindset with a timer and a single clear task.",
+    },
+    {
+      question: "Can a focus app support Stoic practice?",
+      answer:
+        "Yes. A calm timer and task list externalize commitment so willpower is not the only system. Foci’s streaks and daily goals reinforce showing up without gamified noise.",
+    },
+  ],
+  "task-batching-productivity": [
+    {
+      question: "What is task batching?",
+      answer:
+        "Task batching groups similar work (email, admin, creative) into dedicated blocks so you reduce context switching and stay in one cognitive mode longer.",
+    },
+    {
+      question: "Why does context switching hurt productivity?",
+      answer:
+        "Each switch forces your brain to reload context. Research often cited from UC Irvine suggests it can take around 23 minutes to fully refocus after an interruption — batching cuts unnecessary switches.",
+    },
+    {
+      question: "How do I batch tasks with a Pomodoro timer?",
+      answer:
+        "Assign each batch a block on your calendar, then run Pomodoro or 52/17 sessions inside that block. In Foci, keep batch tasks in one project and focus them back-to-back.",
+    },
+  ],
+  "time-blocking-method": [
+    {
+      question: "What is time blocking?",
+      answer:
+        "Time blocking assigns specific hours on your calendar to specific tasks instead of working from an open-ended to-do list. You decide when each priority happens in advance.",
+    },
+    {
+      question: "How is time blocking different from a to-do list?",
+      answer:
+        "To-do lists capture what to do; time blocking commits to when. That protects deep work from shallow tasks that expand to fill the day.",
+    },
+    {
+      question: "Can I combine time blocking with Pomodoro?",
+      answer:
+        "Yes. Use time blocking to schedule the block, then run Pomodoro or Deep Work sessions inside it. Foci tracks sessions per task so each block’s focus time is logged.",
+    },
+  ],
+  "two-minute-rule-productivity": [
+    {
+      question: "What is the 2-minute rule?",
+      answer:
+        "From Getting Things Done: if a task takes less than two minutes, do it now instead of tracking it. James Clear also uses a 2-minute version for starting habits by shrinking the first step.",
+    },
+    {
+      question: "Does the 2-minute rule stop procrastination?",
+      answer:
+        "It clears tiny tasks that clog mental space and lowers the barrier to starting larger habits. For bigger work, pair it with a short Pomodoro sprint so starting stays easy.",
+    },
+    {
+      question: "When should I not use the 2-minute rule?",
+      answer:
+        "Avoid using it to dodge deep work — answering every tiny request can fill your day. Batch 2-minute items into a communication block and protect focus sessions for important tasks.",
+    },
+  ],
 };

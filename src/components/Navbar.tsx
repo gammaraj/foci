@@ -48,17 +48,17 @@ type NavLink = {
 function navLinkClass(active: boolean, mobile = false) {
   if (mobile) {
     return active
-      ? "nav-chrome-link-active px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full bg-slate-100 dark:bg-white/10"
-      : "nav-chrome-link px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left w-full hover:bg-slate-100 dark:hover:bg-white/5";
+      ? "nav-chrome-link-active px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full"
+      : "nav-chrome-link px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full";
   }
   return active
-    ? "nav-chrome-link-active text-sm font-semibold transition-colors"
-    : "nav-chrome-link text-sm font-medium transition-colors";
+    ? "nav-chrome-link-active text-[0.9375rem] transition-colors"
+    : "nav-chrome-link text-[0.9375rem] transition-colors";
 }
 
 const chromeBtn = "nav-chrome-btn rounded-lg";
 const chromeBtnPad = `${chromeBtn} p-2`;
-const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-2 border border-transparent hover:border-slate-200 dark:hover:border-white/10`;
+const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[0.9375rem]`;
 
 function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps) {
   const { user } = useAuth();
@@ -131,16 +131,16 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
 
   return (
     <header className="nav-chrome sticky top-0 z-30">
-      <nav className="relative app-container pb-2 sm:pb-2.5">
-        <div className="relative flex items-center gap-3 min-h-[2.5rem]">
-          <Link href={logoHref} className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
+      <nav className="relative app-container pb-2.5 sm:pb-3">
+        <div className="relative flex items-center gap-2.5 sm:gap-4 min-h-[2.75rem]">
+          <Link href={logoHref} className="group flex items-center gap-2.5 min-w-0 flex-shrink-0">
             <FociLogoMark
               size={36}
               idPrefix="nav"
               surface={logoSurface}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex-shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-[0.65rem] flex-shrink-0 transition-transform duration-200 group-hover:scale-[1.03]"
             />
-            <div className="flex flex-col items-start gap-1 min-w-0">
+            <div className="flex flex-col items-start gap-1.5 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />
               <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap`}>
                 {FOCI_TAGLINE_FOCUS}
@@ -149,17 +149,19 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           </Link>
 
           {centerSlot ? (
-            <div className="hidden sm:flex flex-1 min-w-0 items-center justify-center px-2 sm:px-3">
+            <div className="hidden sm:flex flex-1 min-w-0 items-center justify-center px-1 sm:px-2">
               {centerSlot}
             </div>
           ) : (
             <div className="hidden sm:block flex-1 min-w-0" aria-hidden />
           )}
 
-          <div className="hidden sm:flex items-center gap-6 flex-shrink-0 ml-auto">
-            {navLinks.map((link) => renderNavLink(link))}
+          <div className="hidden sm:flex items-center gap-1 flex-shrink-0 ml-auto">
+            <div className="flex items-center gap-0.5">
+              {navLinks.map((link) => renderNavLink(link))}
+            </div>
             {(toolbarSlot || onOpenSettings) && (
-              <span className="nav-chrome-divider w-px h-5 rounded-full self-center" aria-hidden />
+              <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
             )}
             <div className="flex items-center gap-0.5">
               {toolbarSlot}
@@ -171,17 +173,19 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                   aria-label="Open settings"
                   title="Timer and app settings"
                 >
-                  <SettingsIcon className="w-[18px] h-[18px]" />
-                  <span className="text-sm font-medium">Settings</span>
+                  <SettingsIcon className="w-4 h-4 opacity-80" />
+                  <span>Settings</span>
                 </button>
               )}
             </div>
             {user ? (
-              <UserMenu />
+              <div className="ml-1.5">
+                <UserMenu />
+              </div>
             ) : (
               <Link
                 href="/login"
-                className="nav-chrome-login text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                className="nav-chrome-login ml-2 text-sm px-4 py-2 rounded-xl transition-colors"
               >
                 Log in
               </Link>
@@ -249,7 +253,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="nav-chrome-login mx-3 mt-1 text-sm font-medium text-center px-4 py-2 rounded-lg transition-colors"
+                  className="nav-chrome-login mx-3 mt-2 text-sm font-semibold text-center px-4 py-2.5 rounded-xl transition-colors"
                 >
                   Log in
                 </Link>
