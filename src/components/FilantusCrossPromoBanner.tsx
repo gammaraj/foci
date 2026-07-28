@@ -398,7 +398,7 @@ export function FilantusCrossPromoBanner({
         style={{
           textDecoration: 'none',
           borderColor: `${ad.color}66`,
-          background: `linear-gradient(90deg, ${ad.color}22 0%, #ffffff 52%)`,
+          backgroundColor: '#ffffff',
         }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
