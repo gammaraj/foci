@@ -45,6 +45,7 @@ export function OneThingCard({
   if (status === "unset") {
     return (
       <div
+        data-tour="one-thing"
         className={`${strip} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 shadow-sm shadow-blue-900/20`}
       >
         <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">
@@ -84,6 +85,7 @@ export function OneThingCard({
   if (status === "done" && task) {
     return (
       <div
+        data-tour="one-thing"
         className={`${strip} border-emerald-400 dark:border-emerald-500/70 bg-emerald-100 dark:bg-emerald-500/15`}
       >
         <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">
@@ -111,6 +113,7 @@ export function OneThingCard({
   if (status === "active" && task) {
     return (
       <div
+        data-tour="one-thing"
         className={`${strip} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 shadow-sm shadow-blue-900/20`}
       >
         <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">

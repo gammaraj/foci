@@ -87,7 +87,7 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
   bucket: "Buckets",
   list: "List",
   calendar: "Calendar",
-  plan: "AI Plan",
+  plan: "Smart Plan",
 };
 
 /** Active time/view filters — solid brand blue for clear selection. */
@@ -2207,7 +2207,7 @@ export default function TaskList({
                 Tasks
                 {viewMode === "plan" && (
                   <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal">
-                    {" "}· AI plan
+                    {" "}· Smart Plan
                   </span>
                 )}
               </span>

@@ -14,33 +14,52 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    target: ".pause-button",
-    title: "Focus Timer",
-    description: "Start your work session here. The timer counts down and tracks your focus time.",
-    position: "bottom",
-  },
-  {
     target: "#tasks-section",
-    title: "Task List",
-    description: "Add tasks to work on. Select a task before starting the timer to track time per task.",
+    title: "Your tasks",
+    description:
+      "Add tasks and organize them into projects. Cards view is the default — each project shows its top open work.",
     position: "top",
   },
   {
     target: "[data-tour='view-modes']",
-    title: "Task Views",
-    description: "Switch between Cards, Buckets, List, and Calendar. Cards show top tasks per project; List is best for focusing and completing.",
+    title: "Views",
+    description:
+      "Switch between Cards, Buckets, List, and Calendar. Use Buckets to see every project side by side.",
     position: "bottom",
   },
   {
-    target: "#dailyGoalProgress",
-    title: "Daily Progress",
-    description: "Track your daily session goal and build streaks to stay consistent.",
-    position: "top",
+    target: "[data-tour='one-thing']",
+    title: "Today's One Thing",
+    description:
+      "Pick the one task that would make today a success. It stays pinned above your list until you finish it.",
+    position: "bottom",
   },
   {
-    target: "[aria-label='Open settings']",
-    title: "Settings",
-    description: "Customize work duration, break duration, and daily goals to fit your workflow.",
+    target: "[data-tour='time-filters']",
+    title: "Filters & progress",
+    description:
+      "Filter by All, Today, Week, Month, or Year. The tally nearby shows how much you've completed.",
+    position: "bottom",
+  },
+  {
+    target: ".pause-button",
+    title: "Optional focus timer",
+    description:
+      "Start a session when you want structure — Pomodoro, Deep Work, 52/17, and more. Time logs to the selected task.",
+    position: "bottom",
+  },
+  {
+    target: "#ambient-sounds",
+    title: "Ambient music",
+    description:
+      "Built-in rain, café, and brown noise, plus Spotify, SoundCloud, and lo-fi — without leaving this window.",
+    position: "bottom",
+  },
+  {
+    target: "[data-tour='task-panel-menu']",
+    title: "Smart Plan & settings",
+    description:
+      "Open ⋯ for Smart Plan (day-by-day scheduling), Settings & import (Todoist, Notion, and more), and templates.",
     position: "bottom",
   },
 ];

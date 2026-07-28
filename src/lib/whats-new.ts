@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-07-c";
+export const WHATS_NEW_VERSION = "2026-07-d";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -17,45 +17,73 @@ export interface FeatureTourStep {
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
-    title: "Done progress tally",
-    description: "The Tasks header always shows today, this week, and this month — even at 0 — so progress stays visible.",
+    title: "Cards view (default)",
+    description:
+      "Projects open as cards with top tasks — switch to Buckets, List, or Calendar anytime.",
   },
   {
-    title: "Done today",
-    description: "Finished tasks land in a Done today reel — see your wins accumulate as you check things off.",
+    title: "Smart Plan",
+    description:
+      "Day-by-day scheduling from due dates and daily goals. Open it from the task panel menu (⋯).",
   },
   {
-    title: "Bucket view",
-    description: "See every project side by side — now the default when you open Tasks.",
+    title: "Today's One Thing",
+    description:
+      "Pick the one task that would make today a success — keep it visible above your list.",
+  },
+  {
+    title: "Done progress",
+    description:
+      "See today / this week / this month completions in the Tasks header, plus a Done today reel.",
+  },
+  {
+    title: "Import your tools",
+    description:
+      "Bring tasks from Todoist, Notion, Asana, or Google Tasks via Settings → Import & Export.",
   },
 ];
 
 export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
   {
-    target: "[data-tour='time-filters']",
-    title: "Due-date filters",
-    description:
-      "Today, Week, Month, and Year show tasks due in that window — not your full backlog. Undated tasks appear in a separate section.",
-    position: "bottom",
-  },
-  {
     target: "[data-tour='view-modes']",
-    title: "Bucket view",
+    title: "Views",
     description:
-      "The columns icon opens bucket view: one column per project. Switch to list or calendar anytime.",
+      "Cards is the default. Use Buckets for every project side by side, List to grind through work, or Calendar for due dates.",
     position: "bottom",
   },
   {
-    target: "#tasks-section",
-    title: "Tasks & Focus",
-    description: "Add a task, pick one, and hit Focus to link it to your timer and start a session.",
-    position: "top",
+    target: "[data-tour='one-thing']",
+    title: "Today's One Thing",
+    description:
+      "Set one priority task for the day so focus stays obvious while you work through the rest.",
+    position: "bottom",
+  },
+  {
+    target: "[data-tour='time-filters']",
+    title: "Filters & progress",
+    description:
+      "All / Today / Week / Month / Year filter by due date. The tally shows completions for today, this week, and this month.",
+    position: "bottom",
   },
   {
     target: "[data-tour='task-panel-menu']",
-    title: "More options",
+    title: "Smart Plan & more",
     description:
-      "Open this menu for settings, AI planning, favorites (in list view), templates — and to replay this tour.",
+      "Open ⋯ for Smart Plan scheduling, Settings & import, templates, and to replay What's new.",
+    position: "bottom",
+  },
+  {
+    target: "#ambient-sounds",
+    title: "Ambient music",
+    description:
+      "Rain, café, brown noise, Spotify, SoundCloud, and lo-fi — stay in flow without leaving Foci.",
+    position: "bottom",
+  },
+  {
+    target: ".pause-button",
+    title: "Optional focus timer",
+    description:
+      "Start a session when it helps — Pomodoro, Deep Work, 52/17, and more. Time logs to the selected task.",
     position: "bottom",
   },
 ];
