@@ -414,16 +414,16 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row relative rounded-md pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors ${
+      className={`group/row relative rounded-md pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors border border-transparent ${
         isActive
-          ? "bg-blue-50/80 dark:bg-blue-900/20 ring-1 ring-blue-400/40"
+          ? "bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-400/40 border-blue-200/80 dark:border-transparent"
           : isExpanded
-            ? "bg-violet-50/50 dark:bg-violet-900/15"
+            ? "bg-violet-50/70 dark:bg-violet-900/15 border-violet-200/70 dark:border-transparent"
             : overdue
               ? cardOverdueRowClass()
               : blocked
-                ? "bg-amber-50/40 dark:bg-amber-950/20"
-                : "hover:bg-blue-50/60 dark:hover:bg-white/[0.03]"
+                ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-transparent"
+                : "hover:bg-slate-100/90 dark:hover:bg-white/[0.03] hover:border-slate-200/90 dark:hover:border-transparent"
       } ${dragEnabled ? "cursor-grab active:cursor-grabbing" : ""} ${
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
@@ -694,7 +694,7 @@ function ProjectCard({
       }}
       className={`group/card project-surface project-accent-edge rounded-lg px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 break-inside-avoid mb-2.5 sm:mb-3.5 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
-      } ${collapsed ? "bg-slate-50/90 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
+      } ${collapsed ? "bg-slate-100/95 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
         highlighted
           ? "ring-2 ring-[var(--urgency-chip)] dark:ring-rose-400 shadow-[0_0_0_4px_color-mix(in_srgb,var(--urgency-chip)_22%,transparent)]"
           : ""
@@ -703,11 +703,11 @@ function ProjectCard({
       data-collapsed={collapsed ? "true" : "false"}
     >
       <header
-        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80 ${
+        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-300/80 dark:border-[#243350]/80 ${
           collapsed ? "pb-0 mb-0 border-b-0" : ""
         }`}
         style={{
-          borderBottomColor: collapsed ? "transparent" : `color-mix(in srgb, ${accentColor} 25%, transparent)`,
+          borderBottomColor: collapsed ? "transparent" : `color-mix(in srgb, ${accentColor} 32%, #94a3b8)`,
         }}
       >
         <div className="flex items-center gap-1 min-w-0">

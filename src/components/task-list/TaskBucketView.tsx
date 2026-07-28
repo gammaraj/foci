@@ -333,8 +333,8 @@ function BucketTaskCard({
               : isDueToday
               ? "border-amber-200/70 dark:border-amber-800/45 bg-amber-50/65 dark:bg-amber-950/38 hover:border-amber-300/85 dark:hover:border-amber-700/55 hover:bg-amber-50/85 dark:hover:bg-amber-950/48"
               : isLowUrgency
-              ? "border-slate-200/45 dark:border-[#1a2438]/80 bg-slate-50/35 dark:bg-black/25 hover:border-slate-300/60 dark:hover:border-[#223048] hover:bg-slate-50/50 dark:hover:bg-black/20"
-              : "border-slate-200/75 dark:border-[#2a3f5f]/90 bg-white/80 dark:bg-white/[0.03] hover:border-slate-300/90 dark:hover:border-[#3a5070] hover:bg-slate-50/90 dark:hover:bg-white/[0.05]"
+              ? "border-slate-300/80 dark:border-[#1a2438]/80 bg-slate-100/70 dark:bg-black/25 hover:border-slate-400/70 dark:hover:border-[#223048] hover:bg-slate-100/90 dark:hover:bg-black/20"
+              : "border-slate-300/90 dark:border-[#2a3f5f]/90 bg-slate-50 dark:bg-white/[0.03] hover:border-slate-400/90 dark:hover:border-[#3a5070] hover:bg-white dark:hover:bg-white/[0.05]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
         isDragOver
           ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-blue-500 dark:before:bg-blue-400"
@@ -647,7 +647,7 @@ function BucketColumn({
       style={{ ["--project-accent" as string]: accentColor } as React.CSSProperties}
     >
       <div
-        className="group/col project-accent-wash flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-200/60 dark:border-[#334863]/80"
+        className="group/col project-accent-wash flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80"
         title={project.description?.trim() || project.name}
       >
         {onToggleProjectFavorite ? (

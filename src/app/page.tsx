@@ -17,10 +17,10 @@ const siteUrl = "https://usefoci.com";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Foci – Free Pomodoro Timer, Tasks & Focus App",
+    absolute: "Foci – Free Task Manager & Focus App",
   },
   description:
-    "Free Pomodoro timer with tasks, brown noise, lo-fi, and streaks. Flowtime, 52/17, and Pomodoro presets — no signup. Open Foci in your browser at usefoci.com.",
+    "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer — no signup. Open Foci in your browser at usefoci.com.",
   alternates: { canonical: "/" },
 };
 
@@ -39,7 +39,7 @@ const orgJsonLd = {
   areaServed: { "@type": "Place", name: "Worldwide" },
   knowsLanguage: "en",
   description:
-    "Foci builds a free all-in-one focus system: Pomodoro timer, tasks, Smart Plan, ambient music, and streaks — usefoci.com.",
+    "Foci builds a free all-in-one focus system: task tracking, Smart Plan, ambient music, streaks, and an optional focus timer — usefoci.com.",
   foundingDate: "2025",
 };
 
@@ -48,7 +48,7 @@ const webSiteJsonLd = {
   "@type": "WebSite",
   name: "Foci",
   url: siteUrl,
-  description: "Free all-in-one focus system: Pomodoro timer, task tracking, Smart Plan, daily goals, streak stats, and built-in ambient music.",
+  description: "Free all-in-one focus system: task tracking, Smart Plan, daily goals, streak stats, built-in ambient music, and an optional focus timer.",
   inLanguage: "en-US",
   audience: { "@type": "Audience", audienceType: "Students, developers, writers, remote workers, and knowledge workers worldwide" },
 };
@@ -62,20 +62,25 @@ const jsonLd = {
   operatingSystem: "Any",
   browserRequirements: "Requires a modern web browser with JavaScript enabled",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/OnlineOnly" },
-  description: "Foci is a free all-in-one focus system: Pomodoro timer, task tracking, Smart Plan scheduling, daily goals, streak stats, built-in ambient music, and motivational quotes — everything you need to stay productive, in one calm window.",
+  description: "Foci is a free all-in-one focus system: task tracking, Smart Plan scheduling, daily goals, streak stats, built-in ambient music, and an optional focus timer — everything you need to stay productive, in one calm window.",
   image: `${siteUrl}/opengraph-image`,
   inLanguage: "en-US",
   areaServed: { "@type": "Place", name: "Worldwide" },
   dateModified: "2026-07-27",
   featureList: [
-    "Pomodoro focus timer with customizable work and break durations",
-    "Task tracking with automatic per-task time logging",
-    "Daily session goals and streak tracking",
-    "Built-in ambient sounds (rain, café, white noise, brown noise) and live lo-fi/synthwave via YouTube channel streams",
-    "Calm interface with clear visual hierarchy — timer, tasks, and music without visual noise",
+    "Task tracking with projects, subtasks, and automatic per-task time logging",
+    "Smart Plan: algorithmic day-by-day task scheduling based on due dates and daily goals",
     "Card view (default): project cards with drag-and-drop task reorder and slide-over task detail drawer",
     "Bucket board view: kanban columns per project with drag-and-drop reorder and cross-project moves",
-    "List and calendar task views plus Smart Plan scheduling",
+    "List and calendar task views",
+    "Import tasks from Google Tasks, Todoist, Asana, and Notion",
+    "Export tasks as JSON or CSV for backup and migration",
+    "Today, This Week, This Month, and This Year smart task filters with project tabs",
+    "Optional Pomodoro-style focus timer with customizable work and break durations",
+    "Timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, Ultra Focus (90/20)",
+    "Daily session goals and streak tracking",
+    "Built-in ambient sounds (rain, café, white noise, brown noise) and live lo-fi/synthwave via YouTube channel streams",
+    "Calm interface with clear visual hierarchy — tasks, timer, and music without visual noise",
     "Task detail drawer with Save, Focus, due date, priority, waiting/someday, recurrence, and subtasks",
     "Mobile urgency chips for overdue vs due-today tasks and a compact tasks toolbar",
     "Print the active task view (cards, list, or buckets)",
@@ -88,10 +93,6 @@ const jsonLd = {
     "Cloud sync across devices",
     "Dark mode support",
     "Brown noise generator for deep focus and ADHD support",
-    "Import tasks from Google Tasks, Todoist, Asana, and Notion",
-    "Export tasks as JSON or CSV for backup and migration",
-    "Today, This Week, This Month, and This Year smart task filters with project tabs",
-    "Smart Plan: algorithmic day-by-day task scheduling based on due dates and daily goals",
     "Project color coding and due date tracking",
     "Productivity stats dashboard with heatmap, charts, streak tracking, overdue count, and completion rate",
     "Recurring tasks with daily, weekly, monthly, and yearly recurrence",
@@ -102,7 +103,6 @@ const jsonLd = {
     "Indian classical music playlists via SoundCloud for deep focus",
     "Due date reminder notifications for upcoming and overdue tasks",
     "Task templates for common workflows: Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning",
-    "Timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, Ultra Focus (90/20)",
     "Compact status bar with session progress, local weather, live clock, and streak when active",
     "Curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi",
     "Collapsible timer panel for full-width task management",
@@ -179,7 +179,7 @@ export default function LandingPage() {
             {FOCI_HERO_HEADLINE}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Timer, tasks, Smart Plan, and ambient sound in one calm browser window — start in seconds, no account required.
+            Projects, Smart Plan, and streaks in one calm browser window — with ambient sound and an optional focus timer. No account required.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -299,51 +299,27 @@ export default function LandingPage() {
         {/* Why Foci vs. others */}
         <section id="features" className="w-full max-w-4xl mx-auto pb-12 sm:pb-20">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            More than just a countdown timer
+            More than a to-do list
           </h2>
           <p className="text-center text-base sm:text-lg text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto">
-            A simple timer counts down and beeps. Foci gives you tasks, Smart Plan scheduling,
-            ambient music, imports, and streaks — so you actually stay focused and see your progress.
+            Most task apps stop at the checklist. Foci adds Smart Plan scheduling, focus sessions,
+            ambient sound, and streaks — so you finish what you planned.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               {
-                title: "Timer + tasks, same screen",
-                desc: "No more Alt-Tab between your timer and to-do app.",
+                title: "Tasks + projects, same screen",
+                desc: "Cards, list, and kanban views — organize work without leaving focus.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 ),
                 iconClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
-              },
-              {
-                title: "Built-in ambient sound",
-                desc: "Rain, café, brown noise, and curated playlists — offline sounds included.",
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                ),
-                iconClass: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30",
-              },
-              {
-                title: "Automatic time logging",
-                desc: "Every session is tracked per task so you know where your hours went.",
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                ),
-                iconClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30",
-              },
-              {
-                title: "Streaks that stick",
-                desc: "Daily session goals and streak tracking build a consistent focus habit.",
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                ),
-                iconClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30",
               },
               {
                 title: "Smart Plan scheduling",
                 desc: "Day-by-day task plan from due dates and daily goals — no AI required.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 ),
                 iconClass: "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30",
               },
@@ -356,8 +332,32 @@ export default function LandingPage() {
                 iconClass: "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30",
               },
               {
-                title: "Pomodoro, Flowtime & 52/17",
-                desc: "Presets for Classic Pomodoro, Deep Work, 52/17, Short Sprint, and Ultra Focus.",
+                title: "Automatic time logging",
+                desc: "Optional focus sessions track time per task so you know where hours went.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                ),
+                iconClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30",
+              },
+              {
+                title: "Built-in ambient sound",
+                desc: "Rain, café, brown noise, and curated playlists — offline sounds included.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                ),
+                iconClass: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30",
+              },
+              {
+                title: "Streaks that stick",
+                desc: "Daily session goals and streak tracking build a consistent focus habit.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                ),
+                iconClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30",
+              },
+              {
+                title: "Focus timer when you need it",
+                desc: "Pomodoro, Flowtime, 52/17, Deep Work, and Ultra Focus — optional, not the product.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 ),
@@ -365,7 +365,7 @@ export default function LandingPage() {
               },
               {
                 title: "Cards, list & kanban",
-                desc: "Switch between card, list, and bucket board views with drag-and-drop reorder.",
+                desc: "Switch views with drag-and-drop reorder — pick the layout that fits the day.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 ),
@@ -409,9 +409,9 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Flowtime &amp; 52/17 presets</h3>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Focus timer when you need it</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Switch between Classic Pomodoro, Flowtime-friendly custom lengths, 52/17, Deep Work, and Ultra Focus in one tap.
+                Optional Pomodoro, Flowtime, 52/17, and Deep Work presets — use them when a session helps, not as the whole product.
               </p>
             </div>
           </div>
@@ -503,7 +503,7 @@ export default function LandingPage() {
             Ready to focus?
           </h2>
           <p className="text-slate-500 dark:text-slate-400 mb-6">
-            No credit card. No setup. Just start a timer.
+            No credit card. No setup. Add a task and start.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link

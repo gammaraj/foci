@@ -7,11 +7,11 @@ test.describe("Landing Page", () => {
 
   test("renders hero headline and subtitle", async ({ page }) => {
     await expect(page.locator("h1")).toContainText(
-      "Free Pomodoro timer with tasks & focus sounds",
+      "A free task manager built for deep focus",
     );
     await expect(page.getByText("Foci — deep work, one calm window")).toBeVisible();
     await expect(
-      page.getByText("Timer, tasks, Smart Plan, and ambient sound"),
+      page.getByText("Projects, Smart Plan, and streaks"),
     ).toBeVisible();
   });
 
@@ -49,14 +49,12 @@ test.describe("Landing Page", () => {
 
   test("renders comparison section", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "More than just a countdown timer" }),
+      page.getByRole("heading", { name: "More than a to-do list" }),
     ).toBeVisible();
-    await expect(page.getByText("Timer + tasks, same screen")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Built-in ambient sound" })).toBeVisible();
-    await expect(page.getByText("Automatic time logging")).toBeVisible();
-    await expect(page.getByText("Streaks that stick")).toBeVisible();
-    await expect(page.getByText("Smart Plan scheduling")).toBeVisible();
+    await expect(page.getByText("Tasks + projects, same screen")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Smart Plan scheduling" })).toBeVisible();
     await expect(page.getByText("Import from your tools")).toBeVisible();
+    await expect(page.getByText("Streaks that stick")).toBeVisible();
   });
 
   test("renders differentiator section", async ({ page }) => {
@@ -65,7 +63,7 @@ test.describe("Landing Page", () => {
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Smart Plan" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Import Todoist & Notion" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Flowtime & 52/17 presets" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Focus timer when you need it" })).toBeVisible();
   });
 
   test("renders final CTA section", async ({ page }) => {

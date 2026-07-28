@@ -11,13 +11,20 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode — cool gray with a soft electric-blue cast */
-  --page-bg: #dce4f2;
-  --surface-border: #b8c9e6;
+  /* Light mode — cooler page wash; elevated panels stay white for clear layers */
+  --page-bg: #c9d5e9;
+  --surface-border: #8fa6c7;
   --surface-bg: #ffffff;
   --panel-header-bg: #ffffff;
-  --seg-track-bg: #e4eaf4;
-  --surface-muted: #e8eef8;
+  --seg-track-bg: #d7e0ef;
+  --surface-muted: #e4ebf6;
+  --project-surface-bg: #ffffff;
+  --project-surface-border: #a8bdd9;
+  --project-surface-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 8px 20px -10px rgba(15, 23, 42, 0.18);
+  --task-row-border: #c5d3e8;
+  --task-row-bg: #f8fafc;
   /* Cool berry urgency — pink-leaning so it sits with brand blue (not warm fire-engine red) */
   --urgency: #b0175c;
   --urgency-strong: #8e1249;
@@ -254,8 +261,8 @@ select {
   background: linear-gradient(
     180deg,
     var(--page-bg) 0%,
-    #e4ebf6 55%,
-    #eaf0f8 100%
+    #d4deee 55%,
+    #dde5f2 100%
   );
 }
 .dark .status-strip {
@@ -266,11 +273,11 @@ select {
 
 /* Focus strip card — weather | timer | music with clear zones */
 .status-strip-card {
-  border: 1px solid rgba(37, 99, 235, 0.16);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: #ffffff;
   box-shadow:
-    0 1px 2px rgba(37, 99, 235, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 6px 16px -10px rgba(15, 23, 42, 0.14);
 }
 .dark .status-strip-card {
   border-color: #243350;
@@ -281,7 +288,7 @@ select {
   background: transparent;
 }
 .status-strip-zone--side {
-  background: rgba(191, 212, 245, 0.28);
+  background: rgba(191, 212, 245, 0.4);
 }
 .dark .status-strip-zone--side {
   background: rgba(15, 23, 42, 0.35);
@@ -301,10 +308,10 @@ select {
   border-color: rgba(58, 80, 112, 0.9);
 }
 
-/* Toolbar strip — white content surface on the blue page wash */
+/* Toolbar strip — white content surface on the muted tasks shell */
 .panel-header-calm {
   background: var(--panel-header-bg);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+  border-bottom: 1px solid var(--surface-border);
 }
 .dark .panel-header-calm {
   --panel-header-bg: rgba(17, 24, 39, 0.85);
@@ -332,11 +339,11 @@ select {
 
 /* ===== App card elevation (light mode) ===== */
 .app-surface {
-  background: var(--surface-bg);
+  background: var(--surface-muted);
   border: 1px solid var(--surface-border);
   box-shadow:
-    0 1px 3px rgba(37, 99, 235, 0.05),
-    0 6px 20px -4px rgba(15, 23, 42, 0.1);
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 10px 28px -12px rgba(15, 23, 42, 0.16);
 }
 .dark .app-surface {
   background: #111827;
@@ -346,10 +353,11 @@ select {
     0 8px 24px -10px rgba(0, 0, 0, 0.55);
 }
 
-/* Project cards/columns — lift off the near-black page in dark mode */
+/* Project cards/columns — solid white plates on the muted shell */
 .project-surface {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: var(--project-surface-bg);
+  border: 1px solid var(--project-surface-border);
+  box-shadow: var(--project-surface-shadow);
 }
 .dark .project-surface {
   background: #16233a;
@@ -359,10 +367,10 @@ select {
     0 10px 28px -12px rgba(0, 0, 0, 0.65);
 }
 
-/* Project accent stripe — lighten in dark so teal/purple still read */
+/* Project accent stripe — readable on light and dark */
 .project-accent-edge {
   --project-accent-display: var(--project-accent);
-  border-top-width: 2px;
+  border-top-width: 3px;
   border-top-color: var(--project-accent-display);
 }
 .dark .project-accent-edge {
@@ -383,9 +391,10 @@ select {
   --project-accent-display: var(--project-accent);
   background: linear-gradient(
     135deg,
-    color-mix(in oklab, var(--project-accent-display) 14%, transparent),
-    transparent 72%
+    color-mix(in oklab, var(--project-accent-display) 18%, transparent),
+    transparent 70%
   );
+  border-bottom: 1px solid color-mix(in srgb, var(--project-surface-border) 80%, transparent);
 }
 .dark .project-accent-wash {
   --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
@@ -394,6 +403,7 @@ select {
     color-mix(in oklab, var(--project-accent-display) 22%, transparent),
     transparent 72%
   );
+  border-bottom-color: #334863;
 }
 
 /*
@@ -556,7 +566,7 @@ select {
 
 /* List view zones — header | projects | composer | task sections */
 .task-list-composer {
-  background: rgba(248, 250, 252, 0.9);
+  background: color-mix(in srgb, var(--surface-muted) 70%, white);
   border-top: 1px solid var(--surface-border);
 }
 .dark .task-list-composer {
@@ -579,8 +589,8 @@ select {
 
 .task-list-section-panel {
   border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
-  background: rgba(248, 250, 252, 0.55);
+  border: 1px solid var(--task-row-border, #c5d3e8);
+  background: var(--task-row-bg, #f8fafc);
   overflow: hidden;
 }
 .dark .task-list-section-panel {
@@ -601,8 +611,8 @@ select {
   gap: 0.5rem;
   width: 100%;
   padding: 0.375rem 0.625rem;
-  border-bottom: 1px solid #e2e8f0;
-  background: rgba(241, 245, 249, 0.96);
+  border-bottom: 1px solid var(--task-row-border, #c5d3e8);
+  background: color-mix(in srgb, var(--surface-muted) 88%, white);
   backdrop-filter: blur(6px);
   text-align: left;
 }

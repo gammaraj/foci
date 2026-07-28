@@ -9,7 +9,7 @@ import {
   FOCI_WORDMARK_OG_PX,
 } from "@/lib/logo-brand";
 
-export const alt = "Foci – Free Pomodoro Timer, Tasks & Focus App";
+export const alt = "Foci – Free Task Manager & Focus App";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -97,13 +97,13 @@ function OgBrandImage() {
           fontWeight: 500,
         }}
       >
-        <span>Timer</span>
-        <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
         <span>Tasks</span>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
         <span>Smart Plan</span>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
-        <span>Ambient sound</span>
+        <span>Projects</span>
+        <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+        <span>Focus timer</span>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
         <span>Free</span>
       </div>

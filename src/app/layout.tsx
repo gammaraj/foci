@@ -15,9 +15,9 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 
 const siteUrl = "https://usefoci.com";
-const title = "Foci – Free Pomodoro Timer, Tasks & Focus App";
+const title = "Foci – Free Task Manager & Focus App";
 const description =
-  "Free Pomodoro timer with tasks, brown noise, lo-fi, and streaks. Flowtime, 52/17, and Pomodoro presets — no signup. Open Foci in your browser at usefoci.com.";
+  "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer — no signup. Open Foci in your browser at usefoci.com.";
 
 export const viewport: Viewport = {
   width: "device-width",
