@@ -1,7 +1,7 @@
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 
-/** Primary brand typeface — loaded via next/font for consistent rendering. */
-export const fontSans = Plus_Jakarta_Sans({
+/** Primary UI typeface — loaded via next/font for consistent rendering. */
+export const fontSans = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
