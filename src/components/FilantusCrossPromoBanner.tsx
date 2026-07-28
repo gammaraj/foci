@@ -1,6 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { FOCI_BRAND_CYAN } from '@/lib/logo-brand'
+
+/** Host site chrome — always Foci brand, not the rotating ad's color. */
+const HOST_THEME_COLOR = FOCI_BRAND_CYAN
 
 const ADS_URL = 'https://filantus.com/cross-promo/ads.json'
 const CURRENT_SITE = 'foci' as const
@@ -397,7 +401,7 @@ export function FilantusCrossPromoBanner({
         className="group flex items-center gap-2.5 w-[420px] h-11 box-border pl-1.5 pr-2 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
         style={{
           textDecoration: 'none',
-          borderColor: `${ad.color}99`,
+          borderColor: `${HOST_THEME_COLOR}99`,
         }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
@@ -405,7 +409,7 @@ export function FilantusCrossPromoBanner({
       >
         <span
           className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold text-white shadow-sm"
-          style={{ backgroundColor: ad.color }}
+          style={{ backgroundColor: HOST_THEME_COLOR }}
           aria-hidden="true"
         >
           {ad.name.replace(/[^A-Za-z]/g, "").slice(0, 2)}
@@ -413,7 +417,7 @@ export function FilantusCrossPromoBanner({
         <span className="flex-1 min-w-0">
           <span
             className="block text-[13px] font-bold tracking-tight truncate leading-tight"
-            style={{ color: ad.color }}
+            style={{ color: HOST_THEME_COLOR }}
           >
             {ad.name}
           </span>
@@ -423,7 +427,7 @@ export function FilantusCrossPromoBanner({
         </span>
         <span
           className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap text-white shadow-sm"
-          style={{ backgroundColor: ad.color }}
+          style={{ backgroundColor: HOST_THEME_COLOR }}
         >
           Try free →
         </span>
