@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { FOCI_BRAND_CYAN } from '@/lib/logo-brand'
+import { isCrossPromoExcludedPath } from '@/lib/ad-excluded-paths'
 
 /** Host site chrome — always Foci brand, not the rotating ad's color. */
 const HOST_THEME_COLOR = FOCI_BRAND_CYAN
@@ -334,12 +336,15 @@ export function FilantusCrossPromoBanner({
   hidden = false,
 }: {
   className?: string
-  /** Force-hide (e.g. event pages on Brakto) */
+  /** Force-hide from a parent when path helper is not enough */
   hidden?: boolean
 }) {
+  const pathname = usePathname() || ''
   const [ads, setAds] = useState<FilantusAd[]>(FALLBACK_ADS)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
+  // Hide on pricing / checkout / login so cross-promo cannot compete with conversion
+  const adFreeRoute = isCrossPromoExcludedPath(pathname)
 
   useEffect(() => {
     if (FALLBACK_ADS.length === 0) return
@@ -377,7 +382,7 @@ export function FilantusCrossPromoBanner({
   }, [ads.length, paused])
 
   const ad = ads[index] || ads[0]
-  if (!ad || hidden || ads.length === 0) return null
+  if (!ad || hidden || adFreeRoute || ads.length === 0) return null
 
   const href = bannerHref(ad.id, ad.url)
 
