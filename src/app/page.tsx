@@ -118,13 +118,12 @@ const howToJsonLd = {
   "@context": "https://schema.org",
   "@type": "HowTo",
   name: "How to Use Foci to Stay Focused and Productive",
-  description: "A step-by-step guide to using Foci — a free all-in-one focus system with a Pomodoro timer, task tracking, ambient music, daily goals, and streak stats.",
+  description: "A step-by-step guide to using Foci — a free task manager with Smart Plan, ambient music, streaks, and an optional focus timer.",
   step: [
     { "@type": "HowToStep", name: "Create your free account", text: "Visit usefoci.com and create a free account to sync tasks, settings, and streaks across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
-    { "@type": "HowToStep", name: "Set your preferences", text: "Open Settings to configure work duration (default 25 min), break duration (default 5 min), daily session goal, and notification preferences." },
-    { "@type": "HowToStep", name: "Pick a task and start", text: "Select a task from Today or a project tab. Start highlights when a task is selected. Turn on ambient music or lo-fi if you like, then press Start. The circular timer counts down your work session." },
-    { "@type": "HowToStep", name: "Take a break", text: "When the session ends, Foci automatically starts your break. Sessions and time are logged per-task." },
+    { "@type": "HowToStep", name: "Plan your day", text: "Use Smart Plan to turn due dates and daily goals into a day-by-day execution plan. Switch between Cards, list, kanban, and calendar views." },
+    { "@type": "HowToStep", name: "Focus when you need it", text: "Optionally start a focus session with presets like Classic Pomodoro (25/5), Deep Work (50/10), or 52/17. Turn on ambient sound if you like. Time is logged per-task." },
     { "@type": "HowToStep", name: "Build your streak", text: "Hit your daily session goal and watch your streak grow. Track progress with stats, charts, and a calendar view." },
   ],
 };
@@ -218,7 +217,7 @@ export default function LandingPage() {
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>Import Todoist &amp; Notion</span>
+              <span>Import Todoist, Notion &amp; more</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -264,13 +263,12 @@ export default function LandingPage() {
               </div>
               <div className="w-11 h-11 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center mb-4 mt-1">
                 <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Start the timer</h3>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Plan your day</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Hit play. Foci runs a focused work sprint, then gives you a break. Sessions are tracked per-task automatically.
+                Smart Plan schedules work from due dates and daily goals. Use Cards, list, kanban, or calendar — and an optional focus timer when a session helps.
               </p>
             </div>
 
@@ -305,7 +303,7 @@ export default function LandingPage() {
             {[
               {
                 title: "Tasks + projects, same screen",
-                desc: "Cards, list, and kanban views — organize work without leaving focus.",
+                desc: "Cards, list, kanban, and calendar views — organize work without leaving focus.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 ),
@@ -353,19 +351,11 @@ export default function LandingPage() {
               },
               {
                 title: "Focus timer when you need it",
-                desc: "Pomodoro, Flowtime, 52/17, Deep Work, and Ultra Focus — optional, not the product.",
+                desc: "Pomodoro, Deep Work, 52/17, and Ultra Focus presets — optional, not the whole product.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 ),
                 iconClass: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30",
-              },
-              {
-                title: "Cards, list & kanban",
-                desc: "Switch views with drag-and-drop reorder — pick the layout that fits the day.",
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                ),
-                iconClass: "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30",
               },
             ].map((item) => (
               <div key={item.title} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0f1b33] border border-slate-200 dark:border-[#1e3355]">
@@ -380,36 +370,6 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* High-intent differentiators */}
-        <section className="w-full max-w-5xl mx-auto pb-12 sm:pb-20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            Built for how you already work
-          </h2>
-          <p className="text-center text-base sm:text-lg text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto">
-            The features people search for — scheduling, migration, and focus methods — are in the product, not buried in settings.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Smart Plan</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Turns due dates and daily goals into a day-by-day execution plan. Flags overdue and at-risk work automatically.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Import Todoist &amp; Notion</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Migrate from Todoist, Notion, Asana, or Google Tasks via Settings → Import &amp; Export. Preview before you confirm.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355]">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Focus timer when you need it</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Optional Pomodoro, Flowtime, 52/17, and Deep Work presets — use them when a session helps, not as the whole product.
-              </p>
-            </div>
           </div>
         </section>
 
@@ -541,7 +501,6 @@ export default function LandingPage() {
           >
             SEO workspace on BoostLogik
           </a>
-          {" "}· Filantus
         </p>
         <p className="text-sm text-slate-400 dark:text-slate-600">
           <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400">

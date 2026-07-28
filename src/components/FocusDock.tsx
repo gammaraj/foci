@@ -218,7 +218,7 @@ export function FocusDockToolbar({
         </span>
       )}
       <span
-        className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-mono font-semibold tabular-nums leading-none shrink-0 ${
+        className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
           isBreak
             ? "text-green-700 dark:text-green-300"
             : isRunning
@@ -384,7 +384,7 @@ export default function FocusDockPanel({
         <div className="text-center space-y-0.5 pb-3">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
           <p
-            className={`text-xl sm:text-3xl font-mono font-bold tabular-nums leading-none ${
+            className={`text-xl sm:text-3xl font-bold tabular-nums leading-none ${
               isBreak
                 ? "text-green-700 dark:text-green-300"
                 : isRunning

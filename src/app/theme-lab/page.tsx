@@ -315,7 +315,7 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
           {[theme.dim, theme.mid, theme.bright, theme.btn].map((hex) => (
             <span
               key={hex}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2 py-0.5 text-[10px] font-mono text-slate-600"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2 py-0.5 text-[10px] tabular-nums text-slate-600"
             >
               <span className="w-2.5 h-2.5 rounded-full ring-1 ring-black/10" style={{ backgroundColor: hex }} />
               {hex}

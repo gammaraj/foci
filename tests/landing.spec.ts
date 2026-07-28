@@ -34,14 +34,14 @@ test.describe("Landing Page", () => {
   test("renders social proof section", async ({ page }) => {
     await expect(page.getByText("Free to start")).toBeVisible();
     await expect(page.getByText("Sync across devices")).toBeVisible();
-    await expect(page.getByText("Import Todoist & Notion")).toBeVisible();
+    await expect(page.getByText("Import Todoist, Notion & more")).toBeVisible();
     await expect(page.getByText("Works offline (PWA)")).toBeVisible();
   });
 
   test("renders How Foci works section with 3 steps", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "How Foci works" })).toBeVisible();
     await expect(page.getByText("Add your tasks")).toBeVisible();
-    await expect(page.getByText("Start the timer")).toBeVisible();
+    await expect(page.getByText("Plan your day")).toBeVisible();
     await expect(page.getByText("Build your streak")).toBeVisible();
   });
 
@@ -53,15 +53,6 @@ test.describe("Landing Page", () => {
     await expect(page.getByRole("heading", { name: "Smart Plan scheduling" })).toBeVisible();
     await expect(page.getByText("Import from your tools")).toBeVisible();
     await expect(page.getByText("Streaks that stick")).toBeVisible();
-  });
-
-  test("renders differentiator section", async ({ page }) => {
-    await expect(
-      page.getByRole("heading", { name: "Built for how you already work" }),
-    ).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Smart Plan" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Import Todoist & Notion" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Focus timer when you need it" })).toBeVisible();
   });
 
   test("renders final CTA section", async ({ page }) => {

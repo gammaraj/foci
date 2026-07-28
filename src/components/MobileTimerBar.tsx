@@ -47,7 +47,7 @@ export default function MobileTimerBar({
           onClick={onExpandTimer}
           className={`flex flex-col min-w-0 flex-1 text-left touch-target-sm px-1 ${isBreak ? "text-green-800 dark:text-green-200" : ""}`}
         >
-          <span className={`text-xl font-mono font-bold tabular-nums leading-none ${isRunning && !isBreak ? "text-blue-600 dark:text-blue-400" : isBreak ? "text-green-700 dark:text-green-300" : "text-slate-800 dark:text-slate-100"}`}>
+          <span className={`text-xl font-bold tabular-nums leading-none ${isRunning && !isBreak ? "text-blue-600 dark:text-blue-400" : isBreak ? "text-green-700 dark:text-green-300" : "text-slate-800 dark:text-slate-100"}`}>
             {displayTime}
           </span>
           <span className="text-sm text-slate-600 dark:text-slate-400 truncate mt-0.5">

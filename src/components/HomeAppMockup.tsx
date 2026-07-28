@@ -9,7 +9,7 @@ export default function HomeAppMockup() {
           <div className="w-3 h-3 rounded-full bg-[#28c840]" />
         </div>
         <div className="flex-1 flex justify-center">
-          <div className="bg-white dark:bg-[#0d1117] rounded-md px-4 py-1 text-xs text-slate-500 dark:text-slate-400 font-mono border border-slate-200 dark:border-transparent">
+          <div className="bg-white dark:bg-[#0d1117] rounded-md px-4 py-1 text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-transparent">
             usefoci.com/app
           </div>
         </div>
