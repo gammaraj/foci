@@ -3,6 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
+import {
+  ONBOARDING_LEGACY_STORAGE_KEY,
+  ONBOARDING_START_EVENT,
+  ONBOARDING_STORAGE_KEY,
+} from "@/lib/onboarding";
 import { positionTourTooltip } from "@/lib/tour-tooltip";
 
 interface Step {
@@ -59,10 +64,27 @@ const STEPS: Step[] = [
     target: "[data-tour='task-panel-menu']",
     title: "Smart Plan & settings",
     description:
-      "Open ⋯ for Smart Plan (day-by-day scheduling), Settings & import (Todoist, Notion, and more), and templates.",
+      "Open ⋯ for Smart Plan (day-by-day scheduling), Settings & import (Todoist, Notion, and more), templates, and to replay this tour.",
     position: "bottom",
   },
 ];
+
+function waitForTourStart(onReady: () => void): () => void {
+  let cancelled = false;
+  const waitForTargets = () => {
+    const firstTarget = document.querySelector(STEPS[0].target);
+    if (firstTarget && !cancelled) {
+      onReady();
+    } else if (!cancelled) {
+      requestAnimationFrame(waitForTargets);
+    }
+  };
+  const timer = setTimeout(() => requestAnimationFrame(waitForTargets), 300);
+  return () => {
+    cancelled = true;
+    clearTimeout(timer);
+  };
+}
 
 export default function OnboardingTour() {
   const { user, loading: authLoading } = useAuth();
@@ -74,7 +96,12 @@ export default function OnboardingTour() {
     if (authLoading) return;
 
     // Check if already completed (works for both guest and authenticated users)
-    if (localStorage.getItem("foci_onboarding_done") || localStorage.getItem("tempo_onboarding_done")) return;
+    if (
+      localStorage.getItem(ONBOARDING_STORAGE_KEY) ||
+      localStorage.getItem(ONBOARDING_LEGACY_STORAGE_KEY)
+    ) {
+      return;
+    }
 
     // For authenticated users: check Supabase metadata and account age
     if (user) {
@@ -82,7 +109,7 @@ export default function OnboardingTour() {
       // Only show for new signups: skip if account older than 5 minutes
       const createdAt = new Date(user.created_at).getTime();
       if (Date.now() - createdAt > 5 * 60 * 1000) {
-        localStorage.setItem("foci_onboarding_done", "1");
+        localStorage.setItem(ONBOARDING_STORAGE_KEY, "1");
         const supabase = createClient();
         supabase.auth.updateUser({ data: { onboarding_done: true } })
           .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
@@ -91,24 +118,25 @@ export default function OnboardingTour() {
     }
 
     // Show tour for both guest users and new authenticated users
-    // Delay until the page has actually rendered
-    let cancelled = false;
-    const waitForTargets = () => {
-      const firstTarget = document.querySelector(STEPS[0].target);
-      if (firstTarget && !cancelled) {
-        setCurrentStep(0);
-      } else if (!cancelled) {
-        requestAnimationFrame(waitForTargets);
-      }
-    };
-    // Give initial render a moment to settle
-    const timer = setTimeout(() => requestAnimationFrame(waitForTargets), 300);
-    return () => { cancelled = true; clearTimeout(timer); };
+    return waitForTourStart(() => setCurrentStep(0));
   }, [user, authLoading]);
+
+  useEffect(() => {
+    let cancelWait: (() => void) | undefined;
+    const start = () => {
+      cancelWait?.();
+      cancelWait = waitForTourStart(() => setCurrentStep(0));
+    };
+    window.addEventListener(ONBOARDING_START_EVENT, start);
+    return () => {
+      cancelWait?.();
+      window.removeEventListener(ONBOARDING_START_EVENT, start);
+    };
+  }, []);
 
   const finish = useCallback(() => {
     setCurrentStep(-1);
-    localStorage.setItem("foci_onboarding_done", "1");
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, "1");
     if (user) {
       const supabase = createClient();
       supabase.auth.updateUser({ data: { onboarding_done: true } })

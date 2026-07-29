@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "./AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
+import { startOnboardingTour } from "@/lib/onboarding";
 import { WHATS_NEW_SHOW_EVENT, hasSeenWhatsNew } from "@/lib/whats-new";
 
 export default function UserMenu() {
@@ -116,6 +117,18 @@ export default function UserMenu() {
               {whatsNewUnseen && (
                 <span className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0" />
               )}
+            </button>
+            <button
+              onClick={() => {
+                setOpen(false);
+                startOnboardingTour();
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="flex-1">Take product tour</span>
             </button>
           </div>
 

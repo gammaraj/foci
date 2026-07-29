@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import type { TaskTemplate } from "@/lib/templates";
+import { startOnboardingTour } from "@/lib/onboarding";
 import { showWhatsNewBanner, startFeatureTour } from "@/lib/whats-new";
 
 interface TaskPanelMenuProps {
@@ -99,6 +100,16 @@ export default function TaskPanelMenu({
             }}
           >
             What&apos;s new & tour
+          </button>
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            onClick={() => {
+              startOnboardingTour();
+              setOpen(false);
+            }}
+          >
+            Take product tour
           </button>
           {onTogglePlan && (
             <button

@@ -69,7 +69,7 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     target: "[data-tour='task-panel-menu']",
     title: "Smart Plan & more",
     description:
-      "Open ⋯ for Smart Plan scheduling, Settings & import, templates, and to replay What's new.",
+      "Open ⋯ for Smart Plan scheduling, Settings & import, templates, What's new, and Take product tour.",
     position: "bottom",
   },
   {
