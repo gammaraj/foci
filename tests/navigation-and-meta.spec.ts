@@ -26,24 +26,25 @@ test.describe("Navigation", () => {
     await expect(logoLink).toHaveAttribute("href", "/");
   });
 
-  test("navbar shows Stats link", async ({ page }) => {
+  test("navbar shows Features, Blog, and About for logged-out visitors", async ({ page }) => {
     await page.goto("/");
-    const statsLink = page.getByRole("link", { name: "Stats" });
-    await expect(statsLink).toBeVisible();
-    await expect(statsLink).toHaveAttribute("href", "/stats");
-  });
-
-  test("navbar shows Blog link", async ({ page }) => {
-    await page.goto("/");
+    const featuresLink = page.getByRole("link", { name: "Features" });
+    await expect(featuresLink).toBeVisible();
+    await expect(featuresLink).toHaveAttribute("href", "/#features");
     const blogLink = page.getByRole("link", { name: "Blog" });
     await expect(blogLink).toBeVisible();
     await expect(blogLink).toHaveAttribute("href", "/blog");
+    const aboutLink = page.getByRole("link", { name: "About" });
+    await expect(aboutLink).toBeVisible();
+    await expect(aboutLink).toHaveAttribute("href", "/about");
+    await expect(page.getByRole("link", { name: "Stats" })).toHaveCount(0);
   });
 
-  test("Stats link in navbar navigates to stats page", async ({ page }) => {
+  test("Features link scrolls to features section", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Stats" }).click();
-    await expect(page).toHaveURL(/\/stats/);
+    await page.getByRole("link", { name: "Features" }).click();
+    await expect(page).toHaveURL(/\/#features/);
+    await expect(page.locator("#features")).toBeVisible();
   });
 
   test("Blog link in navbar navigates to blog page", async ({ page }) => {

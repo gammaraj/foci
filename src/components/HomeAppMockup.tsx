@@ -1,4 +1,4 @@
-/** Landing preview — real product screenshot with public-safe demo projects/tasks. */
+/** Landing preview — cropped to the task board so visitors land on “organized,” not chrome noise. */
 export default function HomeAppMockup() {
   return (
     <div className="relative w-full max-w-5xl mx-auto">
@@ -19,9 +19,9 @@ export default function HomeAppMockup() {
         {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
         <img
           src="/home-app-preview.webp"
-          alt="Foci app showing projects as cards, ambient music, and a focus timer in one window"
+          alt="Foci task board with projects organized as cards"
           width={1536}
-          height={1024}
+          height={632}
           className="w-full h-auto block"
           decoding="async"
           fetchPriority="high"

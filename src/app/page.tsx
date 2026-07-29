@@ -174,7 +174,7 @@ export default function LandingPage() {
             {FOCI_HERO_HEADLINE}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Projects, Smart Plan, and streaks in one calm window — with ambient sound and an optional focus timer. Create a free account to get started.
+            Organize projects, plan the day, and finish what matters — in one calm window. Create a free account to get started.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">

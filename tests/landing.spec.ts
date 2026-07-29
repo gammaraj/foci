@@ -9,7 +9,7 @@ test.describe("Landing Page", () => {
     await expect(page.locator("h1")).toContainText("Plan your day. Finish your tasks.");
     await expect(page.getByText("Free · Syncs across devices")).toBeVisible();
     await expect(
-      page.getByText("Create a free account to get started"),
+      page.getByText("Organize projects, plan the day, and finish what matters"),
     ).toBeVisible();
   });
 
@@ -25,10 +25,22 @@ test.describe("Landing Page", () => {
 
   test("renders app preview screenshot", async ({ page }) => {
     const preview = page.getByRole("img", {
-      name: /Foci app showing projects as cards/i,
+      name: /Foci task board with projects organized as cards/i,
     });
     await expect(preview).toBeVisible();
     await expect(preview).toHaveAttribute("src", "/home-app-preview.webp");
+  });
+
+  test("logged-out nav is trimmed to essentials", async ({ page }) => {
+    await expect(page.getByRole("link", { name: "Features" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Blog" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "About" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Try Foci" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Stats" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /settings/i })).toHaveCount(0);
+    await expect(page.getByText(/Partly cloudy|Clear sky|Baltimore|Austin/i)).toHaveCount(0);
+    await expect(page.getByText("FOCUS · FLOW · FINISH")).toHaveCount(0);
   });
 
   test("renders social proof section", async ({ page }) => {

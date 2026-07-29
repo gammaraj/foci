@@ -22,7 +22,7 @@ interface AppNavbarProps {
   onTasksImported?: () => void;
 }
 
-/** Site-wide navbar — same links, toolbar, and settings on every page. */
+/** Site-wide navbar — logged-out visitors get a lean marketing chrome; signed-in users get weather, settings, and app toolbar. */
 export default function AppNavbar({
   focusMode = false,
   settings: externalSettings,
@@ -93,13 +93,21 @@ export default function AppNavbar({
       {/* HeadlessWhatsNewBanner listens for WHATS_NEW_SHOW_EVENT dispatched from UserMenu */}
       <WhatsNewBanner focusMode={focusMode} headless />
       <Navbar
-        onOpenSettings={() => setShowSettings(true)}
+        onOpenSettings={user ? () => setShowSettings(true) : undefined}
         centerSlot={
           focusMode ? undefined : (
-            <div className="flex items-center justify-center gap-10 sm:gap-12 min-w-0 w-full max-w-3xl">
-              <div className="min-w-0 shrink">
-                <WeatherTime nav />
-              </div>
+            <div
+              className={
+                user
+                  ? "flex items-center justify-center gap-10 sm:gap-12 min-w-0 w-full max-w-3xl"
+                  : "flex items-center justify-end min-w-0 w-full"
+              }
+            >
+              {user ? (
+                <div className="min-w-0 shrink">
+                  <WeatherTime nav />
+                </div>
+              ) : null}
               <FilantusCrossPromoBanner />
             </div>
           )

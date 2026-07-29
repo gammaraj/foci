@@ -106,8 +106,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
         },
       ]
     : [
-        { key: "try", href: "/app", label: "Try Foci", active: pathname === "/app" },
-        { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" },
+        { key: "features", href: "/#features", label: "Features", active: false },
         { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
         { key: "about", href: "/about", label: "About", active: pathname === "/about" },
       ];
@@ -142,9 +141,12 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             />
             <div className="flex flex-col items-start gap-1.5 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />
-              <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap`}>
-                {FOCI_TAGLINE_FOCUS}
-              </p>
+              {/* Logged-in: brand rhythm. Logged-out: omit so the hero owns the value prop. */}
+              {user ? (
+                <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap`}>
+                  {FOCI_TAGLINE_FOCUS}
+                </p>
+              ) : null}
             </div>
           </Link>
 
