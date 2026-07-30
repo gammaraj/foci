@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
+import ThemeToggle from "@/components/ThemeToggle";
 import UserMenu from "@/components/UserMenu";
 import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
 import {
@@ -17,7 +18,7 @@ import {
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
   onOpenSettings?: () => void;
-  /** Extra actions shown before theme toggle (e.g. invites, notifications on /app). */
+  /** Extra actions shown before theme toggle (e.g. collaboration invites on /app). */
   toolbarSlot?: ReactNode;
   /** Optional center content between logo and nav links (kept empty by default — promo belongs outside the task workspace). */
   centerSlot?: ReactNode;
@@ -162,11 +163,10 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             <div className="flex items-center gap-0.5">
               {navLinks.map((link) => renderNavLink(link))}
             </div>
-            {(toolbarSlot || onOpenSettings) && (
-              <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
-            )}
+            <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
             <div className="flex items-center gap-0.5">
               {toolbarSlot}
+              <ThemeToggle className={chromeBtnPad} />
               {onOpenSettings && (
                 <button
                   type="button"
@@ -195,6 +195,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           </div>
 
           <div className="flex sm:hidden items-center gap-0.5 ml-auto">
+            <ThemeToggle className={`${chromeBtnPad} touch-target-sm`} />
             {onOpenSettings && (
               <button
                 type="button"

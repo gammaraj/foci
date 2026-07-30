@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/AuthProvider";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
-import NotificationBell from "@/components/NotificationBell";
 import WhatsNewBanner from "@/components/WhatsNewBanner";
 import WeatherTime from "@/components/WeatherTime";
 import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
@@ -116,7 +115,6 @@ export default function AppNavbar({
           user ? (
             <div className="flex items-center gap-0.5">
               <CollaborationInvitesButton />
-              <NotificationBell />
             </div>
           ) : undefined
         }

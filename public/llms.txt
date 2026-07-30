@@ -236,10 +236,13 @@ A: Yes. Foci includes 9 curated Spotify playlists for meditation, ambient, deep 
 A: Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer or editor roles) and Project collaboration (share specific projects with customizable access levels). All invites are managed through email with role-based permissions.
 
 **Q: How do collaboration invites work in Foci?**
-A: Send account or project collaboration invites via email. Recipients receive notifications in their notification bell and can accept/decline invites. Account invites grant access to all projects (role-dependent), while project invites are scoped to specific projects. Invites expire automatically for security.
+A: Send account or project collaboration invites via email. Recipients see invites via the Sharing / invites control in the navbar and can accept or decline. Account invites grant access to all projects (role-dependent), while project invites are scoped to specific projects. Invites expire automatically for security.
 
 **Q: Does Foci have a notification system?**
-A: Yes. Foci includes a notification bell that shows upcoming task reminders, overdue task alerts, and collaboration invite notifications with a badge counter. Click the bell to view all pending notifications and take action.
+A: Yes. Enable browser notifications in Settings for session-complete alerts. Upcoming and overdue task reminders appear in the app, and collaboration invites show in the navbar Sharing control with a badge when pending.
+
+**Q: Can I switch between light and dark mode?**
+A: Yes. Use the sun/moon button in the navbar for one-click light ↔ dark. In your profile menu, Appearance also cycles Light → Dark → System (follow OS preference).
 
 **Q: Can I reorder project tabs in Foci?**
 A: Yes. Drag project tabs on desktop to reorder them, or open Manage projects (⋮ on the tab bar) and use the Tab order panel — drag rows or tap up/down arrows. Pin projects with the star to keep them at the front. Drop onto a pinned project to pin; drop onto an unpinned one to unpin.
@@ -342,8 +345,8 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - `src/components/SmartPlan.tsx` – Smart Plan UI with summary cards, day sections, and task rows.
 - `src/components/TaskImportExport.tsx` – Import tasks from Google Tasks, Todoist, Asana, Notion, CSV. Export as JSON/CSV.
 - `src/components/AmbientSounds.tsx` – Ambient sounds (rain, café, white/brown noise), lo-fi radio, and Indian classical music via SoundCloud.
+- `src/components/ThemeToggle.tsx` – One-click light/dark theme toggle in the navbar.
 - `src/components/DueDateReminders.tsx` – Notification bell with upcoming and overdue task alerts.
-- `src/components/NotificationBell.tsx` – Notification icon and dropdown for reminders and collaboration invites.
 - `src/lib/collaboration.ts` – Account and project collaboration logic with role-based access control.
 - `supabase/migrations/` – Database schema migrations including user_profiles, account_invites, collaboration_invites.
 - `src/hooks/useTimer.ts` – Core timer logic hook (work/break cycles, callbacks).
