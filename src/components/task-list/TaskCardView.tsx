@@ -17,6 +17,7 @@ import {
 import { isActionableOverdue } from "@/lib/task-status";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
+import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
@@ -358,9 +359,6 @@ function CardTaskRow({
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
 }) {
-  const [titleExpanded, setTitleExpanded] = useState(false);
-  const [isTruncated, setIsTruncated] = useState(false);
-  const titleTextRef = useRef<HTMLSpanElement>(null);
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
   const isActive = activeTaskId === task.id;
@@ -372,21 +370,6 @@ function CardTaskRow({
   const titleTooltip = [overdueLabel, task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null, task.title]
     .filter(Boolean)
     .join(" — ");
-
-  useEffect(() => {
-    const el = titleTextRef.current;
-    if (!el || titleExpanded) {
-      setIsTruncated(false);
-      return;
-    }
-    const check = () => {
-      setIsTruncated(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
-    };
-    check();
-    const ro = new ResizeObserver(check);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [task.title, titleExpanded, overdue, daysLate]);
 
   return (
     <div
@@ -456,28 +439,14 @@ function CardTaskRow({
             aria-label="Edit task title"
           />
         ) : (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setTitleExpanded((open) => !open);
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              onToggleTaskDetail?.(task.id);
-            }}
+          <TaskTitleButton
+            title={task.title}
+            onOpen={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
+            onRename={onStartEdit ? () => onStartEdit(task) : undefined}
+            titleAttr={titleTooltip}
             className={`group/title relative flex-1 min-w-0 basis-0 flex items-start sm:items-center gap-1 sm:gap-1.5 text-sm font-normal leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
               overdue ? overdueTitleClass(daysLate) : "text-slate-700 dark:text-slate-200"
             }`}
-            title={titleTooltip}
-            aria-expanded={titleExpanded}
-            aria-label={
-              titleExpanded
-                ? `Collapse title: ${task.title}`
-                : isTruncated
-                  ? `Show full title: ${task.title}`
-                  : task.title
-            }
           >
             {overdue && (
               <span
@@ -492,29 +461,8 @@ function CardTaskRow({
             {isOneThing && <OneThingBadge size="compact" />}
             {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
             {task.dueDate && <CardDuePrefix task={task} />}
-            <span
-              ref={titleTextRef}
-              className={`min-w-0 ${
-                titleExpanded
-                  ? "whitespace-normal break-words [overflow-wrap:anywhere]"
-                  : "line-clamp-2 break-words [overflow-wrap:anywhere]"
-              }`}
-            >
-              {task.title}
-            </span>
-            {(isTruncated || titleExpanded) && (
-              <span
-                className={`shrink-0 self-center text-[10px] font-medium normal-case tracking-normal ${
-                  titleExpanded
-                    ? "text-slate-400 dark:text-slate-500"
-                    : "text-slate-400 dark:text-slate-500 opacity-70 group-hover/title:opacity-100"
-                }`}
-                aria-hidden
-              >
-                {titleExpanded ? "less" : "…"}
-              </span>
-            )}
-          </button>
+            <span className="min-w-0 line-clamp-2 break-words [overflow-wrap:anywhere]">{task.title}</span>
+          </TaskTitleButton>
         )}
         {!isEditing && (
           <div className="shrink-0 flex items-start sm:items-center gap-0.5 pt-0.5 sm:pt-0">

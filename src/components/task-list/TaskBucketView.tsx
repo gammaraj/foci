@@ -6,6 +6,7 @@ import { getToday } from "@/lib/dates";
 import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
+import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { MiniPlayPauseIcon } from "@/components/FocusStripControls";
 import {
@@ -384,15 +385,15 @@ function BucketTaskCard({
             autoFocus
             aria-label="Edit task title"
           />
-        ) : canEdit ? (
-          <button
-            type="button"
-            onClick={() => onStartEdit?.(task)}
-            className="flex-1 min-w-0 text-left text-sm font-medium leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] hover:text-slate-900 dark:hover:text-white transition-colors text-slate-800 dark:text-slate-100"
+        ) : canOpenDetail || canEdit ? (
+          <TaskTitleButton
             title={task.title}
+            onOpen={canOpenDetail ? () => onToggleTaskDetail?.(task.id) : undefined}
+            onRename={canEdit ? () => onStartEdit?.(task) : undefined}
+            className="flex-1 min-w-0 text-left text-sm font-medium leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] hover:text-slate-900 dark:hover:text-white transition-colors text-slate-800 dark:text-slate-100"
           >
             {task.title}
-          </button>
+          </TaskTitleButton>
         ) : (
           <p
             className="flex-1 min-w-0 text-sm font-medium leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] text-slate-800 dark:text-slate-100"

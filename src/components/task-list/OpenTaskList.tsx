@@ -6,6 +6,7 @@ import { getToday } from "@/lib/dates";
 import { formatDueDate, formatDuration, isDueDateOverdue } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
+import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import {
   getTaskListSection,
   isActionableOverdue,
@@ -219,13 +220,14 @@ export default function OpenTaskList({
                   autoFocus
                 />
               ) : (
-                <span
-                  onDoubleClick={(e) => { e.stopPropagation(); onStartEdit(task); }}
-                  className="cursor-text"
+                <TaskTitleButton
                   title={task.title}
+                  onOpen={() => onToggleTaskDetail(task.id)}
+                  onRename={() => onStartEdit(task)}
+                  className="cursor-pointer text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                 >
                   {task.title}
-                </span>
+                </TaskTitleButton>
               )}
               {activeTaskId === task.id && isTimerRunning && (
                 <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />

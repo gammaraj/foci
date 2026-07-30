@@ -6,6 +6,7 @@ import { ALL_PROJECTS_ID } from "@/lib/types";
 import { formatDueDate, MAX_TASK_TITLE } from "./utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
+import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -340,21 +341,25 @@ export default function TaskCalendarView({
                       aria-label="Edit task title"
                     />
                   ) : (
-                    <span
-                      className={`text-sm flex-1 truncate ${
+                    <TaskTitleButton
+                      title={task.title}
+                      onOpen={
+                        onToggleTaskDetail && !task.completed
+                          ? () => onToggleTaskDetail(task.id)
+                          : undefined
+                      }
+                      onRename={
+                        canEditTitle && !task.completed ? () => onStartEdit!(task) : undefined
+                      }
+                      interactive={!task.completed && (!!onToggleTaskDetail || canEditTitle)}
+                      className={`text-sm flex-1 truncate text-left ${
                         task.completed
                           ? "line-through text-slate-400"
-                          : "text-slate-700 dark:text-slate-200 font-medium"
-                      } ${canEditTitle && !task.completed ? "cursor-text" : ""}`}
-                      title={task.title}
-                      onDoubleClick={(e) => {
-                        if (!canEditTitle || task.completed) return;
-                        e.stopPropagation();
-                        onStartEdit!(task);
-                      }}
+                          : "text-slate-700 dark:text-slate-200 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                      }`}
                     >
                       {task.title}
-                    </span>
+                    </TaskTitleButton>
                   )}
                   {renderSubtasksBadge(task, detailOpen)}
                   {!task.completed && (
@@ -437,17 +442,14 @@ export default function TaskCalendarView({
                     aria-label="Edit task title"
                   />
                 ) : (
-                  <span
-                    className={`text-sm text-slate-600 dark:text-slate-300 truncate flex-1 ${canEditTitle ? "cursor-text" : ""}`}
+                  <TaskTitleButton
                     title={task.title}
-                    onDoubleClick={(e) => {
-                      if (!canEditTitle) return;
-                      e.stopPropagation();
-                      onStartEdit!(task);
-                    }}
+                    onOpen={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
+                    onRename={canEditTitle ? () => onStartEdit!(task) : undefined}
+                    className="text-sm text-slate-600 dark:text-slate-300 truncate flex-1 text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                   >
                     {task.title}
-                  </span>
+                  </TaskTitleButton>
                 )}
                 {renderSubtasksBadge(task, detailOpen)}
                 {onToggleTaskDetail && (
