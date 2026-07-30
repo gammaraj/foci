@@ -11,6 +11,8 @@ import {
   isDueDateOverdue,
 } from "@/components/task-list/utils";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
+import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePicker";
+import type { ProjectTemplate } from "@/lib/templates";
 
 function GripIcon() {
   return (
@@ -54,7 +56,7 @@ export interface ProjectManageViewProps {
   onFocusProject?: (id: string) => void;
   onSelectSharedProject: (sp: SharedProject) => void;
   onLeaveShared: (sp: SharedProject) => void;
-  onAddProject: () => void;
+  onAddProject: (template?: ProjectTemplate) => void;
   renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }
 
@@ -740,29 +742,32 @@ export default function ProjectManageView({
         </div>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onAddProject();
-        }}
-        className="flex gap-2 px-3 sm:px-4 py-3 border-t border-slate-100 dark:border-[#243350] shrink-0"
-      >
-        <input
-          type="text"
-          value={newProjectName}
-          onChange={(e) => setNewProjectName(e.target.value)}
-          placeholder="New project name..."
-          maxLength={MAX_PROJECT_NAME}
-          className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
-        />
-        <button
-          type="submit"
-          disabled={!newProjectName.trim()}
-          className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      <div className="px-3 sm:px-4 py-3 border-t border-slate-100 dark:border-[#243350] shrink-0 space-y-3">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onAddProject();
+          }}
+          className="flex gap-2"
         >
-          Add
-        </button>
-      </form>
+          <input
+            type="text"
+            value={newProjectName}
+            onChange={(e) => setNewProjectName(e.target.value)}
+            placeholder="New project name..."
+            maxLength={MAX_PROJECT_NAME}
+            className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+          />
+          <button
+            type="submit"
+            disabled={!newProjectName.trim()}
+            className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Add
+          </button>
+        </form>
+        <ProjectTemplatePicker onSelect={(tpl) => onAddProject(tpl)} />
+      </div>
     </div>
   );
 }

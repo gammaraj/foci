@@ -34,56 +34,68 @@ export const GOAL_PRESETS: GoalPreset[] = [
   { label: "Intense", emoji: "🔥", sessions: 12, description: "~6 hours of focus" },
 ];
 
-// ====== Task Templates ======
+// ====== Project Templates ======
 
-export interface TaskTemplate {
+export interface ProjectTemplate {
   label: string;
   emoji: string;
   description: string;
+  /** Optional grouping for pickers (e.g. Finance). */
+  category?: "workflow" | "finance";
   tasks: string[];
 }
 
-export const TASK_TEMPLATES: TaskTemplate[] = [
+/** @deprecated Use ProjectTemplate */
+export type TaskTemplate = ProjectTemplate;
+
+export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   {
     label: "Morning Routine",
     emoji: "🌅",
     description: "Start your day right",
+    category: "workflow",
     tasks: ["Plan today's priorities", "Check & respond to emails", "Identify top 3 must-do tasks"],
   },
   {
     label: "Study Session",
     emoji: "📚",
     description: "Structured learning block",
+    category: "workflow",
     tasks: ["Review previous notes", "Study new material", "Practice problems / exercises", "Summarize key takeaways"],
   },
   {
     label: "Dev Sprint",
     emoji: "💻",
     description: "Focused coding workflow",
+    category: "workflow",
     tasks: ["Plan feature / review requirements", "Implement code changes", "Write tests", "Code review & cleanup"],
   },
   {
     label: "Writing Block",
     emoji: "✍️",
     description: "Focused writing session",
+    category: "workflow",
     tasks: ["Outline key points", "Write first draft", "Edit and revise", "Final review & polish"],
   },
   {
     label: "Meeting Prep",
     emoji: "📋",
     description: "Get ready for meetings",
+    category: "workflow",
     tasks: ["Review agenda", "Prepare talking points", "Gather required documents", "Note follow-up actions"],
   },
   {
     label: "Weekly Review",
     emoji: "📊",
     description: "End-of-week reflection",
+    category: "workflow",
     tasks: ["Review completed tasks", "Assess goal progress", "Identify blockers", "Plan next week's priorities"],
   },
   {
     label: "Trip Planning",
     emoji: "✈️",
     description: "Focused travel prep — pair with Wandering Hermit itineraries",
+    category: "workflow",
     tasks: [
       "Research visa and entry requirements",
       "Compare flights and travel dates",
@@ -96,11 +108,122 @@ export const TASK_TEMPLATES: TaskTemplate[] = [
       "Final packing list and check-in times",
     ],
   },
+  {
+    label: "Financial Life Plan",
+    emoji: "🧭",
+    description: "End-to-end money system: cash flow, protection, debt, investing, and goals",
+    category: "finance",
+    tasks: [
+      "Write money values and 1-, 5-, and 10-year goals",
+      "List all income sources and take-home pay",
+      "Map monthly fixed costs and must-pay bills",
+      "Track variable spending for 30 days",
+      "Build a zero-based or 50/30/20 monthly budget",
+      "Automate paycheck splits (bills, savings, investing, spending)",
+      "Set emergency fund target and open HYSA if needed",
+      "List debts with balance, rate, and minimum payment",
+      "Choose debt payoff method and first target",
+      "Confirm health, life, disability, and property insurance coverage",
+      "Max employer retirement match (401k/403b)",
+      "Open or fund IRA / brokerage and set contribution rate",
+      "Define target asset allocation and rebalance rule",
+      "Set sinking funds (taxes, travel, car, home, gifts)",
+      "Review tax withholding, credits, and estimated payments",
+      "Draft or update will, beneficiaries, and key contacts",
+      "Calculate current net worth baseline",
+      "Schedule quarterly money review on the calendar",
+    ],
+  },
+  {
+    label: "Monthly Budget",
+    emoji: "💵",
+    description: "Review income, spending, and savings",
+    category: "finance",
+    tasks: [
+      "List income sources for the month",
+      "Categorize last month's spending",
+      "Set category budgets",
+      "Schedule bill payments",
+      "Review subscriptions to cancel or keep",
+      "Set savings transfer for the month",
+    ],
+  },
+  {
+    label: "Debt Payoff",
+    emoji: "📉",
+    description: "Organize and attack debt",
+    category: "finance",
+    tasks: [
+      "List all debts with balances and rates",
+      "Choose avalanche or snowball order",
+      "Set this month's extra payment amount",
+      "Automate minimum payments",
+      "Make extra payment on priority debt",
+      "Update payoff tracker",
+    ],
+  },
+  {
+    label: "Emergency Fund",
+    emoji: "🛟",
+    description: "Build a cash safety net",
+    category: "finance",
+    tasks: [
+      "Set target (3–6 months of expenses)",
+      "Open or confirm high-yield savings account",
+      "Calculate monthly contribution",
+      "Automate transfer on payday",
+      "Review progress and adjust",
+    ],
+  },
+  {
+    label: "Investing Setup",
+    emoji: "📈",
+    description: "Get accounts and contributions in order",
+    category: "finance",
+    tasks: [
+      "Confirm retirement account eligibility (401k/IRA)",
+      "Set contribution rate and auto-invest",
+      "Choose or rebalance target allocation",
+      "Max employer match if available",
+      "Review fees and fund choices",
+      "Schedule next portfolio check-in",
+    ],
+  },
+  {
+    label: "Tax Prep",
+    emoji: "🧾",
+    description: "Gather documents and file with less stress",
+    category: "finance",
+    tasks: [
+      "Collect W-2s / 1099s",
+      "Gather deductible expense records",
+      "Download investment tax forms",
+      "Confirm filing status and credits",
+      "Complete draft return or send to preparer",
+      "File return and store confirmation",
+    ],
+  },
+  {
+    label: "Net Worth Review",
+    emoji: "🧮",
+    description: "Snapshot assets, liabilities, and goals",
+    category: "finance",
+    tasks: [
+      "Update bank and investment balances",
+      "Update debt balances",
+      "Calculate net worth",
+      "Compare to last quarter",
+      "Set or adjust one money goal",
+    ],
+  },
 ];
 
-/** Convert a task template into Task objects ready to save */
+/** @deprecated Use PROJECT_TEMPLATES */
+export const TASK_TEMPLATES = PROJECT_TEMPLATES;
+
+/** Convert a project template into Task objects ready to save */
 export function templateToTasks(
-  template: TaskTemplate,
+  template: ProjectTemplate,
   projectId: string = DEFAULT_PROJECT_ID
 ) {
   return template.tasks.map((title) => ({

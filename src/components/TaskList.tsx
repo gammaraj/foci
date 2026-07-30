@@ -9,7 +9,7 @@ import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/anal
 import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
-import { TASK_TEMPLATES, templateToTasks } from "@/lib/templates";
+import { PROJECT_TEMPLATES, templateToTasks, type ProjectTemplate } from "@/lib/templates";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getToday, formatDateLocal } from "@/lib/dates";
@@ -44,6 +44,7 @@ import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
 import { dismissDatePicker } from "@/components/task-list/dismiss-overlays";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
+import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePicker";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
@@ -710,8 +711,8 @@ export default function TaskList({
     const changed = updated.find((t) => t.id === taskId);
     if (changed) persistOne(updated, changed);
   };
-  const addProject = () => {
-    const name = newProjectName.trim().slice(0, MAX_PROJECT_NAME);
+  const addProject = (template?: ProjectTemplate) => {
+    const name = (template?.label ?? newProjectName).trim().slice(0, MAX_PROJECT_NAME);
     if (!name) return;
     const usedColors = projects.map((p) => p.color).filter(Boolean);
     const nextColor = PROJECT_COLORS.find((c) => !usedColors.includes(c)) ?? PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
@@ -722,9 +723,16 @@ export default function TaskList({
       color: nextColor,
       order: maxOrder + 1,
       createdAt: Date.now(),
+      ...(template?.description ? { description: template.description } : {}),
     };
     persistProjects([...projects, project]);
+    if (template) {
+      const newTasks = templateToTasks(template, project.id);
+      void persist([...tasks, ...newTasks]);
+      showToast(`Created ${name} with ${newTasks.length} tasks`);
+    }
     setNewProjectName("");
+    setShowAddProject(false);
     selectProject(project.id);
   };
 
@@ -1546,21 +1554,6 @@ export default function TaskList({
     : isAllProjects
       ? null
       : selectedProjectId;
-  const applyTemplate = useCallback(
-    (tpl: (typeof TASK_TEMPLATES)[number]) => {
-      const templateProjectId = isTimeFilter
-        ? projectFilterId !== ALL_PROJECTS_ID
-          ? projectFilterId
-          : DEFAULT_PROJECT_ID
-        : isAllProjects
-          ? DEFAULT_PROJECT_ID
-          : selectedProjectId;
-      const newTasks = templateToTasks(tpl, templateProjectId);
-      persist([...tasks, ...newTasks]);
-    },
-    [tasks, isAllProjects, isTimeFilter, projectFilterId, selectedProjectId, persist]
-  );
-
   const today = getToday();
   const endOfWeek = (() => {
     const d = new Date();
@@ -2255,8 +2248,8 @@ export default function TaskList({
                 onOpenSettings={onOpenSettings}
                 onToggleFullscreen={onToggleFullscreen}
                 isFullscreen={isFullscreen}
-                templates={TASK_TEMPLATES}
-                onSelectTemplate={applyTemplate}
+                templates={PROJECT_TEMPLATES}
+                onSelectTemplate={addProject}
                 onTogglePlan={() => {
                   if (viewMode === "plan") {
                     selectViewMode(viewBeforePlanRef.current);
@@ -3128,32 +3121,34 @@ export default function TaskList({
 
         {/* Inline add project input */}
         {showAddProject && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              addProject();
-              setShowAddProject(false);
-            }}
-            className="flex gap-1.5 mt-2"
-          >
-            <input
-              type="text"
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              placeholder="Project name..."
-              maxLength={MAX_PROJECT_NAME}
-              className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
-              autoFocus
-              onKeyDown={(e) => { if (e.key === "Escape") setShowAddProject(false); }}
-            />
-            <button
-              type="submit"
-              disabled={!newProjectName.trim()}
-              className="px-2.5 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          <div className="mt-2 space-y-2">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                addProject();
+              }}
+              className="flex gap-1.5"
             >
-              Add
-            </button>
-          </form>
+              <input
+                type="text"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                placeholder="Project name..."
+                maxLength={MAX_PROJECT_NAME}
+                className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+                autoFocus
+                onKeyDown={(e) => { if (e.key === "Escape") setShowAddProject(false); }}
+              />
+              <button
+                type="submit"
+                disabled={!newProjectName.trim()}
+                className="px-2.5 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Add
+              </button>
+            </form>
+            <ProjectTemplatePicker onSelect={addProject} />
+          </div>
         )}
 
       </div>
@@ -3306,12 +3301,12 @@ export default function TaskList({
 
         {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && (
           <div className="flex flex-wrap gap-1.5">
-            <span className="text-xs text-slate-500 dark:text-slate-400 w-full">Quick start:</span>
-            {TASK_TEMPLATES.slice(0, 3).map((tpl) => (
+            <span className="text-xs text-slate-500 dark:text-slate-400 w-full">Quick start a project:</span>
+            {PROJECT_TEMPLATES.slice(0, 4).map((tpl) => (
               <button
                 key={tpl.label}
                 type="button"
-                onClick={() => applyTemplate(tpl)}
+                onClick={() => addProject(tpl)}
                 className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors touch-target-sm"
               >
                 {tpl.emoji} {tpl.label}
@@ -3339,7 +3334,7 @@ export default function TaskList({
           </div>
         )}
 
-        {/* Empty state with template gallery */}
+        {/* Empty state with project template gallery */}
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
             <div className="text-center mb-6 px-4">
@@ -3352,24 +3347,11 @@ export default function TaskList({
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto">
                 {isTimeFilter 
                   ? "Add a task above to get started" 
-                  : "Add your first task above to get started, or choose a template below"}
+                  : "Add your first task above, or start a project from a template"}
               </p>
             </div>
             {!isTimeFilter && (
-            <div className="grid grid-cols-2 gap-2">
-              {TASK_TEMPLATES.map((tpl) => (
-                <button
-                  key={tpl.label}
-                  type="button"
-                  onClick={() => applyTemplate(tpl)}
-                  className="text-left p-3 rounded-xl border border-slate-100 dark:border-[#1e3050] hover:border-purple-200 dark:hover:border-purple-700 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-all group"
-                >
-                  <div className="text-xl mb-1">{tpl.emoji}</div>
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-100 group-hover:text-purple-700 dark:group-hover:text-purple-200 transition-colors">{tpl.label}</div>
-                  <div className="text-sm text-slate-400 dark:text-slate-300">{tpl.tasks.length} tasks</div>
-                </button>
-              ))}
-            </div>
+              <ProjectTemplatePicker variant="cards" onSelect={addProject} />
             )}
           </div>
         )}

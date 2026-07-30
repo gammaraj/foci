@@ -31,6 +31,11 @@ export const HOME_FAQS: HomeFaq[] = [
       "Yes. Foci supports importing from Google Tasks (JSON), Todoist (CSV), Asana (CSV), Notion (CSV), and generic CSV. Go to Settings → Import & Export Tasks to upload and preview before importing.",
   },
   {
+    question: "Does Foci have project templates?",
+    answer:
+      "Yes. Project templates create a new project with preset tasks. Workflows include Dev Sprint, Trip Planning, and Weekly Review. Financial packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. Open ⋯ → Project templates, or pick one when creating a project.",
+  },
+  {
     question: "Does Foci have ambient music and brown noise?",
     answer:
       "Yes. Foci includes offline ambient sounds (rain, café, white noise, brown noise) via the Web Audio API, plus live lo-fi/synthwave, SoundCloud Indian classical, and curated Spotify playlists.",

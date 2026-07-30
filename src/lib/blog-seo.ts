@@ -646,7 +646,7 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
     {
       question: "Can I plan a trip while staying productive in Foci?",
       answer:
-        "Yes. Use Foci’s Trip Planning task template and timer for trip-prep sessions, then open Wandering Hermit for deeper itinerary planning when you are ready.",
+        "Yes. Use Foci’s Trip Planning project template (creates a project with preset prep tasks) and timer for trip-prep sessions, then open Wandering Hermit for deeper itinerary planning when you are ready.",
     },
   ],
   "productive-morning-routine": [

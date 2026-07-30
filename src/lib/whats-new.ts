@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-07-d";
+export const WHATS_NEW_VERSION = "2026-07-e";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -17,6 +17,11 @@ export interface FeatureTourStep {
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
+    title: "Project templates",
+    description:
+      "Start a new project with preset tasks — workflows like Dev Sprint and Trip Planning, plus financial packs including Financial Life Plan, Monthly Budget, and Debt Payoff. Open ⋯ → Project templates, or pick one when creating a project.",
+  },
+  {
     title: "Cards view (default)",
     description:
       "Projects open as cards with top tasks — switch to Buckets, List, or Calendar anytime.",
@@ -30,11 +35,6 @@ export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
     title: "Today's One Thing",
     description:
       "Pick the one task that would make today a success — keep it visible above your list.",
-  },
-  {
-    title: "Done progress",
-    description:
-      "See today / this week / this month completions in the Tasks header, plus a Done today reel.",
   },
   {
     title: "Import your tools",
@@ -67,9 +67,9 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
   },
   {
     target: "[data-tour='task-panel-menu']",
-    title: "Smart Plan & more",
+    title: "Project templates & more",
     description:
-      "Open ⋯ for Smart Plan scheduling, Settings & import, templates, What's new, and Take product tour.",
+      "Open ⋯ for Project templates (workflows + financial life planning with preset tasks), Smart Plan, Settings & import, What's new, and Take product tour.",
     position: "bottom",
   },
   {

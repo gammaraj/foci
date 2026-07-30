@@ -20,9 +20,9 @@ interface Step {
 const STEPS: Step[] = [
   {
     target: "#tasks-section",
-    title: "Your tasks",
+    title: "Your tasks & projects",
     description:
-      "Add tasks and organize them into projects. Cards view is the default — each project shows its top open work.",
+      "Add tasks and group them into projects. Start blank, or use a project template — workflows and financial life planning packs come with preset tasks.",
     position: "top",
   },
   {
@@ -62,9 +62,9 @@ const STEPS: Step[] = [
   },
   {
     target: "[data-tour='task-panel-menu']",
-    title: "Smart Plan & settings",
+    title: "Templates, Smart Plan & settings",
     description:
-      "Open ⋯ for Smart Plan (day-by-day scheduling), Settings & import (Todoist, Notion, and more), templates, and to replay this tour.",
+      "Open ⋯ for Project templates (Financial Life Plan, Dev Sprint, Trip Planning, and more), Smart Plan, Settings & import, and to replay this tour.",
     position: "bottom",
   },
 ];

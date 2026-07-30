@@ -399,12 +399,15 @@ export function TaskDetailPanel({
     )
   ) : null;
 
+  const oneThingPrimary =
+    "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700";
+
   const oneThingChip =
     isOneThing && onClearOneThing ? (
       <button
         type="button"
         onClick={onClearOneThing}
-        className={`${chip} border-blue-500/80 dark:border-blue-600/60 text-blue-900 dark:text-blue-200 bg-blue-50 dark:bg-blue-950/50`}
+        className={`${chip} ${oneThingPrimary}`}
         title="Clear as today’s One Thing"
         aria-pressed
       >
@@ -417,7 +420,7 @@ export function TaskDetailPanel({
       <button
         type="button"
         onClick={onSetOneThing}
-        className={`${chip} ${chipIdle} hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-800 dark:hover:text-blue-200`}
+        className={`${chip} ${oneThingPrimary}`}
         title="Set as today’s One Thing — the one outcome that would make today a success"
       >
         <svg className={`${iconSize} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

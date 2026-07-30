@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import type { TaskTemplate } from "@/lib/templates";
+import type { ProjectTemplate } from "@/lib/templates";
+import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePicker";
 import { startOnboardingTour } from "@/lib/onboarding";
 import { showWhatsNewBanner, startFeatureTour } from "@/lib/whats-new";
 
@@ -10,8 +11,8 @@ interface TaskPanelMenuProps {
   onOpenSettings: () => void;
   onToggleFullscreen?: () => void;
   isFullscreen?: boolean;
-  templates?: TaskTemplate[];
-  onSelectTemplate?: (template: TaskTemplate) => void;
+  templates?: ProjectTemplate[];
+  onSelectTemplate?: (template: ProjectTemplate) => void;
   onTogglePlan?: () => void;
   isPlanView?: boolean;
   onPrint?: () => void;
@@ -143,31 +144,18 @@ export default function TaskPanelMenu({
               <div className="my-1 border-t border-slate-100 dark:border-[#243350]" />
               <div className="px-3 py-1.5">
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                  Task templates
+                  Project templates
                 </span>
               </div>
               <div className="max-h-[280px] overflow-y-auto">
-                {templates.map((tpl) => (
-                  <button
-                    key={tpl.label}
-                    type="button"
-                    className="w-full text-left px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
-                    onClick={() => {
-                      onSelectTemplate(tpl);
-                      setOpen(false);
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-base flex-shrink-0">{tpl.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">{tpl.label}</div>
-                        <div className="text-xs text-slate-400 dark:text-slate-300 truncate">
-                          {tpl.tasks.length} tasks
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                <ProjectTemplatePicker
+                  variant="menu"
+                  templates={templates}
+                  onSelect={(tpl) => {
+                    onSelectTemplate!(tpl);
+                    setOpen(false);
+                  }}
+                />
               </div>
             </>
           )}
