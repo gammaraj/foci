@@ -347,7 +347,7 @@ export function FilantusCrossPromoBanner({
     if (FALLBACK_ADS.length === 0) return
     const initial = collapseToUniqueProducts(FALLBACK_ADS, true)
     setAds(initial)
-    setIndex(Math.floor(Math.random() * Math.max(initial.length, 1)))
+    setIndex(0)
 
     fetch(ADS_URL)
       .then((r) => r.json())
@@ -368,7 +368,7 @@ export function FilantusCrossPromoBanner({
         )
         if (pool.length > 0) {
           setAds(pool)
-          setIndex(Math.floor(Math.random() * pool.length))
+          setIndex(0) // keep BoostLogik last in the Next cycle
         }
       })
       .catch(() => {})
