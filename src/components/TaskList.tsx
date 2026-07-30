@@ -2542,8 +2542,8 @@ export default function TaskList({
         </div>
       )}
 
-      {/* The One Thing — daily critical task */}
-      {!isFocusMode && !projectManageOpen && viewMode !== "plan" && tasksReady && (
+      {/* The One Thing — full strip outside Cards (Cards folds it into the toolbar on desktop) */}
+      {!isFocusMode && !projectManageOpen && viewMode !== "plan" && viewMode !== "card" && tasksReady && (
         (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
           <OneThingCard
             status={oneThingResolved.status}
@@ -2570,6 +2570,39 @@ export default function TaskList({
                 : undefined
             }
           />
+        )
+      )}
+
+      {/* Cards mobile: keep One Thing as its own strip */}
+      {!isFocusMode && !projectManageOpen && viewMode === "card" && tasksReady && (
+        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
+          <div className="sm:hidden">
+            <OneThingCard
+              status={oneThingResolved.status}
+              task={oneThingResolved.task}
+              projectName={
+                oneThingResolved.task
+                  ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
+                  : undefined
+              }
+              hasOpenTasks={allOpenCount > 0}
+              isTimerRunning={isTimerRunning}
+              isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
+              onFocus={() => {
+                if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
+              }}
+              onComplete={() => {
+                if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
+              }}
+              onChange={changeOneThingPick}
+              onClear={clearOneThingPick}
+              onDismissEmpty={
+                oneThingResolved.status === "unset"
+                  ? () => setOneThingPromptDismissed(true)
+                  : undefined
+              }
+            />
+          </div>
         )
       )}
 
@@ -2689,37 +2722,84 @@ export default function TaskList({
         />
       )}
 
-      {/* Card toolbar — desktop only (mobile uses MobileTaskToolbar) */}
+      {/* Card toolbar — One Thing + manage/new on one desktop row */}
       {!isFocusMode && !projectManageOpen && viewMode === "card" && (
-        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
+        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2 flex-wrap items-center gap-x-3 gap-y-2 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
+          {tasksReady && (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) ? (
+            <div className="flex-1 min-w-0">
+              <OneThingCard
+                variant="inline"
+                status={oneThingResolved.status}
+                task={oneThingResolved.task}
+                projectName={
+                  oneThingResolved.task
+                    ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
+                    : undefined
+                }
+                hasOpenTasks={allOpenCount > 0}
+                isTimerRunning={isTimerRunning}
+                isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
+                onFocus={() => {
+                  if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
+                }}
+                onComplete={() => {
+                  if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
+                }}
+                onChange={changeOneThingPick}
+                onClear={clearOneThingPick}
+                onDismissEmpty={
+                  oneThingResolved.status === "unset"
+                    ? () => setOneThingPromptDismissed(true)
+                    : undefined
+                }
+              />
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={openProjectManage}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
+                data-tour="manage-projects"
+              >
+                <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+                </svg>
+                Manage projects
+              </button>
+              <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
+                Drag cards to reorder · pin favorites · templates when you add
+              </span>
+            </div>
+          )}
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
+            {tasksReady && (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
+              <button
+                type="button"
+                onClick={openProjectManage}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
+                data-tour="manage-projects"
+                title="Manage projects"
+              >
+                <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+                </svg>
+                <span className="hidden md:inline">Manage</span>
+              </button>
+            )}
             <button
               type="button"
-              onClick={openProjectManage}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
-              data-tour="manage-projects"
+              onClick={() => { setNewProjectName(""); openProjectManage(); }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-colors shrink-0"
+              title="Create a new project — blank or from a template"
+              data-tour="new-project"
             >
-              <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Manage projects
+              New project
             </button>
-            <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
-              Drag cards to reorder · pin favorites · templates when you add
-            </span>
           </div>
-          <button
-            type="button"
-            onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-colors shrink-0"
-            title="Create a new project — blank or from a template"
-            data-tour="new-project"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New project
-          </button>
         </div>
       )}
 
