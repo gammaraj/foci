@@ -546,7 +546,6 @@ function CardTaskRow({
             {onToggleTaskDetail && (
               <TaskEditButton
                 compact
-                revealOnHover
                 isOpen={isExpanded}
                 taskTitle={task.title}
                 onClick={(e) => {
