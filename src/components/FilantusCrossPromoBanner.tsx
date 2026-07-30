@@ -275,17 +275,44 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
   }
 ]
 
-const FALLBACK_ADS: FilantusAd[] = FALLBACK_CATALOG
-  .filter((a) => a.id !== CURRENT_SITE)
-  .map((a) => ({
-    id: a.id,
-    name: a.name,
-    url: a.url,
-    color: a.color,
-    headline: a.taglines?.[CURRENT_SITE]?.headline || '',
-    sub: a.taglines?.[CURRENT_SITE]?.sub || '',
-  }))
-  .filter((a) => a.headline)
+/** Group Foci hook variants into one product slot; BoostLogik always last. */
+function productKey(id: string): string {
+  if (id === 'foci' || id.startsWith('foci-')) return 'foci'
+  return id
+}
+
+function collapseToUniqueProducts(ads: FilantusAd[], randomize = false): FilantusAd[] {
+  const byKey = new Map<string, FilantusAd[]>()
+  for (const ad of ads) {
+    const key = productKey(ad.id)
+    const list = byKey.get(key) ?? []
+    list.push(ad)
+    byKey.set(key, list)
+  }
+  const keys = [...byKey.keys()].filter((k) => k !== 'boostlogik')
+  if (byKey.has('boostlogik')) keys.push('boostlogik')
+  return keys.map((key) => {
+    const variants = byKey.get(key)!
+    if (randomize && variants.length > 1) {
+      return variants[Math.floor(Math.random() * variants.length)]!
+    }
+    return variants.find((a) => a.id === key) ?? variants[0]!
+  })
+}
+
+const FALLBACK_ADS: FilantusAd[] = collapseToUniqueProducts(
+  FALLBACK_CATALOG
+    .filter((a) => productKey(a.id) !== CURRENT_SITE)
+    .map((a) => ({
+      id: a.id,
+      name: a.name,
+      url: a.url,
+      color: a.color,
+      headline: a.taglines?.[CURRENT_SITE]?.headline || '',
+      sub: a.taglines?.[CURRENT_SITE]?.sub || '',
+    }))
+    .filter((a) => a.headline)
+)
 
 function bannerHref(adId: string, fallbackUrl: string): string {
   try {
@@ -318,22 +345,27 @@ export function FilantusCrossPromoBanner({
 
   useEffect(() => {
     if (FALLBACK_ADS.length === 0) return
-    setIndex(Math.floor(Math.random() * FALLBACK_ADS.length))
+    const initial = collapseToUniqueProducts(FALLBACK_ADS, true)
+    setAds(initial)
+    setIndex(Math.floor(Math.random() * Math.max(initial.length, 1)))
 
     fetch(ADS_URL)
       .then((r) => r.json())
       .then((data: FilantusAdRaw[]) => {
-        const pool = data
-          .filter((a) => a.id !== CURRENT_SITE)
-          .map((a) => ({
-            id: a.id,
-            name: a.name,
-            url: a.url,
-            color: a.color,
-            headline: a.taglines?.[CURRENT_SITE]?.headline || '',
-            sub: a.taglines?.[CURRENT_SITE]?.sub || '',
-          }))
-          .filter((a) => a.headline)
+        const pool = collapseToUniqueProducts(
+          data
+            .filter((a) => productKey(a.id) !== CURRENT_SITE)
+            .map((a) => ({
+              id: a.id,
+              name: a.name,
+              url: a.url,
+              color: a.color,
+              headline: a.taglines?.[CURRENT_SITE]?.headline || '',
+              sub: a.taglines?.[CURRENT_SITE]?.sub || '',
+            }))
+            .filter((a) => a.headline),
+          true
+        )
         if (pool.length > 0) {
           setAds(pool)
           setIndex(Math.floor(Math.random() * pool.length))
