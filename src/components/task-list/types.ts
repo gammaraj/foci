@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type TaskViewMode = "bucket" | "list" | "calendar" | "card" | "plan";
 
 export interface TaskListProps {
@@ -12,4 +14,6 @@ export interface TaskListProps {
   onToggleFullscreen?: () => void;
   focusMode?: boolean;
   onOpenSettings?: () => void;
+  /** Music + timer strip rendered at the top of the Tasks card. */
+  focusStrip?: ReactNode;
 }

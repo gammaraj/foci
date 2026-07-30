@@ -24,7 +24,6 @@ import {
   summarizeDoneToday,
 } from "@/lib/done-today";
 import TaskPanelMenu from "@/components/TaskPanelMenu";
-import TaskPanelQuote from "@/components/TaskPanelQuote";
 import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
 
@@ -118,6 +117,7 @@ export default function TaskList({
   onToggleFullscreen,
   focusMode,
   onOpenSettings,
+  focusStrip,
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -2069,6 +2069,8 @@ export default function TaskList({
 
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
+      {!isFocusMode && focusStrip}
+
       <div className="print-only print-header px-3 sm:px-4 pt-3">
         <h1>Foci — Tasks ({VIEW_PRINT_LABELS[viewMode]})</h1>
         <p>
@@ -2089,7 +2091,7 @@ export default function TaskList({
       {/* Focus mode header */}
       {isFocusMode ? (
         <div
-          className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
+          className={`panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white ${focusStrip ? "" : "rounded-t-2xl"}`}
         >
           <div className="flex items-center justify-between min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -2116,11 +2118,11 @@ export default function TaskList({
       <>
       {/* Header — title row + controls row */}
       <div
-        className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
+        className={`panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white ${focusStrip ? "" : "rounded-t-2xl"}`}
       >
         {/* Title + quote + utilities — single compact row */}
         <div className="flex items-center justify-between min-w-0 gap-2">
-          <div className="min-w-0 shrink md:max-w-[46%]">
+          <div className="min-w-0 shrink">
             {projectManageOpen ? (
               <>
                 <button
@@ -2219,10 +2221,6 @@ export default function TaskList({
             </h2>
               </>
             )}
-          </div>
-
-          <div className="no-print hidden md:flex flex-1 min-w-0 items-center justify-center px-1 lg:px-3">
-            <TaskPanelQuote variant="navbar" />
           </div>
 
           {/* Utilities — keep out of the filter/view cluster */}

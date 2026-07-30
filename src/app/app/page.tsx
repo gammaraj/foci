@@ -266,66 +266,6 @@ function AppPageContent() {
         onSaveSettings={timer.saveSettings}
         onTasksImported={() => setTaskListKey((k) => k + 1)}
       />
-      {!focusMode && (
-        <div id="focus-dock" className="no-print">
-          <DailyQuoteBanner
-            timerPanelExpanded={!timerCollapsed}
-            onCollapseAll={() => setTimerCollapsed(true)}
-            timerToolbar={
-              <FocusDockToolbar
-                embedded
-                expanded={!timerCollapsed}
-                onToggleExpanded={() => setTimerCollapsed((c) => !c)}
-                displayTime={mobileDisplayTime}
-                isRunning={isRunning}
-                isBreak={timer.isBreakMode}
-                activeTaskTitle={activeTaskTitle}
-                onStartPause={handleStartPause}
-                onReset={handleReset}
-                emphasizeStart={readyToFocus}
-                remainingTime={timer.remainingTime}
-                workDurationMs={timer.settings.workDuration}
-                sessions={{
-                  count: timer.dailyGoalData.sessionCount,
-                  goal: timer.settings.dailyGoal,
-                  streak: timer.dailyGoalData.streak,
-                }}
-                onShowShortcuts={() => setShowShortcuts(true)}
-              />
-            }
-            musicToolbar={<AmbientSounds inline embedded />}
-            timerPanel={
-              <FocusDockPanel
-                compactStrip
-                expanded={!timerCollapsed}
-                onToggleExpanded={() => setTimerCollapsed(true)}
-                displayTime={timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}
-                isRunning={isRunning}
-                isBreak={timer.isBreakMode}
-                readyToFocus={readyToFocus}
-                activeTaskId={activeTaskId}
-                activeTaskTitle={activeTaskTitle}
-                onClearTask={() => setActiveTaskId(null)}
-                onStartPause={handleStartPause}
-                onReset={handleReset}
-                onToggleFocusMode={() => setFocusMode((f) => !f)}
-                onShowShortcuts={() => setShowShortcuts(true)}
-                focusMode={focusMode}
-                remainingTime={timer.remainingTime}
-                workDuration={timer.settings.workDuration}
-                breakDuration={timer.settings.breakDuration}
-                label={timer.label}
-                statusText={timer.statusText}
-                timerStatus={timer.status}
-                workDurationMs={timer.settings.workDuration}
-                onSelectWorkPreset={handleSelectWorkPreset}
-                lastQuote={timer.lastQuote}
-                emphasizeStart={readyToFocus}
-              />
-            }
-          />
-        </div>
-      )}
       <div className="no-print">
         <AppMessageQueue user={user} focusMode={focusMode} />
       </div>
@@ -365,7 +305,7 @@ function AppPageContent() {
           </div>
         )}
 
-        {/* Tasks — full width */}
+        {/* Tasks — full width; music + timer live in the card header */}
         <div id="tasks-section" className="w-full">
           <Suspense fallback={null}>
             <TaskList
@@ -381,6 +321,67 @@ function AppPageContent() {
               onToggleFullscreen={() => setTasksFullscreen(f => !f)}
               focusMode={focusMode}
               onOpenSettings={() => window.dispatchEvent(new CustomEvent("foci-open-settings"))}
+              focusStrip={
+                focusMode ? undefined : (
+                  <DailyQuoteBanner
+                    variant="embedded"
+                    timerPanelExpanded={!timerCollapsed}
+                    onCollapseAll={() => setTimerCollapsed(true)}
+                    timerToolbar={
+                      <FocusDockToolbar
+                        embedded
+                        expanded={!timerCollapsed}
+                        onToggleExpanded={() => setTimerCollapsed((c) => !c)}
+                        displayTime={mobileDisplayTime}
+                        isRunning={isRunning}
+                        isBreak={timer.isBreakMode}
+                        activeTaskTitle={activeTaskTitle}
+                        onStartPause={handleStartPause}
+                        onReset={handleReset}
+                        emphasizeStart={readyToFocus}
+                        remainingTime={timer.remainingTime}
+                        workDurationMs={timer.settings.workDuration}
+                        sessions={{
+                          count: timer.dailyGoalData.sessionCount,
+                          goal: timer.settings.dailyGoal,
+                          streak: timer.dailyGoalData.streak,
+                        }}
+                        onShowShortcuts={() => setShowShortcuts(true)}
+                      />
+                    }
+                    musicToolbar={<AmbientSounds inline embedded />}
+                    timerPanel={
+                      <FocusDockPanel
+                        compactStrip
+                        expanded={!timerCollapsed}
+                        onToggleExpanded={() => setTimerCollapsed(true)}
+                        displayTime={timer.status === "break" ? formatTime(timer.remainingTime) : displayTime}
+                        isRunning={isRunning}
+                        isBreak={timer.isBreakMode}
+                        readyToFocus={readyToFocus}
+                        activeTaskId={activeTaskId}
+                        activeTaskTitle={activeTaskTitle}
+                        onClearTask={() => setActiveTaskId(null)}
+                        onStartPause={handleStartPause}
+                        onReset={handleReset}
+                        onToggleFocusMode={() => setFocusMode((f) => !f)}
+                        onShowShortcuts={() => setShowShortcuts(true)}
+                        focusMode={focusMode}
+                        remainingTime={timer.remainingTime}
+                        workDuration={timer.settings.workDuration}
+                        breakDuration={timer.settings.breakDuration}
+                        label={timer.label}
+                        statusText={timer.statusText}
+                        timerStatus={timer.status}
+                        workDurationMs={timer.settings.workDuration}
+                        onSelectWorkPreset={handleSelectWorkPreset}
+                        lastQuote={timer.lastQuote}
+                        emphasizeStart={readyToFocus}
+                      />
+                    }
+                  />
+                )
+              }
             />
           </Suspense>
         </div>

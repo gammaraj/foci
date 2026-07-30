@@ -174,7 +174,7 @@ export default function LandingPage() {
             {FOCI_HERO_HEADLINE}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Organize projects, plan the day, and finish what matters — in one calm window. Create a free account to get started.
+            Organize projects, plan the day, and finish what matters — in one calm window. Try free in the browser, or create an account to sync across devices.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -185,10 +185,10 @@ export default function LandingPage() {
               Create free account
             </Link>
             <Link
-              href="/login"
+              href="/app"
               className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
             >
-              Sign in →
+              Try without signing in →
             </Link>
           </div>
         </section>
@@ -395,10 +395,10 @@ export default function LandingPage() {
                 Create free account
               </Link>
               <Link
-                href="/login"
+                href="/app"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-sm hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
-                Sign in →
+                Try without signing in →
               </Link>
             </div>
           </div>
@@ -459,7 +459,7 @@ export default function LandingPage() {
             Ready to focus?
           </h2>
           <p className="text-slate-500 dark:text-slate-400 mb-6">
-            Create an account and add your first task.
+            Try the app free, or create an account to sync your tasks everywhere.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
@@ -469,10 +469,10 @@ export default function LandingPage() {
               Create free account
             </Link>
             <Link
-              href="/login"
+              href="/app"
               className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
             >
-              Sign in →
+              Try without signing in →
             </Link>
           </div>
         </section>

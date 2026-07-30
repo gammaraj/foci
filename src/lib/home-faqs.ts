@@ -18,7 +18,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Do I need an account to use Foci?",
     answer:
-      "Yes. A free account is required so your tasks, projects, Smart Plan, and streaks stay with you across devices. Create one at usefoci.com/login — it takes under a minute.",
+      "No — you can open usefoci.com/app and try Foci without signing in. A free account is optional and syncs tasks, projects, Smart Plan, and streaks across devices.",
   },
   {
     question: "What is Smart Plan?",

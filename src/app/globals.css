@@ -309,6 +309,22 @@ select {
   border-color: rgba(58, 80, 112, 0.9);
 }
 
+/* Embedded focus bar inside Tasks card — quieter zones so it reads as one panel */
+.status-strip-zone--embedded-side {
+  background: transparent;
+}
+.dark .status-strip-zone--embedded-side {
+  background: transparent;
+}
+.status-strip-zone--embedded-focus {
+  background: transparent;
+  box-shadow: none;
+}
+.dark .status-strip-zone--embedded-focus {
+  background: transparent;
+  box-shadow: none;
+}
+
 /* Toolbar strip — white content surface on the muted tasks shell */
 .panel-header-calm {
   background: var(--panel-header-bg);
