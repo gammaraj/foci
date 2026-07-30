@@ -154,7 +154,7 @@ export function MobileTaskToolbar({
           <button
             type="button"
             onClick={onNewProject}
-            className="shrink-0 inline-flex items-center justify-center gap-1 px-2 py-1.5 min-h-[2.25rem] rounded-md border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            className="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[2.25rem] rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors"
             data-tour="new-project"
             title="New project"
             aria-label="New project"

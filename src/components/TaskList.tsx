@@ -95,7 +95,7 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
 const FILTER_TAB_ACTIVE =
   "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
 const FILTER_TAB_INACTIVE =
-  "text-slate-700 dark:text-white/85 hover:text-blue-800 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10";
+  "text-slate-600 dark:text-white/85 hover:text-blue-800 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
@@ -2577,12 +2577,12 @@ export default function TaskList({
 
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
-        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <button
               type="button"
               onClick={openProjectManage}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
               data-tour="manage-projects"
             >
               <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -2626,7 +2626,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={() => { setNewProjectName(""); openProjectManage(); }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-200 rounded-lg border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 shadow-sm transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-colors shrink-0"
               title="Create a new project bucket"
               data-tour="new-project"
             >
@@ -2693,12 +2693,12 @@ export default function TaskList({
 
       {/* Card toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!isFocusMode && !projectManageOpen && viewMode === "card" && (
-        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/90 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <button
               type="button"
               onClick={openProjectManage}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100/90 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
               data-tour="manage-projects"
             >
               <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -2713,7 +2713,7 @@ export default function TaskList({
           <button
             type="button"
             onClick={() => { setNewProjectName(""); openProjectManage(); }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-200 rounded-lg border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 shadow-sm transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-colors shrink-0"
             title="Create a new project — blank or from a template"
             data-tour="new-project"
           >

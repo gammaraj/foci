@@ -86,14 +86,14 @@ export function OneThingCard({
     return (
       <div
         data-tour="one-thing"
-        className={`${strip} border-emerald-400 dark:border-emerald-500/70 bg-emerald-100 dark:bg-emerald-500/15`}
+        className={`${strip} border-slate-200 dark:border-emerald-500/40 bg-slate-50 dark:bg-emerald-500/10 border-l-[3px] border-l-emerald-500 dark:border-l-emerald-400`}
       >
         <div className="flex items-center justify-center gap-2.5 min-w-0 flex-1">
-          <span className="inline-flex items-center shrink-0 rounded-md bg-emerald-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+          <span className="inline-flex items-center shrink-0 rounded-md bg-slate-700 dark:bg-emerald-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
             Done
           </span>
           <p
-            className="min-w-0 max-w-md truncate text-sm font-medium text-emerald-950 dark:text-emerald-50 line-through decoration-emerald-600/50"
+            className="min-w-0 max-w-md truncate text-sm font-medium text-slate-600 dark:text-emerald-50 line-through decoration-slate-400/70 dark:decoration-emerald-600/50"
             title={task.title}
           >
             {task.title}
@@ -102,7 +102,7 @@ export function OneThingCard({
         <button
           type="button"
           onClick={onClear}
-          className="shrink-0 text-xs font-semibold text-emerald-800 dark:text-emerald-200 hover:underline px-1.5 py-0.5"
+          className="shrink-0 text-xs font-semibold text-slate-500 dark:text-emerald-200 hover:text-slate-800 dark:hover:text-emerald-50 hover:underline px-1.5 py-0.5"
         >
           Clear
         </button>
