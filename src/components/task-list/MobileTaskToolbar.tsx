@@ -28,6 +28,8 @@ interface MobileTaskToolbarProps {
   viewMode: TaskViewMode;
   onSelectViewMode: (mode: TaskViewMode) => void;
   onManageProjects: () => void;
+  /** Opens manage projects ready to create (blank or template). */
+  onNewProject?: () => void;
   doneTodayCount?: number;
   doneWeekCount?: number;
   doneMonthCount?: number;
@@ -72,6 +74,7 @@ export function MobileTaskToolbar({
   viewMode,
   onSelectViewMode,
   onManageProjects,
+  onNewProject,
   doneTodayCount = 0,
   doneWeekCount = 0,
   doneMonthCount = 0,
@@ -145,6 +148,22 @@ export function MobileTaskToolbar({
               })}
             </select>
           </>
+        )}
+
+        {onNewProject && (
+          <button
+            type="button"
+            onClick={onNewProject}
+            className="shrink-0 inline-flex items-center justify-center gap-1 px-2 py-1.5 min-h-[2.25rem] rounded-md border border-blue-200/90 dark:border-blue-700/60 bg-blue-50/90 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            data-tour="new-project"
+            title="New project"
+            aria-label="New project"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="text-xs font-semibold hidden min-[380px]:inline">New</span>
+          </button>
         )}
 
         <button
