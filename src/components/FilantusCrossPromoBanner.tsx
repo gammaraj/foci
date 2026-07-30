@@ -355,50 +355,72 @@ export function FilantusCrossPromoBanner({
   if (!ad || hidden || adFreeRoute || ads.length === 0) return null
 
   const href = bannerHref(ad.id, ad.url)
+  const showNext = ads.length > 1
 
   return (
-    <div id="filantus-banner" className={`hidden lg:block shrink-0 w-[320px] ${className}`.trim()}>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => {
-          if (typeof window !== 'undefined') {
-            const gtag = (window as { gtag?: (...args: unknown[]) => void }).gtag
-            gtag?.('event', 'filantus_product_click', {
-              event_category: 'cross_promotion',
-              event_label: `${ad.id}_${REF}`,
-              product: ad.id,
-              source: REF,
-            })
-          }
-        }}
-        className="group flex items-center gap-1.5 w-[320px] h-11 box-border pl-2.5 pr-1.5 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
-        style={{
-          textDecoration: 'none',
-          borderColor: `${HOST_THEME_COLOR}99`,
-        }}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        title={`${ad.headline} — ${ad.sub}`}
+    <div
+      id="filantus-banner"
+      className={`hidden lg:block shrink-0 ${showNext ? 'w-[344px]' : 'w-[320px]'} ${className}`.trim()}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div
+        className="flex items-center h-11 box-border pl-2.5 pr-1 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
+        style={{ borderColor: `${HOST_THEME_COLOR}99` }}
       >
-        <span className="flex-1 min-w-0">
-          <span
-            className="block text-[13px] font-bold tracking-tight truncate leading-tight text-slate-900 dark:text-white"
-          >
-            {ad.name}
-          </span>
-          <span className="block text-[11px] font-medium truncate leading-tight text-slate-700 dark:text-slate-300">
-            {ad.headline}
-          </span>
-        </span>
-        <span
-          className="shrink-0 text-[11px] font-bold px-2 py-1 rounded-full whitespace-nowrap bg-transparent"
-          style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              const gtag = (window as { gtag?: (...args: unknown[]) => void }).gtag
+              gtag?.('event', 'filantus_product_click', {
+                event_category: 'cross_promotion',
+                event_label: `${ad.id}_${REF}`,
+                product: ad.id,
+                source: REF,
+              })
+            }
+          }}
+          className="group flex flex-1 min-w-0 items-center gap-1.5 h-full pr-1"
+          style={{ textDecoration: 'none' }}
+          title={`${ad.headline} — ${ad.sub}`}
         >
-          Try →
-        </span>
-      </a>
+          <span className="flex-1 min-w-0">
+            <span className="block text-[13px] font-bold tracking-tight truncate leading-tight text-slate-900 dark:text-white">
+              {ad.name}
+            </span>
+            <span className="block text-[11px] font-medium truncate leading-tight text-slate-700 dark:text-slate-300">
+              {ad.headline}
+            </span>
+          </span>
+          <span
+            className="shrink-0 text-[11px] font-bold px-2 py-1 rounded-full whitespace-nowrap bg-transparent"
+            style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
+          >
+            Try →
+          </span>
+        </a>
+        {showNext ? (
+          <button
+            type="button"
+            aria-label="Next promo"
+            className="shrink-0 w-7 h-7 mr-0.5 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+            onClick={() => setIndex((i) => (i + 1) % ads.length)}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M9 5l7 7-7 7"
+                stroke="currentColor"
+                strokeWidth="2.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        ) : null}
+      </div>
     </div>
   )
 }
