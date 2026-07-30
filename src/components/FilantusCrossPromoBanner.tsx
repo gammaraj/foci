@@ -154,36 +154,6 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     }
   },
   {
-    "id": "wanderinghermit",
-    "name": "WanderingHermit",
-    "url": "https://wanderinghermit.com",
-    "color": "#3B6D11",
-    "iconBg": "#EAF3DE",
-    "iconText": "W",
-    "taglines": {
-      "foci": {
-        "headline": "You earned that focus session — plan a trip",
-        "sub": "WanderingHermit builds your perfect itinerary, free"
-      },
-      "brakto": {
-        "headline": "Host international tournaments? Plan the trip too",
-        "sub": "WanderingHermit — AI travel planning, free to use"
-      },
-      "certstud": {
-        "headline": "Pass your cert? Celebrate with a trip",
-        "sub": "WanderingHermit plans it — 100+ destinations"
-      },
-      "collegedecider": {
-        "headline": "Campus visits made easy with WanderingHermit",
-        "sub": "AI-powered travel planning for your college tour"
-      },
-      "boostlogik": {
-        "headline": "Travel clients? WanderingHermit has you covered",
-        "sub": "AI itineraries for 100+ destinations, free"
-      }
-    }
-  },
-  {
     "id": "boostlogik",
     "name": "BoostLogik",
     "url": "https://boostlogik.com",
