@@ -72,7 +72,12 @@ function formatNameList(names: string[], limit = 3): string {
 function resolveProjectIds(
   tasks: ParsedTask[],
   existing: Project[],
-): { projectIdFor: (projectName?: string) => string; projects: Project[]; createdCount: number } {
+): {
+  projectIdFor: (projectName?: string) => string;
+  projects: Project[];
+  createdCount: number;
+  createdIds: string[];
+} {
   const projects = existing.some((p) => p.id === DEFAULT_PROJECT_ID)
     ? [...existing]
     : [DEFAULT_PROJECT, ...existing];
@@ -84,6 +89,7 @@ function resolveProjectIds(
   nameToId.set("general", DEFAULT_PROJECT_ID);
 
   let createdCount = 0;
+  const createdIds: string[] = [];
 
   const ensureProject = (raw?: string): string => {
     const name = raw?.trim().slice(0, MAX_PROJECT_NAME);
@@ -97,16 +103,17 @@ function resolveProjectIds(
     const nextColor =
       PROJECT_COLORS.find((c) => !usedColors.includes(c)) ??
       PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
-    const maxOrder = Math.max(0, ...projects.map((p) => p.order ?? 0));
     const project: Project = {
       id: uuid(),
       name,
       color: nextColor,
-      order: maxOrder + 1,
+      // Temporary — reassigned below so new imports sort first.
+      order: 0,
       createdAt: Date.now() + createdCount,
     };
     projects.push(project);
     nameToId.set(key, project.id);
+    createdIds.push(project.id);
     createdCount += 1;
     return project.id;
   };
@@ -120,7 +127,24 @@ function resolveProjectIds(
     projectIdFor: (projectName?: string) => ensureProject(projectName),
     projects,
     createdCount,
+    createdIds,
   };
+}
+
+/** Put the given projects at the front of tab/card order (before other unpinned). */
+function moveProjectsToFront(projects: Project[], frontIds: string[]): Project[] {
+  const unique = [...new Set(frontIds.filter((id) => id && id !== DEFAULT_PROJECT_ID))];
+  if (unique.length === 0) return projects;
+
+  const restOrders = projects
+    .filter((p) => !p.archived && !unique.includes(p.id))
+    .map((p) => p.order ?? 0);
+  const restMin = restOrders.length > 0 ? Math.min(0, ...restOrders) : 0;
+  const orderById = new Map(unique.map((id, i) => [id, restMin - unique.length + i]));
+
+  return projects.map((p) =>
+    orderById.has(p.id) ? { ...p, order: orderById.get(p.id)! } : p,
+  );
 }
 
 function toFociTasks(
@@ -250,17 +274,18 @@ export default function TaskImportExport({
   >({ step: "idle" });
   const [importCompleted, setImportCompleted] = useState(true);
   const [exporting, setExporting] = useState(false);
-  const defaultExistingId =
-    initialProjectId &&
-    (projectsProp ?? []).some((p) => p.id === initialProjectId && !p.archived)
-      ? initialProjectId
-      : (projectsProp ?? []).find((p) => !p.archived)?.id ?? DEFAULT_PROJECT_ID;
   const [destination, setDestination] = useState<ImportDestination>({ mode: "file" });
   const [newProjectName, setNewProjectName] = useState("");
   /** Projects used for new-vs-existing preview (props when provided, else loaded). */
   const [loadedProjects, setLoadedProjects] = useState<Project[]>([]);
 
   const availableProjects = (projectsProp ?? loadedProjects).filter((p) => !p.archived);
+  const defaultExistingId =
+    initialProjectId && availableProjects.some((p) => p.id === initialProjectId)
+      ? initialProjectId
+      : availableProjects.find((p) => p.id !== DEFAULT_PROJECT_ID)?.id ??
+        availableProjects[0]?.id ??
+        DEFAULT_PROJECT_ID;
 
   useEffect(() => {
     if (projectsProp) return;
@@ -338,6 +363,7 @@ export default function TaskImportExport({
       let projectIdFor: (projectName?: string) => string;
       let projects = existingProjects;
       let createdCount = 0;
+      let createdIds: string[] = [];
       let focusProjectId: string | undefined;
 
       if (destination.mode === "existing") {
@@ -351,6 +377,7 @@ export default function TaskImportExport({
         );
         projects = resolved.projects;
         createdCount = resolved.createdCount;
+        createdIds = resolved.createdIds;
         const targetId = resolved.projectIdFor(newProjectName.trim());
         projectIdFor = () => targetId;
         focusProjectId = targetId;
@@ -358,12 +385,23 @@ export default function TaskImportExport({
         const resolved = resolveProjectIds(tasksToImport, existingProjects);
         projects = resolved.projects;
         createdCount = resolved.createdCount;
+        createdIds = resolved.createdIds;
         projectIdFor = resolved.projectIdFor;
         const firstNamed = tasksToImport.find((t) => t.projectName?.trim())?.projectName;
         focusProjectId = firstNamed
           ? projectIdFor(firstNamed)
           : projectIdFor(undefined);
       }
+
+      // Newly imported / target project(s) appear first in Cards, Buckets, and tabs.
+      const frontIds =
+        createdIds.length > 0
+          ? createdIds
+          : focusProjectId
+            ? [focusProjectId]
+            : [];
+      const orderedProjects = moveProjectsToFront(projects, frontIds);
+      const shouldSaveProjects = createdCount > 0 || frontIds.some((id) => id !== DEFAULT_PROJECT_ID);
 
       const existing = await loadTasks();
       const orderBase =
@@ -374,16 +412,16 @@ export default function TaskImportExport({
             .map((t) => t.order as number),
         ) + 1;
       const newTasks = toFociTasks(tasksToImport, projectIdFor, orderBase);
-      if (createdCount > 0) {
-        await saveProjects(projects);
+      if (shouldSaveProjects) {
+        await saveProjects(orderedProjects);
       }
       const mergedTasks = [...existing, ...newTasks];
       await saveTasks(mergedTasks);
       setImportState({ step: "done", count: newTasks.length, projectsCreated: createdCount });
-      if (!projectsProp) setLoadedProjects(projects);
+      if (!projectsProp) setLoadedProjects(orderedProjects);
       onTasksImported?.({
         tasks: mergedTasks,
-        projects,
+        projects: orderedProjects,
         focusProjectId,
       });
     } catch {

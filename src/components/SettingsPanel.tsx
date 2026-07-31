@@ -630,7 +630,10 @@ export default function SettingsPanel({
                     Back up your tasks or bring them in from another tool.
                   </p>
                   <div className="rounded-lg border border-slate-200 dark:border-[#243350] p-3">
-                    <TaskImportExport onTasksImported={onTasksImported} />
+                    <TaskImportExport
+                      showDestinationPicker
+                      onTasksImported={onTasksImported}
+                    />
                   </div>
                 </section>
               )}
