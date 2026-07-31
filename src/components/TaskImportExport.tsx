@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Task,
   Project,
@@ -33,6 +33,39 @@ function uniqueProjectNames(tasks: ParsedTask[]): string[] {
     names.push(name);
   }
   return names;
+}
+
+/** Split file project names into ones that already exist vs ones import will create. */
+function classifyImportProjects(
+  names: string[],
+  existing: Project[],
+): { matchExisting: { fileName: string; existingName: string }[]; createNew: string[] } {
+  const byKey = new Map<string, string>();
+  for (const p of existing) {
+    if (p.archived) continue;
+    byKey.set(p.name.trim().toLowerCase(), p.name);
+  }
+  byKey.set("general", "General");
+
+  const matchExisting: { fileName: string; existingName: string }[] = [];
+  const createNew: string[] = [];
+  for (const name of names) {
+    const key = name.toLowerCase();
+    const existingName = byKey.get(key);
+    if (existingName) {
+      matchExisting.push({ fileName: name, existingName });
+    } else {
+      createNew.push(name);
+    }
+  }
+  return { matchExisting, createNew };
+}
+
+function formatNameList(names: string[], limit = 3): string {
+  if (names.length === 0) return "";
+  const shown = names.slice(0, limit);
+  const extra = names.length - shown.length;
+  return shown.map((n) => `“${n}”`).join(", ") + (extra > 0 ? `, +${extra} more` : "");
 }
 
 /** Match existing projects by name (case-insensitive); create any that are missing. */
@@ -224,8 +257,25 @@ export default function TaskImportExport({
       : (projectsProp ?? []).find((p) => !p.archived)?.id ?? DEFAULT_PROJECT_ID;
   const [destination, setDestination] = useState<ImportDestination>({ mode: "file" });
   const [newProjectName, setNewProjectName] = useState("");
+  /** Projects used for new-vs-existing preview (props when provided, else loaded). */
+  const [loadedProjects, setLoadedProjects] = useState<Project[]>([]);
 
-  const availableProjects = (projectsProp ?? []).filter((p) => !p.archived);
+  const availableProjects = (projectsProp ?? loadedProjects).filter((p) => !p.archived);
+
+  useEffect(() => {
+    if (projectsProp) return;
+    let cancelled = false;
+    loadProjects()
+      .then((projects) => {
+        if (!cancelled) setLoadedProjects(projects);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadedProjects([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectsProp]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -330,6 +380,7 @@ export default function TaskImportExport({
       const mergedTasks = [...existing, ...newTasks];
       await saveTasks(mergedTasks);
       setImportState({ step: "done", count: newTasks.length, projectsCreated: createdCount });
+      if (!projectsProp) setLoadedProjects(projects);
       onTasksImported?.({
         tasks: mergedTasks,
         projects,
@@ -362,20 +413,45 @@ export default function TaskImportExport({
   const previewProjects =
     importState.step === "preview" ? uniqueProjectNames(importState.tasks) : [];
 
+  const projectPlan = useMemo(
+    () => classifyImportProjects(previewProjects, availableProjects),
+    [previewProjects, availableProjects],
+  );
+
   const destinationSummary = (() => {
     if (destination.mode === "existing") {
       const name =
         availableProjects.find((p) => p.id === destination.projectId)?.name ?? "selected project";
-      return `into ${name}`;
+      return `into existing project “${name}”`;
     }
     if (destination.mode === "new") {
       const name = newProjectName.trim();
-      return name ? `into new project “${name}”` : "into a new project";
+      if (!name) return "into a new project (enter a name)";
+      const match = availableProjects.find((p) => p.name.trim().toLowerCase() === name.toLowerCase());
+      return match
+        ? `into existing project “${match.name}” (name already used)`
+        : `into new project “${name}”`;
     }
-    if (previewProjects.length > 0) {
-      return `${previewProjects.length} project${previewProjects.length !== 1 ? "s" : ""} from file (${previewProjects.slice(0, 3).join(", ")}${previewProjects.length > 3 ? `, +${previewProjects.length - 3} more` : ""})`;
+    if (previewProjects.length === 0) {
+      return "into General (no Project column)";
     }
-    return "into General (no Project column)";
+    const parts: string[] = [];
+    if (projectPlan.createNew.length > 0) {
+      parts.push(
+        projectPlan.createNew.length === 1
+          ? `will create new project ${formatNameList(projectPlan.createNew)}`
+          : `will create ${projectPlan.createNew.length} new projects (${formatNameList(projectPlan.createNew)})`,
+      );
+    }
+    if (projectPlan.matchExisting.length > 0) {
+      const names = projectPlan.matchExisting.map((m) => m.existingName);
+      parts.push(
+        names.length === 1
+          ? `will add to existing project ${formatNameList(names)}`
+          : `will add to ${names.length} existing projects (${formatNameList(names)})`,
+      );
+    }
+    return parts.join(" · ");
   })();
 
   const filteredCount =
@@ -545,8 +621,36 @@ export default function TaskImportExport({
                   ({importState.tasks.filter((t) => t.completed).length} completed)
                 </span>
               )}
-              <span className="text-slate-500 dark:text-slate-400"> · {destinationSummary}</span>
             </p>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{destinationSummary}</p>
+            {destination.mode === "file" &&
+              (projectPlan.createNew.length > 0 || projectPlan.matchExisting.length > 0) && (
+              <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1 rounded-md bg-white/60 dark:bg-[#0f172a]/40 px-2.5 py-2 border border-blue-100 dark:border-blue-900/40">
+                {projectPlan.createNew.map((name) => (
+                  <li key={`new:${name}`} className="flex items-start gap-1.5">
+                    <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+                      New
+                    </span>
+                    <span>
+                      Create project <strong className="font-medium text-slate-800 dark:text-slate-100">{name}</strong>
+                    </span>
+                  </li>
+                ))}
+                {projectPlan.matchExisting.map(({ fileName, existingName }) => (
+                  <li key={`ex:${fileName}`} className="flex items-start gap-1.5">
+                    <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300">
+                      Existing
+                    </span>
+                    <span>
+                      Add to <strong className="font-medium text-slate-800 dark:text-slate-100">{existingName}</strong>
+                      {existingName.toLowerCase() !== fileName.toLowerCase() && (
+                        <span className="text-slate-400"> (from “{fileName}”)</span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
 
             <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-0.5 max-h-28 overflow-y-auto">
               {importState.tasks.slice(0, 5).map((t, i) => (
