@@ -40,9 +40,46 @@ task,Real task`);
   it("detectAndParse recognizes Foci JSON", () => {
     const json = JSON.stringify({
       tasks: [{ id: "1", title: "Backup task", projectId: "general", sessions: 0, timeSpent: 0, completed: false }],
+      projects: [{ id: "p1", name: "Trip", createdAt: 1 }],
     });
     const { format, tasks } = detectAndParse(json, "foci.json");
     expect(format).toBe("foci");
     expect(tasks[0].title).toBe("Backup task");
+  });
+
+  it("detectAndParse maps Foci JSON projectId to projectName", () => {
+    const json = JSON.stringify({
+      tasks: [
+        {
+          id: "1",
+          title: "Pack",
+          projectId: "p1",
+          sessions: 0,
+          timeSpent: 0,
+          completed: false,
+        },
+      ],
+      projects: [{ id: "p1", name: "India Trip", createdAt: 1 }],
+    });
+    const { tasks } = detectAndParse(json, "foci.json");
+    expect(tasks[0].projectName).toBe("India Trip");
+  });
+
+  it("detectAndParse reads Project column on generic CSV", () => {
+    const csv = `Title,Project
+Pack shirts,India Trip
+Buy tickets,India Trip
+Inbox note,`;
+    const { tasks } = detectAndParse(csv, "packing.csv");
+    expect(tasks).toHaveLength(3);
+    expect(tasks[0].projectName).toBe("India Trip");
+    expect(tasks[2].projectName).toBeUndefined();
+  });
+
+  it("detectAndParse ignores Project ID column when naming projects", () => {
+    const csv = `Title,Project ID
+Old export,__general__`;
+    const { tasks } = detectAndParse(csv, "old.csv");
+    expect(tasks[0].projectName).toBeUndefined();
   });
 });

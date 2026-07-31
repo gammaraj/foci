@@ -1,8 +1,15 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { Task, DEFAULT_PROJECT_ID } from "@/lib/types";
-import { loadTasks, saveTasks } from "@/lib/storage";
+import {
+  Task,
+  Project,
+  DEFAULT_PROJECT_ID,
+  DEFAULT_PROJECT,
+  PROJECT_COLORS,
+} from "@/lib/types";
+import { loadTasks, saveTasks, loadProjects, saveProjects } from "@/lib/storage";
+import { MAX_PROJECT_NAME } from "@/components/task-list/utils";
 import {
   detectAndParse,
   FORMAT_LABELS,
@@ -14,9 +21,79 @@ function uuid(): string {
   return crypto.randomUUID();
 }
 
-// ── Convert to Foci tasks ───────────────────────────────
+function uniqueProjectNames(tasks: ParsedTask[]): string[] {
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const t of tasks) {
+    const name = t.projectName?.trim();
+    if (!name) continue;
+    const key = name.toLowerCase();
+    if (key === "general" || seen.has(key)) continue;
+    seen.add(key);
+    names.push(name);
+  }
+  return names;
+}
 
-function toFociTasks(parsed: ParsedTask[], projectId: string): Task[] {
+/** Match existing projects by name (case-insensitive); create any that are missing. */
+function resolveProjectIds(
+  tasks: ParsedTask[],
+  existing: Project[],
+): { projectIdFor: (projectName?: string) => string; projects: Project[]; createdCount: number } {
+  const projects = existing.some((p) => p.id === DEFAULT_PROJECT_ID)
+    ? [...existing]
+    : [DEFAULT_PROJECT, ...existing];
+
+  const nameToId = new Map<string, string>();
+  for (const p of projects) {
+    nameToId.set(p.name.trim().toLowerCase(), p.id);
+  }
+  nameToId.set("general", DEFAULT_PROJECT_ID);
+
+  let createdCount = 0;
+
+  const ensureProject = (raw?: string): string => {
+    const name = raw?.trim().slice(0, MAX_PROJECT_NAME);
+    if (!name) return DEFAULT_PROJECT_ID;
+    const key = name.toLowerCase();
+    if (key === "general") return DEFAULT_PROJECT_ID;
+    const existingId = nameToId.get(key);
+    if (existingId) return existingId;
+
+    const usedColors = projects.map((p) => p.color).filter(Boolean) as string[];
+    const nextColor =
+      PROJECT_COLORS.find((c) => !usedColors.includes(c)) ??
+      PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
+    const maxOrder = Math.max(0, ...projects.map((p) => p.order ?? 0));
+    const project: Project = {
+      id: uuid(),
+      name,
+      color: nextColor,
+      order: maxOrder + 1,
+      createdAt: Date.now() + createdCount,
+    };
+    projects.push(project);
+    nameToId.set(key, project.id);
+    createdCount += 1;
+    return project.id;
+  };
+
+  // Prefetch so createdCount is accurate before mapping tasks
+  for (const t of tasks) {
+    ensureProject(t.projectName);
+  }
+
+  return {
+    projectIdFor: (projectName?: string) => ensureProject(projectName),
+    projects,
+    createdCount,
+  };
+}
+
+function toFociTasks(
+  parsed: ParsedTask[],
+  projectIdFor: (projectName?: string) => string,
+): Task[] {
   const now = Date.now();
   return parsed.map((p, i) => ({
     id: uuid(),
@@ -24,9 +101,9 @@ function toFociTasks(parsed: ParsedTask[], projectId: string): Task[] {
     completed: p.completed || false,
     sessions: 0,
     timeSpent: 0,
-    createdAt: now + i, // ensure unique ordering
+    createdAt: now + i,
     ...(p.completed ? { completedAt: now + i } : {}),
-    projectId,
+    projectId: projectIdFor(p.projectName),
     subtasks: p.subtasks?.map((s) => ({
       id: uuid(),
       title: s.title.slice(0, 200),
@@ -37,10 +114,17 @@ function toFociTasks(parsed: ParsedTask[], projectId: string): Task[] {
   }));
 }
 
-// ── Export helpers ───────────────────────────────────────
-
-function exportToJSON(tasks: Task[]): string {
-  return JSON.stringify({ tasks, exportedAt: new Date().toISOString(), format: "foci" }, null, 2);
+function exportToJSON(tasks: Task[], projects: Project[]): string {
+  return JSON.stringify(
+    {
+      tasks,
+      projects,
+      exportedAt: new Date().toISOString(),
+      format: "foci",
+    },
+    null,
+    2,
+  );
 }
 
 function escapeCSVField(value: string): string {
@@ -50,15 +134,27 @@ function escapeCSVField(value: string): string {
   return value;
 }
 
-function exportToCSV(tasks: Task[]): string {
-  const headers = ["Title", "Completed", "Due Date", "Sessions", "Time Spent (min)", "Project ID", "Created At"];
+function exportToCSV(tasks: Task[], projects: Project[]): string {
+  const nameById = new Map<string, string>([[DEFAULT_PROJECT_ID, "General"]]);
+  for (const p of projects) {
+    nameById.set(p.id, p.name);
+  }
+  const headers = [
+    "Title",
+    "Completed",
+    "Due Date",
+    "Project",
+    "Sessions",
+    "Time Spent (min)",
+    "Created At",
+  ];
   const rows = tasks.map((t) => [
     escapeCSVField(t.title),
     t.completed ? "Yes" : "No",
     t.dueDate || "",
+    escapeCSVField(nameById.get(t.projectId) || "General"),
     String(t.sessions),
     String(Math.round(t.timeSpent / 60000)),
-    t.projectId,
     new Date(t.createdAt).toISOString(),
   ]);
   return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -86,7 +182,7 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
     | { step: "idle" }
     | { step: "preview"; format: DetectedFormat; tasks: ParsedTask[]; fileName: string }
     | { step: "importing" }
-    | { step: "done"; count: number }
+    | { step: "done"; count: number; projectsCreated: number }
     | { step: "error"; message: string }
   >({ step: "idle" });
   const [importCompleted, setImportCompleted] = useState(true);
@@ -113,7 +209,8 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
       if (format === "unknown" || tasks.length === 0) {
         setImportState({
           step: "error",
-          message: "Could not detect format. Supported: Foci JSON, Google Tasks JSON, Todoist CSV, Asana CSV, Notion CSV, or any CSV with a Title/Name column.",
+          message:
+            "Could not detect format. Supported: Foci JSON, Google Tasks JSON, Todoist CSV, Asana CSV, Notion CSV, or any CSV with a Title/Name column. Include a Project column to create projects.",
         });
       } else {
         setImportState({ step: "preview", format, tasks, fileName: file.name });
@@ -132,10 +229,18 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
       if (!importCompleted) {
         tasksToImport = tasksToImport.filter((t) => !t.completed);
       }
-      const newTasks = toFociTasks(tasksToImport, DEFAULT_PROJECT_ID);
+      const existingProjects = await loadProjects();
+      const { projectIdFor, projects, createdCount } = resolveProjectIds(
+        tasksToImport,
+        existingProjects,
+      );
+      const newTasks = toFociTasks(tasksToImport, projectIdFor);
+      if (createdCount > 0) {
+        await saveProjects(projects);
+      }
       const existing = await loadTasks();
       await saveTasks([...existing, ...newTasks]);
-      setImportState({ step: "done", count: newTasks.length });
+      setImportState({ step: "done", count: newTasks.length, projectsCreated: createdCount });
       onTasksImported?.();
     } catch {
       setImportState({ step: "error", message: "Failed to import tasks. Please try again." });
@@ -145,31 +250,28 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
   const handleExport = async (type: "json" | "csv") => {
     setExporting(true);
     try {
-      const tasks = await loadTasks();
+      const [tasks, projects] = await Promise.all([loadTasks(), loadProjects()]);
       if (tasks.length === 0) {
         setImportState({ step: "error", message: "No tasks to export." });
         return;
       }
       const date = new Date().toISOString().slice(0, 10);
       if (type === "json") {
-        downloadFile(exportToJSON(tasks), `foci-tasks-${date}.json`, "application/json");
+        downloadFile(exportToJSON(tasks, projects), `foci-tasks-${date}.json`, "application/json");
       } else {
-        downloadFile(exportToCSV(tasks), `foci-tasks-${date}.csv`, "text/csv");
+        downloadFile(exportToCSV(tasks, projects), `foci-tasks-${date}.csv`, "text/csv");
       }
     } finally {
       setExporting(false);
     }
   };
 
-  const filteredCount =
-    importState.step === "preview" && !importCompleted
-      ? importState.tasks.filter((t) => !t.completed).length
-      : importState.step === "preview"
-        ? importState.tasks.length
-        : 0;
+  const previewProjects =
+    importState.step === "preview" ? uniqueProjectNames(importState.tasks) : [];
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {/* Export */}
       <div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
           Download all your tasks as a backup or to use in another app.
@@ -177,24 +279,18 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
         <div className="flex gap-2">
           <button
             type="button"
-            disabled={exporting}
             onClick={() => handleExport("json")}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition"
+            disabled={exporting}
+            className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
-            </svg>
             Export JSON
           </button>
           <button
             type="button"
-            disabled={exporting}
             onClick={() => handleExport("csv")}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition"
+            disabled={exporting}
+            className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
-            </svg>
             Export CSV
           </button>
         </div>
@@ -206,7 +302,9 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
       {/* Import */}
       <div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-          Import tasks from Google Tasks, Todoist, Asana, Notion, or any CSV file.
+          Import tasks from Google Tasks, Todoist, Asana, Notion, or any CSV. A{" "}
+          <strong className="font-medium text-slate-600 dark:text-slate-300">Project</strong> column
+          creates or matches projects automatically.
         </p>
         <input
           ref={fileInputRef}
@@ -238,10 +336,26 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
               </span>
             </div>
             <p className="text-sm text-slate-700 dark:text-slate-200">
-              Found <strong>{importState.tasks.length}</strong> task{importState.tasks.length !== 1 ? "s" : ""}
+              Found <strong>{importState.tasks.length}</strong> task
+              {importState.tasks.length !== 1 ? "s" : ""}
               {importState.tasks.filter((t) => t.completed).length > 0 && (
                 <span className="text-slate-500 dark:text-slate-400">
-                  {" "}({importState.tasks.filter((t) => t.completed).length} completed)
+                  {" "}
+                  ({importState.tasks.filter((t) => t.completed).length} completed)
+                </span>
+              )}
+              {previewProjects.length > 0 ? (
+                <span className="text-slate-500 dark:text-slate-400">
+                  {" "}
+                  · {previewProjects.length} project
+                  {previewProjects.length !== 1 ? "s" : ""} (
+                  {previewProjects.slice(0, 3).join(", ")}
+                  {previewProjects.length > 3 ? `, +${previewProjects.length - 3} more` : ""})
+                </span>
+              ) : (
+                <span className="text-slate-500 dark:text-slate-400">
+                  {" "}
+                  · into General (no Project column)
                 </span>
               )}
             </p>
@@ -251,6 +365,11 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
               {importState.tasks.slice(0, 5).map((t, i) => (
                 <li key={i} className="flex items-center gap-1.5 truncate">
                   <span className={t.completed ? "line-through text-slate-400" : ""}>{t.title}</span>
+                  {t.projectName && (
+                    <span className="text-slate-400 dark:text-slate-400 flex-shrink-0">
+                      · {t.projectName}
+                    </span>
+                  )}
                   {t.dueDate && (
                     <span className="text-slate-400 dark:text-slate-400 flex-shrink-0">
                       · {t.dueDate}
@@ -282,15 +401,22 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
               <button
                 type="button"
                 onClick={handleImport}
-                disabled={filteredCount === 0}
-                className="flex-1 px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition disabled:opacity-50"
+                className="flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition"
               >
-                Import {filteredCount} task{filteredCount !== 1 ? "s" : ""}
+                Import {importCompleted
+                  ? importState.tasks.length
+                  : importState.tasks.filter((t) => !t.completed).length}{" "}
+                task
+                {(importCompleted
+                  ? importState.tasks.length
+                  : importState.tasks.filter((t) => !t.completed).length) !== 1
+                  ? "s"
+                  : ""}
               </button>
               <button
                 type="button"
                 onClick={() => setImportState({ step: "idle" })}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition"
               >
                 Cancel
               </button>
@@ -300,44 +426,44 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
 
         {/* Importing spinner */}
         {importState.step === "importing" && (
-          <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
+          <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
+            <span className="inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             Importing…
           </div>
         )}
 
-        {/* Success */}
+        {/* Done */}
         {importState.step === "done" && (
-          <div className="mt-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 flex items-center justify-between">
-            <span className="text-sm text-green-700 dark:text-green-300 flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Imported {importState.count} task{importState.count !== 1 ? "s" : ""} successfully!
-            </span>
+          <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 space-y-2">
+            <p className="text-sm text-emerald-800 dark:text-emerald-200">
+              Imported {importState.count} task{importState.count !== 1 ? "s" : ""}
+              {importState.projectsCreated > 0
+                ? ` and created ${importState.projectsCreated} project${
+                    importState.projectsCreated !== 1 ? "s" : ""
+                  }`
+                : ""}
+              !
+            </p>
             <button
               type="button"
               onClick={() => setImportState({ step: "idle" })}
-              className="text-xs text-green-600 dark:text-green-400 hover:underline"
+              className="text-xs font-medium text-emerald-700 dark:text-emerald-300 hover:underline"
             >
-              Dismiss
+              Import another file
             </button>
           </div>
         )}
 
         {/* Error */}
         {importState.step === "error" && (
-          <div className="mt-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-center justify-between">
-            <span className="text-sm text-red-700 dark:text-red-300">{importState.message}</span>
+          <div className="mt-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 space-y-2">
+            <p className="text-sm text-red-700 dark:text-red-300">{importState.message}</p>
             <button
               type="button"
               onClick={() => setImportState({ step: "idle" })}
-              className="text-xs text-red-600 dark:text-red-400 hover:underline ml-2 flex-shrink-0"
+              className="text-xs font-medium text-red-600 dark:text-red-400 hover:underline"
             >
-              Dismiss
+              Try again
             </button>
           </div>
         )}
@@ -352,7 +478,7 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
           <li>• Asana (CSV)</li>
           <li>• Notion (CSV)</li>
           <li>• Foci backup (JSON)</li>
-          <li>• Any CSV with titles</li>
+          <li>• CSV with Title + optional Project</li>
         </ul>
       </div>
     </div>

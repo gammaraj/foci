@@ -49,6 +49,22 @@ export function findColumn(headers: string[], ...candidates: string[]): number {
   return -1;
 }
 
+/** Prefer Project / Project Name; never treat Project ID as a name. */
+export function findProjectColumn(headers: string[]): number {
+  const preferred = ["project name", "projects", "list name"];
+  for (const c of preferred) {
+    const idx = headers.findIndex((h) => h === c || h.includes(c));
+    if (idx !== -1) return idx;
+  }
+  const exact = headers.findIndex((h) => h === "project" || h === "list" || h === "board");
+  if (exact !== -1) return exact;
+  return headers.findIndex(
+    (h) =>
+      (h.includes("project") || h.includes("list") || h.includes("board")) &&
+      !h.includes("id"),
+  );
+}
+
 export function normalizeDate(raw: string | undefined): string | undefined {
   if (!raw) return undefined;
   const isoMatch = raw.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
@@ -70,6 +86,8 @@ export type ParsedTask = {
   title: string;
   completed?: boolean;
   dueDate?: string;
+  /** Optional project/list name from source file — used to create or match Foci projects. */
+  projectName?: string;
   subtasks?: Pick<Subtask, "title" | "completed">[];
 };
 
@@ -109,17 +127,35 @@ export function parseFociJSON(text: string): ParsedTask[] | null {
       return null;
     }
 
-    return (tasks as Record<string, unknown>[]).map((t) => ({
-      title: String(t.title || ""),
-      completed: Boolean(t.completed),
-      dueDate: t.dueDate ? String(t.dueDate) : undefined,
-      subtasks: Array.isArray(t.subtasks)
-        ? (t.subtasks as Record<string, unknown>[]).map((s) => ({
-            title: String(s.title || ""),
-            completed: Boolean(s.completed),
-          }))
-        : undefined,
-    }));
+    const projectNameById = new Map<string, string>();
+    const projects = Array.isArray(data.projects) ? (data.projects as Record<string, unknown>[]) : [];
+    for (const p of projects) {
+      if (p?.id != null && p?.name != null) {
+        projectNameById.set(String(p.id), String(p.name));
+      }
+    }
+
+    return (tasks as Record<string, unknown>[]).map((t) => {
+      const projectId = t.projectId != null ? String(t.projectId) : undefined;
+      const fromExport =
+        typeof t.projectName === "string" && t.projectName.trim()
+          ? t.projectName.trim()
+          : projectId
+            ? projectNameById.get(projectId)
+            : undefined;
+      return {
+        title: String(t.title || ""),
+        completed: Boolean(t.completed),
+        dueDate: t.dueDate ? String(t.dueDate) : undefined,
+        projectName: fromExport,
+        subtasks: Array.isArray(t.subtasks)
+          ? (t.subtasks as Record<string, unknown>[]).map((s) => ({
+              title: String(s.title || ""),
+              completed: Boolean(s.completed),
+            }))
+          : undefined,
+      };
+    });
   } catch {
     return null;
   }
@@ -131,6 +167,7 @@ export function parseTodoistCSV(headers: string[], rows: string[][]): ParsedTask
   const dueDateIdx = findColumn(headers, "due date", "due_date", "deadline");
   const completedIdx = findColumn(headers, "is completed", "is_completed", "completed");
   const typeIdx = findColumn(headers, "type");
+  const projectIdx = findProjectColumn(headers);
 
   if (typeIdx === -1 && !headers.some((h) => h.includes("content"))) return null;
 
@@ -143,6 +180,7 @@ export function parseTodoistCSV(headers: string[], rows: string[][]): ParsedTask
       title: r[contentIdx].trim(),
       completed: completedIdx !== -1 ? r[completedIdx] === "1" || r[completedIdx]?.toLowerCase() === "true" : false,
       dueDate: dueDateIdx !== -1 ? normalizeDate(r[dueDateIdx]) : undefined,
+      projectName: projectIdx !== -1 ? r[projectIdx]?.trim() || undefined : undefined,
     }));
 }
 
@@ -153,6 +191,7 @@ export function parseAsanaCSV(headers: string[], rows: string[][]): ParsedTask[]
   const completedIdx = findColumn(headers, "completed", "completed at", "completed_at");
   const sectionIdx = findColumn(headers, "section", "column");
   const assigneeIdx = findColumn(headers, "assignee");
+  const projectIdx = findProjectColumn(headers);
   if (sectionIdx === -1 && assigneeIdx === -1) return null;
 
   return rows
@@ -161,6 +200,11 @@ export function parseAsanaCSV(headers: string[], rows: string[][]): ParsedTask[]
       title: r[nameIdx].trim(),
       completed: completedIdx !== -1 ? Boolean(r[completedIdx]?.trim()) : false,
       dueDate: dueDateIdx !== -1 ? normalizeDate(r[dueDateIdx]) : undefined,
+      // Asana "Projects" can be comma-separated — take the first.
+      projectName:
+        projectIdx !== -1
+          ? r[projectIdx]?.split(",")[0]?.trim() || undefined
+          : undefined,
     }));
 }
 
@@ -169,6 +213,7 @@ export function parseNotionCSV(headers: string[], rows: string[][]): ParsedTask[
   if (nameIdx === -1) return null;
   const statusIdx = findColumn(headers, "status", "state");
   const dueDateIdx = findColumn(headers, "due", "date", "deadline");
+  const projectIdx = findProjectColumn(headers);
 
   return rows
     .filter((r) => r[nameIdx]?.trim())
@@ -178,6 +223,7 @@ export function parseNotionCSV(headers: string[], rows: string[][]): ParsedTask[
         title: r[nameIdx].trim(),
         completed: status === "done" || status === "completed" || status === "complete",
         dueDate: dueDateIdx !== -1 ? normalizeDate(r[dueDateIdx]) : undefined,
+        projectName: projectIdx !== -1 ? r[projectIdx]?.trim() || undefined : undefined,
       };
     });
 }
@@ -187,6 +233,7 @@ export function parseGenericCSV(headers: string[], rows: string[][]): ParsedTask
   if (nameIdx === -1) return null;
   const dueDateIdx = findColumn(headers, "due", "date", "deadline");
   const completedIdx = findColumn(headers, "completed", "done", "status", "complete");
+  const projectIdx = findProjectColumn(headers);
 
   return rows
     .filter((r) => r[nameIdx]?.trim())
@@ -200,6 +247,7 @@ export function parseGenericCSV(headers: string[], rows: string[][]): ParsedTask
         title: r[nameIdx].trim(),
         completed,
         dueDate: dueDateIdx !== -1 ? normalizeDate(r[dueDateIdx]) : undefined,
+        projectName: projectIdx !== -1 ? r[projectIdx]?.trim() || undefined : undefined,
       };
     });
 }
