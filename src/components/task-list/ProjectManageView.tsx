@@ -13,6 +13,7 @@ import {
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePicker";
 import type { ProjectTemplate } from "@/lib/templates";
+import TaskImportExport from "@/components/TaskImportExport";
 
 function GripIcon() {
   return (
@@ -57,6 +58,8 @@ export interface ProjectManageViewProps {
   onSelectSharedProject: (sp: SharedProject) => void;
   onLeaveShared: (sp: SharedProject) => void;
   onAddProject: (template?: ProjectTemplate) => void;
+  /** Reload tasks/projects after an import from this screen. */
+  onTasksImported?: () => void;
   renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }
 
@@ -558,10 +561,12 @@ export default function ProjectManageView({
   onSelectSharedProject,
   onLeaveShared,
   onAddProject,
+  onTasksImported,
   renderOpenTasks,
 }: ProjectManageViewProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
   const [showArchived, setShowArchived] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   const toggleExpanded = (id: string) => {
     setExpandedIds((prev) => {
@@ -743,6 +748,40 @@ export default function ProjectManageView({
       </div>
 
       <div className="px-3 sm:px-4 py-3 border-t border-slate-100 dark:border-[#243350] shrink-0 space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowImport((v) => !v)}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border transition-colors ${
+              showImport
+                ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+                : "border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            }`}
+            aria-expanded={showImport}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Import tasks
+          </button>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Into an existing project, a new one, or from the file’s Project column
+          </span>
+        </div>
+
+        {showImport && (
+          <div className="rounded-xl border border-slate-200 dark:border-[#243350] bg-slate-50/60 dark:bg-[#0f1a2c]/60 p-3">
+            <TaskImportExport
+              importOnly
+              showDestinationPicker
+              projects={sortedProjects}
+              onTasksImported={() => {
+                onTasksImported?.();
+              }}
+            />
+          </div>
+        )}
+
         <form
           onSubmit={(e) => {
             e.preventDefault();

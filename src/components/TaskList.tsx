@@ -514,6 +514,18 @@ export default function TaskList({
     });
   }, [showToast]);
 
+  const reloadAfterImport = useCallback(async () => {
+    try {
+      const [nextProjects, nextTasks] = await Promise.all([loadProjects(), loadTasks()]);
+      setProjects(nextProjects);
+      setTasks(nextTasks);
+      showToast("Import complete", "success");
+    } catch (err) {
+      console.error("[Foci] Failed to reload after import:", err);
+      showToast("Imported, but failed to refresh the list. Reload the page.", "error");
+    }
+  }, [showToast]);
+
   const selectProject = (id: string) => {
     setSelectedSharedProject(null);
     setSelectedProjectId(id);
@@ -2483,6 +2495,7 @@ export default function TaskList({
           }}
           onLeaveShared={handleLeaveSharedProject}
           onAddProject={addProject}
+          onTasksImported={reloadAfterImport}
           renderOpenTasks={renderOpenTasks}
         />
       )}

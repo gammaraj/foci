@@ -174,9 +174,28 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 
 interface TaskImportExportProps {
   onTasksImported?: () => void;
+  /** Hide export section (e.g. Projects page embed). */
+  importOnly?: boolean;
+  /** Let the user put all tasks into an existing or new project. */
+  showDestinationPicker?: boolean;
+  /** Existing projects for the destination dropdown. */
+  projects?: Project[];
+  /** Pre-select an existing project. */
+  initialProjectId?: string;
 }
 
-export default function TaskImportExport({ onTasksImported }: TaskImportExportProps) {
+type ImportDestination =
+  | { mode: "file" }
+  | { mode: "existing"; projectId: string }
+  | { mode: "new"; name: string };
+
+export default function TaskImportExport({
+  onTasksImported,
+  importOnly = false,
+  showDestinationPicker = false,
+  projects: projectsProp,
+  initialProjectId,
+}: TaskImportExportProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importState, setImportState] = useState<
     | { step: "idle" }
@@ -187,6 +206,19 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
   >({ step: "idle" });
   const [importCompleted, setImportCompleted] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const defaultExistingId =
+    initialProjectId &&
+    (projectsProp ?? []).some((p) => p.id === initialProjectId && !p.archived)
+      ? initialProjectId
+      : (projectsProp ?? []).find((p) => !p.archived)?.id ?? DEFAULT_PROJECT_ID;
+  const [destination, setDestination] = useState<ImportDestination>(() =>
+    showDestinationPicker
+      ? { mode: "existing", projectId: defaultExistingId }
+      : { mode: "file" },
+  );
+  const [newProjectName, setNewProjectName] = useState("");
+
+  const availableProjects = (projectsProp ?? []).filter((p) => !p.archived);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -222,6 +254,16 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
 
   const handleImport = async () => {
     if (importState.step !== "preview") return;
+
+    if (destination.mode === "new" && !newProjectName.trim()) {
+      setImportState({ step: "error", message: "Enter a name for the new project." });
+      return;
+    }
+    if (destination.mode === "existing" && !destination.projectId) {
+      setImportState({ step: "error", message: "Choose a project to import into." });
+      return;
+    }
+
     setImportState({ step: "importing" });
 
     try {
@@ -230,10 +272,30 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
         tasksToImport = tasksToImport.filter((t) => !t.completed);
       }
       const existingProjects = await loadProjects();
-      const { projectIdFor, projects, createdCount } = resolveProjectIds(
-        tasksToImport,
-        existingProjects,
-      );
+
+      let projectIdFor: (projectName?: string) => string;
+      let projects = existingProjects;
+      let createdCount = 0;
+
+      if (destination.mode === "existing") {
+        const targetId = destination.projectId;
+        projectIdFor = () => targetId;
+      } else if (destination.mode === "new") {
+        const resolved = resolveProjectIds(
+          [{ title: "_", projectName: newProjectName.trim() }],
+          existingProjects,
+        );
+        projects = resolved.projects;
+        createdCount = resolved.createdCount;
+        const targetId = resolved.projectIdFor(newProjectName.trim());
+        projectIdFor = () => targetId;
+      } else {
+        const resolved = resolveProjectIds(tasksToImport, existingProjects);
+        projects = resolved.projects;
+        createdCount = resolved.createdCount;
+        projectIdFor = resolved.projectIdFor;
+      }
+
       const newTasks = toFociTasks(tasksToImport, projectIdFor);
       if (createdCount > 0) {
         await saveProjects(projects);
@@ -269,43 +331,151 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
   const previewProjects =
     importState.step === "preview" ? uniqueProjectNames(importState.tasks) : [];
 
+  const destinationSummary = (() => {
+    if (destination.mode === "existing") {
+      const name =
+        availableProjects.find((p) => p.id === destination.projectId)?.name ?? "selected project";
+      return `into ${name}`;
+    }
+    if (destination.mode === "new") {
+      const name = newProjectName.trim();
+      return name ? `into new project “${name}”` : "into a new project";
+    }
+    if (previewProjects.length > 0) {
+      return `${previewProjects.length} project${previewProjects.length !== 1 ? "s" : ""} from file (${previewProjects.slice(0, 3).join(", ")}${previewProjects.length > 3 ? `, +${previewProjects.length - 3} more` : ""})`;
+    }
+    return "into General (no Project column)";
+  })();
+
+  const filteredCount =
+    importState.step === "preview"
+      ? importCompleted
+        ? importState.tasks.length
+        : importState.tasks.filter((t) => !t.completed).length
+      : 0;
+
   return (
     <div className="space-y-4">
-      {/* Export */}
-      <div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-          Download all your tasks as a backup or to use in another app.
-        </p>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => handleExport("json")}
-            disabled={exporting}
-            className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
-          >
-            Export JSON
-          </button>
-          <button
-            type="button"
-            onClick={() => handleExport("csv")}
-            disabled={exporting}
-            className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
-          >
-            Export CSV
-          </button>
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="border-t border-slate-200 dark:border-[#243350]" />
+      {!importOnly && (
+        <>
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+              Download all your tasks as a backup or to use in another app.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => handleExport("json")}
+                disabled={exporting}
+                className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
+              >
+                Export JSON
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport("csv")}
+                disabled={exporting}
+                className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <div className="border-t border-slate-200 dark:border-[#243350]" />
+        </>
+      )}
 
       {/* Import */}
       <div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-          Import tasks from Google Tasks, Todoist, Asana, Notion, or any CSV. A{" "}
-          <strong className="font-medium text-slate-600 dark:text-slate-300">Project</strong> column
-          creates or matches projects automatically.
+          {showDestinationPicker
+            ? "Import from Google Tasks, Todoist, Asana, Notion, or CSV into an existing or new project."
+            : (
+              <>
+                Import tasks from Google Tasks, Todoist, Asana, Notion, or any CSV. A{" "}
+                <strong className="font-medium text-slate-600 dark:text-slate-300">Project</strong>{" "}
+                column creates or matches projects automatically.
+              </>
+            )}
         </p>
+
+        {showDestinationPicker && (
+          <fieldset className="mb-3 space-y-2 rounded-lg border border-slate-200 dark:border-[#243350] p-3">
+            <legend className="px-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+              Put tasks in
+            </legend>
+            <label className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+              <input
+                type="radio"
+                name="import-dest"
+                className="mt-1"
+                checked={destination.mode === "existing"}
+                onChange={() =>
+                  setDestination({ mode: "existing", projectId: defaultExistingId })
+                }
+              />
+              <span className="min-w-0 flex-1 space-y-1.5">
+                <span className="block font-medium">Existing project</span>
+                {destination.mode === "existing" && (
+                  <select
+                    value={destination.projectId}
+                    onChange={(e) =>
+                      setDestination({ mode: "existing", projectId: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] dark:text-white"
+                  >
+                    {availableProjects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </span>
+            </label>
+            <label className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+              <input
+                type="radio"
+                name="import-dest"
+                className="mt-1"
+                checked={destination.mode === "new"}
+                onChange={() => setDestination({ mode: "new", name: newProjectName })}
+              />
+              <span className="min-w-0 flex-1 space-y-1.5">
+                <span className="block font-medium">New project</span>
+                {destination.mode === "new" && (
+                  <input
+                    type="text"
+                    value={newProjectName}
+                    onChange={(e) => {
+                      setNewProjectName(e.target.value);
+                      setDestination({ mode: "new", name: e.target.value });
+                    }}
+                    placeholder="Project name"
+                    maxLength={MAX_PROJECT_NAME}
+                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+                  />
+                )}
+              </span>
+            </label>
+            <label className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+              <input
+                type="radio"
+                name="import-dest"
+                className="mt-1"
+                checked={destination.mode === "file"}
+                onChange={() => setDestination({ mode: "file" })}
+              />
+              <span>
+                <span className="block font-medium">Projects from file</span>
+                <span className="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Use the Project column when present; otherwise General.
+                </span>
+              </span>
+            </label>
+          </fieldset>
+        )}
+
         <input
           ref={fileInputRef}
           type="file"
@@ -344,28 +514,14 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
                   ({importState.tasks.filter((t) => t.completed).length} completed)
                 </span>
               )}
-              {previewProjects.length > 0 ? (
-                <span className="text-slate-500 dark:text-slate-400">
-                  {" "}
-                  · {previewProjects.length} project
-                  {previewProjects.length !== 1 ? "s" : ""} (
-                  {previewProjects.slice(0, 3).join(", ")}
-                  {previewProjects.length > 3 ? `, +${previewProjects.length - 3} more` : ""})
-                </span>
-              ) : (
-                <span className="text-slate-500 dark:text-slate-400">
-                  {" "}
-                  · into General (no Project column)
-                </span>
-              )}
+              <span className="text-slate-500 dark:text-slate-400"> · {destinationSummary}</span>
             </p>
 
-            {/* Preview list (max 5) */}
             <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-0.5 max-h-28 overflow-y-auto">
               {importState.tasks.slice(0, 5).map((t, i) => (
                 <li key={i} className="flex items-center gap-1.5 truncate">
                   <span className={t.completed ? "line-through text-slate-400" : ""}>{t.title}</span>
-                  {t.projectName && (
+                  {destination.mode === "file" && t.projectName && (
                     <span className="text-slate-400 dark:text-slate-400 flex-shrink-0">
                       · {t.projectName}
                     </span>
@@ -384,7 +540,6 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
               )}
             </ul>
 
-            {/* Include completed toggle */}
             {importState.tasks.some((t) => t.completed) && (
               <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
                 <input
@@ -401,17 +556,10 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
               <button
                 type="button"
                 onClick={handleImport}
-                className="flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition"
+                disabled={filteredCount === 0}
+                className="flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Import {importCompleted
-                  ? importState.tasks.length
-                  : importState.tasks.filter((t) => !t.completed).length}{" "}
-                task
-                {(importCompleted
-                  ? importState.tasks.length
-                  : importState.tasks.filter((t) => !t.completed).length) !== 1
-                  ? "s"
-                  : ""}
+                Import {filteredCount} task{filteredCount !== 1 ? "s" : ""}
               </button>
               <button
                 type="button"
@@ -424,7 +572,6 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
           </div>
         )}
 
-        {/* Importing spinner */}
         {importState.step === "importing" && (
           <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
             <span className="inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -432,7 +579,6 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
           </div>
         )}
 
-        {/* Done */}
         {importState.step === "done" && (
           <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 space-y-2">
             <p className="text-sm text-emerald-800 dark:text-emerald-200">
@@ -454,7 +600,6 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
           </div>
         )}
 
-        {/* Error */}
         {importState.step === "error" && (
           <div className="mt-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 space-y-2">
             <p className="text-sm text-red-700 dark:text-red-300">{importState.message}</p>
@@ -469,18 +614,19 @@ export default function TaskImportExport({ onTasksImported }: TaskImportExportPr
         )}
       </div>
 
-      {/* Supported platforms info */}
-      <div className="text-xs text-slate-400 dark:text-slate-400 space-y-1">
-        <p className="font-medium text-slate-500 dark:text-slate-400">Supported import formats:</p>
-        <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-          <li>• Google Tasks (JSON)</li>
-          <li>• Todoist (CSV)</li>
-          <li>• Asana (CSV)</li>
-          <li>• Notion (CSV)</li>
-          <li>• Foci backup (JSON)</li>
-          <li>• CSV with Title + optional Project</li>
-        </ul>
-      </div>
+      {!importOnly && (
+        <div className="text-xs text-slate-400 dark:text-slate-400 space-y-1">
+          <p className="font-medium text-slate-500 dark:text-slate-400">Supported import formats:</p>
+          <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+            <li>• Google Tasks (JSON)</li>
+            <li>• Todoist (CSV)</li>
+            <li>• Asana (CSV)</li>
+            <li>• Notion (CSV)</li>
+            <li>• Foci backup (JSON)</li>
+            <li>• CSV with Title + optional Project</li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
