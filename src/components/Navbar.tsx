@@ -43,6 +43,7 @@ type NavLink = {
   href: string;
   label: string;
   active: boolean;
+  title?: string;
   onClick?: (e: React.MouseEvent) => void;
 };
 
@@ -93,7 +94,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
         {
           key: "tasks",
           href: "/app",
-          label: "My Tasks",
+          label: "Tasks",
           active: pathname === "/app" && !projectsOpen,
           onClick: closeProjectsIfOpen,
         },
@@ -102,6 +103,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           key: "projects",
           href: "/app?projects=1",
           label: "Projects",
+          title: "Manage projects — pin, rename, share, import",
           active: projectsOpen,
           onClick: openProjects,
         },
@@ -118,6 +120,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
     <Link
       key={link.key}
       href={link.href}
+      title={link.title}
       onClick={(e) => {
         link.onClick?.(e);
         if (mobile) setMenuOpen(false);

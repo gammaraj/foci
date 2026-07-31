@@ -64,7 +64,7 @@ const STEPS: Step[] = [
     target: "[data-tour='task-panel-menu']",
     title: "Templates, Smart Plan & settings",
     description:
-      "Open ⋯ for Project templates (Financial Life Plan, Dev Sprint, Trip Planning, and more), Import tasks, Smart Plan, Settings, and to replay this tour.",
+      "Open ⋯ for Project templates, Import tasks, Settings, and to replay this tour. Use Layout → Plan for Smart Plan. Top nav Projects manages pin, share, and create.",
     position: "bottom",
   },
 ];

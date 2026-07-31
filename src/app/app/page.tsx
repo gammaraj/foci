@@ -55,7 +55,6 @@ function AppPageContent() {
     }
     return true;
   });
-  const [focusProjectId, setFocusProjectId] = useState<string | null>(null);
   const [tasksFullscreen, setTasksFullscreen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [timerAnnouncement, setTimerAnnouncement] = useState("");
@@ -67,13 +66,6 @@ function AppPageContent() {
   const announceTimer = useCallback((message: string) => {
     setTimerAnnouncement("");
     requestAnimationFrame(() => setTimerAnnouncement(message));
-  }, []);
-
-  const handleFocusProject = useCallback((projectId: string | null) => {
-    setFocusProjectId(projectId);
-    if (projectId) {
-      setTimerCollapsed(true);
-    }
   }, []);
 
   useEffect(() => {
@@ -273,13 +265,13 @@ function AppPageContent() {
         <>
           <div className="no-print app-container py-2">
             <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
-              <span className="text-blue-800 dark:text-blue-200 font-medium">Focus mode — fewer distractions</span>
+              <span className="text-blue-800 dark:text-blue-200 font-medium">Zen mode — fewer distractions</span>
               <button
                 type="button"
                 onClick={() => setFocusMode(false)}
                 className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline touch-target-sm px-2"
               >
-                Exit (F)
+                Exit Zen (F)
               </button>
             </div>
           </div>
@@ -315,8 +307,6 @@ function AppPageContent() {
               onStartTask={handleStartTask}
               onCompleteTask={handleCompleteTask}
               isTimerRunning={isRunning}
-              focusProjectId={focusProjectId}
-              onFocusProject={handleFocusProject}
               isFullscreen={tasksFullscreen}
               onToggleFullscreen={() => setTasksFullscreen(f => !f)}
               focusMode={focusMode}

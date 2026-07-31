@@ -10,6 +10,7 @@ import WeatherTime from "@/components/WeatherTime";
 import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
 import { loadSettings, saveSettings as persistSettings } from "@/lib/storage";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/types";
+import type { ImportResult } from "@/components/TaskImportExport";
 
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 
@@ -18,7 +19,7 @@ interface AppNavbarProps {
   /** When set (e.g. on /app), sync settings with the live timer. */
   settings?: Settings;
   onSaveSettings?: (settings: Settings) => void;
-  onTasksImported?: () => void;
+  onTasksImported?: (result?: ImportResult) => void;
 }
 
 /** Site-wide navbar — logged-out visitors get a lean marketing chrome; signed-in users get weather, settings, and app toolbar. */

@@ -79,7 +79,9 @@ import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 const VIEW_RETURN_LABELS: Record<string, string> = {
   card: "Cards",
   bucket: "Buckets",
+  list: "List",
   calendar: "Calendar",
+  plan: "Plan",
 };
 
 const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
@@ -111,8 +113,6 @@ export default function TaskList({
   onStartTask,
   onCompleteTask,
   isTimerRunning,
-  focusProjectId,
-  onFocusProject,
   isFullscreen,
   onToggleFullscreen,
   focusMode,
@@ -143,7 +143,6 @@ export default function TaskList({
   const [showCardReorderTip, setShowCardReorderTip] = useState(false);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
-  const [showAddProject, setShowAddProject] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editProjectName, setEditProjectName] = useState("");
   const [editingProjectDescId, setEditingProjectDescId] = useState<string | null>(null);
@@ -251,15 +250,31 @@ export default function TaskList({
   const [tallyPulse, setTallyPulse] = useState(false);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
+    if (mode === "plan") {
+      setViewMode((prev) => {
+        if (prev !== "plan") {
+          viewBeforePlanRef.current =
+            prev === "calendar" || prev === "list" || prev === "bucket" || prev === "card"
+              ? prev
+              : "card";
+        }
+        return "plan";
+      });
+      loadSettings().then(setPlanSettings);
+      setListReturnView(null);
+      setExpandedTaskId(null);
+      setExpandedSubtasksTaskId(null);
+      setNewSubtaskTitle("");
+      setEditingSubtaskId(null);
+      return;
+    }
     setViewMode(mode);
     setListReturnView(null);
     setExpandedTaskId(null);
     setExpandedSubtasksTaskId(null);
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
-    if (mode !== "plan") {
-      persistTaskView(mode);
-    }
+    persistTaskView(mode);
   }, [persistTaskView]);
 
   // Default due date when adding from Today / Week / Month / Year views
@@ -358,11 +373,6 @@ export default function TaskList({
   }, [closeProjectManage]);
 
   // Lock project selection in focus mode
-  useEffect(() => {
-    if (focusProjectId) {
-      setSelectedProjectId(focusProjectId);
-    }
-  }, [focusProjectId]);
 
   const userId = user?.id;
   useEffect(() => {
@@ -514,18 +524,6 @@ export default function TaskList({
     });
   }, [showToast]);
 
-  const reloadAfterImport = useCallback(async () => {
-    try {
-      const [nextProjects, nextTasks] = await Promise.all([loadProjects(), loadTasks()]);
-      setProjects(nextProjects);
-      setTasks(nextTasks);
-      showToast("Import complete", "success");
-    } catch (err) {
-      console.error("[Foci] Failed to reload after import:", err);
-      showToast("Imported, but failed to refresh the list. Reload the page.", "error");
-    }
-  }, [showToast]);
-
   const selectProject = (id: string) => {
     setSelectedSharedProject(null);
     setSelectedProjectId(id);
@@ -544,6 +542,31 @@ export default function TaskList({
     // Temporary drill-in — don't overwrite the user's default view preference.
     setViewMode("list");
   }, [viewMode]);
+
+  const reloadAfterImport = useCallback(async (result?: {
+    tasks: Task[];
+    projects: Project[];
+    focusProjectId?: string;
+  }) => {
+    try {
+      if (result?.tasks && result?.projects) {
+        setProjects(result.projects);
+        setTasks(result.tasks);
+      } else {
+        const [nextProjects, nextTasks] = await Promise.all([loadProjects(), loadTasks()]);
+        setProjects(nextProjects);
+        setTasks(nextTasks);
+      }
+      const focusId = result?.focusProjectId;
+      if (focusId && focusId !== ALL_PROJECTS_ID) {
+        expandProjectToList(focusId);
+      }
+      showToast("Import complete", "success");
+    } catch (err) {
+      console.error("[Foci] Failed to reload after import:", err);
+      showToast("Imported, but failed to refresh the list. Reload the page.", "error");
+    }
+  }, [showToast, expandProjectToList]);
 
   const backFromProjectList = useCallback(() => {
     const returnTo = listReturnView ?? "card";
@@ -744,7 +767,6 @@ export default function TaskList({
       showToast(`Created ${name} with ${newTasks.length} tasks`);
     }
     setNewProjectName("");
-    setShowAddProject(false);
     selectProject(project.id);
   };
 
@@ -1834,14 +1856,9 @@ export default function TaskList({
     setShowDayRecap(false);
   }, []);
 
-  const isFocusMode = !!focusProjectId;
-  const focusProject = focusProjectId ? projects.find((p) => p.id === focusProjectId) : null;
-
   const printSubtitle = useMemo(() => {
     const parts: string[] = [];
-    if (isFocusMode && focusProject) {
-      parts.push(`Project: ${focusProject.name}`);
-    } else if (isTimeFilter) {
+    if (isTimeFilter) {
       if (timeScopeDescription) parts.push(timeScopeDescription);
       parts.push(
         projectFilterId !== ALL_PROJECTS_ID
@@ -1855,8 +1872,6 @@ export default function TaskList({
     }
     return parts.join(" · ");
   }, [
-    isFocusMode,
-    focusProject,
     isTimeFilter,
     timeScopeDescription,
     projectFilterId,
@@ -1866,19 +1881,12 @@ export default function TaskList({
   ]);
 
   const printOpenTaskCount = useMemo(() => {
-    if (isFocusMode && focusProjectId) {
-      return tasks.filter(
-        (t) => t.projectId === focusProjectId && !t.completed && !t.archivedAt,
-      ).length;
-    }
     if (viewMode === "list") return pendingTasks.length;
     if (viewMode === "card" || viewMode === "bucket") {
       return Array.from(bucketTasksByProject.values()).reduce((sum, list) => sum + list.length, 0);
     }
     return tasks.filter((t) => !t.completed && !t.archivedAt).length;
   }, [
-    isFocusMode,
-    focusProjectId,
     viewMode,
     pendingTasks.length,
     bucketTasksByProject,
@@ -2081,7 +2089,7 @@ export default function TaskList({
 
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
-      {!isFocusMode && focusStrip}
+      {focusStrip}
 
       <div className="print-only print-header px-3 sm:px-4 pt-3">
         <h1>Foci — Tasks ({VIEW_PRINT_LABELS[viewMode]})</h1>
@@ -2100,34 +2108,6 @@ export default function TaskList({
         </p>
       </div>
 
-      {/* Focus mode header */}
-      {isFocusMode ? (
-        <div
-          className={`panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white ${focusStrip ? "" : "rounded-t-2xl"}`}
-        >
-          <div className="flex items-center justify-between min-w-0">
-            <div className="flex items-center gap-2.5 min-w-0">
-              {focusProject?.color && (
-                <span className="w-3 h-3 rounded-full flex-shrink-0 ring-2 ring-slate-300 dark:ring-white/20" style={{ backgroundColor: focusProject.color }} />
-              )}
-              <div className="min-w-0">
-                <p className="app-section-label text-slate-400 dark:text-white/50 leading-none mb-0.5">Project Focus</p>
-                <h2 className="text-base sm:text-lg font-bold truncate">{focusProject?.name ?? "Project"}</h2>
-              </div>
-            </div>
-            <button
-              onClick={() => onFocusProject?.(null)}
-              className="no-print flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-white/80 hover:bg-slate-300/60 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Exit Focus
-            </button>
-          </div>
-        </div>
-      ) : (
-      <>
       {/* Header — title row + controls row */}
       <div
         className={`panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white ${focusStrip ? "" : "rounded-t-2xl"}`}
@@ -2145,7 +2125,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Back to tasks
+                  Back to {VIEW_RETURN_LABELS[viewBeforeManageRef.current] ?? "tasks"}
                 </button>
                 <h2 className="text-base sm:text-lg font-semibold leading-tight">Projects</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 line-clamp-1">
@@ -2156,7 +2136,7 @@ export default function TaskList({
                       · {pinnedProjectCount} pinned
                     </span>
                   )}
-                  {" "}— tap ★ to pin · ⋯ to rename, archive, or delete
+                  {" "}— pin ★ · open in List · rename, archive, import
                 </p>
               </>
             ) : (
@@ -2260,19 +2240,6 @@ export default function TaskList({
                 isFullscreen={isFullscreen}
                 templates={PROJECT_TEMPLATES}
                 onSelectTemplate={addProject}
-                onTogglePlan={() => {
-                  if (viewMode === "plan") {
-                    selectViewMode(viewBeforePlanRef.current);
-                  } else {
-                    viewBeforePlanRef.current =
-                      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
-                        ? viewMode
-                        : "card";
-                    setViewMode("plan");
-                  }
-                  loadSettings().then(setPlanSettings);
-                }}
-                isPlanView={viewMode === "plan"}
                 onPrint={handlePrint}
                 printDisabled={projectManageOpen}
               />
@@ -2281,8 +2248,8 @@ export default function TaskList({
               <button
                 onClick={onToggleFullscreen}
                 className={`no-print p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
-                title={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
-                aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen tasks"}
+                title={isFullscreen ? "Exit expand" : "Expand tasks"}
+                aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
               >
                 {isFullscreen ? (
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2306,10 +2273,10 @@ export default function TaskList({
                 <button
                   onClick={() => selectProject(ALL_PROJECTS_ID)}
                   className={`${SEG_TAB_PAD} ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="All open tasks — every project"
-                  aria-label="All tasks"
+                  title="All times — every open task"
+                  aria-label="All times"
                 >
-                  All
+                  All times
                 </button>
                 <button
                   onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -2357,7 +2324,7 @@ export default function TaskList({
 
             <div className="flex items-center justify-end gap-2 shrink-0" data-tour="view-modes">
               <span className="hidden md:inline app-section-label leading-none self-center text-blue-800/60 dark:text-blue-200/55 shrink-0">
-                View
+                Layout
               </span>
               <div className="app-seg-track flex items-center gap-0.5">
                 <button
@@ -2369,7 +2336,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
                   </svg>
-                  <span>Buckets</span>
+                  <span className="hidden xl:inline">Buckets</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("card")}
@@ -2380,7 +2347,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                   </svg>
-                  <span>Cards</span>
+                  <span className="hidden xl:inline">Cards</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("list")}
@@ -2391,7 +2358,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
-                  <span>List</span>
+                  <span className="hidden xl:inline">List</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("calendar")}
@@ -2402,8 +2369,29 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="hidden lg:inline">Calendar</span>
-                  <span className="lg:hidden">Cal</span>
+                  <span className="hidden xl:inline">Cal</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (viewMode !== "plan") {
+                      viewBeforePlanRef.current =
+                        viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
+                          ? viewMode
+                          : "card";
+                      setViewMode("plan");
+                      loadSettings().then(setPlanSettings);
+                    } else {
+                      selectViewMode(viewBeforePlanRef.current);
+                    }
+                  }}
+                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "plan" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Smart Plan — schedule your day"
+                  aria-label="Smart Plan"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  <span className="hidden xl:inline">Plan</span>
                 </button>
               </div>
             </div>
@@ -2418,7 +2406,6 @@ export default function TaskList({
           viewMode={viewMode}
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
-          onNewProject={() => { setNewProjectName(""); openProjectManage(); }}
           doneTodayCount={doneProgress.today}
           doneWeekCount={doneProgress.week}
           doneMonthCount={doneProgress.month}
@@ -2445,10 +2432,8 @@ export default function TaskList({
         )}
 
       </div>
-      </>
-      )}
 
-      {!isFocusMode && projectManageOpen && (
+      {projectManageOpen && (
         <ProjectManageView
           sortedProjects={sortedProjects}
           archivedProjects={archivedProjects}
@@ -2471,9 +2456,7 @@ export default function TaskList({
           onProjectDragEnd={handleProjectDragEnd}
           onMoveProject={handleMoveProject}
           onOpenProject={(id) => {
-            closeProjectManage();
-            selectViewMode(viewBeforeManageRef.current);
-            selectProjectScope(id);
+            expandProjectToList(id);
           }}
           onUpdateColor={updateProjectColor}
           onUpdateDueDate={updateProjectDueDate}
@@ -2484,10 +2467,6 @@ export default function TaskList({
           onArchive={toggleProjectArchived}
           onDelete={deleteProject}
           onUnarchive={toggleProjectArchived}
-          onFocusProject={(id) => {
-            onFocusProject?.(id);
-            closeProjectManage();
-          }}
           onSelectSharedProject={(sp) => {
             closeProjectManage();
             selectViewMode(viewBeforeManageRef.current);
@@ -2501,7 +2480,7 @@ export default function TaskList({
       )}
 
       {/* Smart Plan view */}
-      {!isFocusMode && !projectManageOpen && viewMode === "plan" && (
+      {!projectManageOpen && viewMode === "plan" && (
         <SmartPlan
           tasks={tasks}
           projects={projects}
@@ -2511,7 +2490,7 @@ export default function TaskList({
       )}
 
       {/* Calendar view */}
-      {!isFocusMode && !projectManageOpen && viewMode === "calendar" && (
+      {!projectManageOpen && viewMode === "calendar" && (
         <TaskCalendarView
           tasks={tasks}
           projects={projects}
@@ -2539,7 +2518,7 @@ export default function TaskList({
       )}
 
       {/* Time scope banner — card, bucket, and list */}
-      {!isFocusMode && !projectManageOpen && isTimeFilter && timeScopeDescription && (
+      {!projectManageOpen && isTimeFilter && timeScopeDescription && (
         <div className="no-print">
         <TimeFilterBanner
           description={timeScopeDescription}
@@ -2556,7 +2535,7 @@ export default function TaskList({
       )}
 
       {/* The One Thing — full strip outside Cards (Cards folds it into the toolbar on desktop) */}
-      {!isFocusMode && !projectManageOpen && viewMode !== "plan" && viewMode !== "card" && tasksReady && (
+      {!projectManageOpen && viewMode !== "plan" && viewMode !== "card" && tasksReady && (
         (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
           <OneThingCard
             status={oneThingResolved.status}
@@ -2587,7 +2566,7 @@ export default function TaskList({
       )}
 
       {/* Cards mobile: keep One Thing as its own strip */}
-      {!isFocusMode && !projectManageOpen && viewMode === "card" && tasksReady && (
+      {!projectManageOpen && viewMode === "card" && tasksReady && (
         (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
           <div className="sm:hidden">
             <OneThingCard
@@ -2620,22 +2599,11 @@ export default function TaskList({
       )}
 
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
-      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && (
+      {!projectManageOpen && viewMode === "bucket" && (
         <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
-            <button
-              type="button"
-              onClick={openProjectManage}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
-              data-tour="manage-projects"
-            >
-              <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
-              </svg>
-              Manage projects
-            </button>
             <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
-              Drag to reorder · pin columns · scroll for more
+              Drag to reorder · pin columns · manage in Projects (nav or ⋯)
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -2667,24 +2635,12 @@ export default function TaskList({
                 </select>
               </>
             )}
-            <button
-              type="button"
-              onClick={() => { setNewProjectName(""); openProjectManage(); }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-colors shrink-0"
-              title="Create a new project bucket"
-              data-tour="new-project"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              New project
-            </button>
           </div>
         </div>
       )}
 
       {/* Bucket view — all projects as columns */}
-      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && !tasksReady && (
+      {!projectManageOpen && viewMode === "bucket" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
@@ -2698,7 +2654,7 @@ export default function TaskList({
           ))}
         </div>
       )}
-      {!isFocusMode && !projectManageOpen && viewMode === "bucket" && tasksReady && (
+      {!projectManageOpen && viewMode === "bucket" && tasksReady && (
         <TaskBucketView
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
@@ -2735,88 +2691,44 @@ export default function TaskList({
         />
       )}
 
-      {/* Card toolbar — One Thing + manage/new on one desktop row */}
-      {!isFocusMode && !projectManageOpen && viewMode === "card" && (
+      {/* Card toolbar — One Thing on desktop; project admin lives in nav / ⋯ */}
+      {!projectManageOpen &&
+        viewMode === "card" &&
+        tasksReady &&
+        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
         <div className="no-print hidden sm:flex px-3 sm:px-4 py-2 flex-wrap items-center gap-x-3 gap-y-2 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
-          {tasksReady && (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) ? (
-            <div className="flex-1 min-w-0">
-              <OneThingCard
-                variant="inline"
-                status={oneThingResolved.status}
-                task={oneThingResolved.task}
-                projectName={
-                  oneThingResolved.task
-                    ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
-                    : undefined
-                }
-                hasOpenTasks={allOpenCount > 0}
-                isTimerRunning={isTimerRunning}
-                isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
-                onFocus={() => {
-                  if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
-                }}
-                onComplete={() => {
-                  if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
-                }}
-                onChange={changeOneThingPick}
-                onClear={clearOneThingPick}
-                onDismissEmpty={
-                  oneThingResolved.status === "unset"
-                    ? () => setOneThingPromptDismissed(true)
-                    : undefined
-                }
-              />
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0 flex-1">
-              <button
-                type="button"
-                onClick={openProjectManage}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors touch-target-sm"
-                data-tour="manage-projects"
-              >
-                <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
-                </svg>
-                Manage projects
-              </button>
-              <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
-                Drag cards to reorder · pin favorites · templates when you add
-              </span>
-            </div>
-          )}
-          <div className="flex items-center gap-2 shrink-0 ml-auto">
-            {tasksReady && (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
-              <button
-                type="button"
-                onClick={openProjectManage}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 rounded-lg hover:bg-white/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
-                data-tour="manage-projects"
-                title="Manage projects"
-              >
-                <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
-                </svg>
-                <span className="hidden md:inline">Manage</span>
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => { setNewProjectName(""); openProjectManage(); }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-colors shrink-0"
-              title="Create a new project — blank or from a template"
-              data-tour="new-project"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              New project
-            </button>
+          <div className="flex-1 min-w-0">
+            <OneThingCard
+              variant="inline"
+              status={oneThingResolved.status}
+              task={oneThingResolved.task}
+              projectName={
+                oneThingResolved.task
+                  ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
+                  : undefined
+              }
+              hasOpenTasks={allOpenCount > 0}
+              isTimerRunning={isTimerRunning}
+              isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
+              onFocus={() => {
+                if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
+              }}
+              onComplete={() => {
+                if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
+              }}
+              onChange={changeOneThingPick}
+              onClear={clearOneThingPick}
+              onDismissEmpty={
+                oneThingResolved.status === "unset"
+                  ? () => setOneThingPromptDismissed(true)
+                  : undefined
+              }
+            />
           </div>
         </div>
       )}
 
-      {!isFocusMode && !projectManageOpen && viewMode === "card" && !tasksReady && (
+      {!projectManageOpen && viewMode === "card" && !tasksReady && (
         <div className="px-3 sm:px-4 pb-4 pt-1 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
@@ -2831,7 +2743,7 @@ export default function TaskList({
           ))}
         </div>
       )}
-      {!isFocusMode && !projectManageOpen && viewMode === "card" && tasksReady && (
+      {!projectManageOpen && viewMode === "card" && tasksReady && (
         <TaskCardView
           projects={sortedProjects}
           tasksByProject={bucketTasksByProject}
@@ -2884,7 +2796,7 @@ export default function TaskList({
       )}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
-      {!isFocusMode && !projectManageOpen && viewMode === "list" && isViewingSharedProject && selectedSharedProject && (
+      {!projectManageOpen && viewMode === "list" && isViewingSharedProject && selectedSharedProject && (
         <div className="px-3 sm:px-4 pt-2 pb-2 border-b border-slate-200/90 dark:border-[#243350]/80 no-print">
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/20 px-3 py-2">
             <div className="min-w-0 flex-1">
@@ -2917,7 +2829,7 @@ export default function TaskList({
       )}
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
-      {!isFocusMode && !projectManageOpen && viewMode === "list" && (<>
+      {!projectManageOpen && viewMode === "list" && (<>
       {!isViewingSharedProject && (
       <div className="px-3 sm:px-4 pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
@@ -2965,36 +2877,7 @@ export default function TaskList({
             )}
           </select>
 
-          {/* Focus on project button */}
-          {onFocusProject && !isAllProjects && !isTimeFilter && selectedProjectId !== DEFAULT_PROJECT_ID && (
-            <button
-              onClick={() => onFocusProject(selectedProjectId)}
-              className="flex-shrink-0 touch-target-sm p-2 rounded-lg text-slate-400 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
-              title="Focus on this project"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-            </button>
-          )}
-
-          {/* Add project button */}
-          <button
-            onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
-            className={`flex-shrink-0 touch-target-sm p-2 rounded-lg transition-colors ${
-              showAddProject
-                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
-            }`}
-            title="Add project"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
-
-          {/* More / manage button */}
+          {/* Projects admin */}
           <button
             onClick={openProjectManage}
             className={`flex-shrink-0 touch-target-sm p-2 rounded-lg transition-colors ${
@@ -3002,7 +2885,7 @@ export default function TaskList({
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
-            title="Manage projects"
+            title="Projects"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
@@ -3181,22 +3064,7 @@ export default function TaskList({
           )}
 
           <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
-          {/* Add project button */}
-          <button
-            onClick={() => { setShowAddProject(!showAddProject); setNewProjectName(""); }}
-            className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
-              showAddProject
-                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
-            }`}
-            title="Add project"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
-
-          {/* More / manage button */}
+          {/* Projects admin */}
           <button
             onClick={openProjectManage}
             className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
@@ -3204,7 +3072,7 @@ export default function TaskList({
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
-            title="Manage projects"
+            title="Projects"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
@@ -3245,38 +3113,6 @@ export default function TaskList({
             </div>
           )}
         </div>
-
-        {/* Inline add project input */}
-        {showAddProject && (
-          <div className="mt-2 space-y-2">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                addProject();
-              }}
-              className="flex gap-1.5"
-            >
-              <input
-                type="text"
-                value={newProjectName}
-                onChange={(e) => setNewProjectName(e.target.value)}
-                placeholder="Project name..."
-                maxLength={MAX_PROJECT_NAME}
-                className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
-                autoFocus
-                onKeyDown={(e) => { if (e.key === "Escape") setShowAddProject(false); }}
-              />
-              <button
-                type="submit"
-                disabled={!newProjectName.trim()}
-                className="px-2.5 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                Add
-              </button>
-            </form>
-            <ProjectTemplatePicker onSelect={addProject} />
-          </div>
-        )}
 
       </div>
       )}

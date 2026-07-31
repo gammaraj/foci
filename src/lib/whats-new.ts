@@ -69,7 +69,7 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     target: "[data-tour='task-panel-menu']",
     title: "Project templates & more",
     description:
-      "Open ⋯ for Project templates (workflows + financial life planning with preset tasks), Import tasks, Smart Plan, Settings, What's new, and Take product tour.",
+      "Open ⋯ for Project templates (workflows + financial life planning with preset tasks), Import tasks, Settings, What's new, and Take product tour. Smart Plan is under Layout → Plan. Projects in the top nav is where you manage, create, and import.",
     position: "bottom",
   },
   {

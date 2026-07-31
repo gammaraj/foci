@@ -28,8 +28,6 @@ interface MobileTaskToolbarProps {
   viewMode: TaskViewMode;
   onSelectViewMode: (mode: TaskViewMode) => void;
   onManageProjects: () => void;
-  /** Opens manage projects ready to create (blank or template). */
-  onNewProject?: () => void;
   doneTodayCount?: number;
   doneWeekCount?: number;
   doneMonthCount?: number;
@@ -47,6 +45,7 @@ const VIEW_OPTIONS: { mode: TaskViewMode; label: string }[] = [
   { mode: "card", label: "Cards" },
   { mode: "list", label: "List" },
   { mode: "calendar", label: "Cal" },
+  { mode: "plan", label: "Plan" },
 ];
 
 function scopeLabel(id: TimeScopeId): string {
@@ -60,7 +59,7 @@ function scopeLabel(id: TimeScopeId): string {
     case THIS_YEAR_FILTER_ID:
       return "Year";
     default:
-      return "All";
+      return "All times";
   }
 }
 
@@ -74,7 +73,6 @@ export function MobileTaskToolbar({
   viewMode,
   onSelectViewMode,
   onManageProjects,
-  onNewProject,
   doneTodayCount = 0,
   doneWeekCount = 0,
   doneMonthCount = 0,
@@ -112,10 +110,10 @@ export function MobileTaskToolbar({
         </label>
         <select
           id="mobile-view-mode"
-          value={viewMode === "plan" ? "card" : viewMode}
+          value={viewMode}
           onChange={(e) => onSelectViewMode(e.target.value as TaskViewMode)}
           className={`${SELECT_CLASS} flex-1 min-w-[5.25rem]`}
-          aria-label="Task view mode"
+          aria-label="Task layout"
           data-tour="view-modes"
         >
           {VIEW_OPTIONS.map(({ mode, label }) => (
@@ -150,33 +148,18 @@ export function MobileTaskToolbar({
           </>
         )}
 
-        {onNewProject && (
-          <button
-            type="button"
-            onClick={onNewProject}
-            className="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[2.25rem] rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors"
-            data-tour="new-project"
-            title="New project"
-            aria-label="New project"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="text-xs font-semibold hidden min-[380px]:inline">New</span>
-          </button>
-        )}
-
         <button
           type="button"
           onClick={onManageProjects}
-          className="shrink-0 inline-flex items-center justify-center px-2 py-1.5 min-h-[2.25rem] min-w-[2.25rem] rounded-md border border-blue-200/80 dark:border-[#243350] bg-white dark:bg-[#131d30] text-blue-600/80 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+          className="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[2.25rem] rounded-md border border-blue-200/80 dark:border-[#243350] bg-white dark:bg-[#131d30] text-blue-600/80 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
           data-tour="manage-projects"
-          title="Manage projects"
-          aria-label="Manage projects"
+          title="Projects — manage, create, import"
+          aria-label="Projects"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
           </svg>
+          <span className="text-xs font-semibold hidden min-[380px]:inline">Projects</span>
         </button>
       </div>
 

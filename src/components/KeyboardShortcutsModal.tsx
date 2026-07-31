@@ -6,7 +6,7 @@ const SHORTCUTS = [
   { keys: "Space", action: "Start or pause timer" },
   { keys: "R", action: "Reset timer" },
   { keys: "N", action: "Focus task input" },
-  { keys: "F", action: "Toggle focus mode" },
+  { keys: "F", action: "Toggle Zen mode" },
   { keys: "?", action: "Show this help" },
   { keys: "Esc", action: "Close dialogs" },
 ];

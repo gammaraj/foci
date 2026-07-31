@@ -54,12 +54,15 @@ export interface ProjectManageViewProps {
   onArchive: (id: string) => void;
   onDelete: (id: string) => void;
   onUnarchive: (id: string) => void;
-  onFocusProject?: (id: string) => void;
   onSelectSharedProject: (sp: SharedProject) => void;
   onLeaveShared: (sp: SharedProject) => void;
   onAddProject: (template?: ProjectTemplate) => void;
   /** Reload tasks/projects after an import from this screen. */
-  onTasksImported?: () => void;
+  onTasksImported?: (result?: {
+    tasks: Task[];
+    projects: Project[];
+    focusProjectId?: string;
+  }) => void;
   renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }
 
@@ -262,7 +265,6 @@ function ProjectRow({
   onShare,
   onArchive,
   onDelete,
-  onFocusProject,
   renderOpenTasks,
 }: {
   project: Project;
@@ -293,7 +295,6 @@ function ProjectRow({
   onShare: (p: Project) => void;
   onArchive: (id: string) => void;
   onDelete: (id: string) => void;
-  onFocusProject?: (id: string) => void;
   renderOpenTasks: (tasks: Task[], options?: { className?: string }) => React.ReactNode;
 }) {
   const canManage = project.id !== DEFAULT_PROJECT_ID;
@@ -467,19 +468,10 @@ function ProjectRow({
               onClick={() => onOpenProject(project.id)}
               className="px-2.5 py-1.5 text-xs font-medium rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
             >
-              Open in tasks
+              Open in List
             </button>
             {canManage && (
               <>
-                {onFocusProject && (
-                  <button
-                    type="button"
-                    onClick={() => onFocusProject(project.id)}
-                    className="px-2.5 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
-                  >
-                    Focus project
-                  </button>
-                )}
                 <button
                   type="button"
                   onClick={() => onStartRename(project)}
@@ -557,7 +549,6 @@ export default function ProjectManageView({
   onArchive,
   onDelete,
   onUnarchive,
-  onFocusProject,
   onSelectSharedProject,
   onLeaveShared,
   onAddProject,
@@ -683,7 +674,6 @@ export default function ProjectManageView({
               onShare={onShare}
               onArchive={onArchive}
               onDelete={onDelete}
-              onFocusProject={onFocusProject}
               renderOpenTasks={renderOpenTasks}
             />
             </div>
@@ -775,8 +765,8 @@ export default function ProjectManageView({
               importOnly
               showDestinationPicker
               projects={sortedProjects}
-              onTasksImported={() => {
-                onTasksImported?.();
+              onTasksImported={(result) => {
+                onTasksImported?.(result);
               }}
             />
           </div>

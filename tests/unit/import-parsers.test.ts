@@ -82,4 +82,17 @@ Old export,__general__`;
     const { tasks } = detectAndParse(csv, "old.csv");
     expect(tasks[0].projectName).toBeUndefined();
   });
+
+  it("detectAndParse reads Project + Task + Notes packing-list CSV", () => {
+    const csv = `Project,Task,Notes
+India Trip Packing,Lightweight shirts,Cotton/linen, mix short & long sleeve
+India Trip Packing,Rain jacket,Monsoon season`;
+    const { format, tasks } = detectAndParse(csv, "india_trip_packing_checklist.csv");
+    expect(format).toBe("notion");
+    expect(tasks).toHaveLength(2);
+    expect(tasks[0].title).toBe("Lightweight shirts");
+    expect(tasks[0].projectName).toBe("India Trip Packing");
+    expect(tasks[0].description).toBe("Cotton/linen, mix short & long sleeve");
+    expect(tasks[1].description).toBe("Monsoon season");
+  });
 });

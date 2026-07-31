@@ -13,8 +13,6 @@ interface TaskPanelMenuProps {
   isFullscreen?: boolean;
   templates?: ProjectTemplate[];
   onSelectTemplate?: (template: ProjectTemplate) => void;
-  onTogglePlan?: () => void;
-  isPlanView?: boolean;
   onPrint?: () => void;
   printDisabled?: boolean;
 }
@@ -26,8 +24,6 @@ export default function TaskPanelMenu({
   isFullscreen,
   templates,
   onSelectTemplate,
-  onTogglePlan,
-  isPlanView,
   onPrint,
   printDisabled,
 }: TaskPanelMenuProps) {
@@ -67,9 +63,12 @@ export default function TaskPanelMenu({
           <button
             type="button"
             className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-            onClick={() => { onOpenSettings(); setOpen(false); }}
+            onClick={() => {
+              window.dispatchEvent(new Event("foci-open-project-menu"));
+              setOpen(false);
+            }}
           >
-            Settings
+            Projects
           </button>
           <button
             type="button"
@@ -83,6 +82,13 @@ export default function TaskPanelMenu({
           >
             Import tasks…
           </button>
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            onClick={() => { onOpenSettings(); setOpen(false); }}
+          >
+            Settings
+          </button>
           {onPrint && (
             <button
               type="button"
@@ -93,16 +99,6 @@ export default function TaskPanelMenu({
               Print current view
             </button>
           )}
-          <button
-            type="button"
-            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-            onClick={() => {
-              window.dispatchEvent(new Event("foci-open-project-menu"));
-              setOpen(false);
-            }}
-          >
-            Manage projects
-          </button>
           <button
             type="button"
             className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
@@ -124,22 +120,13 @@ export default function TaskPanelMenu({
           >
             Take product tour
           </button>
-          {onTogglePlan && (
-            <button
-              type="button"
-              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-              onClick={() => { onTogglePlan(); setOpen(false); }}
-            >
-              {isPlanView ? "← Back to task list" : "Smart Plan — schedule my day"}
-            </button>
-          )}
           {onToggleFullscreen && (
             <button
               type="button"
               className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
               onClick={() => { onToggleFullscreen(); setOpen(false); }}
             >
-              {isFullscreen ? "Exit focus view" : "Focus view (tasks)"}
+              {isFullscreen ? "Exit expand" : "Expand tasks"}
             </button>
           )}
           {user && (

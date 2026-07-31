@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Settings, Project } from "@/lib/types";
 import { TIMER_PRESETS, GOAL_PRESETS } from "@/lib/templates";
-import TaskImportExport from "@/components/TaskImportExport";
+import TaskImportExport, { type ImportResult } from "@/components/TaskImportExport";
 import AccountSharingModal from "@/components/AccountSharingModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
@@ -19,7 +19,7 @@ interface SettingsPanelProps {
   settings: Settings;
   onSave: (s: Settings) => void;
   onClose: () => void;
-  onTasksImported?: () => void;
+  onTasksImported?: (result?: ImportResult) => void;
 }
 
 type SettingsTab = "timer" | "experience" | "sharing" | "data";
@@ -463,7 +463,7 @@ export default function SettingsPanel({
                   <section className="divide-y divide-slate-100 dark:divide-[#243350]">
                     <ToggleRow
                       id="focusModeAuto"
-                      label="Enter focus mode when timer starts"
+                      label="Enter Zen mode when timer starts"
                       description="Hides distractions and simplifies the task panel while you work."
                       checked={focusModeAuto}
                       onChange={(next) => {

@@ -93,6 +93,7 @@ function resolveProjectIds(
 function toFociTasks(
   parsed: ParsedTask[],
   projectIdFor: (projectName?: string) => string,
+  orderBase = 0,
 ): Task[] {
   const now = Date.now();
   return parsed.map((p, i) => ({
@@ -104,12 +105,15 @@ function toFociTasks(
     createdAt: now + i,
     ...(p.completed ? { completedAt: now + i } : {}),
     projectId: projectIdFor(p.projectName),
+    ...(p.description?.trim()
+      ? { description: p.description.trim().slice(0, 2000) }
+      : {}),
     subtasks: p.subtasks?.map((s) => ({
       id: uuid(),
       title: s.title.slice(0, 200),
       completed: s.completed || false,
     })),
-    order: i,
+    order: orderBase + i,
     dueDate: p.dueDate,
   }));
 }
@@ -172,8 +176,15 @@ function downloadFile(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 
+export type ImportResult = {
+  tasks: Task[];
+  projects: Project[];
+  /** Primary project to open so the user can see what was imported. */
+  focusProjectId?: string;
+};
+
 interface TaskImportExportProps {
-  onTasksImported?: () => void;
+  onTasksImported?: (result?: ImportResult) => void;
   /** Hide export section (e.g. Projects page embed). */
   importOnly?: boolean;
   /** Let the user put all tasks into an existing or new project. */
@@ -211,11 +222,7 @@ export default function TaskImportExport({
     (projectsProp ?? []).some((p) => p.id === initialProjectId && !p.archived)
       ? initialProjectId
       : (projectsProp ?? []).find((p) => !p.archived)?.id ?? DEFAULT_PROJECT_ID;
-  const [destination, setDestination] = useState<ImportDestination>(() =>
-    showDestinationPicker
-      ? { mode: "existing", projectId: defaultExistingId }
-      : { mode: "file" },
-  );
+  const [destination, setDestination] = useState<ImportDestination>({ mode: "file" });
   const [newProjectName, setNewProjectName] = useState("");
 
   const availableProjects = (projectsProp ?? []).filter((p) => !p.archived);
@@ -246,6 +253,11 @@ export default function TaskImportExport({
         });
       } else {
         setImportState({ step: "preview", format, tasks, fileName: file.name });
+        // Prefer the file's Project column when present so imports aren't silently
+        // dumped into whatever project happens to be first in the dropdown.
+        if (showDestinationPicker && uniqueProjectNames(tasks).length > 0) {
+          setDestination({ mode: "file" });
+        }
       }
     };
     reader.readAsText(file);
@@ -276,10 +288,12 @@ export default function TaskImportExport({
       let projectIdFor: (projectName?: string) => string;
       let projects = existingProjects;
       let createdCount = 0;
+      let focusProjectId: string | undefined;
 
       if (destination.mode === "existing") {
         const targetId = destination.projectId;
         projectIdFor = () => targetId;
+        focusProjectId = targetId;
       } else if (destination.mode === "new") {
         const resolved = resolveProjectIds(
           [{ title: "_", projectName: newProjectName.trim() }],
@@ -289,21 +303,38 @@ export default function TaskImportExport({
         createdCount = resolved.createdCount;
         const targetId = resolved.projectIdFor(newProjectName.trim());
         projectIdFor = () => targetId;
+        focusProjectId = targetId;
       } else {
         const resolved = resolveProjectIds(tasksToImport, existingProjects);
         projects = resolved.projects;
         createdCount = resolved.createdCount;
         projectIdFor = resolved.projectIdFor;
+        const firstNamed = tasksToImport.find((t) => t.projectName?.trim())?.projectName;
+        focusProjectId = firstNamed
+          ? projectIdFor(firstNamed)
+          : projectIdFor(undefined);
       }
 
-      const newTasks = toFociTasks(tasksToImport, projectIdFor);
+      const existing = await loadTasks();
+      const orderBase =
+        Math.max(
+          -1,
+          ...existing
+            .filter((t) => !t.completed && !t.archivedAt && t.order != null)
+            .map((t) => t.order as number),
+        ) + 1;
+      const newTasks = toFociTasks(tasksToImport, projectIdFor, orderBase);
       if (createdCount > 0) {
         await saveProjects(projects);
       }
-      const existing = await loadTasks();
-      await saveTasks([...existing, ...newTasks]);
+      const mergedTasks = [...existing, ...newTasks];
+      await saveTasks(mergedTasks);
       setImportState({ step: "done", count: newTasks.length, projectsCreated: createdCount });
-      onTasksImported?.();
+      onTasksImported?.({
+        tasks: mergedTasks,
+        projects,
+        focusProjectId,
+      });
     } catch {
       setImportState({ step: "error", message: "Failed to import tasks. Please try again." });
     }

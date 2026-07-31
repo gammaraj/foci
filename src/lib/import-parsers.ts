@@ -88,6 +88,8 @@ export type ParsedTask = {
   dueDate?: string;
   /** Optional project/list name from source file — used to create or match Foci projects. */
   projectName?: string;
+  /** Optional notes/description from source file. */
+  description?: string;
   subtasks?: Pick<Subtask, "title" | "completed">[];
 };
 
@@ -208,12 +210,23 @@ export function parseAsanaCSV(headers: string[], rows: string[][]): ParsedTask[]
     }));
 }
 
+/** Prefer Notes / Description; never use the title column as notes. */
+export function findNotesColumn(headers: string[], titleIdx: number): number {
+  const preferred = ["notes", "note", "description", "details", "body", "comment", "comments"];
+  for (const c of preferred) {
+    const idx = headers.findIndex((h, i) => i !== titleIdx && (h === c || h.includes(c)));
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
+
 export function parseNotionCSV(headers: string[], rows: string[][]): ParsedTask[] | null {
   const nameIdx = findColumn(headers, "name", "title", "task");
   if (nameIdx === -1) return null;
   const statusIdx = findColumn(headers, "status", "state");
   const dueDateIdx = findColumn(headers, "due", "date", "deadline");
   const projectIdx = findProjectColumn(headers);
+  const notesIdx = findNotesColumn(headers, nameIdx);
 
   return rows
     .filter((r) => r[nameIdx]?.trim())
@@ -224,16 +237,32 @@ export function parseNotionCSV(headers: string[], rows: string[][]): ParsedTask[
         completed: status === "done" || status === "completed" || status === "complete",
         dueDate: dueDateIdx !== -1 ? normalizeDate(r[dueDateIdx]) : undefined,
         projectName: projectIdx !== -1 ? r[projectIdx]?.trim() || undefined : undefined,
+        description: readNotesField(r, notesIdx, headers.length),
       };
     });
 }
 
+/** When Notes is the last column, rejoin extras from unquoted commas in the note text. */
+function readNotesField(
+  row: string[],
+  notesIdx: number,
+  headerCount: number,
+): string | undefined {
+  if (notesIdx === -1) return undefined;
+  if (notesIdx === headerCount - 1 && row.length > headerCount) {
+    return row.slice(notesIdx).join(", ").trim() || undefined;
+  }
+  return row[notesIdx]?.trim() || undefined;
+}
+
 export function parseGenericCSV(headers: string[], rows: string[][]): ParsedTask[] | null {
-  const nameIdx = findColumn(headers, "title", "name", "task", "summary", "subject", "description", "to-do", "todo");
+  // Prefer Title/Name over Task; still accept Task (common packing-list exports).
+  const nameIdx = findColumn(headers, "title", "name", "task", "summary", "subject", "to-do", "todo");
   if (nameIdx === -1) return null;
   const dueDateIdx = findColumn(headers, "due", "date", "deadline");
   const completedIdx = findColumn(headers, "completed", "done", "status", "complete");
   const projectIdx = findProjectColumn(headers);
+  const notesIdx = findNotesColumn(headers, nameIdx);
 
   return rows
     .filter((r) => r[nameIdx]?.trim())
@@ -248,6 +277,7 @@ export function parseGenericCSV(headers: string[], rows: string[][]): ParsedTask
         completed,
         dueDate: dueDateIdx !== -1 ? normalizeDate(r[dueDateIdx]) : undefined,
         projectName: projectIdx !== -1 ? r[projectIdx]?.trim() || undefined : undefined,
+        description: readNotesField(r, notesIdx, headers.length),
       };
     });
 }
