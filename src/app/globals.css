@@ -1247,10 +1247,13 @@ input:focus-visible {
     margin: 0.6in;
   }
 
+  html,
   body {
     background: #fff !important;
     color: #0f172a !important;
     padding: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
   }
 
   .no-print,
@@ -1266,9 +1269,18 @@ input:focus-visible {
     display: block !important;
   }
 
+  /* Collapse screen flex/min-height so print doesn't leave a blank viewport gap */
   .app-shell {
     background: #fff !important;
-    min-height: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  .app-shell .flex-1 {
+    flex: none !important;
+    min-height: 0 !important;
+    height: auto !important;
   }
 
   .app-container,
@@ -1285,6 +1297,8 @@ input:focus-visible {
     border-radius: 0 !important;
     box-shadow: none !important;
     overflow: visible !important;
+    min-height: 0 !important;
+    height: auto !important;
   }
 
   .dark,
@@ -1293,8 +1307,8 @@ input:focus-visible {
   }
 
   .print-header {
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
     border-bottom: 2px solid #e2e8f0;
   }
 
@@ -1322,8 +1336,17 @@ input:focus-visible {
     print-color-adjust: exact;
   }
 
+  /* Allow long sections to split across pages — avoiding breaks on whole
+     panels caused a large blank gap under the print header. */
   #tasks-section .task-list-section-panel,
+  #tasks-section .task-list-body,
   #tasks-section .rounded-lg.border {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  #tasks-section .group\/row,
+  #tasks-section .group\/task {
     break-inside: avoid;
     page-break-inside: avoid;
   }
