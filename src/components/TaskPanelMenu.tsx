@@ -69,7 +69,19 @@ export default function TaskPanelMenu({
             className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
             onClick={() => { onOpenSettings(); setOpen(false); }}
           >
-            Settings & import
+            Settings
+          </button>
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            onClick={() => {
+              window.dispatchEvent(
+                new CustomEvent("foci-open-settings", { detail: { tab: "data" } }),
+              );
+              setOpen(false);
+            }}
+          >
+            Import tasks…
           </button>
           {onPrint && (
             <button
@@ -134,7 +146,12 @@ export default function TaskPanelMenu({
             <button
               type="button"
               className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-              onClick={() => { onOpenSettings(); setOpen(false); }}
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("foci-open-settings", { detail: { tab: "sharing" } }),
+                );
+                setOpen(false);
+              }}
             >
               Collaboration & sharing
             </button>

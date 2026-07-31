@@ -39,7 +39,7 @@ export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
     title: "Import your tools",
     description:
-      "Bring tasks from Todoist, Notion, Asana, or Google Tasks via Settings → Import & Export.",
+      "Bring tasks from Todoist, Notion, Asana, or Google Tasks via ⋯ → Import tasks, or Settings → Data.",
   },
 ];
 
@@ -69,7 +69,7 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     target: "[data-tour='task-panel-menu']",
     title: "Project templates & more",
     description:
-      "Open ⋯ for Project templates (workflows + financial life planning with preset tasks), Smart Plan, Settings & import, What's new, and Take product tour.",
+      "Open ⋯ for Project templates (workflows + financial life planning with preset tasks), Import tasks, Smart Plan, Settings, What's new, and Take product tour.",
     position: "bottom",
   },
   {
