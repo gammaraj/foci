@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-07-e";
+export const WHATS_NEW_VERSION = "2026-08-a";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -17,29 +17,29 @@ export interface FeatureTourStep {
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
+    title: "Safer project delete",
+    description:
+      "Deleting a project now removes its tasks too. Archive a project if you want to hide it while keeping the work.",
+  },
+  {
+    title: "Smarter task import",
+    description:
+      "Import from ⋯, Settings → Data, or Projects. Preview new vs existing projects and choose a destination before importing.",
+  },
+  {
+    title: "Tasks vs Projects",
+    description:
+      "Tasks is for day-to-day work. Projects in the top nav is where you manage, create, and import projects.",
+  },
+  {
     title: "Project templates",
     description:
-      "Start a new project with preset tasks — workflows like Dev Sprint and Trip Planning, plus financial packs including Financial Life Plan, Monthly Budget, and Debt Payoff. Open ⋯ → Project templates, or pick one when creating a project.",
+      "Start a new project with preset tasks — workflows like Dev Sprint and Trip Planning, plus financial packs including Financial Life Plan.",
   },
   {
     title: "Cards view (default)",
     description:
       "Projects open as cards with top tasks — switch to Buckets, List, or Calendar anytime.",
-  },
-  {
-    title: "Smart Plan",
-    description:
-      "Day-by-day scheduling from due dates and daily goals. Open it from the task panel menu (⋯).",
-  },
-  {
-    title: "Today's One Thing",
-    description:
-      "Pick the one task that would make today a success — keep it visible above your list.",
-  },
-  {
-    title: "Import your tools",
-    description:
-      "Bring tasks from Todoist, Notion, Asana, or Google Tasks via ⋯ → Import tasks, or Settings → Data.",
   },
 ];
 

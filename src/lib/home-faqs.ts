@@ -28,7 +28,12 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Can I import tasks from Todoist, Notion, Asana, or Google Tasks?",
     answer:
-      "Yes. Foci supports importing from Google Tasks (JSON), Todoist (CSV), Asana (CSV), Notion (CSV), and generic CSV. Go to Settings → Import & Export Tasks to upload and preview before importing.",
+      "Yes. Foci supports importing from Google Tasks (JSON), Todoist (CSV), Asana (CSV), Notion (CSV), and generic CSV. Open ⋯ → Import tasks, Settings → Data, or Projects. Preview shows new vs existing projects; pick a destination or create projects from the file.",
+  },
+  {
+    question: "What happens when I delete a project in Foci?",
+    answer:
+      "Deleting a project permanently removes the project and all of its tasks. Archive a project instead if you want to hide it while keeping the tasks.",
   },
   {
     question: "Does Foci have project templates?",

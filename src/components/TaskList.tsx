@@ -855,18 +855,23 @@ export default function TaskList({
   const deleteProject = async (id: string) => {
     if (id === DEFAULT_PROJECT_ID) return;
     const project = projects.find((p) => p.id === id);
+    const taskCount = tasks.filter((t) => t.projectId === id).length;
     setPendingConfirm({
       title: "Delete project",
-      message: `Delete "${project?.name ?? ""}"? Tasks will be moved to General.`,
+      message:
+        taskCount > 0
+          ? `Delete "${project?.name ?? ""}" and its ${taskCount} task${taskCount === 1 ? "" : "s"}? This cannot be undone.`
+          : `Delete "${project?.name ?? ""}"? This cannot be undone.`,
       confirmLabel: "Delete",
       onConfirm: async () => {
         setPendingConfirm(null);
-        const updated = tasks.map((t) =>
-          t.projectId === id ? { ...t, projectId: DEFAULT_PROJECT_ID } : t
-        );
-        persist(updated);
+        const toRemove = tasks.filter((t) => t.projectId === id).map((t) => t.id);
+        persist(tasks.filter((t) => t.projectId !== id));
         persistProjects(projects.filter((p) => p.id !== id));
+        if (oneThingPref?.taskId && toRemove.includes(oneThingPref.taskId)) clearOneThingPick();
+        if (activeTaskId && toRemove.includes(activeTaskId)) onSelectTask(null);
         try {
+          if (toRemove.length > 0) await removeTasksFromDB(toRemove);
           await removeProjectFromDB(id);
         } catch (err) {
           console.error("[Foci] Failed to delete project:", err);

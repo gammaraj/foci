@@ -4,7 +4,7 @@ import { getAllPosts } from "@/lib/blog";
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = "https://usefoci.com";
   const now = new Date();
-  const productRefresh = new Date("2026-07-29");
+  const productRefresh = new Date("2026-08-01");
 
   const allPosts = getAllPosts();
   const mostRecentPostDate = allPosts.length > 0

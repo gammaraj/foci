@@ -66,14 +66,14 @@ const jsonLd = {
   image: `${siteUrl}/opengraph-image`,
   inLanguage: "en-US",
   areaServed: { "@type": "Place", name: "Worldwide" },
-  dateModified: "2026-07-29",
+  dateModified: "2026-08-01",
   featureList: [
     "Task tracking with projects, subtasks, and automatic per-task time logging",
     "Smart Plan: algorithmic day-by-day task scheduling based on due dates and daily goals",
     "Card view (default): project cards with drag-and-drop task reorder and slide-over task detail drawer",
     "Bucket board view: kanban columns per project with drag-and-drop reorder and cross-project moves",
     "List and calendar task views",
-    "Import tasks from Google Tasks, Todoist, Asana, and Notion",
+    "Import tasks from Google Tasks, Todoist, Asana, and Notion with destination picker and new vs existing project preview",
     "Export tasks as JSON or CSV for backup and migration",
     "Today, This Week, This Month, and This Year smart task filters with project tabs",
     "Optional Pomodoro-style focus timer with customizable work and break durations",
@@ -85,6 +85,7 @@ const jsonLd = {
     "Mobile urgency chips for overdue vs due-today tasks and a compact tasks toolbar",
     "Print the active task view (cards, list, or buckets)",
     "Project tab reorder: drag tabs or use Projects admin; pin favorites to the front",
+    "Delete project permanently removes the project and its tasks; archive to keep tasks",
     "Status bar flyouts for timer and music — compact strip with expandable panels",
     "Daily motivational quote in the tasks header on desktop",
     "Projects and subtasks for organized workflows",
@@ -319,7 +320,7 @@ export default function LandingPage() {
               },
               {
                 title: "Import from your tools",
-                desc: "Bring tasks from Todoist, Notion, Asana, or Google Tasks in a few clicks.",
+                desc: "Bring tasks from Todoist, Notion, Asana, or Google Tasks — pick a destination project in the preview.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 ),
