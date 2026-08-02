@@ -116,6 +116,22 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
 
   const logoHref = user ? "/app" : "/";
 
+  const goHomeCards = (e: React.MouseEvent) => {
+    if (!user) return;
+    if (pathname === "/app") {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent("foci-go-home-cards"));
+      setMenuOpen(false);
+      return;
+    }
+    // Navigating to /app from another page — ask TaskList to land on cards.
+    try {
+      sessionStorage.setItem("foci-go-home-cards", "1");
+    } catch {
+      /* ignore */
+    }
+  };
+
   const renderNavLink = (link: NavLink, mobile = false) => (
     <Link
       key={link.key}
@@ -136,7 +152,13 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
     <header className="nav-chrome sticky top-0 z-30">
       <nav className="relative app-container pb-2.5 sm:pb-3">
         <div className="relative flex items-center gap-2.5 sm:gap-4 min-h-[2.75rem]">
-          <Link href={logoHref} className="group flex items-center gap-2.5 min-w-0 flex-shrink-0">
+          <Link
+            href={logoHref}
+            onClick={goHomeCards}
+            className="group flex items-center gap-2.5 min-w-0 flex-shrink-0"
+            title={user ? "Cards view" : "Foci home"}
+            aria-label={user ? "Foci — go to Cards view" : "Foci home"}
+          >
             <FociLogoMark
               size={36}
               idPrefix="nav"

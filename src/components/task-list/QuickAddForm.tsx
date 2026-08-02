@@ -30,7 +30,7 @@ export function QuickAddForm({
           type="text"
           value={draft}
           onChange={(e) => onDraftChange(e.target.value)}
-          placeholder="Add a task…"
+          placeholder="Quick add a task…"
           maxLength={MAX_TASK_TITLE}
           className={`app-placeholder flex-1 min-w-0 bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200 ${
             compact ? "text-xs" : "text-sm"
@@ -42,8 +42,8 @@ export function QuickAddForm({
           className={`font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
             compact ? "text-xs" : "text-sm"
           }`}
-          aria-label="Add task"
-          title="Add task"
+          aria-label="Quick Add"
+          title="Quick Add"
         >
           Add
         </button>

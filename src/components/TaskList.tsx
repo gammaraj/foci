@@ -42,6 +42,7 @@ import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
 import { dismissDatePicker } from "@/components/task-list/dismiss-overlays";
+import { DueDateField } from "@/components/task-list/DueDateField";
 import ProjectManageView from "@/components/task-list/ProjectManageView";
 import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePicker";
 import OpenTaskList from "@/components/task-list/OpenTaskList";
@@ -58,7 +59,6 @@ import {
   formatDueDate,
   isDueDateOverdue,
   getDaysOverdue,
-  openDatePicker,
   getNextDueDate,
   projectTabTooltip,
   projectTabLabel,
@@ -140,6 +140,8 @@ export default function TaskList({
   const [cardJumpProjectId, setCardJumpProjectId] = useState("");
   const [cardJumpToken, setCardJumpToken] = useState(0);
   const [highlightProjectId, setHighlightProjectId] = useState<string | null>(null);
+  const [forceVisibleProjectIds, setForceVisibleProjectIds] = useState<Set<string>>(() => new Set());
+  const [autoQuickAddProjectId, setAutoQuickAddProjectId] = useState<string | null>(null);
   const [showCardReorderTip, setShowCardReorderTip] = useState(false);
   const [showOverflowProjectMenu, setShowOverflowProjectMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
@@ -331,16 +333,41 @@ export default function TaskList({
   const projectDidDragRef = useRef(false);
   const [maxVisibleProjectTabs, setMaxVisibleProjectTabs] = useState(MAX_VISIBLE_PROJECT_TABS);
 
+  const goHomeCards = useCallback(() => {
+    closeProjectManage();
+    setSelectedSharedProject(null);
+    setSelectedProjectId(ALL_PROJECTS_ID);
+    saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+    setListReturnView(null);
+    setExpandedTaskId(null);
+    setExpandedSubtasksTaskId(null);
+    selectViewMode("card");
+  }, [closeProjectManage, selectViewMode]);
+
   useEffect(() => {
     const open = () => openProjectManage();
     const close = () => closeProjectManage();
+    const homeCards = () => goHomeCards();
     window.addEventListener("foci-open-project-menu", open);
     window.addEventListener("foci-close-project-menu", close);
+    window.addEventListener("foci-go-home-cards", homeCards);
     return () => {
       window.removeEventListener("foci-open-project-menu", open);
       window.removeEventListener("foci-close-project-menu", close);
+      window.removeEventListener("foci-go-home-cards", homeCards);
     };
-  }, [openProjectManage, closeProjectManage]);
+  }, [openProjectManage, closeProjectManage, goHomeCards]);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("foci-go-home-cards") === "1") {
+        sessionStorage.removeItem("foci-go-home-cards");
+        goHomeCards();
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [goHomeCards]);
 
   useEffect(() => {
     const shouldOpen = searchParams.get("projects") === "1";
@@ -358,8 +385,6 @@ export default function TaskList({
       setEditingProjectId(null);
     }
   }, [searchParams, viewMode]);
-  const newTaskDueDateInputRef = useRef<HTMLInputElement>(null);
-
   // Close project menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -542,6 +567,20 @@ export default function TaskList({
     // Temporary drill-in — don't overwrite the user's default view preference.
     setViewMode("list");
   }, [viewMode]);
+
+  /** Stay on cards: highlight / scroll to the project (don't drill into list). */
+  const focusProjectCard = useCallback((projectId: string) => {
+    if (viewMode !== "card") selectViewMode("card");
+    setCardJumpProjectId(projectId);
+    setCardJumpToken((n) => n + 1);
+    setHighlightProjectId(projectId);
+    setForceVisibleProjectIds((prev) => {
+      if (prev.has(projectId)) return prev;
+      const next = new Set(prev);
+      next.add(projectId);
+      return next;
+    });
+  }, [viewMode, selectViewMode]);
 
   const reloadAfterImport = useCallback(async (result?: {
     tasks: Task[];
@@ -765,9 +804,26 @@ export default function TaskList({
       const newTasks = templateToTasks(template, project.id);
       void persist([...tasks, ...newTasks]);
       showToast(`Created ${name} with ${newTasks.length} tasks`);
+    } else {
+      showToast(`Created ${name} — add your first task`);
     }
     setNewProjectName("");
-    selectProject(project.id);
+    setForceVisibleProjectIds((prev) => {
+      const next = new Set(prev);
+      next.add(project.id);
+      return next;
+    });
+    closeProjectManage();
+    setSelectedSharedProject(null);
+    setSelectedProjectId(ALL_PROJECTS_ID);
+    saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+    setListReturnView(null);
+    selectViewMode("card");
+    setCardJumpProjectId(project.id);
+    setCardJumpToken((n) => n + 1);
+    setHighlightProjectId(project.id);
+    setAutoQuickAddProjectId(project.id);
+    window.setTimeout(() => setAutoQuickAddProjectId(null), 4000);
   };
 
   const startEditingProject = (p: Project) => {
@@ -868,6 +924,12 @@ export default function TaskList({
         const toRemove = tasks.filter((t) => t.projectId === id).map((t) => t.id);
         persist(tasks.filter((t) => t.projectId !== id));
         persistProjects(projects.filter((p) => p.id !== id));
+        setForceVisibleProjectIds((prev) => {
+          if (!prev.has(id)) return prev;
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
         if (oneThingPref?.taskId && toRemove.includes(oneThingPref.taskId)) clearOneThingPick();
         if (activeTaskId && toRemove.includes(activeTaskId)) onSelectTask(null);
         try {
@@ -877,12 +939,23 @@ export default function TaskList({
           console.error("[Foci] Failed to delete project:", err);
           showToast("Failed to delete project.", "error");
         }
-        if (selectedProjectId === id) selectProject(DEFAULT_PROJECT_ID);
+        setSelectedSharedProject(null);
+        setSelectedProjectId(ALL_PROJECTS_ID);
+        saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+        setListReturnView(null);
+        setExpandedTaskId(null);
+        closeProjectManage();
+        selectViewMode("card");
       },
     });
   };
 
-  const addTaskWithTitle = (titleRaw: string, dueDateOverride?: string, projectIdOverride?: string) => {
+  const addTaskWithTitle = (
+    titleRaw: string,
+    dueDateOverride?: string,
+    projectIdOverride?: string,
+    options?: { openDetail?: boolean },
+  ) => {
     if (isViewingSharedProject) {
       showToast("You can't add tasks to a shared project", "error");
       return;
@@ -941,7 +1014,9 @@ export default function TaskList({
     trackTaskAdded();
     setNewTaskTitle("");
     setNewTaskDueDate("");
-    setExpandedTaskId(task.id);
+    if (options?.openDetail !== false) {
+      setExpandedTaskId(task.id);
+    }
   };
 
   const addTask = () => addTaskWithTitle(newTaskTitle, undefined, newTaskProjectId);
@@ -1807,9 +1882,6 @@ export default function TaskList({
       tasks.filter((t) => !t.archivedAt && t.completed && t.projectId === project.id).length
     );
   }
-  const emptyCardProjectCount = sortedProjects.filter(
-    (p) => (bucketTasksByProject.get(p.id) ?? []).length === 0,
-  ).length;
   const timeFilterActiveProject =
     projectFilterId !== ALL_PROJECTS_ID
       ? projects.find((p) => p.id === projectFilterId)
@@ -1849,6 +1921,12 @@ export default function TaskList({
       getDoneTodayTasks(tasks.filter((t) => t.projectId === project.id && !t.archivedAt)),
     );
   }
+  const emptyCardProjectCount = sortedProjects.filter(
+    (p) =>
+      (bucketTasksByProject.get(p.id) ?? []).length === 0 &&
+      (doneTodayByProject.get(p.id) ?? []).length === 0 &&
+      !forceVisibleProjectIds.has(p.id),
+  ).length;
   const globalDoneTodaySummary = summarizeDoneToday(tasks);
   const doneProgress = summarizeDoneProgress(tasks);
   const scrollToDoneToday = useCallback(() => {
@@ -2507,7 +2585,7 @@ export default function TaskList({
           isTimerRunning={isTimerRunning}
           selectedDay={calendarSelectedDay}
           onSelectDay={setCalendarSelectedDay}
-          onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate)}
+          onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate, undefined, { openDetail: false })}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
           expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
@@ -2672,7 +2750,7 @@ export default function TaskList({
           onToggleComplete={toggleComplete}
           onStartTask={onStartTask}
           onSelectTask={onSelectTask}
-          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
+          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId, { openDetail: false })}
           onToggleProjectFavorite={toggleProjectFavorite}
           onExpandProject={expandProjectToList}
           // Drawer owns title edit — don't mount row autoFocus input (steals caret).
@@ -2782,9 +2860,9 @@ export default function TaskList({
           onDeleteTask={deleteTask}
           onMoveProject={handleMoveProject}
           onExpandProject={expandProjectToList}
-          onOpenProject={expandProjectToList}
+          onOpenProject={focusProjectCard}
           onToggleProjectFavorite={toggleProjectFavorite}
-          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId)}
+          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId, { openDetail: false })}
           onToggleComplete={toggleComplete}
           onToggleTaskDetail={toggleTaskDetail}
           onToggleSubtasks={toggleSubtasksExpanded}
@@ -2797,6 +2875,8 @@ export default function TaskList({
           onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
           suppressOverdueBanner={showUrgencySummary}
           highlightProjectId={highlightProjectId}
+          forceVisibleProjectIds={forceVisibleProjectIds}
+          autoQuickAddProjectId={autoQuickAddProjectId}
         />
       )}
 
@@ -2890,7 +2970,8 @@ export default function TaskList({
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
-            title="Projects"
+            title="Manage projects"
+            aria-label="Manage projects"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
@@ -3077,7 +3158,8 @@ export default function TaskList({
                 ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
                 : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
             }`}
-            title="Projects"
+            title="Manage projects"
+            aria-label="Manage projects"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
@@ -3218,45 +3300,32 @@ export default function TaskList({
               </option>
             ))}
           </select>
-          <div className="relative flex-1 min-w-0 sm:flex-shrink-0 sm:max-w-[9.5rem]">
-            <input
-              ref={newTaskDueDateInputRef}
-              id="new-task-due-date"
-              type="date"
-              value={newTaskDueDate}
-              onChange={(e) => setNewTaskDueDate(e.target.value)}
-              className="sr-only"
-              tabIndex={-1}
-              aria-hidden="true"
-            />
-            <button
-              type="button"
-              onClick={() => openDatePicker(newTaskDueDateInputRef.current)}
-              className={`flex items-center gap-1 min-w-0 w-full h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
-                newTaskDueDate
-                  ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                  : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070]"
-              }`}
-              aria-label={newTaskDueDate ? `Due date: ${formatDueDate(newTaskDueDate)}. Click to change.` : "Set due date"}
-              title={newTaskDueDate ? `Due: ${formatDueDate(newTaskDueDate)}` : "Set due date"}
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {newTaskDueDate ? (
-                <>
-                  <span className="truncate font-semibold sm:hidden">{formatDueDate(newTaskDueDate)}</span>
-                  <span className="hidden sm:inline font-medium whitespace-nowrap">Due Date</span>
-                  <span className="hidden sm:inline text-xs font-semibold whitespace-nowrap">({formatDueDate(newTaskDueDate)})</span>
-                </>
-              ) : (
-                <>
-                  <span className="font-medium sm:hidden">Due</span>
-                  <span className="hidden sm:inline font-medium whitespace-nowrap">Due Date</span>
-                </>
-              )}
-            </button>
-          </div>
+          <DueDateField
+            value={newTaskDueDate || undefined}
+            onChange={(date) => setNewTaskDueDate(date ?? "")}
+            ariaLabel={newTaskDueDate ? `Due date: ${formatDueDate(newTaskDueDate)}. Click to change.` : "Set due date"}
+            className={`flex items-center gap-1 min-w-0 flex-1 sm:flex-shrink-0 sm:max-w-[9.5rem] h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
+              newTaskDueDate
+                ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                : "border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070]"
+            }`}
+          >
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {newTaskDueDate ? (
+              <>
+                <span className="truncate font-semibold sm:hidden">{formatDueDate(newTaskDueDate)}</span>
+                <span className="hidden sm:inline font-medium whitespace-nowrap">Due Date</span>
+                <span className="hidden sm:inline text-xs font-semibold whitespace-nowrap">({formatDueDate(newTaskDueDate)})</span>
+              </>
+            ) : (
+              <>
+                <span className="font-medium sm:hidden">Due</span>
+                <span className="hidden sm:inline font-medium whitespace-nowrap">Due Date</span>
+              </>
+            )}
+          </DueDateField>
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}

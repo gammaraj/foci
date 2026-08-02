@@ -38,7 +38,7 @@ export function DoneTodayTally({
       className={`inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${
         pulse ? "ring-2 ring-blue-400/50 scale-[1.03]" : ""
       } ${className}`}
-      title="Jump to Done today"
+      title="Done today · this week (in this month) · this month — tap to jump"
       aria-label={ariaLabel}
       data-done-today-tally
     >

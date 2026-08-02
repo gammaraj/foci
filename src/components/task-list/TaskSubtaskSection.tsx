@@ -254,7 +254,11 @@ export function TaskSubtaskSection({
                   }}
                   aria-label={`Subtask title: ${sub.title}`}
                   className={`flex-1 min-w-0 font-medium outline-none transition-colors ${
-                    compact ? "text-xs px-1 py-0.5" : "text-sm px-2 py-1.5"
+                    compact
+                      ? "text-xs px-1 py-0.5"
+                      : spacious
+                        ? "text-base sm:text-sm px-2 py-1.5"
+                        : "text-sm px-2 py-1.5"
                   } ${
                     isEditing
                       ? "rounded-md border border-blue-400 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white focus-visible:ring-2 focus-visible:ring-blue-400/40"

@@ -92,6 +92,10 @@ interface TaskCardViewProps {
   suppressOverdueBanner?: boolean;
   /** Soft flash highlight for jump-to-card (e.g. most-late CTA). */
   highlightProjectId?: string | null;
+  /** Keep these projects visible even when empty (e.g. just created). */
+  forceVisibleProjectIds?: ReadonlySet<string>;
+  /** Open the Quick Add form for this project card. */
+  autoQuickAddProjectId?: string | null;
 }
 
 function CardTaskMoreMenu({
@@ -559,6 +563,7 @@ function ProjectCard({
   collapsed = false,
   onToggleCollapsed,
   highlighted = false,
+  autoQuickAdd = false,
 }: {
   project: Project;
   projectIndex: number;
@@ -602,10 +607,12 @@ function ProjectCard({
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
   highlighted?: boolean;
+  autoQuickAdd?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const addInputRef = useRef<HTMLInputElement>(null);
+  const touchOverIdRef = useRef<string | null>(null);
   const topTasks = sortCardTasks(tasks, activeTaskId).slice(0, 5);
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
@@ -618,6 +625,11 @@ function ProjectCard({
     if (showAdd) addInputRef.current?.focus();
   }, [showAdd]);
 
+  useEffect(() => {
+    if (!autoQuickAdd) return;
+    setShowAdd(true);
+  }, [autoQuickAdd]);
+
   const submitQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
     const title = draft.trim();
@@ -627,9 +639,15 @@ function ProjectCard({
     setShowAdd(false);
   };
 
+  const projectUnderTouch = (clientX: number, clientY: number) => {
+    const el = document.elementFromPoint(clientX, clientY);
+    return el?.closest<HTMLElement>("[data-project-card-id]")?.dataset.projectCardId ?? null;
+  };
+
   return (
     <article
       id={`project-card-${project.id}`}
+      data-project-card-id={project.id}
       onDragOver={(e) => {
         if (!canReorder || !onProjectDragOver || !dragProjectId) return;
         onProjectDragOver(e, project.id);
@@ -698,7 +716,36 @@ function ProjectCard({
                 e.stopPropagation();
               }}
               onDragEnd={onProjectDragEnd}
-              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing p-0.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              onTouchStart={(e) => {
+                if (!onProjectDragStart) return;
+                e.stopPropagation();
+                touchOverIdRef.current = project.id;
+                onProjectDragStart(project.id);
+              }}
+              onTouchMove={(e) => {
+                if (!onProjectDragStart || !onProjectDragOver) return;
+                const touch = e.touches[0];
+                if (!touch) return;
+                const overId = projectUnderTouch(touch.clientX, touch.clientY);
+                if (!overId || overId === touchOverIdRef.current) return;
+                touchOverIdRef.current = overId;
+                onProjectDragOver(
+                  { preventDefault() {}, stopPropagation() {} } as React.DragEvent,
+                  overId,
+                );
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                const targetId = touchOverIdRef.current;
+                touchOverIdRef.current = null;
+                if (targetId && targetId !== project.id) onProjectDrop?.(targetId);
+                else onProjectDragEnd?.();
+              }}
+              onTouchCancel={() => {
+                touchOverIdRef.current = null;
+                onProjectDragEnd?.();
+              }}
+              className="inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
             >
@@ -706,15 +753,15 @@ function ProjectCard({
             </span>
           ) : null}
           {canReorder && onMoveProject ? (
-            <div className="sm:hidden flex flex-col shrink-0 -space-y-px -ml-0.5">
+            <div className="sm:hidden flex items-center gap-0.5 shrink-0">
               <button
                 type="button"
                 onClick={() => onMoveProject(project.id, "up")}
                 disabled={projectIndex === 0}
-                className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="touch-target-sm !min-h-8 !min-w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} up`}
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               </button>
@@ -722,10 +769,10 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "down")}
                 disabled={projectIndex >= projectCount - 1}
-                className="p-0 h-4 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="touch-target-sm !min-h-8 !min-w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} down`}
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -769,9 +816,12 @@ function ProjectCard({
           />
           <button
             type="button"
-            onClick={() => onOpenProject?.(project.id)}
+            onClick={() => {
+              if (collapsed) onToggleCollapsed?.();
+              onOpenProject?.(project.id);
+            }}
             className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-            title={`View all tasks in ${project.name}`}
+            title={`Focus ${project.name}`}
           >
             {project.name}
           </button>
@@ -848,9 +898,9 @@ function ProjectCard({
                   type="button"
                   onClick={() => setShowAdd(true)}
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border border-blue-300/90 dark:border-blue-600/60 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:border-blue-400 dark:hover:border-blue-500 transition-colors shadow-sm"
+                  aria-label="Quick Add"
                 >
-                  <span aria-hidden>+</span>
-                  Add
+                  Quick Add
                 </button>
               )}
               {remaining > 0 && onExpandProject && (
@@ -928,6 +978,8 @@ export default function TaskCardView({
   onViewOverdue,
   suppressOverdueBanner = false,
   highlightProjectId = null,
+  forceVisibleProjectIds,
+  autoQuickAddProjectId = null,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
 
@@ -936,15 +988,16 @@ export default function TaskCardView({
   }, []);
 
   useEffect(() => {
-    if (!highlightProjectId) return;
+    const expandId = highlightProjectId ?? autoQuickAddProjectId;
+    if (!expandId) return;
     setCollapsedIds((prev) => {
-      if (!prev.has(highlightProjectId)) return prev;
+      if (!prev.has(expandId)) return prev;
       const next = new Set(prev);
-      next.delete(highlightProjectId);
+      next.delete(expandId);
       persistCollapsedProjectIds(next);
       return next;
     });
-  }, [highlightProjectId]);
+  }, [highlightProjectId, autoQuickAddProjectId]);
 
   const toggleCollapsed = useCallback((projectId: string) => {
     setCollapsedIds((prev) => {
@@ -968,10 +1021,11 @@ export default function TaskCardView({
     if (!hideEmptyProjects) return projects;
     return projects.filter(
       (p) =>
+        forceVisibleProjectIds?.has(p.id) ||
         (tasksByProject.get(p.id) ?? []).length > 0 ||
         (doneTodayByProject?.get(p.id) ?? []).length > 0,
     );
-  }, [projects, tasksByProject, doneTodayByProject, hideEmptyProjects]);
+  }, [projects, tasksByProject, doneTodayByProject, hideEmptyProjects, forceVisibleProjectIds]);
 
   const previewProjects = useMemo(
     () => getProjectsDragPreview(visibleProjects, dragProjectId ?? null, dragOverProjectId ?? null),
@@ -1080,6 +1134,7 @@ export default function TaskCardView({
               collapsed={collapsedIds.has(project.id)}
               onToggleCollapsed={() => toggleCollapsed(project.id)}
               highlighted={highlightProjectId === project.id}
+              autoQuickAdd={autoQuickAddProjectId === project.id}
             />
           );
         })}

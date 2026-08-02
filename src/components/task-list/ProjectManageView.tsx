@@ -325,8 +325,8 @@ function ProjectRow({
             draggable
             onDragStart={() => onProjectDragStart(project.id)}
             onDragEnd={onProjectDragEnd}
-            className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 flex-shrink-0 cursor-grab active:cursor-grabbing p-1 -ml-1 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
-            title="Drag to reorder tabs"
+            className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 flex-shrink-0 cursor-grab active:cursor-grabbing p-1.5 -ml-1 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+            title="Drag to reorder"
             aria-label={`Drag ${project.name} to reorder`}
           >
             <GripIcon />

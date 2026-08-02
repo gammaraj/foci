@@ -111,6 +111,27 @@ describe("done-today", () => {
     );
   });
 
+  it("summarizeDoneProgress clips this week to the current month", () => {
+    // Fri Apr 3 2026 → week starts Mon Mar 30 (prior month).
+    const today = "2026-04-03";
+    const tasks = [
+      makeTask({
+        id: "spill",
+        completed: true,
+        completedAt: new Date("2026-03-31T12:00:00").getTime(),
+      }),
+      makeTask({
+        id: "april",
+        completed: true,
+        completedAt: new Date("2026-04-01T12:00:00").getTime(),
+      }),
+    ];
+    const progress = summarizeDoneProgress(tasks, today);
+    expect(progress.week).toBe(1);
+    expect(progress.month).toBe(1);
+    expect(progress.week).toBeLessThanOrEqual(progress.month);
+  });
+
   it("formatDoneTaskMeta joins time and sessions", () => {
     expect(formatDoneTaskMeta({ timeSpent: 0, sessions: 0 })).toBeNull();
     expect(formatDoneTaskMeta({ timeSpent: 25 * 60000, sessions: 0 })).toBe("25m");

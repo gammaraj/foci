@@ -192,7 +192,7 @@ export default function OpenTaskList({
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
           }`}
         >
-        <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 py-1 sm:px-2 sm:py-1">
+        <div className="relative flex items-center gap-1.5 sm:gap-2 px-1.5 py-1 sm:px-2 sm:py-1">
           <div className="hidden sm:flex flex-shrink-0 items-center cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
               <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
@@ -355,20 +355,47 @@ export default function OpenTaskList({
               Deselect
             </button>
           ) : isOverdue ? (
-            <div
-              className="hidden sm:group-hover/task:flex shrink-0 items-center gap-1"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
-                Move to today
-              </button>
-              <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
-                Done
-              </button>
-              <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors whitespace-nowrap">
-                Focus
-              </button>
-            </div>
+            <>
+              {/* Mobile: always-visible actions (no hover). */}
+              <div
+                className="flex sm:hidden shrink-0 items-center gap-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => onSnoozeToToday(task.id)}
+                  className="px-2 py-1 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] touch-target-sm !min-h-8"
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onStartTask(task.id)}
+                  className="flex items-center justify-center gap-1 px-2 py-1 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 touch-target-sm !min-h-8"
+                  title={isTimerRunning ? "Switch focus to this task" : "Focus on this task and start the timer"}
+                >
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                    <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                  </svg>
+                  Focus
+                </button>
+              </div>
+              {/* Desktop: overlay on hover — never toggle display, or the row reflows and the page flickers. */}
+              <div
+                className="pointer-events-none absolute right-9 top-1/2 z-10 hidden -translate-y-1/2 items-center gap-1 rounded-md border border-[var(--urgency-border)] bg-[var(--urgency-soft-bg)]/95 px-1 py-0.5 opacity-0 shadow-sm backdrop-blur-sm transition-opacity sm:flex dark:border-rose-800/50 dark:bg-[#1a1520]/95 group-hover/task:pointer-events-auto group-hover/task:opacity-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-white dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
+                  Move to today
+                </button>
+                <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
+                  Done
+                </button>
+                <button type="button" onClick={() => onStartTask(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors whitespace-nowrap">
+                  Focus
+                </button>
+              </div>
+            </>
           ) : (
             <button
               onClick={(e) => { e.stopPropagation(); onStartTask(task.id); }}

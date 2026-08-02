@@ -52,13 +52,18 @@ export interface DoneProgressSummary {
   month: number;
 }
 
-/** Today / this week (Mon–Sun) / this month completion counts for the header tally. */
+/**
+ * Today / this week / this month completion counts for the header tally.
+ * "This week" is clipped to the current month so week never exceeds month
+ * when the Mon–Sun week spills into the prior month.
+ */
 export function summarizeDoneProgress(
   tasks: Task[],
   today: string = getToday(),
 ): DoneProgressSummary {
-  const weekStart = getStartOfWeek(new Date(`${today}T12:00:00`));
+  const calendarWeekStart = getStartOfWeek(new Date(`${today}T12:00:00`));
   const monthStart = getStartOfMonth(new Date(`${today}T12:00:00`));
+  const weekStart = calendarWeekStart > monthStart ? calendarWeekStart : monthStart;
   let todayCount = 0;
   let weekCount = 0;
   let monthCount = 0;

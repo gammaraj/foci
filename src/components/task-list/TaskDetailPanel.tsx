@@ -112,7 +112,8 @@ export function TaskDetailPanel({
   const isDrawer = variant === "drawer";
   const pad = isDrawer ? "px-4 sm:px-6" : "px-4";
   const chip = isDrawer ? chipBaseDrawer : chipBase;
-  const selectText = "text-xs";
+  // text-base on mobile avoids iOS Safari auto-zoom on focused <select>s.
+  const selectText = "text-base sm:text-xs";
   const iconSize = "w-3.5 h-3.5";
   const saveButtonRef = useRef<HTMLButtonElement | null>(null);
 

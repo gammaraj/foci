@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { openDatePicker } from "@/components/task-list/utils";
 
 interface DueDateFieldProps {
@@ -21,8 +21,9 @@ function blurDateInput(input: HTMLInputElement | null) {
 }
 
 /**
- * Due date control: visible label opens the picker on click. The native input stays
- * screen-reader only so it cannot steal clicks from overlays (e.g. drawer close).
+ * Invisible date input over a visible label. The input stays a real hit target so
+ * mobile browsers can open the native picker; programmatic showPicker on a
+ * clipped/sr-only input often no-ops on Safari/Chrome mobile.
  */
 export function DueDateField({
   value,
@@ -35,23 +36,14 @@ export function DueDateField({
   const inputRef = useRef<HTMLInputElement>(null);
   const pickerOpenedRef = useRef(false);
 
-  const handleOpenPicker = (e: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
+  const handleOpenPicker = (e: React.MouseEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    e.preventDefault();
     pickerOpenedRef.current = true;
-    openDatePicker(inputRef.current);
+    openDatePicker(e.currentTarget);
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleOpenPicker}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") handleOpenPicker(e);
-      }}
-      className={className || "relative inline-flex items-center"}
-      aria-label={ariaLabel}
-    >
+    <div className={`relative ${className}`.trim()}>
       {children}
       <input
         ref={inputRef}
@@ -70,13 +62,14 @@ export function DueDateField({
           }
           onChange(next);
         }}
+        onClick={handleOpenPicker}
         onBlur={() => {
           pickerOpenedRef.current = false;
         }}
-        className="sr-only"
+        className="absolute inset-0 z-10 w-full h-full cursor-pointer touch-manipulation opacity-0 text-base"
+        aria-label={ariaLabel}
         tabIndex={-1}
-        aria-hidden
       />
-    </button>
+    </div>
   );
 }
