@@ -3,8 +3,9 @@
  * so that authenticated users can still load their data when offline.
  *
  * Strategy:
- * - Reads: try Supabase → on success, cache to localStorage → return.
- *          On failure (network error), return cached data from localStorage.
+ * - Reads (tasks/projects/prefs): cache-first when warm — return localStorage
+ *   immediately, refresh Supabase in the background, notify on change.
+ *   Cold cache: try Supabase → cache → return; on failure use cache/defaults.
  * - Writes: always update localStorage cache first (so data is never lost),
  *           then attempt Supabase write (fire-and-forget error logging on failure).
  */
@@ -65,6 +66,15 @@ function cacheGet<T>(key: string): T | null {
   }
 }
 
+function cacheHas(key: string): boolean {
+  if (!isBrowser()) return false;
+  try {
+    return localStorage.getItem(key) != null;
+  } catch {
+    return false;
+  }
+}
+
 const REMOTE_LOAD_TIMEOUT_MS = 15_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -76,6 +86,11 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+function notifyTasksUpdated(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("tempo-tasks-updated"));
+}
+
 /** Clear all cache keys (call on logout). */
 export function clearOfflineCache(): void {
   if (!isBrowser()) return;
@@ -84,6 +99,11 @@ export function clearOfflineCache(): void {
 
 export class CachedSupabaseAdapter implements StorageAdapter {
   constructor(private remote: StorageAdapter) {}
+
+  private refreshingTasks = false;
+  private refreshingProjects = false;
+  private refreshingTaskViewPrefs = false;
+  private refreshingOneThing = false;
 
   // ── Settings ──────────────────────────────────────────
 
@@ -160,6 +180,29 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   // ── Tasks ─────────────────────────────────────────────
 
   async loadTasks(): Promise<Task[]> {
+    // Cache-first: paint immediately for returning users, refresh in background.
+    if (cacheHas(CACHE_KEYS.tasks)) {
+      const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
+      if (!this.refreshingTasks) {
+        this.refreshingTasks = true;
+        void withTimeout(this.remote.loadTasks(), REMOTE_LOAD_TIMEOUT_MS)
+          .then((result) => {
+            const prev = cacheGet<Task[]>(CACHE_KEYS.tasks);
+            cacheSet(CACHE_KEYS.tasks, result);
+            if (JSON.stringify(prev) !== JSON.stringify(result)) {
+              notifyTasksUpdated();
+            }
+          })
+          .catch(() => {
+            /* keep serving cache */
+          })
+          .finally(() => {
+            this.refreshingTasks = false;
+          });
+      }
+      return cached;
+    }
+
     try {
       const result = await withTimeout(this.remote.loadTasks(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.tasks, result);
@@ -207,6 +250,29 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   // ── Projects ──────────────────────────────────────────
 
   async loadProjects(): Promise<Project[]> {
+    if (cacheHas(CACHE_KEYS.projects)) {
+      const cached = cacheGet<Project[]>(CACHE_KEYS.projects);
+      const painted = cached && cached.length > 0 ? cached : [DEFAULT_PROJECT];
+      if (!this.refreshingProjects) {
+        this.refreshingProjects = true;
+        void withTimeout(this.remote.loadProjects(), REMOTE_LOAD_TIMEOUT_MS)
+          .then((result) => {
+            const prev = cacheGet<Project[]>(CACHE_KEYS.projects);
+            cacheSet(CACHE_KEYS.projects, result);
+            if (JSON.stringify(prev) !== JSON.stringify(result)) {
+              notifyTasksUpdated();
+            }
+          })
+          .catch(() => {
+            /* keep serving cache */
+          })
+          .finally(() => {
+            this.refreshingProjects = false;
+          });
+      }
+      return painted;
+    }
+
     try {
       const result = await withTimeout(this.remote.loadProjects(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.projects, result);
@@ -246,6 +312,24 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   }
 
   async loadTaskViewPreferences(): Promise<TaskViewPreferences> {
+    if (cacheHas(CACHE_KEYS.taskViewPrefs)) {
+      const cached =
+        cacheGet<TaskViewPreferences>(CACHE_KEYS.taskViewPrefs) ?? {
+          ...DEFAULT_TASK_VIEW_PREFERENCES,
+        };
+      if (!this.refreshingTaskViewPrefs) {
+        this.refreshingTaskViewPrefs = true;
+        void this.remote
+          .loadTaskViewPreferences()
+          .then((result) => cacheSet(CACHE_KEYS.taskViewPrefs, result))
+          .catch(() => {})
+          .finally(() => {
+            this.refreshingTaskViewPrefs = false;
+          });
+      }
+      return cached;
+    }
+
     try {
       const result = await this.remote.loadTaskViewPreferences();
       cacheSet(CACHE_KEYS.taskViewPrefs, result);
@@ -263,6 +347,21 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   }
 
   async loadOneThing(): Promise<OneThingPreference | null> {
+    if (cacheHas(CACHE_KEYS.oneThing)) {
+      const cached = cacheGet<OneThingPreference | null>(CACHE_KEYS.oneThing) ?? null;
+      if (!this.refreshingOneThing) {
+        this.refreshingOneThing = true;
+        void this.remote
+          .loadOneThing()
+          .then((result) => cacheSet(CACHE_KEYS.oneThing, result))
+          .catch(() => {})
+          .finally(() => {
+            this.refreshingOneThing = false;
+          });
+      }
+      return cached;
+    }
+
     try {
       const result = await this.remote.loadOneThing();
       cacheSet(CACHE_KEYS.oneThing, result);

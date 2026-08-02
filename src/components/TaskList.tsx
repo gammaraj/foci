@@ -442,19 +442,18 @@ export default function TaskList({
           setTasks(migrated);
         }
 
-        // Load shared projects for authenticated users
-        if (user) {
-          try {
-            const shared = await getSharedProjects();
-            setSharedProjects(shared);
-          } catch (err) {
-            console.error("[Foci] Failed to load shared projects:", err);
-          }
-        }
+        // Paint cards immediately — shared projects are not needed for own data.
+        setTasksReady(true);
 
+        if (user) {
+          getSharedProjects()
+            .then(setSharedProjects)
+            .catch((err) => {
+              console.error("[Foci] Failed to load shared projects:", err);
+            });
+        }
       } catch (err) {
         console.error("[Foci] Failed to load data:", err);
-      } finally {
         setTasksReady(true);
       }
     };
@@ -567,20 +566,6 @@ export default function TaskList({
     // Temporary drill-in — don't overwrite the user's default view preference.
     setViewMode("list");
   }, [viewMode]);
-
-  /** Stay on cards: highlight / scroll to the project (don't drill into list). */
-  const focusProjectCard = useCallback((projectId: string) => {
-    if (viewMode !== "card") selectViewMode("card");
-    setCardJumpProjectId(projectId);
-    setCardJumpToken((n) => n + 1);
-    setHighlightProjectId(projectId);
-    setForceVisibleProjectIds((prev) => {
-      if (prev.has(projectId)) return prev;
-      const next = new Set(prev);
-      next.add(projectId);
-      return next;
-    });
-  }, [viewMode, selectViewMode]);
 
   const reloadAfterImport = useCallback(async (result?: {
     tasks: Task[];
@@ -2860,7 +2845,7 @@ export default function TaskList({
           onDeleteTask={deleteTask}
           onMoveProject={handleMoveProject}
           onExpandProject={expandProjectToList}
-          onOpenProject={focusProjectCard}
+          onOpenProject={expandProjectToList}
           onToggleProjectFavorite={toggleProjectFavorite}
           onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId, { openDetail: false })}
           onToggleComplete={toggleComplete}

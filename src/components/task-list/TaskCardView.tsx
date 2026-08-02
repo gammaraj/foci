@@ -821,7 +821,7 @@ function ProjectCard({
               onOpenProject?.(project.id);
             }}
             className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-            title={`Focus ${project.name}`}
+            title={`View all tasks in ${project.name}`}
           >
             {project.name}
           </button>
