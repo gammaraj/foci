@@ -745,7 +745,7 @@ function ProjectCard({
                 touchOverIdRef.current = null;
                 onProjectDragEnd?.();
               }}
-              className="inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
             >
@@ -753,15 +753,15 @@ function ProjectCard({
             </span>
           ) : null}
           {canReorder && onMoveProject ? (
-            <div className="sm:hidden flex items-center gap-0.5 shrink-0">
+            <div className="sm:hidden flex flex-col shrink-0 -space-y-0.5 -ml-0.5">
               <button
                 type="button"
                 onClick={() => onMoveProject(project.id, "up")}
                 disabled={projectIndex === 0}
-                className="touch-target-sm !min-h-8 !min-w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="p-0 h-5 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} up`}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               </button>
@@ -769,10 +769,10 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "down")}
                 disabled={projectIndex >= projectCount - 1}
-                className="touch-target-sm !min-h-8 !min-w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="p-0 h-5 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
                 aria-label={`Move ${project.name} down`}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
