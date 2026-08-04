@@ -33,6 +33,8 @@ interface MobileTaskToolbarProps {
   viewMode: TaskViewMode;
   onSelectViewMode: (mode: TaskViewMode) => void;
   onManageProjects: () => void;
+  /** Opens Projects with create at the top. */
+  onAddProject?: () => void;
   projects?: Project[];
   projectJumpId?: string;
   onProjectJump?: (projectId: string) => void;
@@ -76,6 +78,7 @@ export function MobileTaskToolbar({
   viewMode,
   onSelectViewMode,
   onManageProjects,
+  onAddProject,
   projects = [],
   projectJumpId = "",
   onProjectJump,
@@ -162,6 +165,22 @@ export function MobileTaskToolbar({
           </>
         )}
 
+        {onAddProject && (
+          <button
+            type="button"
+            onClick={onAddProject}
+            className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1.5 min-h-[2.25rem] rounded-md border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            data-tour="add-project"
+            title="Add a new project"
+            aria-label="Add project"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="text-xs font-semibold hidden min-[400px]:inline">Project</span>
+          </button>
+        )}
+
         <button
           type="button"
           onClick={onManageProjects}
@@ -173,7 +192,7 @@ export function MobileTaskToolbar({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
           </svg>
-          <span className="text-xs font-semibold hidden min-[380px]:inline">Projects</span>
+          <span className="text-xs font-semibold hidden min-[380px]:inline">All</span>
         </button>
       </div>
     </div>

@@ -50,6 +50,7 @@ import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
+import { AddProjectButton } from "@/components/task-list/AddProjectButton";
 import { MobileTaskToolbar } from "@/components/task-list/MobileTaskToolbar";
 import {
   MAX_TASK_TITLE,
@@ -2622,6 +2623,7 @@ export default function TaskList({
                   <span className="hidden lg:inline">Plan</span>
                 </button>
               </div>
+              <AddProjectButton onClick={openProjectManage} size="sm" />
             </div>
           </div>
         )}
@@ -2634,6 +2636,7 @@ export default function TaskList({
           viewMode={viewMode}
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
+          onAddProject={openProjectManage}
           projects={sortedProjects}
           projectJumpId={bucketJumpProjectId}
           onProjectJump={handleMobileProjectJump}
@@ -2861,6 +2864,7 @@ export default function TaskList({
                 </select>
               </>
             )}
+            <AddProjectButton onClick={openProjectManage} size="sm" />
           </div>
         </div>
       )}
@@ -3106,6 +3110,7 @@ export default function TaskList({
           </select>
 
           {/* Projects admin */}
+          <AddProjectButton onClick={openProjectManage} size="sm" className="sm:hidden" />
           <button
             onClick={openProjectManage}
             className={`flex-shrink-0 touch-target-sm p-2 rounded-lg transition-colors ${
@@ -3293,6 +3298,7 @@ export default function TaskList({
           )}
 
           <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
+          <AddProjectButton onClick={openProjectManage} size="sm" />
           {/* Projects admin */}
           <button
             onClick={openProjectManage}
