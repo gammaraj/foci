@@ -217,41 +217,73 @@ export default function TaskList({
 
   const viewBeforePlanRef = useRef<TaskViewMode>("card");
   const viewBeforeManageRef = useRef<TaskViewMode>("card");
+  const drillReturnViewRef = useRef<TaskViewMode>("card");
+  const wasProjectDrillInRef = useRef(false);
+  const taskDetailPushedRef = useRef(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const syncProjectsUrl = useCallback(
-    (open: boolean) => {
-      const hasProjects = searchParams.get("projects") === "1";
-      if (open && !hasProjects) {
-        router.replace("/app?projects=1", { scroll: false });
-      } else if (!open && hasProjects) {
-        router.replace("/app", { scroll: false });
-      }
-    },
-    [router, searchParams]
-  );
+  const appHref = useCallback((mutate: (params: URLSearchParams) => void) => {
+    const params = new URLSearchParams(searchParams.toString());
+    mutate(params);
+    const q = params.toString();
+    return q ? `/app?${q}` : "/app";
+  }, [searchParams]);
 
   const openProjectManage = useCallback(() => {
     viewBeforeManageRef.current =
       viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
         ? viewMode
         : "card";
-    setProjectManageOpen(true);
-    syncProjectsUrl(true);
-  }, [viewMode, syncProjectsUrl]);
+    if (searchParams.get("projects") === "1") {
+      setProjectManageOpen(true);
+      return;
+    }
+    // Push so browser Back closes Projects and returns to the prior view.
+    router.push(appHref((p) => p.set("projects", "1")), { scroll: false });
+  }, [viewMode, searchParams, router, appHref]);
 
   const closeProjectManage = useCallback(() => {
-    setProjectManageOpen(false);
     setEditingProjectId(null);
-    syncProjectsUrl(false);
-  }, [syncProjectsUrl]);
+    if (searchParams.get("projects") === "1") {
+      router.replace(appHref((p) => p.delete("projects")), { scroll: false });
+    } else {
+      setProjectManageOpen(false);
+    }
+  }, [searchParams, router, appHref]);
+
+  const backFromProjectsManage = useCallback(() => {
+    setEditingProjectId(null);
+    if (searchParams.get("projects") === "1") {
+      router.back();
+      return;
+    }
+    setProjectManageOpen(false);
+  }, [searchParams, router]);
 
   const [listReturnView, setListReturnView] = useState<TaskViewMode | null>(null);
   const [showDayRecap, setShowDayRecap] = useState(false);
   const [tallyPulse, setTallyPulse] = useState(false);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
+    wasProjectDrillInRef.current = false;
+    taskDetailPushedRef.current = false;
+    if (
+      searchParams.get("project") ||
+      searchParams.get("from") ||
+      searchParams.get("task") ||
+      searchParams.get("projects")
+    ) {
+      router.replace(
+        appHref((p) => {
+          p.delete("project");
+          p.delete("from");
+          p.delete("task");
+          p.delete("projects");
+        }),
+        { scroll: false },
+      );
+    }
     if (mode === "plan") {
       setViewMode((prev) => {
         if (prev !== "plan") {
@@ -277,7 +309,7 @@ export default function TaskList({
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
     persistTaskView(mode);
-  }, [persistTaskView]);
+  }, [persistTaskView, searchParams, router, appHref]);
 
   // Default due date when adding from Today / Week / Month / Year views
   useEffect(() => {
@@ -334,15 +366,19 @@ export default function TaskList({
   const [maxVisibleProjectTabs, setMaxVisibleProjectTabs] = useState(MAX_VISIBLE_PROJECT_TABS);
 
   const goHomeCards = useCallback(() => {
-    closeProjectManage();
+    setEditingProjectId(null);
     setSelectedSharedProject(null);
     setSelectedProjectId(ALL_PROJECTS_ID);
     saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
     setListReturnView(null);
     setExpandedTaskId(null);
     setExpandedSubtasksTaskId(null);
+    setNewSubtaskTitle("");
+    wasProjectDrillInRef.current = false;
+    taskDetailPushedRef.current = false;
     selectViewMode("card");
-  }, [closeProjectManage, selectViewMode]);
+    router.replace("/app", { scroll: false });
+  }, [selectViewMode, router]);
 
   useEffect(() => {
     const open = () => openProjectManage();
@@ -358,6 +394,68 @@ export default function TaskList({
     };
   }, [openProjectManage, closeProjectManage, goHomeCards]);
 
+  // Sync navigable overlays from the URL so browser Back restores prior UI.
+  useEffect(() => {
+    const shouldOpenProjects = searchParams.get("projects") === "1";
+    setProjectManageOpen((wasOpen) => {
+      if (wasOpen === shouldOpenProjects) return wasOpen;
+      if (shouldOpenProjects) {
+        viewBeforeManageRef.current =
+          viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
+            ? viewMode
+            : "card";
+      }
+      return shouldOpenProjects;
+    });
+    if (!shouldOpenProjects) {
+      setEditingProjectId(null);
+    }
+
+    const drillProject = searchParams.get("project");
+    const fromParam = searchParams.get("from");
+    if (drillProject) {
+      if (
+        fromParam === "bucket" ||
+        fromParam === "calendar" ||
+        fromParam === "card" ||
+        fromParam === "plan"
+      ) {
+        drillReturnViewRef.current = fromParam;
+      } else if (!wasProjectDrillInRef.current) {
+        drillReturnViewRef.current = "card";
+      }
+      wasProjectDrillInRef.current = true;
+      setSelectedSharedProject(null);
+      setSelectedProjectId(drillProject);
+      setViewMode("list");
+      setListReturnView(drillReturnViewRef.current);
+      setShowOverflowProjectMenu(false);
+    } else if (wasProjectDrillInRef.current) {
+      wasProjectDrillInRef.current = false;
+      const returnTo = drillReturnViewRef.current;
+      setListReturnView(null);
+      setSelectedProjectId(ALL_PROJECTS_ID);
+      saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+      setViewMode(returnTo);
+    }
+
+    const taskId = searchParams.get("task");
+    if (taskId) {
+      setExpandedTaskId((current) => {
+        if (current === taskId) return current;
+        setNewSubtaskTitle("");
+        return taskId;
+      });
+    } else {
+      taskDetailPushedRef.current = false;
+      setExpandedTaskId((current) => {
+        if (!current) return current;
+        setNewSubtaskTitle("");
+        return null;
+      });
+    }
+  }, [searchParams, viewMode]);
+
   useEffect(() => {
     try {
       if (sessionStorage.getItem("foci-go-home-cards") === "1") {
@@ -369,22 +467,6 @@ export default function TaskList({
     }
   }, [goHomeCards]);
 
-  useEffect(() => {
-    const shouldOpen = searchParams.get("projects") === "1";
-    setProjectManageOpen((wasOpen) => {
-      if (wasOpen === shouldOpen) return wasOpen;
-      if (shouldOpen) {
-        viewBeforeManageRef.current =
-          viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
-            ? viewMode
-            : "card";
-      }
-      return shouldOpen;
-    });
-    if (!shouldOpen) {
-      setEditingProjectId(null);
-    }
-  }, [searchParams, viewMode]);
   // Close project menus on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -414,7 +496,12 @@ export default function TaskList({
           loadOneThing(),
         ]);
         setProjects(existingProjects);
-        setViewMode(resolveInitialTaskView(taskViewPrefs));
+        const drillingIn =
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("project");
+        if (!drillingIn) {
+          setViewMode(resolveInitialTaskView(taskViewPrefs));
+        }
         setOneThingPref(oneThing);
 
         // Seed sample tasks only for logged-out users with no tasks
@@ -554,18 +641,55 @@ export default function TaskList({
     saveSelectedProjectId(id).catch((err) => {
       console.error("[Foci] Failed to save selected project:", err);
     });
-    closeProjectManage();
     setShowOverflowProjectMenu(false);
+    if (searchParams.get("projects") === "1") {
+      router.replace(appHref((p) => p.delete("projects")), { scroll: false });
+    } else {
+      setProjectManageOpen(false);
+      setEditingProjectId(null);
+    }
+
+    const drilled = searchParams.get("project");
+    if (drilled) {
+      const isTimeScope =
+        id === TODAY_FILTER_ID ||
+        id === THIS_WEEK_FILTER_ID ||
+        id === THIS_MONTH_FILTER_ID ||
+        id === THIS_YEAR_FILTER_ID;
+      if (id === ALL_PROJECTS_ID || isTimeScope) {
+        wasProjectDrillInRef.current = false;
+        setListReturnView(null);
+        router.replace(
+          appHref((p) => {
+            p.delete("project");
+            p.delete("from");
+          }),
+          { scroll: false },
+        );
+      } else if (id !== drilled) {
+        router.replace(appHref((p) => p.set("project", id)), { scroll: false });
+      }
+    }
   };
 
   const expandProjectToList = useCallback((projectId: string) => {
-    if (viewMode !== "list") {
-      setListReturnView(viewMode);
-    }
-    selectProject(projectId);
-    // Temporary drill-in — don't overwrite the user's default view preference.
-    setViewMode("list");
-  }, [viewMode]);
+    const from: TaskViewMode =
+      viewMode === "list"
+        ? (listReturnView ?? "card")
+        : viewMode === "plan"
+          ? "card"
+          : viewMode;
+    drillReturnViewRef.current = from === "list" ? "card" : from;
+    router.push(
+      appHref((p) => {
+        p.delete("projects");
+        p.delete("task");
+        p.set("project", projectId);
+        p.set("from", drillReturnViewRef.current);
+      }),
+      { scroll: false },
+    );
+  }, [viewMode, listReturnView, router, appHref]);
 
   const reloadAfterImport = useCallback(async (result?: {
     tasks: Task[];
@@ -593,11 +717,17 @@ export default function TaskList({
   }, [showToast, expandProjectToList]);
 
   const backFromProjectList = useCallback(() => {
+    if (searchParams.get("project")) {
+      router.back();
+      return;
+    }
     const returnTo = listReturnView ?? "card";
-    selectProject(ALL_PROJECTS_ID);
+    setSelectedProjectId(ALL_PROJECTS_ID);
+    saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
     setViewMode(returnTo);
     setListReturnView(null);
-  }, [listReturnView]);
+    wasProjectDrillInRef.current = false;
+  }, [listReturnView, searchParams, router]);
 
   const selectProjectScope = (projectId: string) => {
     const timeScope =
@@ -1001,6 +1131,9 @@ export default function TaskList({
     setNewTaskDueDate("");
     if (options?.openDetail !== false) {
       setExpandedTaskId(task.id);
+      setNewSubtaskTitle("");
+      taskDetailPushedRef.current = true;
+      router.push(appHref((p) => p.set("task", task.id)), { scroll: false });
     }
   };
 
@@ -1481,11 +1614,19 @@ export default function TaskList({
   });
 
   const toggleTaskDetail = (taskId: string) => {
-    setExpandedTaskId((current) => {
-      const next = current === taskId ? null : taskId;
-      if (next !== current) setNewSubtaskTitle("");
-      return next;
-    });
+    if (expandedTaskId === taskId) {
+      closeTaskDetail();
+      return;
+    }
+    setExpandedTaskId(taskId);
+    setNewSubtaskTitle("");
+    const href = appHref((p) => p.set("task", taskId));
+    if (searchParams.get("task")) {
+      router.replace(href, { scroll: false });
+    } else {
+      taskDetailPushedRef.current = true;
+      router.push(href, { scroll: false });
+    }
   };
 
   const toggleSubtasksExpanded = (taskId: string) => {
@@ -1498,8 +1639,18 @@ export default function TaskList({
 
   const closeTaskDetail = () => {
     dismissDatePicker();
-    setExpandedTaskId(null);
     setNewSubtaskTitle("");
+    if (searchParams.get("task")) {
+      if (taskDetailPushedRef.current) {
+        taskDetailPushedRef.current = false;
+        router.back();
+        return;
+      }
+      setExpandedTaskId(null);
+      router.replace(appHref((p) => { p.delete("task"); }), { scroll: false });
+      return;
+    }
+    setExpandedTaskId(null);
   };
 
   const saveAndCloseTaskDetail = (taskId: string) => {
@@ -2187,7 +2338,7 @@ export default function TaskList({
               <>
                 <button
                   type="button"
-                  onClick={closeProjectManage}
+                  onClick={backFromProjectsManage}
                   className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1 transition-colors touch-target-sm -ml-2 px-2 py-1 rounded-lg"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
