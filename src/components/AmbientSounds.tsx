@@ -569,7 +569,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         stripEmbedded
-          ? "w-full min-w-0 flex flex-col scroll-mt-24 relative"
+          ? "min-w-0 w-full sm:w-auto flex flex-col scroll-mt-24 relative"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -577,35 +577,18 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
-        <div className="relative flex items-center gap-0.5 sm:gap-1 min-w-0 max-w-full">
+        <div className="relative flex items-center gap-1 min-w-0 w-full sm:w-auto max-w-full">
           {modePicker}
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className="hidden sm:block min-w-0 max-w-[6.5rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="min-w-0 flex-1 sm:flex-initial sm:max-w-[6.5rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-1.5 sm:py-0"
             title={nowPlayingLabel}
             aria-expanded={!collapsed}
             aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}
           >
-            {nowPlayingLabel}
-          </button>
-          <button
-            type="button"
-            onClick={() => setCollapsed((c) => !c)}
-            className={`flex-shrink-0 ${FOCUS_STRIP_ICON_BTN} sm:hidden`}
-            aria-expanded={!collapsed}
-            aria-label={collapsed ? "Show music options" : "Hide music options"}
-            title={nowPlayingLabel}
-          >
-            <svg
-              className={`w-3.5 h-3.5 transition-transform ${collapsed ? "" : "rotate-180"}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            <span className="sm:hidden">{activeModeTab.label}</span>
+            <span className="hidden sm:inline">{nowPlayingLabel}</span>
           </button>
           <button
             type="button"
@@ -631,7 +614,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           {/* Expanded music — popover so the Tasks header stays one row */}
           {!collapsed && (
             <div
-              className="absolute left-0 top-full mt-1 z-50 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2 shadow-lg shadow-slate-900/10 space-y-2"
+              className="absolute left-0 sm:left-0 top-full mt-1 z-50 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2 shadow-lg shadow-slate-900/10 space-y-2"
               role="dialog"
               aria-label="Music player"
             >

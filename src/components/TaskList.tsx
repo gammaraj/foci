@@ -2329,7 +2329,7 @@ export default function TaskList({
       <div
         className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
-        {/* Title + focus controls + utilities — single compact row */}
+        {/* Title + focus controls + utilities */}
         <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2">
           <div className="min-w-0 shrink">
             {projectManageOpen ? (
@@ -2444,7 +2444,7 @@ export default function TaskList({
           </div>
 
           {focusStrip && !projectManageOpen && (
-            <div className="no-print flex-1 min-w-0 flex justify-center overflow-visible px-0.5 sm:px-1">
+            <div className="no-print hidden sm:flex flex-1 min-w-0 justify-center overflow-visible px-1">
               {focusStrip}
             </div>
           )}
@@ -2481,7 +2481,7 @@ export default function TaskList({
             {onToggleFullscreen && (
               <button
                 onClick={onToggleFullscreen}
-                className={`no-print p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+                className={`no-print hidden sm:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
                 title={isFullscreen ? "Exit expand" : "Expand tasks"}
                 aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
               >
@@ -2498,6 +2498,13 @@ export default function TaskList({
             )}
           </div>
         </div>
+
+        {/* Mobile: music + timer get their own row so the title stays readable */}
+        {focusStrip && !projectManageOpen && (
+          <div className="no-print sm:hidden mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-[#243350]/80">
+            {focusStrip}
+          </div>
+        )}
 
         {/* Layout primary · time filter secondary (not competing blue pills) */}
         {!focusMode && !projectManageOpen && (

@@ -301,12 +301,12 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`group flex items-center gap-1 min-w-0 shrink-0 transition-colors ${embeddedChrome}`}
+        className={`group flex items-center gap-1 sm:gap-1.5 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
       >
         {timerLabelButton}
         <div className="flex items-center gap-0.5 shrink-0">
           {timerControls}
-          {expandChevron}
+          <span className="hidden sm:contents">{expandChevron}</span>
         </div>
       </div>
     );
@@ -368,7 +368,7 @@ export default function FocusDockPanel({
   if (compactStrip) {
     return (
       <div
-        className={`absolute left-1/2 top-[calc(100%+0.25rem)] z-50 w-[20rem] max-w-[calc(100%-1.5rem)] -translate-x-1/2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${
+        className={`absolute left-1/2 top-[calc(100%+0.25rem)] z-50 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] -translate-x-1/2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${
           isBreak ? "timer-break-mode" : ""
         } ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >

@@ -39,12 +39,12 @@ export default function DailyQuoteBanner({
     return (
       <div
         id="focus-dock"
-        className="no-print flex items-center gap-2 sm:gap-2.5 min-w-0 max-w-full relative"
+        className="no-print flex items-center justify-between sm:justify-center gap-2 sm:gap-2.5 min-w-0 w-full max-w-full relative"
         role="status"
         aria-label="Focus timer and music"
       >
         {hasMusic && (
-          <div className="min-w-0 shrink flex items-center gap-1 rounded-lg border border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/80 dark:bg-[#0f172a]/55 px-1 sm:px-1.5 py-0.5">
+          <div className="min-w-0 flex-1 sm:flex-initial sm:shrink flex items-center gap-1 rounded-lg border border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/80 dark:bg-[#0f172a]/55 px-1.5 py-1 sm:py-0.5">
             <span className="app-section-label text-slate-400 dark:text-slate-500 leading-none shrink-0 hidden xl:inline pr-0.5">
               Music
             </span>
@@ -53,11 +53,11 @@ export default function DailyQuoteBanner({
         )}
         {hasMusic && (
           <div
-            className="w-px h-6 sm:h-7 bg-slate-300 dark:bg-[#3a5070] shrink-0 opacity-90"
+            className="w-px self-stretch min-h-[2rem] sm:min-h-0 sm:h-7 bg-slate-300 dark:bg-[#3a5070] shrink-0 opacity-90"
             aria-hidden
           />
         )}
-        <div className="relative flex items-center min-w-0 shrink-0 rounded-lg border border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/80 dark:bg-[#0f172a]/55 px-1 sm:px-1.5 py-0.5">
+        <div className="relative flex items-center min-w-0 flex-1 sm:flex-initial sm:shrink-0 justify-end sm:justify-start rounded-lg border border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/80 dark:bg-[#0f172a]/55 px-1.5 py-1 sm:py-0.5">
           <span className="app-section-label text-slate-400 dark:text-slate-500 leading-none shrink-0 hidden xl:inline pr-0.5">
             Timer
           </span>
