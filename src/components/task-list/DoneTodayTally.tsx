@@ -26,28 +26,36 @@ export function DoneTodayTally({
   const todayLabel = count === 1 ? "1 done today" : `${count} done today`;
   const ariaLabel = `${todayLabel}, ${weekCount} this week, ${monthCount} this month`;
   const empty = count <= 0;
+  // Green = completion cue. Soft when empty (invite), stronger when you've shipped.
   const todayNumClass = empty
-    ? "text-slate-500 dark:text-slate-400"
-    : "text-slate-800 dark:text-slate-100";
-  const periodNumClass = "text-slate-600 dark:text-slate-300";
+    ? "text-emerald-600/80 dark:text-emerald-400/85"
+    : "text-emerald-700 dark:text-emerald-300";
+  const periodNumClass = empty
+    ? "text-emerald-700/70 dark:text-emerald-400/70"
+    : "text-emerald-700/90 dark:text-emerald-300/90";
+  const mutedSepClass = empty
+    ? "text-emerald-600/55 dark:text-emerald-500/55"
+    : "text-emerald-600/70 dark:text-emerald-400/60";
+  const checkClass = empty
+    ? "text-emerald-500 dark:text-emerald-400"
+    : "text-emerald-600 dark:text-emerald-300";
   const tone = empty
-    ? "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/80 dark:bg-[#131d30]/80 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
-    : "border-slate-200/90 dark:border-[#2a3f5f] bg-slate-50/90 dark:bg-[#131d30]/70 text-slate-700 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-[#1a2d4a]";
+    ? "border-emerald-300/70 dark:border-emerald-700/50 bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-100/90 dark:hover:bg-emerald-900/35"
+    : "border-emerald-400/80 dark:border-emerald-600/55 bg-emerald-100/95 dark:bg-emerald-950/55 text-emerald-900 dark:text-emerald-100 hover:bg-emerald-200/90 dark:hover:bg-emerald-900/45 shadow-sm shadow-emerald-900/5 dark:shadow-emerald-950/30";
+  const pulseRing = pulse ? "ring-2 ring-emerald-400/60 scale-[1.03]" : "";
 
   if (compact) {
     return (
       <button
         type="button"
         onClick={onClick}
-        className={`inline-flex items-center gap-1 px-1.5 sm:px-2 min-h-[1.75rem] rounded-md text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${
-          pulse ? "ring-2 ring-blue-400/50 scale-[1.03]" : ""
-        } ${className}`}
+        className={`inline-flex items-center gap-1 px-1.5 sm:px-2 min-h-[1.75rem] rounded-md text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${pulseRing} ${className}`}
         title="Done today · this week · this month — tap to jump"
         aria-label={ariaLabel}
         data-done-today-tally
       >
         <svg
-          className={`w-3 h-3 shrink-0 ${empty ? "text-slate-400" : "text-blue-600 dark:text-blue-400"}`}
+          className={`w-3 h-3 shrink-0 ${checkClass}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -56,7 +64,7 @@ export function DoneTodayTally({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
         </svg>
         <span className={todayNumClass}>{count}</span>
-        <span className="font-medium text-slate-500 dark:text-slate-400">
+        <span className={`font-medium ${mutedSepClass}`}>
           · <span className={periodNumClass}>{weekCount}</span>w ·{" "}
           <span className={periodNumClass}>{monthCount}</span>mo
         </span>
@@ -68,15 +76,13 @@ export function DoneTodayTally({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${
-        pulse ? "ring-2 ring-blue-400/50 scale-[1.03]" : ""
-      } ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${pulseRing} ${className}`}
       title="Done today · this week (in this month) · this month — tap to jump"
       aria-label={ariaLabel}
       data-done-today-tally
     >
       <svg
-        className={`w-3.5 h-3.5 shrink-0 ${empty ? "text-slate-400" : "text-blue-600 dark:text-blue-400"}`}
+        className={`w-3.5 h-3.5 shrink-0 ${checkClass}`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -90,7 +96,7 @@ export function DoneTodayTally({
       <span className="sm:hidden">
         <span className={todayNumClass}>{count}</span> done
       </span>
-      <span className="font-medium text-slate-500 dark:text-slate-400">
+      <span className={`font-medium ${mutedSepClass}`}>
         <span className="hidden sm:inline">
           {" "}
           · <span className={periodNumClass}>{weekCount}</span> this week ·{" "}
