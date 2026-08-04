@@ -2429,6 +2429,17 @@ export default function TaskList({
                   onJumpToWorst={jumpToWorstOverdue}
                 />
               )}
+              {!focusMode && !projectManageOpen && (
+                <DoneTodayTally
+                  compact
+                  count={doneProgress.today}
+                  weekCount={doneProgress.week}
+                  monthCount={doneProgress.month}
+                  pulse={tallyPulse}
+                  onClick={scrollToDoneToday}
+                  className="no-print ml-0.5"
+                />
+              )}
             </h2>
               </>
             )}
@@ -2484,65 +2495,35 @@ export default function TaskList({
           </div>
         </div>
 
-        {/* Scope + view controls — own row so filters aren’t jammed into the title */}
+        {/* Layout primary · time filter secondary (not competing blue pills) */}
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:grid grid-cols-[1fr_auto_1fr] items-center gap-3 mt-1.5 pt-1.5 border-t border-slate-200/90 dark:border-blue-400/15 min-w-0">
-            <div className="flex items-stretch justify-start min-w-0">
-              <div className="app-seg-track flex items-center gap-0.5 min-w-0" data-tour="time-filters">
-                <button
-                  onClick={() => selectProject(ALL_PROJECTS_ID)}
-                  className={`${SEG_TAB_PAD} ${isAllProjects && !isTimeFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="All times — every open task"
-                  aria-label="All times"
-                >
-                  All times
-                </button>
-                <button
-                  onClick={() => selectProject(TODAY_FILTER_ID)}
-                  className={`${SEG_TAB_PAD} ${isTodayFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title={overdueTasks.length > 0 ? `${overdueTasks.length} overdue · ${dueExactlyTodayCount} due today` : "Tasks with a due date of today or earlier"}
-                  aria-label="Due today or earlier"
-                >
-                  Today
-                </button>
-                <button
-                  onClick={() => selectProject(THIS_WEEK_FILTER_ID)}
-                  className={`${SEG_TAB_PAD} ${isThisWeekFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="Tasks with a due date this week or earlier"
-                  aria-label="Due this week or earlier"
-                >
-                  Week
-                </button>
-                <button
-                  onClick={() => selectProject(THIS_MONTH_FILTER_ID)}
-                  className={`${SEG_TAB_PAD} ${isThisMonthFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="Tasks with a due date this month or earlier"
-                  aria-label="Due this month or earlier"
-                >
-                  Month
-                </button>
-                <button
-                  onClick={() => selectProject(THIS_YEAR_FILTER_ID)}
-                  className={`${SEG_TAB_PAD} ${isThisYearFilter ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="Tasks with a due date this year or earlier"
-                  aria-label="Due this year or earlier"
-                >
-                  Year
-                </button>
-              </div>
+          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-slate-200/90 dark:border-blue-400/15 min-w-0">
+            <div className="flex items-center gap-2 min-w-0" data-tour="time-filters">
+              <label htmlFor="desktop-time-scope" className="app-section-label leading-none text-slate-500 dark:text-slate-400 shrink-0">
+                When
+              </label>
+              <select
+                id="desktop-time-scope"
+                value={mobileTimeScope}
+                onChange={(e) => selectProject(e.target.value)}
+                className="min-w-0 max-w-[11rem] px-2.5 py-1.5 min-h-[2rem] text-sm font-medium rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.4rem_center] bg-no-repeat pr-7 truncate"
+                aria-label="Filter tasks by due date"
+                title={
+                  isTodayFilter && overdueTasks.length > 0
+                    ? `${overdueTasks.length} overdue · ${dueExactlyTodayCount} due today`
+                    : "Filter by due date"
+                }
+              >
+                <option value={ALL_PROJECTS_ID}>All times</option>
+                <option value={TODAY_FILTER_ID}>Today</option>
+                <option value={THIS_WEEK_FILTER_ID}>This week</option>
+                <option value={THIS_MONTH_FILTER_ID}>This month</option>
+                <option value={THIS_YEAR_FILTER_ID}>This year</option>
+              </select>
             </div>
 
-            <DoneTodayTally
-              count={doneProgress.today}
-              weekCount={doneProgress.week}
-              monthCount={doneProgress.month}
-              pulse={tallyPulse}
-              onClick={scrollToDoneToday}
-              className="justify-self-center shrink-0"
-            />
-
-            <div className="flex items-center justify-end gap-2 shrink-0" data-tour="view-modes">
-              <span className="hidden md:inline app-section-label leading-none self-center text-blue-800/60 dark:text-blue-200/55 shrink-0">
+            <div className="flex items-center justify-end gap-2 shrink-0 min-w-0" data-tour="view-modes">
+              <span className="app-section-label leading-none self-center text-slate-500 dark:text-slate-400 shrink-0">
                 Layout
               </span>
               <div className="app-seg-track flex items-center gap-0.5">
@@ -2555,7 +2536,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
                   </svg>
-                  <span className="hidden xl:inline">Buckets</span>
+                  <span className="hidden lg:inline">Buckets</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("card")}
@@ -2566,7 +2547,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                   </svg>
-                  <span className="hidden xl:inline">Cards</span>
+                  <span className="hidden lg:inline">Cards</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("list")}
@@ -2577,7 +2558,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
-                  <span className="hidden xl:inline">List</span>
+                  <span className="hidden lg:inline">List</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("calendar")}
@@ -2588,7 +2569,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="hidden xl:inline">Cal</span>
+                  <span className="hidden lg:inline">Cal</span>
                 </button>
                 <button
                   onClick={() => {
@@ -2610,14 +2591,14 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
-                  <span className="hidden xl:inline">Plan</span>
+                  <span className="hidden lg:inline">Plan</span>
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Mobile toolbar — single dense row */}
+        {/* Mobile toolbar — layout first, when second */}
         {!focusMode && !projectManageOpen && (
         <MobileTaskToolbar
           selectedScope={mobileTimeScope}
@@ -2625,10 +2606,6 @@ export default function TaskList({
           viewMode={viewMode}
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
-          doneTodayCount={doneProgress.today}
-          doneWeekCount={doneProgress.week}
-          doneMonthCount={doneProgress.month}
-          onDoneTodayClick={scrollToDoneToday}
           projects={sortedProjects}
           projectJumpId={bucketJumpProjectId}
           onProjectJump={handleMobileProjectJump}

@@ -10,10 +10,15 @@ import {
   THIS_YEAR_FILTER_ID,
 } from "@/lib/types";
 import { projectTabLabel, projectTabTooltip } from "@/components/task-list/utils";
-import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
 
 const SELECT_CLASS =
-  "min-w-0 px-2 py-1.5 min-h-[2.25rem] text-xs font-medium rounded-md bg-blue-50/90 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border border-blue-200/80 dark:border-[#243350] outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.35rem_center] bg-no-repeat pr-6 truncate";
+  "min-w-0 px-2 py-1.5 min-h-[2.25rem] text-xs font-medium rounded-md border outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.35rem_center] bg-no-repeat pr-6 truncate";
+
+const SELECT_PRIMARY =
+  `${SELECT_CLASS} bg-blue-50/90 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border-blue-200/80 dark:border-[#243350]`;
+
+const SELECT_SECONDARY =
+  `${SELECT_CLASS} bg-white dark:bg-[#0f172a] text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#243350]`;
 
 type TimeScopeId =
   | typeof ALL_PROJECTS_ID
@@ -28,10 +33,6 @@ interface MobileTaskToolbarProps {
   viewMode: TaskViewMode;
   onSelectViewMode: (mode: TaskViewMode) => void;
   onManageProjects: () => void;
-  doneTodayCount?: number;
-  doneWeekCount?: number;
-  doneMonthCount?: number;
-  onDoneTodayClick?: () => void;
   projects?: Project[];
   projectJumpId?: string;
   onProjectJump?: (projectId: string) => void;
@@ -53,19 +54,19 @@ function scopeLabel(id: TimeScopeId): string {
     case TODAY_FILTER_ID:
       return "Today";
     case THIS_WEEK_FILTER_ID:
-      return "Week";
+      return "This week";
     case THIS_MONTH_FILTER_ID:
-      return "Month";
+      return "This month";
     case THIS_YEAR_FILTER_ID:
-      return "Year";
+      return "This year";
     default:
       return "All times";
   }
 }
 
 /**
- * Mobile toolbar: view mode stays visible; done tally sits on its own row
- * so scope/view selects are not crushed to chevron-only.
+ * Mobile toolbar: Layout is primary; When is a quieter secondary filter.
+ * Done tally lives in the Tasks title row.
  */
 export function MobileTaskToolbar({
   selectedScope,
@@ -73,10 +74,6 @@ export function MobileTaskToolbar({
   viewMode,
   onSelectViewMode,
   onManageProjects,
-  doneTodayCount = 0,
-  doneWeekCount = 0,
-  doneMonthCount = 0,
-  onDoneTodayClick,
   projects = [],
   projectJumpId = "",
   onProjectJump,
@@ -86,33 +83,16 @@ export function MobileTaskToolbar({
   const showJump = showProjectJump && projects.length > 1 && !!onProjectJump;
 
   return (
-    <div className="no-print sm:hidden mt-1.5 space-y-1.5" data-tour="time-filters">
+    <div className="no-print sm:hidden mt-1.5" data-tour="time-filters">
       <div className="flex items-center gap-1.5 min-w-0">
-        <label className="sr-only" htmlFor="mobile-time-scope">
-          Time scope
-        </label>
-        <select
-          id="mobile-time-scope"
-          value={selectedScope}
-          onChange={(e) => onSelectScope(e.target.value)}
-          className={`${SELECT_CLASS} flex-1 min-w-[4.5rem]`}
-          aria-label="Filter tasks by due date"
-        >
-          <option value={ALL_PROJECTS_ID}>{scopeLabel(ALL_PROJECTS_ID)}</option>
-          <option value={TODAY_FILTER_ID}>{scopeLabel(TODAY_FILTER_ID)}</option>
-          <option value={THIS_WEEK_FILTER_ID}>{scopeLabel(THIS_WEEK_FILTER_ID)}</option>
-          <option value={THIS_MONTH_FILTER_ID}>{scopeLabel(THIS_MONTH_FILTER_ID)}</option>
-          <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID)}</option>
-        </select>
-
         <label className="sr-only" htmlFor="mobile-view-mode">
-          View mode
+          Layout
         </label>
         <select
           id="mobile-view-mode"
           value={viewMode}
           onChange={(e) => onSelectViewMode(e.target.value as TaskViewMode)}
-          className={`${SELECT_CLASS} flex-1 min-w-[5.25rem]`}
+          className={`${SELECT_PRIMARY} flex-[1.15] min-w-[5.5rem]`}
           aria-label="Task layout"
           data-tour="view-modes"
         >
@@ -121,6 +101,23 @@ export function MobileTaskToolbar({
               {label}
             </option>
           ))}
+        </select>
+
+        <label className="sr-only" htmlFor="mobile-time-scope">
+          When
+        </label>
+        <select
+          id="mobile-time-scope"
+          value={selectedScope}
+          onChange={(e) => onSelectScope(e.target.value)}
+          className={`${SELECT_SECONDARY} flex-1 min-w-[4.75rem]`}
+          aria-label="Filter tasks by due date"
+        >
+          <option value={ALL_PROJECTS_ID}>{scopeLabel(ALL_PROJECTS_ID)}</option>
+          <option value={TODAY_FILTER_ID}>{scopeLabel(TODAY_FILTER_ID)}</option>
+          <option value={THIS_WEEK_FILTER_ID}>{scopeLabel(THIS_WEEK_FILTER_ID)}</option>
+          <option value={THIS_MONTH_FILTER_ID}>{scopeLabel(THIS_MONTH_FILTER_ID)}</option>
+          <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID)}</option>
         </select>
 
         {showJump && (
@@ -132,7 +129,7 @@ export function MobileTaskToolbar({
               id="mobile-project-jump"
               value={projectJumpId}
               onChange={(e) => onProjectJump?.(e.target.value)}
-              className={`${SELECT_CLASS} flex-[1.2] min-w-[5rem]`}
+              className={`${SELECT_SECONDARY} flex-[1.1] min-w-[5rem]`}
               aria-label="Jump to project"
             >
               <option value="">Project…</option>
@@ -151,7 +148,7 @@ export function MobileTaskToolbar({
         <button
           type="button"
           onClick={onManageProjects}
-          className="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[2.25rem] rounded-md border border-blue-200/80 dark:border-[#243350] bg-white dark:bg-[#131d30] text-blue-600/80 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+          className="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[2.25rem] rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
           data-tour="manage-projects"
           title="Projects — manage, create, import"
           aria-label="Projects"
@@ -162,14 +159,6 @@ export function MobileTaskToolbar({
           <span className="text-xs font-semibold hidden min-[380px]:inline">Projects</span>
         </button>
       </div>
-
-      <DoneTodayTally
-        count={doneTodayCount}
-        weekCount={doneWeekCount}
-        monthCount={doneMonthCount}
-        onClick={onDoneTodayClick}
-        className="w-full justify-center"
-      />
     </div>
   );
 }
