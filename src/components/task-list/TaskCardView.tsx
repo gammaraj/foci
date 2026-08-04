@@ -12,6 +12,8 @@ import {
   getDaysOverdue,
   isDueDateOverdue,
   MAX_TASK_TITLE,
+  OVERDUE_ROW_CLASS,
+  overdueDayChipClass,
   resolveProjectColor,
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
@@ -236,21 +238,13 @@ function ProjectDragPlaceholder({
 
 /** Cards view: left accent only — full washes overwhelm the grid. */
 function cardOverdueRowClass(): string {
-  return "card-row--overdue";
+  return OVERDUE_ROW_CLASS;
 }
 
 /** Chip + left rail carry urgency; titles stay readable slate. */
 function overdueTitleClass(daysLate: number): string {
   if (daysLate >= 5) return "text-slate-800 dark:text-slate-100 font-semibold";
   return "text-slate-700 dark:text-slate-200 font-medium";
-}
-
-/** Intensity ramp: soft outline at 1d → berry fill at 5d+. */
-function overdueDayChipClass(daysLate: number): string {
-  if (daysLate >= 5) return "urgency-chip--strong";
-  if (daysLate >= 3) return "urgency-chip--mid";
-  if (daysLate >= 2) return "urgency-chip--mid";
-  return "urgency-chip--soft";
 }
 
 function CardDuePrefix({ task }: { task: Task }) {

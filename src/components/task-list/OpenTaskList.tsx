@@ -3,7 +3,7 @@
 import React from "react";
 import type { Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, formatDuration, isDueDateOverdue } from "@/components/task-list/utils";
+import { formatDueDate, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, OVERDUE_ROW_CLASS, overdueDayChipClass } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -161,6 +161,8 @@ export default function OpenTaskList({
     const subtasksExpanded = expandedSubtasksTaskId === task.id;
     const isOverdue = isActionableOverdue(task);
     const isBlocked = !!task.blocked;
+    const daysLate = isOverdue && task.dueDate ? getDaysOverdue(task.dueDate) : 0;
+    const overdueLabel = isOverdue ? formatOverdueLabel(daysLate) : null;
     const subtaskCount = task.subtasks?.length ?? 0;
     const completedSubtaskCount = task.subtasks?.filter((s) => s.completed).length ?? 0;
     const spansFullWidth = twoColumn && (isExpanded || subtasksExpanded);
@@ -186,7 +188,7 @@ export default function OpenTaskList({
                 : isBlocked
                   ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15"
                   : isOverdue
-                  ? "urgency-surface urgency-surface--overdue border"
+                  ? `${OVERDUE_ROW_CLASS} border border-transparent`
                   : "border-slate-200/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-[#131d30]"
           } ${dragTaskId === task.id ? "opacity-50" : ""} ${
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
@@ -234,8 +236,12 @@ export default function OpenTaskList({
               )}
               {oneThingTaskId === task.id && <OneThingBadge />}
               {isOverdue && (
-                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded urgency-chip--soft">
-                  OVERDUE
+                <span
+                  className={`inline-flex items-center justify-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${overdueDayChipClass(daysLate)}`}
+                  title={overdueLabel ?? "Overdue"}
+                  aria-label={overdueLabel ?? "Overdue"}
+                >
+                  {formatOverdueChip(daysLate)}
                 </span>
               )}
               {task.kind && task.kind !== "task" && (

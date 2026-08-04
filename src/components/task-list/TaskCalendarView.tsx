@@ -317,7 +317,7 @@ export default function TaskCalendarView({
                         : activeTaskId === task.id
                           ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
                           : selectedDay < todayStr
-                            ? "urgency-surface border"
+                            ? "card-row--overdue border border-transparent"
                             : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
                   }`}
                 >

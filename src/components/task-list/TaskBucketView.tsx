@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, resolveProjectColor } from "@/components/task-list/utils";
+import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, OVERDUE_ROW_CLASS, overdueDayChipClass, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -165,23 +165,20 @@ function DueBadge({
   const overdue = !blocked && isDueDateOverdue(dueDate);
   const isToday = dueDate === today;
   const daysLate = overdue ? getDaysOverdue(dueDate) : 0;
-  const criticalOverdue = daysLate >= 7;
   const label = isToday ? "Today" : formatDueDate(dueDate);
   const interactive = !!(taskId && onSetDueDate);
 
-  const badgeClass = `inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
-    compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
-  } ${
-    overdue
-      ? criticalOverdue
-        ? "urgency-text--severe urgency-chip--soft border border-[var(--urgency-border)]"
-        : "urgency-text--mild urgency-chip--soft"
-      : blocked
-        ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-        : isToday
+  const badgeClass = overdue
+    ? `inline-flex items-center justify-center shrink-0 h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${overdueDayChipClass(daysLate)} ${interactive ? "cursor-pointer" : ""}`
+    : `inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
+        compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
+      } ${
+        blocked
           ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-          : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
-  } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`;
+          : isToday
+            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
+            : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
+      } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`;
 
   const badgeTitle =
     blocked
@@ -330,7 +327,7 @@ function BucketTaskCard({
             : isBlocked
               ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               : isOverdue
-              ? "urgency-surface urgency-surface--overdue border"
+              ? `${OVERDUE_ROW_CLASS} border border-transparent`
               : isDueToday
               ? "border-amber-200/70 dark:border-amber-800/45 bg-amber-50/65 dark:bg-amber-950/38 hover:border-amber-300/85 dark:hover:border-amber-700/55 hover:bg-amber-50/85 dark:hover:bg-amber-950/48"
               : isLowUrgency
@@ -644,11 +641,11 @@ function BucketColumn({
   return (
     <div
       data-bucket-project={project.id}
-      className={`${BUCKET_COLUMN_CLASS} project-surface flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 backdrop-blur-sm ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
+      className={`${BUCKET_COLUMN_CLASS} project-surface project-accent-edge flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
       style={{ ["--project-accent" as string]: accentColor } as React.CSSProperties}
     >
       <div
-        className="group/col project-accent-wash flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80"
+        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80"
         title={project.description?.trim() || project.name}
       >
         {onToggleProjectFavorite ? (

@@ -249,31 +249,27 @@ select {
   }
 }
 
-/* ===== Section Header Gradient ===== */
+/* ===== Section Header — flat (no gradient) ===== */
 .section-header-gradient {
-  background: linear-gradient(135deg, #dce4f2 0%, #e4ebff 100%);
+  background: #e4ebff;
   border-bottom: 1px solid var(--surface-border);
 }
 .dark .section-header-gradient {
-  background: linear-gradient(135deg, #0f1b33 0%, #1a2d4a 100%);
+  background: #0f1b33;
   border-bottom: 1px solid #243350;
 }
 
-/* Status strip below navbar — continues the page-blue wash; white cards sit on top */
+/* Status strip below navbar — flat page surface (no gradient wash) */
 .status-strip {
   border-bottom: 1px solid var(--surface-border);
   box-shadow: 0 6px 16px -14px rgba(37, 99, 235, 0.12);
+  background: var(--page-bg);
 }
 :root:not(.dark) .status-strip {
-  background: linear-gradient(
-    180deg,
-    var(--page-bg) 0%,
-    #d4deee 55%,
-    #dde5f2 100%
-  );
+  background: var(--page-bg);
 }
 .dark .status-strip {
-  background: linear-gradient(180deg, #0d1528 0%, rgba(15, 23, 42, 0.92) 30%, rgba(15, 23, 42, 0.82) 100%);
+  background: #0f172a;
   border-bottom-color: #243350;
   box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.45);
 }
@@ -331,15 +327,15 @@ select {
   box-shadow: none;
 }
 
-/* Toolbar strip — white content surface on the muted tasks shell */
+/* Toolbar strip — flat content surface (no gradient wash) */
 .panel-header-calm {
   background: var(--panel-header-bg);
   border-bottom: 1px solid var(--surface-border);
 }
 .dark .panel-header-calm {
-  --panel-header-bg: rgba(17, 24, 39, 0.85);
+  --panel-header-bg: rgba(17, 24, 39, 0.92);
   --seg-track-bg: rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(30, 58, 110, 0.35) 0%, var(--panel-header-bg) 100%);
+  background: var(--panel-header-bg);
   border-bottom: 1px solid #243350;
 }
 
@@ -412,20 +408,12 @@ select {
 
 .project-accent-wash {
   --project-accent-display: var(--project-accent);
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--project-accent-display) 18%, transparent),
-    transparent 70%
-  );
+  background: color-mix(in oklab, var(--project-accent-display) 10%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--project-surface-border) 80%, transparent);
 }
 .dark .project-accent-wash {
   --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--project-accent-display) 22%, transparent),
-    transparent 72%
-  );
+  background: color-mix(in oklab, var(--project-accent-display) 12%, transparent);
   border-bottom-color: #334863;
 }
 
@@ -660,54 +648,52 @@ select {
   border-left-color: #f472b6;
 }
 
-/* Overdue rows / chips — cooler pink-berry that sits with brand blue */
+/* Legacy urgency rows — same Cards treatment (left rail only) */
 .urgency-row--mild,
 .urgency-row--medium,
 .urgency-row--severe {
   border-left-width: 3px;
   border-left-style: solid;
+  background: transparent;
 }
 .urgency-row--mild {
-  background: var(--urgency-soft-bg);
   border-left-color: #f472b6;
 }
 .urgency-row--mild:hover {
-  background: color-mix(in srgb, var(--urgency) 8%, #f8fafc);
+  background: color-mix(in srgb, var(--urgency) 5%, transparent);
 }
 .urgency-row--medium {
-  background: var(--urgency-mid-bg);
   border-left-color: var(--urgency-chip);
 }
 .urgency-row--medium:hover {
-  background: color-mix(in srgb, var(--urgency) 11%, #eef2ff);
+  background: color-mix(in srgb, var(--urgency) 5%, transparent);
 }
 .urgency-row--severe {
-  background: var(--urgency-strong-bg);
   border-left-color: var(--urgency-strong);
 }
 .urgency-row--severe:hover {
-  background: color-mix(in srgb, var(--urgency-strong) 14%, #eef2ff);
+  background: color-mix(in srgb, var(--urgency-strong) 6%, transparent);
 }
 .dark .urgency-row--mild {
-  background: rgba(176, 23, 92, 0.08);
-  border-left-color: #f472b6;
+  background: transparent;
+  border-left-color: #fb7185;
 }
 .dark .urgency-row--mild:hover {
-  background: rgba(176, 23, 92, 0.12);
+  background: rgba(244, 63, 94, 0.12);
 }
 .dark .urgency-row--medium {
-  background: rgba(176, 23, 92, 0.1);
-  border-left-color: #f472b6;
+  background: transparent;
+  border-left-color: #fb7185;
 }
 .dark .urgency-row--medium:hover {
-  background: rgba(176, 23, 92, 0.14);
+  background: rgba(244, 63, 94, 0.12);
 }
 .dark .urgency-row--severe {
-  background: rgba(142, 18, 73, 0.14);
-  border-left-color: #f472b6;
+  background: transparent;
+  border-left-color: #fb7185;
 }
 .dark .urgency-row--severe:hover {
-  background: rgba(142, 18, 73, 0.18);
+  background: rgba(244, 63, 94, 0.12);
 }
 
 /* Cards view — accent bar + chip only (no full wash, no red titles) */
@@ -744,7 +730,6 @@ select {
 .urgency-chip--strong {
   background: var(--urgency-strong);
   color: #fff;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--urgency-strong) 35%, transparent);
 }
 .dark .urgency-chip--soft {
   background: rgba(244, 63, 94, 0.28);
@@ -753,12 +738,12 @@ select {
 }
 .dark .urgency-chip--mid {
   background: #f43f5e;
-  box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.45), 0 0 10px -2px rgba(244, 63, 94, 0.55);
+  box-shadow: none;
 }
 .dark .urgency-chip--strong {
   background: #fb7185;
   color: #1f0510;
-  box-shadow: 0 0 0 1px rgba(253, 164, 175, 0.55), 0 0 12px -1px rgba(251, 113, 133, 0.65);
+  box-shadow: none;
 }
 
 .urgency-pill {
@@ -807,28 +792,29 @@ select {
   background: #9d174d;
 }
 
+/* Overdue surfaces — Cards look: left accent only, no full magenta wash */
 .urgency-surface {
-  border-color: var(--urgency-border);
-  background: var(--urgency-soft-bg);
+  border-color: transparent;
+  background: transparent;
 }
 .urgency-surface:hover {
-  border-color: color-mix(in srgb, var(--urgency) 40%, #e2e8f0);
-  background: var(--urgency-mid-bg);
+  border-color: transparent;
+  background: color-mix(in srgb, var(--urgency) 5%, transparent);
 }
 .urgency-surface--overdue {
   border-left-width: 3px;
   border-left-color: var(--urgency-chip);
 }
 .dark .urgency-surface {
-  border-color: rgba(244, 114, 182, 0.28);
-  background: rgba(176, 23, 92, 0.14);
+  border-color: transparent;
+  background: transparent;
 }
 .dark .urgency-surface:hover {
-  border-color: rgba(244, 114, 182, 0.4);
-  background: rgba(176, 23, 92, 0.2);
+  border-color: transparent;
+  background: rgba(244, 63, 94, 0.12);
 }
 .dark .urgency-surface--overdue {
-  border-left-color: #f472b6;
+  border-left-color: #fb7185;
 }
 
 .task-list-section-header--blocked {

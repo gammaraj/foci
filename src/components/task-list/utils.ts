@@ -180,6 +180,17 @@ export function formatOverdueLabel(daysLate: number): string {
   return `${daysLate} day${daysLate === 1 ? "" : "s"} late`;
 }
 
+/** Cards-style intensity: soft outline at 1d → strong fill at 5d+. Shared across views. */
+export function overdueDayChipClass(daysLate: number): string {
+  if (daysLate >= 5) return "urgency-chip--strong";
+  if (daysLate >= 3) return "urgency-chip--mid";
+  if (daysLate >= 2) return "urgency-chip--mid";
+  return "urgency-chip--soft";
+}
+
+/** Left-rail overdue row — no full wash (Cards look). */
+export const OVERDUE_ROW_CLASS = "card-row--overdue";
+
 export function openDatePicker(input: HTMLInputElement | null) {
   if (!input) return;
   try {
