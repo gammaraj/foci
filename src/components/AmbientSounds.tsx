@@ -449,6 +449,11 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     setModeMenuOpen(false);
     if (id === "sounds") {
       setShowYt(false);
+    }
+    // Keep header compact — open the music popover only when the user asks
+    if (stripEmbedded) {
+      setCollapsed(true);
+    } else if (id === "sounds") {
       setCollapsed(true);
     } else {
       setCollapsed(false);
@@ -505,7 +510,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         title="Change music source"
       >
         {activeModeTab.icon}
-        <span className="truncate max-w-[4.5rem] sm:max-w-[6.5rem]">{activeModeTab.label}</span>
+        <span className="hidden sm:inline truncate max-w-[4.5rem] lg:max-w-[6.5rem]">{activeModeTab.label}</span>
         <svg
           className={`w-3 h-3 shrink-0 text-slate-400 transition-transform ${modeMenuOpen ? "rotate-180" : ""}`}
           fill="none"
@@ -572,36 +577,89 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
-        <div className="flex items-center gap-1.5 w-full min-w-0 min-h-[2.75rem]">
-          <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0 hidden lg:inline">
-            Music
-          </span>
-          <div className="flex items-center gap-1.5 min-w-0 max-w-full">
-            {modePicker}
+        <div className="relative flex items-center gap-0.5 sm:gap-1 min-w-0 max-w-full">
+          {modePicker}
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className="hidden sm:block min-w-0 max-w-[6.5rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+            title={nowPlayingLabel}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}
+          >
+            {nowPlayingLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className={`flex-shrink-0 ${FOCUS_STRIP_ICON_BTN} sm:hidden`}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? "Show music options" : "Hide music options"}
+            title={nowPlayingLabel}
+          >
+            <svg
+              className={`w-3.5 h-3.5 transition-transform ${collapsed ? "" : "rotate-180"}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleMiniPlayPause}
+            className={`flex-shrink-0 ${miniPlayButtonClass(
+              !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
+              true
+            )}`}
+            aria-label={
+              mode === "sounds"
+                ? activeSound
+                  ? `Pause ${activeSoundMeta?.label}`
+                  : "Play ambient sound"
+                : mode === "soundcloud"
+                  ? "Play or pause SoundCloud"
+                  : "Open player"
+            }
+            title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
+          >
+            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
+          </button>
 
-            <div className="w-px h-5 bg-slate-200 dark:bg-[#243350] shrink-0" aria-hidden />
-
-            {mode === "sounds" ? (
-              <div className="flex items-center gap-1 min-w-0 overflow-x-auto">
-                {SOUNDS.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => playSound(s.id)}
-                    className={`shrink-0 inline-flex items-center gap-1 rounded-md px-1.5 sm:px-2 py-1 text-xs font-medium transition-colors ${
-                      activeSound === s.id
-                        ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                        : "bg-white/80 dark:bg-[#1a2d4a]/80 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350] border border-slate-200/80 dark:border-[#243350]"
-                    }`}
-                    aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
-                    aria-pressed={activeSound === s.id}
-                    title={s.label}
-                  >
-                    <span aria-hidden>{s.emoji}</span>
-                    <span className="hidden 2xl:inline">{s.label}</span>
-                  </button>
-                ))}
-                {activeSound && (
+          {/* Expanded music — popover so the Tasks header stays one row */}
+          {!collapsed && (
+            <div
+              className="absolute left-0 top-full mt-1 z-50 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2 shadow-lg shadow-slate-900/10 space-y-2"
+              role="dialog"
+              aria-label="Music player"
+            >
+              {mode === "sounds" && (
+                <div className="grid grid-cols-4 gap-1.5">
+                  {SOUNDS.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => playSound(s.id)}
+                      className={`flex flex-col items-center gap-0.5 rounded-lg py-2 px-1 text-xs font-medium transition-all ${
+                        activeSound === s.id
+                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
+                          : "bg-slate-50 dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#243350]"
+                      }`}
+                      aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
+                    >
+                      <span className="text-lg leading-none" aria-hidden>{s.emoji}</span>
+                      <span className="truncate w-full text-center leading-tight">{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {mode === "sounds" && activeSound && (
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-[#243350]">
+                  <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                  </svg>
                   <input
                     type="range"
                     min={0}
@@ -609,85 +667,86 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                     step={0.05}
                     value={volume}
                     onChange={(e) => setVolume(parseFloat(e.target.value))}
-                    onClick={(e) => e.stopPropagation()}
-                    className="hidden lg:block w-14 h-1 accent-blue-500 dark:accent-blue-400 flex-shrink-0"
+                    className="flex-1 h-1 accent-blue-500 dark:accent-blue-400"
                     aria-label="Volume"
                   />
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-0.5 min-w-0">
-                <button
-                  type="button"
-                  onClick={() => cyclePlaylist(-1)}
-                  className={FOCUS_STRIP_ICON_BTN}
-                  aria-label="Previous option"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCollapsed(false)}
-                  className="min-w-0 max-w-[10rem] xl:max-w-[14rem] text-left truncate text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
-                  title={nowPlayingLabel}
-                >
-                  {nowPlayingLabel}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => cyclePlaylist(1)}
-                  className={FOCUS_STRIP_ICON_BTN}
-                  aria-label="Next option"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCollapsed((c) => !c)}
-                  className={`flex-shrink-0 touch-target-sm flex items-center ${FOCUS_STRIP_ICON_BTN}`}
-                  aria-label={collapsed ? "Show player" : "Hide player"}
-                  aria-expanded={!collapsed}
-                  title={collapsed ? "Show player" : "Hide player"}
-                >
-                  <svg
-                    className="w-4 h-4 transition-transform duration-200"
-                    style={{ transform: collapsed ? "rotate(0deg)" : "rotate(180deg)" }}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={handleMiniPlayPause}
-              className={`flex-shrink-0 ${miniPlayButtonClass(
-                !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
-                true
-              )}`}
-              aria-label={
-                mode === "sounds"
-                  ? activeSound
-                    ? `Pause ${activeSoundMeta?.label}`
-                    : "Play ambient sound"
-                  : mode === "soundcloud"
-                    ? "Play or pause SoundCloud"
-                    : "Open player"
-              }
-              title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
-            >
-              <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
-            </button>
-          </div>
+                </div>
+              )}
+              {mode === "spotify" && (
+                <>
+                  <iframe
+                    src={`https://open.spotify.com/embed/playlist/${spotifyPlaylist.uri}?utm_source=generator&theme=0`}
+                    width="100%"
+                    height={80}
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="border-0 rounded-lg"
+                    title={spotifyPlaylist.label}
+                  />
+                  <div className="flex items-center justify-between gap-1">
+                    <button type="button" onClick={() => cyclePlaylist(-1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Previous playlist">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
+                    </button>
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate">{spotifyPlaylist.label}</span>
+                    <button type="button" onClick={() => cyclePlaylist(1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Next playlist">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" /></svg>
+                    </button>
+                  </div>
+                </>
+              )}
+              {mode === "lofi" && (
+                <>
+                  {showYt ? (
+                    <div className="h-24 rounded-lg overflow-hidden">
+                      <iframe
+                        key={ytStream.channelId}
+                        src={youtubeLiveEmbedSrc(ytStream.channelId)}
+                        title={ytStream.label}
+                        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-full"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowYt(true)}
+                      className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      Play {ytStream.label}
+                    </button>
+                  )}
+                  <div className="flex items-center justify-between gap-1">
+                    <button type="button" onClick={() => cyclePlaylist(-1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Previous stream">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
+                    </button>
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate">{ytStream.label}</span>
+                    <button type="button" onClick={() => cyclePlaylist(1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Next stream">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" /></svg>
+                    </button>
+                  </div>
+                </>
+              )}
+              {mode === "soundcloud" && (
+                <div className="flex items-center justify-between gap-1">
+                  <button type="button" onClick={() => cyclePlaylist(-1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Previous playlist">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
+                  </button>
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate">{scPlaylist.label}</span>
+                  <button type="button" onClick={() => cyclePlaylist(1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Next playlist">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" /></svg>
+                  </button>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setCollapsed(true)}
+                className="w-full text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white py-1"
+              >
+                Close
+              </button>
+            </div>
+          )}
         </div>
       ) : (
       <div
@@ -799,8 +858,12 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}
       {mode === "soundcloud" && (
         <div
-          className={collapsed ? "h-0 overflow-hidden opacity-0 pointer-events-none" : ""}
-          aria-hidden={collapsed}
+          className={
+            stripEmbedded || collapsed
+              ? "h-0 overflow-hidden opacity-0 pointer-events-none"
+              : ""
+          }
+          aria-hidden={stripEmbedded || collapsed}
         >
           <iframe
             key={scIdx}
@@ -813,32 +876,29 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(scPlaylist.url)}&color=%23334155&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`}
             title={scPlaylist.label}
             className="border-0"
-            tabIndex={collapsed ? -1 : 0}
+            tabIndex={stripEmbedded || collapsed ? -1 : 0}
           />
         </div>
       )}
 
+      {!stripEmbedded && (
       <div
         className={
           collapsed
             ? "hidden"
-            : stripEmbedded
-              ? "space-y-1.5 pb-2 border-t border-slate-200/80 dark:border-[#243350] pt-1.5"
-              : inline
-                ? "space-y-1.5"
-                : "space-y-2"
+            : inline
+              ? "space-y-1.5"
+              : "space-y-2"
         }
       >
       {/* Mode picker — current source only; menu lists the rest */}
-      {!stripEmbedded && (
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
           <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Source</span>
           {modePicker}
         </div>
-      )}
 
-      {/* Ambient Sounds mode — options already shown in strip bar */}
-      {mode === "sounds" && !stripEmbedded && (
+      {/* Ambient Sounds mode */}
+      {mode === "sounds" && (
         <div
           className={`bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350] ${
             stripEmbedded ? "px-2 py-2" : inline ? "px-2 py-2" : "px-3 py-3"
@@ -1119,6 +1179,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         ))}
       </div>
       </div>
+      )}
     </div>
   );
 }

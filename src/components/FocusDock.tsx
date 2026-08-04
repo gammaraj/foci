@@ -218,7 +218,7 @@ export function FocusDockToolbar({
         </span>
       )}
       <span
-        className={`${embedded ? "text-base sm:text-lg" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
+        className={`${embedded ? "text-sm sm:text-base" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
           isBreak
             ? "text-green-700 dark:text-green-300"
             : isRunning
@@ -229,13 +229,13 @@ export function FocusDockToolbar({
         {displayTime}
       </span>
       {activeTaskTitle ? (
-        <span className="min-w-0 hidden sm:inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300 truncate max-w-[7rem] sm:max-w-[12rem] lg:max-w-[16rem]">
+        <span className="min-w-0 hidden lg:inline-flex items-center gap-1 text-xs font-medium text-blue-700 dark:text-blue-300 truncate max-w-[7rem] xl:max-w-[12rem]">
           <span className="shrink-0 text-blue-500 dark:text-blue-400" aria-hidden>
             ↳
           </span>
           <span className="truncate">{activeTaskTitle}</span>
         </span>
-      ) : !isRunning ? (
+      ) : !isRunning && !embedded ? (
         <span className="hidden sm:inline text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
           Select a task ↓
         </span>
@@ -301,15 +301,11 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`group flex items-center justify-between gap-1.5 min-w-0 w-full h-full min-h-[2.75rem] px-0 transition-colors ${embeddedChrome}`}
+        className={`group flex items-center gap-1 min-w-0 shrink-0 transition-colors ${embeddedChrome}`}
       >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <div className="hidden sm:block shrink-0">{sessionsLink}</div>
-          {timerLabelButton}
-        </div>
-        <div className="flex items-center gap-0.5 shrink-0 rounded-lg bg-slate-100/70 dark:bg-white/[0.04] p-0.5">
+        {timerLabelButton}
+        <div className="flex items-center gap-0.5 shrink-0">
           {timerControls}
-          <span className="hidden sm:contents">{shortcutsButton}</span>
           {expandChevron}
         </div>
       </div>

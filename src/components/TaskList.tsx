@@ -2307,9 +2307,7 @@ export default function TaskList({
   };
 
   return (
-    <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden min-w-0">
-      {focusStrip}
-
+    <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible min-w-0">
       <div className="print-only print-header px-3 sm:px-4 pt-3">
         <h1>Foci — Tasks ({VIEW_PRINT_LABELS[viewMode]})</h1>
         <p>
@@ -2327,12 +2325,12 @@ export default function TaskList({
         </p>
       </div>
 
-      {/* Header — title row + controls row */}
+      {/* Header — title · music/timer · utilities (single row) */}
       <div
-        className={`panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white ${focusStrip ? "" : "rounded-t-2xl"}`}
+        className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
-        {/* Title + quote + utilities — single compact row */}
-        <div className="flex items-center justify-between min-w-0 gap-2">
+        {/* Title + focus controls + utilities — single compact row */}
+        <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2">
           <div className="min-w-0 shrink">
             {projectManageOpen ? (
               <>
@@ -2444,6 +2442,12 @@ export default function TaskList({
               </>
             )}
           </div>
+
+          {focusStrip && !projectManageOpen && (
+            <div className="no-print flex-1 min-w-0 flex justify-center overflow-visible px-0.5 sm:px-1">
+              {focusStrip}
+            </div>
+          )}
 
           {/* Utilities — keep out of the filter/view cluster */}
           <div className="no-print flex items-center gap-0.5 flex-shrink-0">
