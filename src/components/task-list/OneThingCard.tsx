@@ -54,11 +54,11 @@ export function OneThingCard({
     return (
       <div
         data-tour="one-thing"
-        className={`${shell} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 ${
+        className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 ${
           compact ? "" : "shadow-sm shadow-blue-900/20"
         }`}
       >
-        <div className={`flex items-center gap-2 min-w-0 flex-1 ${compact ? "" : "justify-center gap-2.5"}`}>
+        <div className={`flex items-center justify-center gap-2 min-w-0 ${compact ? "" : "gap-2.5"} ${onDismissEmpty ? "px-7" : ""}`}>
           <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
             <StarIcon className="w-3 h-3" />
             {compact ? "One Thing" : <>Today&apos;s One Thing</>}
@@ -70,26 +70,24 @@ export function OneThingCard({
                 : "What’s the one thing that would make today a success?"
               : "Add a task, then set it as your One Thing"}
           </p>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
           {hasOpenTasks && !compact && (
             <span className="hidden sm:inline text-xs font-semibold text-blue-800 dark:text-blue-200/90">
               Open a task → Set as Today&apos;s One Thing
             </span>
           )}
-          {onDismissEmpty && (
-            <button
-              type="button"
-              onClick={onDismissEmpty}
-              className="p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
-              aria-label="Dismiss One Thing prompt"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
         </div>
+        {onDismissEmpty && (
+          <button
+            type="button"
+            onClick={onDismissEmpty}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
+            aria-label="Dismiss One Thing prompt"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
     );
   }
