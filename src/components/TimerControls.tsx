@@ -43,7 +43,7 @@ export default function TimerControls({
               className={`flex-shrink-0 ${miniPlayButtonClass(isRunning, true, emphasizeStart && !isRunning)}`}
               aria-label={isRunning ? "Pause timer" : "Start timer"}
             >
-              <MiniPlayPauseIcon playing={isRunning} />
+              <MiniPlayPauseIcon playing={isRunning} size="lg" />
             </button>
           )}
           {showReset && (

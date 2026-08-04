@@ -625,7 +625,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             }
             title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
           >
-            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} />
+            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="lg" />
           </button>
 
           {/* Expanded music — popover so the Tasks header stays one row */}
