@@ -1,4 +1,6 @@
-/** Project tab label — full description first when name is a short acronym (CD, BK, …). */
+import { isProjectCodeName } from "@/components/task-list/utils";
+
+/** Project tab label — description first only for short ALL-CAPS codes (CD, BK). */
 export function ProjectTabName({
   project,
   variant = "tab",
@@ -28,10 +30,12 @@ export function ProjectTabName({
     return <span className="truncate font-bold text-slate-900 dark:text-white">{project.name}</span>;
   }
 
-  if (project.name.length <= 4 && desc) {
+  if (isProjectCodeName(project.name) && desc) {
     return (
       <span className="inline-flex items-center gap-1.5 min-w-0 max-w-full">
-        <span className="truncate font-medium" title={desc}>{desc}</span>
+        <span className="truncate font-medium" title={desc}>
+          {desc}
+        </span>
         <span
           className="shrink-0 text-xs app-badge font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-slate-200/90 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400"
           title={`Project code: ${project.name}`}

@@ -115,6 +115,11 @@ export function moveProjectInDisplayOrder(
   return reorderProjects(projects, projectId, sorted[targetIdx].id);
 }
 
+/** Short ALL-CAPS codes (CD, BK) — not product names like “Foci”. */
+export function isProjectCodeName(name: string): boolean {
+  return name.length > 0 && name.length <= 4 && /^[A-Z0-9]+$/.test(name);
+}
+
 /** Full name for hover / aria */
 export function projectTabTooltip(project: { name: string; description?: string }): string {
   if (project.description?.trim()) {
@@ -123,10 +128,10 @@ export function projectTabTooltip(project: { name: string; description?: string 
   return project.name;
 }
 
-/** Visible tab label — expands cryptic abbreviations (CD, BK, …) */
+/** Visible tab label — expands cryptic ALL-CAPS abbreviations (CD, BK, …) */
 export function projectTabLabel(project: { name: string; description?: string }): string {
   const desc = project.description?.trim();
-  if (project.name.length <= 4 && desc) {
+  if (isProjectCodeName(project.name) && desc) {
     const short = desc.length > 18 ? `${desc.slice(0, 18)}…` : desc;
     return `${project.name} — ${short}`;
   }
