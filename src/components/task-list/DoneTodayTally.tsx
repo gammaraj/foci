@@ -50,7 +50,7 @@ export function DoneTodayTally({
         type="button"
         onClick={onClick}
         className={`inline-flex items-center gap-1 px-1.5 sm:px-2 min-h-[1.75rem] rounded-md text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${pulseRing} ${className}`}
-        title="Done today · this week · this month — tap to jump"
+        title="Done today · this week · this month — tap to show completed tasks"
         aria-label={ariaLabel}
         data-done-today-tally
       >
@@ -77,7 +77,7 @@ export function DoneTodayTally({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-sm font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${pulseRing} ${className}`}
-      title="Done today · this week (in this month) · this month — tap to jump"
+      title="Done today · this week · this month — tap to show completed tasks"
       aria-label={ariaLabel}
       data-done-today-tally
     >

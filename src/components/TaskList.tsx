@@ -2291,10 +2291,9 @@ export default function TaskList({
 
   const jumpToWorstOverdue = () => {
     if (!worstOverdue?.projectId) return;
-    if (viewMode !== "card") setViewMode("card");
-    setCardJumpProjectId(worstOverdue.projectId);
-    setCardJumpToken((n) => n + 1);
-    setHighlightProjectId(worstOverdue.projectId);
+    // Open that project’s list so the overdue task is visible — scrolling a card
+    // that’s already on screen felt like a no-op.
+    expandProjectToList(worstOverdue.projectId);
   };
 
   const dismissCardReorderTip = () => {

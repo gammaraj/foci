@@ -45,7 +45,7 @@ export function TaskUrgencySummary({
 
   const worstLabel = worstOverdue?.projectName ?? null;
   const worstTitle = worstOverdue
-    ? `Jump to ${worstOverdue.projectName}: “${worstOverdue.title}” (${formatOverdueLabel(worstOverdue.daysLate)})`
+    ? `Open ${worstOverdue.projectName}: “${worstOverdue.title}” (${formatOverdueLabel(worstOverdue.daysLate)})`
     : undefined;
 
   const handleWorst = () => {
@@ -105,8 +105,9 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={handleWorst}
-          className={`${worstPillClass} inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors ${compact ? "max-w-[7.5rem]" : "max-w-[14rem]"}`}
+          className={`${worstPillClass} inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer hover:brightness-110 ${compact ? "max-w-[7.5rem]" : "max-w-[14rem]"}`}
           title={worstTitle}
+          aria-label={worstTitle}
         >
           <span
             className={`inline-flex items-center justify-center h-4 sm:h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${
