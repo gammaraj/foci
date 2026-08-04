@@ -36,7 +36,7 @@ const STEPS: Step[] = [
     target: "[data-tour='one-thing']",
     title: "Today's One Thing",
     description:
-      "Pick the one task that would make today a success. It stays pinned above your list until you finish it.",
+      "Open a task and tap Set as Today's One Thing — the one outcome that would make today a success. It stays pinned until you finish it.",
     position: "bottom",
   },
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Task } from "@/lib/types";
 import type { OneThingStatus } from "@/lib/one-thing";
 
@@ -33,6 +33,42 @@ function StarIcon({ className }: { className?: string }) {
   );
 }
 
+function ChevronIcon({ open, className }: { open: boolean; className?: string }) {
+  return (
+    <svg
+      className={`${className ?? ""} transition-transform ${open ? "rotate-180" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
+function OneThingHowTo({ compact }: { compact: boolean }) {
+  return (
+    <div
+      className={`rounded-lg border border-blue-300/70 dark:border-blue-600/50 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg ${
+        compact ? "p-3 text-xs leading-relaxed" : "p-3.5 text-sm leading-relaxed"
+      }`}
+    >
+      <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
+      <ol className="mt-1.5 list-decimal pl-4 space-y-1 text-slate-600 dark:text-slate-300">
+        <li>Open any open task (click its name).</li>
+        <li>
+          Tap <span className="font-semibold text-blue-700 dark:text-blue-300">Set as Today&apos;s One Thing</span>.
+        </li>
+      </ol>
+      <p className="mt-2.5 text-slate-600 dark:text-slate-300">
+        It&apos;s the one outcome that would make today a success. It stays pinned here until you finish or clear it, then
+        resets tomorrow.
+      </p>
+    </div>
+  );
+}
+
 export function OneThingCard({
   status,
   task,
@@ -49,44 +85,108 @@ export function OneThingCard({
 }: OneThingCardProps) {
   const shell = variant === "inline" ? inlineShell : stripShell;
   const compact = variant === "inline";
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const detailsId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  const closeDetails = useCallback(() => setDetailsOpen(false), []);
+
+  useEffect(() => {
+    if (!detailsOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeDetails();
+    };
+    const onPointer = (e: MouseEvent | TouchEvent) => {
+      const el = rootRef.current;
+      if (el && !el.contains(e.target as Node)) closeDetails();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("touchstart", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("touchstart", onPointer);
+    };
+  }, [detailsOpen, closeDetails]);
 
   if (status === "unset") {
+    const howToShort = hasOpenTasks
+      ? compact
+        ? "Open a task → Set as One Thing"
+        : "Open a task → Set as Today’s One Thing"
+      : "Add a task, then set it as your One Thing";
+    const prompt = hasOpenTasks
+      ? compact
+        ? howToShort
+        : "What’s the one thing that would make today a success?"
+      : howToShort;
+
     return (
       <div
+        ref={rootRef}
         data-tour="one-thing"
-        className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 ${
-          compact ? "" : "shadow-sm shadow-blue-900/20"
-        }`}
+        className={compact ? "relative min-w-0 max-w-full" : "relative"}
       >
-        <div className={`flex items-center justify-center gap-2 min-w-0 ${compact ? "" : "gap-2.5"} ${onDismissEmpty ? "px-7" : ""}`}>
-          <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
-            <StarIcon className="w-3 h-3" />
-            {compact ? "One Thing" : <>Today&apos;s One Thing</>}
-          </span>
-          <p className="min-w-0 truncate text-sm font-medium text-blue-950 dark:text-blue-50">
-            {hasOpenTasks
-              ? compact
-                ? "Pick today’s priority task"
-                : "What’s the one thing that would make today a success?"
-              : "Add a task, then set it as your One Thing"}
-          </p>
-          {hasOpenTasks && !compact && (
-            <span className="hidden sm:inline text-xs font-semibold text-blue-800 dark:text-blue-200/90">
-              Open a task → Set as Today&apos;s One Thing
-            </span>
-          )}
-        </div>
-        {onDismissEmpty && (
+        <div
+          className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 ${
+            compact ? "" : "shadow-sm shadow-blue-900/20"
+          }`}
+        >
           <button
             type="button"
-            onClick={onDismissEmpty}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
-            aria-label="Dismiss One Thing prompt"
+            onClick={() => setDetailsOpen((v) => !v)}
+            aria-expanded={detailsOpen}
+            aria-controls={detailsId}
+            className={`flex items-center justify-center gap-2 min-w-0 text-left rounded-md outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
+              compact ? "" : "gap-2.5"
+            } ${onDismissEmpty ? "px-7" : ""}`}
+            title="How to set Today’s One Thing"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+              <StarIcon className="w-3 h-3" />
+              {compact ? "One Thing" : <>Today&apos;s One Thing</>}
+            </span>
+            <span className="min-w-0 truncate text-sm font-medium text-blue-950 dark:text-blue-50">
+              {prompt}
+            </span>
+            {hasOpenTasks && !compact && (
+              <span className="hidden sm:inline text-xs font-semibold text-blue-800 dark:text-blue-200/90">
+                {howToShort}
+              </span>
+            )}
+            <ChevronIcon
+              open={detailsOpen}
+              className="w-3.5 h-3.5 shrink-0 text-blue-800 dark:text-blue-200/90"
+            />
+            <span className="sr-only">{detailsOpen ? "Hide details" : "Show how to pick"}</span>
           </button>
+          {onDismissEmpty && (
+            <button
+              type="button"
+              onClick={onDismissEmpty}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
+              aria-label="Dismiss One Thing prompt"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {detailsOpen && (
+          <div
+            id={detailsId}
+            role="region"
+            aria-label="Today’s One Thing details"
+            className={
+              compact
+                ? "absolute left-0 right-0 top-full z-40 mt-1.5"
+                : "mx-3 sm:mx-4 mt-1.5 mb-1"
+            }
+          >
+            <OneThingHowTo compact={compact} />
+          </div>
         )}
       </div>
     );
