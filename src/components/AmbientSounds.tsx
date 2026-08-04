@@ -316,7 +316,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
 
   useEffect(() => {
     if (!modeMenuOpen) return;
-    const onClick = (e: MouseEvent) => {
+    const onClick = (e: globalThis.MouseEvent) => {
       if (modeMenuRef.current && !modeMenuRef.current.contains(e.target as Node)) {
         setModeMenuOpen(false);
       }
