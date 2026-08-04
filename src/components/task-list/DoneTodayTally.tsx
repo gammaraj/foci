@@ -63,7 +63,9 @@ export function DoneTodayTally({
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
         </svg>
-        <span className={todayNumClass}>{count}</span>
+        <span className={todayNumClass}>
+          {count} today
+        </span>
         <span className={`font-medium ${mutedSepClass} hidden min-[400px]:inline`}>
           · <span className={periodNumClass}>{weekCount}</span>w ·{" "}
           <span className={periodNumClass}>{monthCount}</span>mo
