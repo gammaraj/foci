@@ -13,7 +13,7 @@ interface DoneTodaySectionProps {
   compact?: boolean;
   /** Skip outer margin/border when the parent already provides a separator. */
   flush?: boolean;
-  /** Start collapsed (bucket defaults open so wins stay visible). */
+  /** Start collapsed — wins stay one click away without crowding open work. */
   defaultCollapsed?: boolean;
 }
 
@@ -24,7 +24,7 @@ export function DoneTodaySection({
   showProject = false,
   compact = false,
   flush = false,
-  defaultCollapsed = false,
+  defaultCollapsed = true,
 }: DoneTodaySectionProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
@@ -60,9 +60,9 @@ export function DoneTodaySection({
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-        <span className="truncate">
+        <span className="truncate text-emerald-700 dark:text-emerald-400">
           Done today
-          <span className="ml-1 tabular-nums font-medium normal-case tracking-normal">
+          <span className="ml-1 tabular-nums font-semibold normal-case tracking-normal text-emerald-800 dark:text-emerald-300">
             ({tasks.length})
           </span>
         </span>
@@ -101,16 +101,10 @@ export function DoneTodaySection({
                   </svg>
                 </button>
                 <div className="min-w-0 flex-1">
-                  <div
-                    className={`truncate ${
-                      compact
-                        ? "text-sm text-slate-700 dark:text-slate-200"
-                        : "text-sm text-slate-700 dark:text-slate-200"
-                    }`}
-                  >
+                  <div className="truncate text-sm font-medium text-emerald-800 dark:text-emerald-200">
                     {task.title}
                     {showProject && getProjectName && (
-                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-slate-100 dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-300 align-middle">
+                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 align-middle">
                         {getProjectName(task.projectId)}
                       </span>
                     )}

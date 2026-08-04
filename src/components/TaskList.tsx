@@ -2066,7 +2066,12 @@ export default function TaskList({
   const globalDoneTodaySummary = summarizeDoneToday(tasks);
   const doneProgress = summarizeDoneProgress(tasks);
   const scrollToDoneToday = useCallback(() => {
-    const el = document.querySelector<HTMLElement>("[data-done-today-section]");
+    const sections = document.querySelectorAll<HTMLElement>("[data-done-today-section]");
+    sections.forEach((section) => {
+      const btn = section.querySelector<HTMLButtonElement>("button[aria-expanded='false']");
+      btn?.click();
+    });
+    const el = sections[0];
     if (!el) return;
     el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
   }, []);
