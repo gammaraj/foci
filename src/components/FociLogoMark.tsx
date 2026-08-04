@@ -125,7 +125,7 @@ export function FociBrandLockup({
         surface={tone}
         className="flex-shrink-0 rounded-xl sm:rounded-2xl"
       />
-      <div className="flex flex-col items-start gap-1 min-w-0">
+      <div className="flex flex-col items-start gap-0.5 min-w-0">
         <FociWordmark className={FOCI_WORDMARK_LOCKUP} tone={tone} />
         {showTagline && (
           <p

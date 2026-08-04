@@ -70,14 +70,14 @@ export const FOCI_WORDMARK_MOCKUP =
 export const FOCI_WORDMARK_INLINE = "font-wordmark text-[1rem] font-semibold tracking-[-0.02em]";
 export const FOCI_WORDMARK_OG_PX = 86;
 
-/** Tagline typography — subordinate but still readable in the nav. */
+/** Tagline typography — clearly subordinate to the wordmark. */
 export const FOCI_TAGLINE_NAV =
-  "text-[0.6875rem] sm:text-[0.75rem] font-semibold tracking-[0.11em] sm:tracking-[0.13em] uppercase leading-none";
+  "text-[0.5rem] sm:text-[0.5625rem] font-medium tracking-[0.14em] sm:tracking-[0.16em] uppercase leading-none";
 export const FOCI_TAGLINE_LOCKUP =
-  "text-[9px] sm:text-[10px] font-medium tracking-[0.1em] sm:tracking-[0.12em] uppercase leading-none";
+  "text-[8px] sm:text-[9px] font-medium tracking-[0.12em] sm:tracking-[0.14em] uppercase leading-none";
 export const FOCI_TAGLINE_MOCKUP =
-  "text-[0.5625rem] sm:text-[0.625rem] font-semibold tracking-[0.12em] uppercase leading-none";
-export const FOCI_TAGLINE_OG_PX = 12;
+  "text-[0.5rem] sm:text-[0.5625rem] font-medium tracking-[0.14em] uppercase leading-none";
+export const FOCI_TAGLINE_OG_PX = 11;
 
 /** Tagline color on dark surfaces — softer than wordmark */
 export const FOCI_TAGLINE_ON_DARK = "text-blue-200/80";

@@ -165,7 +165,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
               surface={logoSurface}
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-[0.65rem] flex-shrink-0 transition-transform duration-200 group-hover:scale-[1.03]"
             />
-            <div className="flex flex-col items-start gap-1.5 min-w-0">
+            <div className="flex flex-col items-start gap-0.5 min-w-0">
               <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />
               {/* Logged-in: brand rhythm. Logged-out: omit so the hero owns the value prop. */}
               {user ? (
