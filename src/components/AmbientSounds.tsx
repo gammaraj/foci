@@ -267,6 +267,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const [scError, setScError] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const [modeMenuOpen, setModeMenuOpen] = useState(false);
+  const modeMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMode(getAmbientMode());
@@ -311,6 +313,24 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const gainRef = useRef<GainNode | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
   const scIframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  useEffect(() => {
+    if (!modeMenuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (modeMenuRef.current && !modeMenuRef.current.contains(e.target as Node)) {
+        setModeMenuOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModeMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [modeMenuOpen]);
 
   // Send a command to the SoundCloud Widget via postMessage
   const scCommand = useCallback((method: string, value?: unknown) => {
@@ -424,23 +444,27 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     if (mode === "lofi" && !showYt) setShowYt(true);
   };
 
+  const selectMode = (id: "sounds" | "spotify" | "soundcloud" | "lofi") => {
+    setMode(id);
+    setModeMenuOpen(false);
+    if (id === "sounds") {
+      setShowYt(false);
+      setCollapsed(true);
+    } else {
+      setCollapsed(false);
+    }
+  };
+
   const modeTabs = [
     {
       id: "sounds" as const,
-      onClick: () => {
-        setMode("sounds");
-        setShowYt(false);
-        setCollapsed(true);
-      },
+      onClick: () => selectMode("sounds"),
       label: "Sounds",
       icon: <span className="text-sm leading-none shrink-0" aria-hidden>🎧</span>,
     },
     {
       id: "spotify" as const,
-      onClick: () => {
-        setMode("spotify");
-        setCollapsed(false);
-      },
+      onClick: () => selectMode("spotify"),
       label: "Spotify",
       icon: (
         <svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -450,24 +474,79 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     },
     {
       id: "soundcloud" as const,
-      onClick: () => {
-        setMode("soundcloud");
-        setCollapsed(false);
-      },
+      onClick: () => selectMode("soundcloud"),
       label: "Cloud",
       labelWide: "SoundCloud",
       icon: <span className="text-sm leading-none shrink-0" aria-hidden>☁️</span>,
     },
     {
       id: "lofi" as const,
-      onClick: () => {
-        setMode("lofi");
-        setCollapsed(false);
-      },
+      onClick: () => selectMode("lofi"),
       label: "Lo-fi",
       icon: <span className="text-sm leading-none shrink-0" aria-hidden>📺</span>,
     },
   ] as const;
+
+  const activeModeTab = modeTabs.find((t) => t.id === mode) ?? modeTabs[0];
+  const activeModeLabel =
+    "labelWide" in activeModeTab && activeModeTab.labelWide
+      ? activeModeTab.labelWide
+      : activeModeTab.label;
+
+  const modePicker = (
+    <div className="relative shrink-0" ref={modeMenuRef}>
+      <button
+        type="button"
+        onClick={() => setModeMenuOpen((o) => !o)}
+        className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 text-xs font-medium rounded-md bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070] hover:bg-slate-50 dark:hover:bg-[#243350] transition-colors whitespace-nowrap leading-none"
+        aria-haspopup="listbox"
+        aria-expanded={modeMenuOpen}
+        aria-label={`Music source: ${activeModeLabel}. Change source`}
+        title="Change music source"
+      >
+        {activeModeTab.icon}
+        <span className="truncate max-w-[4.5rem] sm:max-w-[6.5rem]">{activeModeTab.label}</span>
+        <svg
+          className={`w-3 h-3 shrink-0 text-slate-400 transition-transform ${modeMenuOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {modeMenuOpen && (
+        <div
+          role="listbox"
+          aria-label="Music sources"
+          className="absolute left-0 top-full mt-1 z-50 min-w-[10.5rem] py-1 rounded-lg bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] shadow-xl"
+        >
+          {modeTabs.map((tab) => {
+            const active = mode === tab.id;
+            const label = "labelWide" in tab && tab.labelWide ? tab.labelWide : tab.label;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={tab.onClick}
+                className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-left transition-colors ${
+                  active
+                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                }`}
+              >
+                {tab.icon}
+                <span className="truncate">{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 
   const cyclePlaylist = (dir: -1 | 1) => {
     if (mode === "spotify") {
@@ -498,31 +577,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             Music
           </span>
           <div className="flex items-center gap-1.5 min-w-0 max-w-full">
-            <div className="flex items-center gap-0.5 shrink-0 overflow-x-auto rounded-lg bg-slate-100/90 dark:bg-[#0f172a]/70 p-0.5 border border-slate-200/80 dark:border-[#243350]">
-              {modeTabs.map((tab) => {
-                const active = mode === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={tab.onClick}
-                    className={`shrink-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
-                      active
-                        ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
-                        : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
-                    }`}
-                    title={"labelWide" in tab ? tab.labelWide : tab.label}
-                    aria-pressed={active}
-                  >
-                    {tab.icon}
-                    <span className="hidden xl:inline truncate">
-                      {"labelWide" in tab ? tab.labelWide : tab.label}
-                    </span>
-                    <span className="xl:hidden truncate">{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {modePicker}
 
             <div className="w-px h-5 bg-slate-200 dark:bg-[#243350] shrink-0" aria-hidden />
 
@@ -774,37 +829,12 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 : "space-y-2"
         }
       >
-      {/* Mode toggle — single-line icon + label (SoundCloud must not wrap). Hidden in strip: modes live in the bar. */}
+      {/* Mode picker — current source only; menu lists the rest */}
       {!stripEmbedded && (
-      <div className="flex items-stretch gap-0.5 sm:gap-1 bg-slate-100 dark:bg-[#131d30] rounded-lg p-0.5 border border-slate-200 dark:border-[#243350]">
-        {modeTabs.map((tab) => {
-          const active = mode === tab.id;
-          const modeTabClass = `flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap leading-none ${
-            active
-              ? "bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070]"
-              : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100"
-          }`;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={tab.onClick}
-              className={modeTabClass}
-              title={"labelWide" in tab ? tab.labelWide : tab.label}
-            >
-              {tab.icon}
-              {"labelWide" in tab ? (
-                <>
-                  <span className="truncate sm:hidden">{tab.label}</span>
-                  <span className="truncate hidden sm:inline">{tab.labelWide}</span>
-                </>
-              ) : (
-                <span className="truncate">{tab.label}</span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+        <div className="flex items-center gap-2">
+          <span className="app-section-label text-slate-500 dark:text-slate-400 shrink-0">Source</span>
+          {modePicker}
+        </div>
       )}
 
       {/* Ambient Sounds mode — options already shown in strip bar */}
