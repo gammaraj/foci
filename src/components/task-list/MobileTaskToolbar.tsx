@@ -46,10 +46,10 @@ interface MobileTaskToolbarProps {
 }
 
 const VIEW_OPTIONS: { mode: TaskViewMode; label: string }[] = [
-  { mode: "bucket", label: "Buckets" },
   { mode: "card", label: "Cards" },
+  { mode: "bucket", label: "Buckets" },
   { mode: "list", label: "List" },
-  { mode: "calendar", label: "Cal" },
+  { mode: "calendar", label: "Calendar" },
   { mode: "plan", label: "Plan" },
 ];
 

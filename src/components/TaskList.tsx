@@ -2557,17 +2557,6 @@ export default function TaskList({
               </span>
               <div className="app-seg-track flex items-center gap-0.5">
                 <button
-                  onClick={() => selectViewMode("bucket")}
-                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "bucket" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="Bucket view — all projects"
-                  aria-label="Bucket view"
-                >
-                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
-                  </svg>
-                  <span className="hidden lg:inline">Buckets</span>
-                </button>
-                <button
                   onClick={() => selectViewMode("card")}
                   className={`${SEG_TAB_ICON_PAD} ${viewMode === "card" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                   title="Card view — top tasks per project"
@@ -2577,6 +2566,17 @@ export default function TaskList({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                   </svg>
                   <span className="hidden lg:inline">Cards</span>
+                </button>
+                <button
+                  onClick={() => selectViewMode("bucket")}
+                  className={`${SEG_TAB_ICON_PAD} ${viewMode === "bucket" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
+                  title="Bucket view — all projects"
+                  aria-label="Bucket view"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18M5 3h4a1 1 0 011 1v16a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1zm10 0h4a1 1 0 011 1v16a1 1 0 01-1 1h-4a1 1 0 01-1-1V4a1 1 0 011-1z" />
+                  </svg>
+                  <span className="hidden lg:inline">Buckets</span>
                 </button>
                 <button
                   onClick={() => selectViewMode("list")}
@@ -2598,7 +2598,7 @@ export default function TaskList({
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="hidden lg:inline">Cal</span>
+                  <span className="hidden lg:inline">Calendar</span>
                 </button>
                 <button
                   onClick={() => {
