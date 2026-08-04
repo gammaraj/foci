@@ -1,6 +1,6 @@
 import type { Project, RecurrenceType, Subtask } from "@/lib/types";
 import { PROJECT_COLORS } from "@/lib/types";
-import { getToday, formatDateLocal } from "@/lib/dates";
+import { getToday, getTomorrow, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
@@ -149,10 +149,7 @@ export function formatDuration(ms: number): string {
 export function formatDueDate(iso: string): string {
   const today = getToday();
   if (iso === today) return "Today";
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = formatDateLocal(tomorrow);
-  if (iso === tomorrowStr) return "Tomorrow";
+  if (iso === getTomorrow()) return "Tomorrow";
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }

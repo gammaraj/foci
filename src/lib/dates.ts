@@ -8,6 +8,13 @@ export function getToday(): string {
   return formatDateLocal(new Date());
 }
 
+/** Tomorrow's date as YYYY-MM-DD in the local timezone. */
+export function getTomorrow(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return formatDateLocal(d);
+}
+
 /** Yesterday's date as YYYY-MM-DD in the local timezone. */
 export function getYesterday(): string {
   return formatDateLocal(new Date(Date.now() - 86400000));

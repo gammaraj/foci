@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
-import { getToday } from "@/lib/dates";
+import { getToday, getTomorrow } from "@/lib/dates";
 import { sortCardTasks } from "@/components/task-list/bucket-order";
 import { getProjectsDragPreview } from "@/components/task-list/utils";
 import {
@@ -256,26 +256,31 @@ function CardDuePrefix({ task }: { task: Task }) {
   if (overdue) return null;
 
   const isToday = task.dueDate === getToday();
+  const isTomorrow = task.dueDate === getTomorrow();
   const label = formatDueDate(task.dueDate);
+
+  const tone = blocked
+    ? "bg-amber-100/90 dark:bg-amber-950/45 text-amber-800 dark:text-amber-200 border-amber-200/80 dark:border-amber-700/45"
+    : isToday
+      ? "bg-amber-100/95 dark:bg-amber-950/50 text-amber-900 dark:text-amber-100 border-amber-300/90 dark:border-amber-600/55"
+      : isTomorrow
+        ? "bg-amber-50/95 dark:bg-amber-950/35 text-amber-800 dark:text-amber-200 border-amber-200/80 dark:border-amber-700/45"
+        : "bg-slate-100/90 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#2a3f5f]/80";
 
   return (
     <span
-      className={`shrink-0 font-semibold tabular-nums text-xs ${
-        blocked
-          ? "text-amber-700 dark:text-amber-300"
-          : isToday
-            ? "text-amber-700 dark:text-amber-300"
-            : "text-slate-500 dark:text-slate-400"
-      }`}
+      className={`shrink-0 inline-flex items-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap border ${tone}`}
       title={
         blocked
           ? "Waiting on external blocker"
           : isToday
             ? "Due today"
-            : `Due ${label}`
+            : isTomorrow
+              ? "Due tomorrow"
+              : `Due ${label}`
       }
     >
-      [{label}]
+      {label}
     </span>
   );
 }
@@ -409,7 +414,7 @@ function CardTaskRow({
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
     >
-      <div className="flex items-start sm:items-center gap-1.5 min-h-[1.75rem] sm:min-h-[1.875rem] w-full min-w-0">
+      <div className="flex items-start sm:items-center gap-1 min-h-[2rem] sm:min-h-[2rem] w-full min-w-0">
         {onToggleComplete && (
           <button
             type="button"
@@ -417,9 +422,14 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleComplete(task.id);
             }}
-            className="flex-shrink-0 w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+            className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 -ml-1 rounded-md hover:bg-slate-100/90 dark:hover:bg-white/[0.06] transition-colors"
             aria-label={`Mark "${task.title}" complete`}
-          />
+          >
+            <span
+              className="w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-500 group-hover/row:border-blue-500 dark:group-hover/row:border-blue-400"
+              aria-hidden
+            />
+          </button>
         )}
         {isEditing ? (
           <input
@@ -463,7 +473,7 @@ function CardTaskRow({
           </TaskTitleButton>
         )}
         {!isEditing && (
-          <div className="shrink-0 flex items-start sm:items-center gap-0.5 pt-0.5 sm:pt-0">
+          <div className="shrink-0 flex items-start sm:items-center gap-0.5 pt-0.5 sm:pt-0 self-start">
             {(task.subtasks?.length ?? 0) > 0 && (
               <button
                 type="button"
@@ -490,15 +500,18 @@ function CardTaskRow({
               </button>
             )}
             {onToggleTaskDetail && (
-              <TaskEditButton
-                compact
-                isOpen={isExpanded}
-                taskTitle={task.title}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleTaskDetail(task.id);
-                }}
-              />
+              <span className={isExpanded ? "" : "hover-reveal-desktop"}>
+                <TaskEditButton
+                  compact
+                  isOpen={isExpanded}
+                  taskTitle={task.title}
+                  className="!p-1.5"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleTaskDetail(task.id);
+                  }}
+                />
+              </span>
             )}
             <CardTaskMoreMenu
               taskTitle={task.title}
@@ -654,6 +667,10 @@ function ProjectCard({
       className={`group/card project-surface project-accent-edge rounded-lg px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 break-inside-avoid mb-2.5 sm:mb-3.5 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-100/95 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
+        project.favorite && !collapsed
+          ? "ring-1 ring-amber-400/50 dark:ring-amber-500/40 shadow-[0_0_0_1px_rgba(251,191,36,0.15)]"
+          : ""
+      } ${
         highlighted
           ? "ring-2 ring-[var(--urgency-chip)] dark:ring-rose-400 shadow-[0_0_0_4px_color-mix(in_srgb,var(--urgency-chip)_22%,transparent)]"
           : ""
@@ -779,10 +796,10 @@ function ProjectCard({
                 e.stopPropagation();
                 onToggleProjectFavorite(project.id);
               }}
-              className={`flex-shrink-0 p-0.5 sm:touch-target-sm rounded transition-colors ${
+              className={`flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md transition-colors ${
                 project.favorite
-                  ? "text-amber-400 hover:text-amber-500"
-                  : "text-slate-400 dark:text-slate-500 opacity-70 hover:opacity-100 hover:text-amber-400"
+                  ? "bg-amber-100 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400 hover:bg-amber-200/90 dark:hover:bg-amber-900/50"
+                  : "text-slate-400 dark:text-slate-500 hover:text-amber-400 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               }`}
               title={
                 project.favorite
@@ -792,13 +809,17 @@ function ProjectCard({
               aria-label={project.favorite ? `Unpin ${project.name}` : `Pin ${project.name} to top`}
               aria-pressed={!!project.favorite}
             >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill={project.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={project.favorite ? 0 : 1.5} aria-hidden>
+              <svg className="w-4 h-4" viewBox="0 0 20 20" fill={project.favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth={project.favorite ? 0 : 1.5} aria-hidden>
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
             </button>
           ) : project.favorite ? (
-            <span title="Pinned — appears first in card view" className="flex-shrink-0" aria-hidden>
-              <svg className="w-3.5 h-3.5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+            <span
+              title="Pinned — appears first in card view"
+              className="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400"
+              aria-hidden
+            >
+              <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
             </span>
@@ -976,6 +997,7 @@ export default function TaskCardView({
   autoQuickAddProjectId = null,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
+  const [cardQuery, setCardQuery] = useState("");
 
   useEffect(() => {
     setCollapsedIds(loadCollapsedProjectIds());
@@ -1011,15 +1033,48 @@ export default function TaskCardView({
     });
   }, []);
 
+  const query = cardQuery.trim().toLowerCase();
+
+  const filteredTasksByProject = useMemo(() => {
+    if (!query) return tasksByProject;
+    const next = new Map<string, Task[]>();
+    for (const [projectId, list] of tasksByProject) {
+      const project = projects.find((p) => p.id === projectId);
+      const nameHit = !!project?.name.toLowerCase().includes(query);
+      const matched = nameHit
+        ? list
+        : list.filter((t) => t.title.toLowerCase().includes(query));
+      if (matched.length > 0 || nameHit) next.set(projectId, matched);
+    }
+    return next;
+  }, [tasksByProject, projects, query]);
+
   const visibleProjects = useMemo(() => {
-    if (!hideEmptyProjects) return projects;
-    return projects.filter(
-      (p) =>
-        forceVisibleProjectIds?.has(p.id) ||
-        (tasksByProject.get(p.id) ?? []).length > 0 ||
-        (doneTodayByProject?.get(p.id) ?? []).length > 0,
-    );
-  }, [projects, tasksByProject, doneTodayByProject, hideEmptyProjects, forceVisibleProjectIds]);
+    const source = query
+      ? projects.filter(
+          (p) =>
+            forceVisibleProjectIds?.has(p.id) ||
+            filteredTasksByProject.has(p.id) ||
+            p.name.toLowerCase().includes(query),
+        )
+      : hideEmptyProjects
+        ? projects.filter(
+            (p) =>
+              forceVisibleProjectIds?.has(p.id) ||
+              (tasksByProject.get(p.id) ?? []).length > 0 ||
+              (doneTodayByProject?.get(p.id) ?? []).length > 0,
+          )
+        : projects;
+    return source;
+  }, [
+    projects,
+    tasksByProject,
+    filteredTasksByProject,
+    doneTodayByProject,
+    hideEmptyProjects,
+    forceVisibleProjectIds,
+    query,
+  ]);
 
   const previewProjects = useMemo(
     () => getProjectsDragPreview(visibleProjects, dragProjectId ?? null, dragOverProjectId ?? null),
@@ -1034,42 +1089,65 @@ export default function TaskCardView({
 
   return (
     <div className="pb-4 pt-1">
-      {(!suppressOverdueBanner && overdueCount > 0) || onToggleHideEmptyProjects || collapsedVisibleCount > 0 ? (
-        <div className="px-3 sm:px-4 mb-2 flex flex-wrap items-center gap-2">
-          {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (
-            <button
-              type="button"
-              onClick={onViewOverdue}
-              className="urgency-pill inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors touch-target-sm !min-h-0"
-            >
-              <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full urgency-chip--mid text-xs font-bold tabular-nums">
-                {overdueCount}
-              </span>
-              overdue — view all
-            </button>
-          )}
-          {onToggleHideEmptyProjects && emptyProjectCount > 0 && (
-            <button
-              type="button"
-              onClick={onToggleHideEmptyProjects}
-              className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              {hideEmptyProjects
-                ? `Show ${emptyProjectCount} empty project${emptyProjectCount === 1 ? "" : "s"}`
-                : "Hide empty projects"}
-            </button>
-          )}
-          {collapsedVisibleCount > 0 && (
-            <button
-              type="button"
-              onClick={expandAll}
-              className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              Expand {collapsedVisibleCount} collapsed
-            </button>
-          )}
-        </div>
-      ) : null}
+      <div className="px-3 sm:px-4 mb-2 flex flex-wrap items-center gap-2">
+        <label className="relative flex-1 min-w-[12rem] max-w-sm">
+          <span className="sr-only">Search projects and tasks</span>
+          <svg
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+          </svg>
+          <input
+            type="search"
+            value={cardQuery}
+            onChange={(e) => setCardQuery(e.target.value)}
+            placeholder="Filter projects or tasks…"
+            className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-blue-500"
+            aria-label="Filter projects or tasks"
+          />
+        </label>
+        {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (
+          <button
+            type="button"
+            onClick={onViewOverdue}
+            className="urgency-pill inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors touch-target-sm !min-h-0"
+          >
+            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full urgency-chip--mid text-xs font-bold tabular-nums">
+              {overdueCount}
+            </span>
+            overdue — view all
+          </button>
+        )}
+        {onToggleHideEmptyProjects && emptyProjectCount > 0 && !query && (
+          <button
+            type="button"
+            onClick={onToggleHideEmptyProjects}
+            className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            {hideEmptyProjects
+              ? `Show ${emptyProjectCount} empty project${emptyProjectCount === 1 ? "" : "s"}`
+              : "Hide empty projects"}
+          </button>
+        )}
+        {collapsedVisibleCount > 0 && (
+          <button
+            type="button"
+            onClick={expandAll}
+            className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            Expand {collapsedVisibleCount} collapsed
+          </button>
+        )}
+        {query && (
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+            {visibleProjects.length} project{visibleProjects.length === 1 ? "" : "s"}
+          </span>
+        )}
+      </div>
 
       <div className="px-3 sm:px-4 columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3.5">
         {previewProjects.map((project, projectIndex) => {
@@ -1089,7 +1167,7 @@ export default function TaskCardView({
               project={project}
               projectIndex={projectIndex}
               projectCount={visibleProjects.length}
-              tasks={tasksByProject.get(project.id) ?? []}
+              tasks={filteredTasksByProject.get(project.id) ?? []}
               completedCount={completedCountByProject?.get(project.id) ?? 0}
               doneTodayTasks={doneTodayByProject?.get(project.id) ?? []}
               activeTaskId={activeTaskId}
@@ -1134,20 +1212,28 @@ export default function TaskCardView({
         })}
       </div>
 
-      {hideEmptyProjects && visibleProjects.length === 0 && (
+      {visibleProjects.length === 0 && (
         <p className="px-4 py-6 text-sm text-center text-slate-500 dark:text-slate-400">
-          No projects with open tasks.
-          {emptyProjectCount > 0 && onToggleHideEmptyProjects && (
+          {query ? (
+            <>No projects or tasks match “{cardQuery.trim()}”.</>
+          ) : hideEmptyProjects ? (
             <>
-              {" "}
-              <button
-                type="button"
-                onClick={onToggleHideEmptyProjects}
-                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
-              >
-                Show {emptyProjectCount} empty
-              </button>
+              No projects with open tasks.
+              {emptyProjectCount > 0 && onToggleHideEmptyProjects && (
+                <>
+                  {" "}
+                  <button
+                    type="button"
+                    onClick={onToggleHideEmptyProjects}
+                    className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                  >
+                    Show {emptyProjectCount} empty
+                  </button>
+                </>
+              )}
             </>
+          ) : (
+            "No projects yet."
           )}
         </p>
       )}

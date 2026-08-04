@@ -2,11 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { FOCI_BRAND_CYAN } from '@/lib/logo-brand'
 import { isCrossPromoExcludedPath } from '@/lib/ad-excluded-paths'
-
-/** Host site chrome — always Foci brand, not the rotating ad's color. */
-const HOST_THEME_COLOR = FOCI_BRAND_CYAN
 
 const ADS_URL = 'https://filantus.com/cross-promo/ads.json'
 const CURRENT_SITE = 'foci' as const
@@ -392,18 +388,17 @@ export function FilantusCrossPromoBanner({
   return (
     <div
       id="filantus-banner"
-      className={`hidden lg:block shrink-0 ${showNext ? 'w-[344px]' : 'w-[320px]'} ${className}`.trim()}
+      className={`hidden lg:block shrink-0 ${showNext ? 'w-[320px]' : 'w-[296px]'} ${className}`.trim()}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      role="complementary"
+      aria-label="Partner promo"
     >
-      <div
-        className="flex items-center h-11 box-border pl-2.5 pr-1 rounded-xl border-2 shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-900"
-        style={{ borderColor: `${HOST_THEME_COLOR}99` }}
-      >
+      <div className="flex items-stretch h-10 box-border rounded-lg border border-dashed border-slate-300/90 dark:border-slate-600/70 bg-slate-50/90 dark:bg-slate-900/60 overflow-hidden">
         <a
           href={href}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer sponsored"
           onClick={() => {
             if (typeof window !== 'undefined') {
               const gtag = (window as { gtag?: (...args: unknown[]) => void }).gtag
@@ -415,22 +410,22 @@ export function FilantusCrossPromoBanner({
               })
             }
           }}
-          className="group flex flex-1 min-w-0 items-center gap-1.5 h-full pr-1"
+          className="group flex flex-1 min-w-0 items-center gap-2 h-full pl-2.5 pr-1.5"
           style={{ textDecoration: 'none' }}
           title={`${ad.headline} — ${ad.sub}`}
         >
-          <span className="flex-1 min-w-0">
-            <span className="block text-[13px] font-bold tracking-tight truncate leading-tight text-slate-900 dark:text-white">
+          <span className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
+            Also
+          </span>
+          <span className="flex-1 min-w-0 border-l border-slate-200/90 dark:border-slate-700/80 pl-2">
+            <span className="block text-[12px] font-semibold tracking-tight truncate leading-tight text-slate-700 dark:text-slate-200">
               {ad.name}
             </span>
-            <span className="block text-[11px] font-medium truncate leading-tight text-slate-700 dark:text-slate-300">
+            <span className="block text-[10px] font-medium truncate leading-tight text-slate-500 dark:text-slate-400">
               {ad.headline}
             </span>
           </span>
-          <span
-            className="shrink-0 text-[11px] font-bold px-2 py-1 rounded-full whitespace-nowrap bg-transparent"
-            style={{ color: HOST_THEME_COLOR, border: `1.5px solid ${HOST_THEME_COLOR}` }}
-          >
+          <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap text-slate-600 dark:text-slate-300 border border-slate-300/80 dark:border-slate-600/70 group-hover:border-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
             Try →
           </span>
         </a>
@@ -438,7 +433,7 @@ export function FilantusCrossPromoBanner({
           <button
             type="button"
             aria-label="Next promo"
-            className="shrink-0 w-7 h-7 mr-0.5 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+            className="shrink-0 w-7 flex items-center justify-center border-l border-dashed border-slate-300/90 dark:border-slate-600/70 text-slate-400 hover:text-slate-700 hover:bg-slate-100/80 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition-colors"
             onClick={() => setIndex((i) => (i + 1) % ads.length)}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
