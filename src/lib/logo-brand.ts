@@ -60,13 +60,14 @@ export const FOCI_TAGLINE_CALM = "deep work, one calm window";
 /** Homepage H1 — tasks first; account required. */
 export const FOCI_HERO_HEADLINE = "Plan your day. Finish your tasks.";
 
-/** Wordmark typography — clearly dominant over the all-caps tagline. */
+/** Wordmark typography — Plus Jakarta Sans; bold not extrabold (less early-2010s chunk). */
 export const FOCI_WORDMARK_NAV =
-  "text-[1.75rem] sm:text-[1.9375rem] font-extrabold leading-none tracking-[-0.03em]";
-export const FOCI_WORDMARK_LOCKUP = "text-[1.875rem] sm:text-[2.25rem] font-extrabold leading-none";
+  "font-wordmark text-[1.625rem] sm:text-[1.8125rem] font-bold leading-none tracking-[-0.04em]";
+export const FOCI_WORDMARK_LOCKUP =
+  "font-wordmark text-[1.75rem] sm:text-[2.125rem] font-bold leading-none tracking-[-0.04em]";
 export const FOCI_WORDMARK_MOCKUP =
-  "text-[1.5rem] sm:text-[1.625rem] font-extrabold leading-none tracking-[-0.03em]";
-export const FOCI_WORDMARK_INLINE = "text-[1rem] font-semibold";
+  "font-wordmark text-[1.375rem] sm:text-[1.5rem] font-bold leading-none tracking-[-0.04em]";
+export const FOCI_WORDMARK_INLINE = "font-wordmark text-[1rem] font-semibold tracking-[-0.02em]";
 export const FOCI_WORDMARK_OG_PX = 86;
 
 /** Tagline typography — subordinate but still readable in the nav. */

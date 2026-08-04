@@ -82,7 +82,7 @@ export function FociWordmark({
 
   return (
     <span
-      className={`tracking-tight lowercase inline-flex items-baseline ${className}`}
+      className={`font-wordmark tracking-tight lowercase inline-flex items-baseline ${className}`}
       aria-label="foci"
     >
       <span style={{ color }}>foc</span>

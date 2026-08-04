@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import "./globals.css";
-import { fontSans } from "@/lib/fonts";
+import { fontSans, fontWordmark } from "@/lib/fonts";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 // Validate GA measurement ID format to prevent script injection
@@ -266,7 +266,7 @@ export default async function RootLayout({
   const nonce = hdrs.get("x-nonce") ?? "";
 
   return (
-    <html lang="en" suppressHydrationWarning className={fontSans.variable}>
+    <html lang="en" suppressHydrationWarning className={`${fontSans.variable} ${fontWordmark.variable}`}>
       <head>
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} suppressHydrationWarning />
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: swRegisterScript }} suppressHydrationWarning />

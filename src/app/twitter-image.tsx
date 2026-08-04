@@ -40,8 +40,8 @@ function OgBrandImage() {
           <div
             style={{
               fontSize: FOCI_WORDMARK_OG_PX,
-              fontWeight: 800,
-              letterSpacing: -2.5,
+              fontWeight: 700,
+              letterSpacing: -3,
               background: FOCI_WORDMARK_GRADIENT_CSS,
               backgroundClip: "text",
               color: "transparent",

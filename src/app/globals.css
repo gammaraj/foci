@@ -54,6 +54,12 @@ body {
   max-width: 100%;
 }
 
+/* Brand wordmark — Plus Jakarta Sans (loaded via next/font) */
+.font-wordmark {
+  font-family: var(--font-wordmark), var(--font-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01" on, "cv11" on;
+}
+
 /* Prevent native <select> min-content width from blowing out mobile drawers */
 select {
   max-width: 100%;
