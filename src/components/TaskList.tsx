@@ -2520,6 +2520,19 @@ export default function TaskList({
                 <option value={THIS_MONTH_FILTER_ID}>This month</option>
                 <option value={THIS_YEAR_FILTER_ID}>This year</option>
               </select>
+              {isTimeFilter && (
+                <button
+                  type="button"
+                  onClick={() => selectProject(ALL_PROJECTS_ID)}
+                  className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+                  aria-label="Clear time filter — show all times"
+                  title="Clear filter"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
 
             <div className="flex items-center justify-end gap-2 shrink-0 min-w-0" data-tour="view-modes">
@@ -2611,6 +2624,7 @@ export default function TaskList({
           onProjectJump={handleMobileProjectJump}
           projectCounts={cardProjectCounts}
           showProjectJump={viewMode === "bucket"}
+          onClearTimeFilter={() => selectProject(ALL_PROJECTS_ID)}
         />
         )}
 
@@ -2726,6 +2740,7 @@ export default function TaskList({
               ? timeFilterActiveProject?.name
               : undefined
           }
+          onClear={() => selectProject(ALL_PROJECTS_ID)}
         />
         </div>
       )}

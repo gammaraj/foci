@@ -39,6 +39,8 @@ interface MobileTaskToolbarProps {
   projectCounts?: Map<string, number>;
   /** Show project jump (bucket view only — cards scroll naturally). */
   showProjectJump?: boolean;
+  /** Clears active Today/Week/Month/Year scope. */
+  onClearTimeFilter?: () => void;
 }
 
 const VIEW_OPTIONS: { mode: TaskViewMode; label: string }[] = [
@@ -79,8 +81,10 @@ export function MobileTaskToolbar({
   onProjectJump,
   projectCounts,
   showProjectJump = false,
+  onClearTimeFilter,
 }: MobileTaskToolbarProps) {
   const showJump = showProjectJump && projects.length > 1 && !!onProjectJump;
+  const timeFilterActive = selectedScope !== ALL_PROJECTS_ID;
 
   return (
     <div className="no-print sm:hidden mt-1.5" data-tour="time-filters">
@@ -119,6 +123,19 @@ export function MobileTaskToolbar({
           <option value={THIS_MONTH_FILTER_ID}>{scopeLabel(THIS_MONTH_FILTER_ID)}</option>
           <option value={THIS_YEAR_FILTER_ID}>{scopeLabel(THIS_YEAR_FILTER_ID)}</option>
         </select>
+        {timeFilterActive && onClearTimeFilter && (
+          <button
+            type="button"
+            onClick={onClearTimeFilter}
+            className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-md border border-slate-200/90 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            aria-label="Clear time filter — show all times"
+            title="Clear filter"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
 
         {showJump && (
           <>
