@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
 import type { SharedProject } from "@/lib/storage";
 import { DEFAULT_PROJECT_ID, PROJECT_COLORS } from "@/lib/types";
-import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 import {
   MAX_PROJECT_NAME,
   formatDueDate,
@@ -377,7 +376,7 @@ function ProjectRow({
               />
             ) : (
               <span className="text-sm font-medium text-slate-800 dark:text-slate-100 block truncate">
-                <ProjectTabName project={project} />
+                {project.name}
               </span>
             )}
             <span className="block mt-0.5">
@@ -570,13 +569,86 @@ export default function ProjectManageView({
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)]">
-        {user && sharedProjects.length > 0 && (
-          <div className="mb-4 pb-4 border-b border-slate-100 dark:border-[#243350]">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <p className="app-section-label text-slate-400">
-                Shared with me
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)] space-y-5">
+        {/* Create first — primary action, not buried under the list */}
+        <section
+          className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-slate-50/70 dark:bg-[#0d1526]/55 p-3 sm:p-3.5 space-y-3"
+          aria-labelledby="projects-create-heading"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <h3
+              id="projects-create-heading"
+              className="text-sm font-semibold text-slate-800 dark:text-slate-100"
+            >
+              New project
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowImport((v) => !v)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                showImport
+                  ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+                  : "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-[#1a2d4a]"
+              }`}
+              aria-expanded={showImport}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Import
+            </button>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onAddProject();
+            }}
+            className="flex gap-2"
+          >
+            <input
+              type="text"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              placeholder="Project name…"
+              maxLength={MAX_PROJECT_NAME}
+              className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+              aria-label="New project name"
+            />
+            <button
+              type="submit"
+              disabled={!newProjectName.trim()}
+              className="shrink-0 px-4 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Add
+            </button>
+          </form>
+
+          <ProjectTemplatePicker onSelect={(tpl) => onAddProject(tpl)} />
+
+          {showImport && (
+            <div className="rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]/80 p-3 space-y-2">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Import into an existing project, a new one, or use the file’s Project column.
               </p>
+              <TaskImportExport
+                importOnly
+                showDestinationPicker
+                projects={sortedProjects}
+                onTasksImported={(result) => {
+                  onTasksImported?.(result);
+                }}
+              />
+            </div>
+          )}
+        </section>
+
+        {user && sharedProjects.length > 0 && (
+          <section aria-labelledby="projects-shared-heading">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <h3 id="projects-shared-heading" className="app-section-label text-slate-400">
+                Shared with me
+              </h3>
               <span className="text-[11px] text-slate-400">
                 {sharedProjects.length} project{sharedProjects.length !== 1 ? "s" : ""}
               </span>
@@ -616,74 +688,84 @@ export default function ProjectManageView({
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        <section aria-labelledby="projects-yours-heading">
+          <div className="flex items-baseline justify-between gap-2 mb-2">
+            <h3 id="projects-yours-heading" className="app-section-label text-slate-400">
+              Your projects
+            </h3>
+            {sortedProjects.length >= 2 && (
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+                Drag ⋮⋮ to reorder · ★ to pin
+              </p>
+            )}
           </div>
-        )}
-
-        {sortedProjects.length >= 2 && (
-          <>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 hidden sm:block">
-              Drag ⋮⋮ to reorder tabs. Drop on a pinned project to pin, or on an unpinned one to unpin.
-            </p>
+          {sortedProjects.length >= 2 && (
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 sm:hidden">
-              Use ▲▼ to reorder. Tap ★ to pin · ⋯ for rename, archive, or delete.
+              Use ▲▼ to reorder · ★ to pin · ⋯ for more
             </p>
-          </>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
-        {sortedProjects.map((project, index) => {
-          const openTasks = sortOpenTasks(
-            tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),
-            activeTaskId
-          );
-          const completedCount = tasks.filter(
-            (t) => t.projectId === project.id && t.completed && !t.archivedAt
-          ).length;
-          const isExpanded = expandedIds.has(project.id);
+          )}
 
-          return (
-            <div
-              key={project.id}
-              className={isExpanded ? "md:col-span-2" : "min-w-0"}
-            >
-            <ProjectRow
-              project={project}
-              projectIndex={index}
-              projectCount={sortedProjects.length}
-              openTasks={openTasks}
-              completedCount={completedCount}
-              expanded={isExpanded}
-              dragProjectId={dragProjectId}
-              dragOverProjectId={dragOverProjectId}
-              onProjectDragStart={onProjectDragStart}
-              onProjectDragOver={onProjectDragOver}
-              onProjectDrop={onProjectDrop}
-              onProjectDragEnd={onProjectDragEnd}
-              onMoveProject={onMoveProject}
-              onToggleExpanded={() => toggleExpanded(project.id)}
-              editingProjectId={editingProjectId}
-              editProjectName={editProjectName}
-              setEditProjectName={setEditProjectName}
-              user={user}
-              onToggleFavorite={onToggleFavorite}
-              onOpenProject={onOpenProject}
-              onUpdateColor={onUpdateColor}
-              onUpdateDueDate={onUpdateDueDate}
-              onStartRename={onStartRename}
-              onSaveRename={onSaveRename}
-              onCancelRename={onCancelRename}
-              onShare={onShare}
-              onArchive={onArchive}
-              onDelete={onDelete}
-              renderOpenTasks={renderOpenTasks}
-            />
-            </div>
-          );
-        })}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
+            {sortedProjects.map((project, index) => {
+              const openTasks = sortOpenTasks(
+                tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),
+                activeTaskId
+              );
+              const completedCount = tasks.filter(
+                (t) => t.projectId === project.id && t.completed && !t.archivedAt
+              ).length;
+              const isExpanded = expandedIds.has(project.id);
+
+              return (
+                <div
+                  key={project.id}
+                  className={isExpanded ? "md:col-span-2" : "min-w-0"}
+                >
+                  <ProjectRow
+                    project={project}
+                    projectIndex={index}
+                    projectCount={sortedProjects.length}
+                    openTasks={openTasks}
+                    completedCount={completedCount}
+                    expanded={isExpanded}
+                    dragProjectId={dragProjectId}
+                    dragOverProjectId={dragOverProjectId}
+                    onProjectDragStart={onProjectDragStart}
+                    onProjectDragOver={onProjectDragOver}
+                    onProjectDrop={onProjectDrop}
+                    onProjectDragEnd={onProjectDragEnd}
+                    onMoveProject={onMoveProject}
+                    onToggleExpanded={() => toggleExpanded(project.id)}
+                    editingProjectId={editingProjectId}
+                    editProjectName={editProjectName}
+                    setEditProjectName={setEditProjectName}
+                    user={user}
+                    onToggleFavorite={onToggleFavorite}
+                    onOpenProject={onOpenProject}
+                    onUpdateColor={onUpdateColor}
+                    onUpdateDueDate={onUpdateDueDate}
+                    onStartRename={onStartRename}
+                    onSaveRename={onSaveRename}
+                    onCancelRename={onCancelRename}
+                    onShare={onShare}
+                    onArchive={onArchive}
+                    onDelete={onDelete}
+                    renderOpenTasks={renderOpenTasks}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         {archivedProjects.length > 0 && (
-          <div className="pt-2 md:col-span-2">
+          <section aria-labelledby="projects-archived-heading">
             <button
               type="button"
+              id="projects-archived-heading"
               onClick={() => setShowArchived((v) => !v)}
               className="flex items-center gap-2 app-section-label text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               aria-expanded={showArchived}
@@ -731,71 +813,8 @@ export default function ProjectManageView({
                 ))}
               </div>
             )}
-          </div>
+          </section>
         )}
-
-        </div>
-      </div>
-
-      <div className="px-3 sm:px-4 py-3 border-t border-slate-100 dark:border-[#243350] shrink-0 space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setShowImport((v) => !v)}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border transition-colors ${
-              showImport
-                ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
-                : "border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-            }`}
-            aria-expanded={showImport}
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            Import tasks
-          </button>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            Into an existing project, a new one, or from the file’s Project column
-          </span>
-        </div>
-
-        {showImport && (
-          <div className="rounded-xl border border-slate-200 dark:border-[#243350] bg-slate-50/60 dark:bg-[#0f1a2c]/60 p-3">
-            <TaskImportExport
-              importOnly
-              showDestinationPicker
-              projects={sortedProjects}
-              onTasksImported={(result) => {
-                onTasksImported?.(result);
-              }}
-            />
-          </div>
-        )}
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onAddProject();
-          }}
-          className="flex gap-2"
-        >
-          <input
-            type="text"
-            value={newProjectName}
-            onChange={(e) => setNewProjectName(e.target.value)}
-            placeholder="New project name..."
-            maxLength={MAX_PROJECT_NAME}
-            className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
-          />
-          <button
-            type="submit"
-            disabled={!newProjectName.trim()}
-            className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Add
-          </button>
-        </form>
-        <ProjectTemplatePicker onSelect={(tpl) => onAddProject(tpl)} />
       </div>
     </div>
   );
