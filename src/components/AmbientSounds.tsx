@@ -503,7 +503,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       <button
         type="button"
         onClick={() => setModeMenuOpen((o) => !o)}
-        className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 text-xs font-medium rounded-md bg-white dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100 shadow-sm ring-1 ring-slate-300/70 dark:ring-[#3a5070] hover:bg-slate-50 dark:hover:bg-[#243350] transition-colors whitespace-nowrap leading-none"
+        className="inline-flex items-center gap-1 px-1.5 py-1 text-xs font-medium rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/10 transition-colors whitespace-nowrap leading-none"
         aria-haspopup="listbox"
         aria-expanded={modeMenuOpen}
         aria-label={`Music source: ${activeModeLabel}. Change source`}

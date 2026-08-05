@@ -18,31 +18,30 @@ export function MiniPlayPauseIcon({ playing, size = "md" }: { playing: boolean; 
   );
 }
 
-/** Shared dock control size — readable tap target with clear chrome. */
+/** Shared dock control size — flat toolbar chrome (matches Layout tabs). */
 const DOCK_BTN =
-  "w-9 h-9 rounded-lg flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50";
+  "w-8 h-8 rounded-md flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50";
 
 export function miniPlayButtonClass(playing: boolean, dock = false, emphasizeStart = false) {
   if (dock) {
     if (playing) {
-      return `${DOCK_BTN} bg-blue-600 text-white hover:bg-blue-700 shadow-sm`;
+      return `${DOCK_BTN} bg-blue-600 text-white hover:bg-blue-700`;
     }
     if (emphasizeStart) {
-      return `${DOCK_BTN} bg-blue-600 text-white hover:bg-blue-700 shadow-sm ring-2 ring-blue-400/30`;
+      return `${DOCK_BTN} bg-blue-600 text-white hover:bg-blue-700`;
     }
-    // Idle: bordered fill so the triangle doesn’t read as a tiny orphan glyph
-    return `${DOCK_BTN} border border-slate-300/90 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400/60`;
+    return `${DOCK_BTN} text-blue-600 dark:text-blue-400 hover:bg-slate-100/90 dark:hover:bg-white/10`;
   }
 
   const base =
-    "w-9 h-9 rounded-full flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60";
+    "w-9 h-9 rounded-md flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60";
   if (playing) {
-    return `${base} border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700`;
+    return `${base} bg-blue-600 text-white hover:bg-blue-700`;
   }
   if (emphasizeStart) {
-    return `${base} border border-blue-500/70 bg-blue-600 text-white shadow-sm hover:bg-blue-700 ring-2 ring-blue-400/35`;
+    return `${base} bg-blue-600 text-white hover:bg-blue-700`;
   }
-  return `${base} border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-blue-600 dark:text-blue-400 hover:bg-blue-50/80 dark:hover:bg-blue-900/25 hover:border-blue-400/60`;
+  return `${base} text-blue-600 dark:text-blue-400 hover:bg-slate-100/90 dark:hover:bg-white/10`;
 }
 
 export function MiniResetIcon({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
@@ -57,13 +56,13 @@ export function MiniResetIcon({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
 
 export function miniResetButtonClass(dock = false) {
   if (dock) {
-    return `${DOCK_BTN} border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300/80 dark:hover:border-[#3a5070]`;
+    return `${DOCK_BTN} text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200`;
   }
-  return "w-9 h-9 rounded-full flex items-center justify-center touch-target-sm border border-slate-300 dark:border-[#3a5070] bg-white dark:bg-[#1a2d4a] text-slate-500 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-[#243350] hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-400/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60";
+  return "w-9 h-9 rounded-md flex items-center justify-center touch-target-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60";
 }
 
 /** Shortcuts / secondary dock actions — matches reset ghost style.
  *  Hint state stays visually neutral (blue dot only) so it doesn’t look selected. */
 export function miniDockGhostButtonClass(_active = false) {
-  return `${DOCK_BTN} relative text-slate-500 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200`;
+  return `${DOCK_BTN} relative text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200`;
 }

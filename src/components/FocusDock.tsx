@@ -97,10 +97,10 @@ export function FocusDockToolbar({
 
   const embeddedChrome =
     isBreak
-      ? "rounded-lg px-1.5 border border-green-300/50 dark:border-green-700/40 bg-green-50/70 dark:bg-green-900/20"
+      ? "rounded-md px-1 text-emerald-800 dark:text-emerald-200"
       : isRunning
-        ? "rounded-lg px-1.5 border border-blue-300/60 dark:border-blue-600/45 bg-blue-50/70 dark:bg-blue-900/20"
-        : "rounded-lg px-1";
+        ? "rounded-md px-1 text-blue-800 dark:text-blue-200"
+        : "rounded-md px-0.5";
 
   const sessionsLink = sessions ? (
     <Link
