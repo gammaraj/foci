@@ -11,6 +11,7 @@ import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner"
 import { loadSettings, saveSettings as persistSettings } from "@/lib/storage";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/types";
 import type { ImportResult } from "@/components/TaskImportExport";
+import PWAInstallHost from "@/components/PWAInstallHost";
 
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 
@@ -92,6 +93,7 @@ export default function AppNavbar({
     <>
       {/* HeadlessWhatsNewBanner listens for WHATS_NEW_SHOW_EVENT dispatched from UserMenu */}
       <WhatsNewBanner focusMode={focusMode} headless />
+      <PWAInstallHost />
       <Navbar
         onOpenSettings={user ? () => setShowSettings(true) : undefined}
         centerSlot={

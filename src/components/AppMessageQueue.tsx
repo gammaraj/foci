@@ -3,16 +3,22 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { loadTasks } from "@/lib/storage";
+import {
+  consumeDeferredInstallPrompt,
+  ensureInstallPromptCapture,
+  getDeferredInstallPrompt,
+  isIosDevice,
+  openPwaInstallGuide,
+  shouldOfferPwaNudge,
+  snoozePwaInstall,
+  subscribeInstallPrompt,
+  type BeforeInstallPromptEvent,
+} from "@/lib/pwa-install";
 
 type MessageId = "signup" | "first-session" | "notification" | "pwa";
 
-// Soft conversion: get them into a session first, then ask to sync streaks.
+// Soft conversion: get them into a session first, then ask to sync / install.
 const PRIORITY: MessageId[] = ["first-session", "signup", "pwa"];
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 interface AppMessageQueueProps {
   user: { id: string } | null;
@@ -22,7 +28,7 @@ interface AppMessageQueueProps {
 function hasCompletedSession(): boolean {
   return Boolean(
     localStorage.getItem("foci_sessions_completed") ||
-      localStorage.getItem("tempo_sessions_completed")
+      localStorage.getItem("tempo_sessions_completed"),
   );
 }
 
@@ -39,13 +45,21 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
       localStorage.setItem("foci_first_session_nudge_dismissed", "1");
     }
     if (id === "notification") sessionStorage.setItem("foci_notif_dismissed", "1");
-    if (id === "pwa") localStorage.setItem("foci_pwa_dismissed", "1");
+    if (id === "pwa") snoozePwaInstall();
   }, []);
 
   useEffect(() => {
     const onSessionComplete = () => setSessionTick((n) => n + 1);
     window.addEventListener("tempo-session-complete", onSessionComplete);
     return () => window.removeEventListener("tempo-session-complete", onSessionComplete);
+  }, []);
+
+  useEffect(() => {
+    ensureInstallPromptCapture();
+    setDeferredPrompt(getDeferredInstallPrompt());
+    return subscribeInstallPrompt(() => {
+      setDeferredPrompt(getDeferredInstallPrompt());
+    });
   }, []);
 
   useEffect(() => {
@@ -98,8 +112,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         }
 
         if (id === "pwa") {
-          if (localStorage.getItem("foci_pwa_dismissed")) continue;
-          if (!deferredPrompt) continue;
+          if (!shouldOfferPwaNudge()) continue;
           setActiveId("pwa");
           return;
         }
@@ -109,15 +122,6 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
 
     evaluate();
   }, [user, dismissed, deferredPrompt, focusMode, sessionTick]);
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
 
   if (!activeId) return null;
 
@@ -184,22 +188,35 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     );
   }
 
-  if (activeId === "pwa" && deferredPrompt) {
+  if (activeId === "pwa") {
+    const ios = isIosDevice();
+    const canPrompt = Boolean(deferredPrompt);
     return (
       <div className="app-container py-2">
         <div className="p-3 rounded-xl app-surface flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <p className="text-sm text-slate-700 dark:text-slate-200">Install Foci for offline access and a home-screen icon.</p>
+          <p className="text-sm text-slate-700 dark:text-slate-200">
+            {ios
+              ? "Add Foci to your Home Screen for one-tap access and offline use."
+              : "Install Foci for offline access and a home-screen icon."}
+          </p>
           <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
             <button
               type="button"
               className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 touch-target-sm"
               onClick={async () => {
-                await deferredPrompt.prompt();
+                if (canPrompt && deferredPrompt) {
+                  await deferredPrompt.prompt();
+                  await deferredPrompt.userChoice;
+                  consumeDeferredInstallPrompt();
+                  setDeferredPrompt(null);
+                  dismiss("pwa");
+                  return;
+                }
+                openPwaInstallGuide();
                 dismiss("pwa");
-                setDeferredPrompt(null);
               }}
             >
-              Install
+              {ios ? "How to add" : canPrompt ? "Install" : "Add to Home Screen"}
             </button>
             <button type="button" onClick={() => dismiss("pwa")} className="px-3 py-1.5 text-sm text-slate-500 touch-target-sm">
               Not now

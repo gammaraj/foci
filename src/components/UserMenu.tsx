@@ -5,6 +5,7 @@ import { useAuth } from "./AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import { startOnboardingTour } from "@/lib/onboarding";
 import { WHATS_NEW_SHOW_EVENT, hasSeenWhatsNew } from "@/lib/whats-new";
+import { isStandaloneDisplay, openPwaInstallGuide } from "@/lib/pwa-install";
 
 export default function UserMenu() {
   const { user, signOut } = useAuth();
@@ -12,10 +13,12 @@ export default function UserMenu() {
   const [open, setOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(false);
+  const [showInstall, setShowInstall] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setWhatsNewUnseen(!hasSeenWhatsNew());
+    setShowInstall(!isStandaloneDisplay());
   }, []);
 
   const cycleTheme = () => {
@@ -130,6 +133,20 @@ export default function UserMenu() {
               </svg>
               <span className="flex-1">Take product tour</span>
             </button>
+            {showInstall && (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  openPwaInstallGuide();
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+                </svg>
+                <span className="flex-1">Add to Home Screen</span>
+              </button>
+            )}
           </div>
 
           <button
