@@ -152,6 +152,18 @@ export function TaskDetailPanel({
 
   const [detailsOpen, setDetailsOpen] = useState(false);
 
+  // Sparse tasks: open More details so the panel doesn’t feel empty under Subtasks.
+  useEffect(() => {
+    const sparse =
+      !task.description?.trim() &&
+      task.priority == null &&
+      !task.kind &&
+      !task.blocked &&
+      !task.someday &&
+      !task.recurrence;
+    setDetailsOpen(sparse);
+  }, [task.id, task.description, task.priority, task.kind, task.blocked, task.someday, task.recurrence]);
+
   const detailsSummary = useMemo(() => {
     const bits: string[] = [];
     if (task.priority === 1) bits.push("High");
@@ -400,15 +412,17 @@ export function TaskDetailPanel({
     )
   ) : null;
 
-  const oneThingPrimary =
+  const oneThingOn =
     "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700";
+  const oneThingOff =
+    "border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35";
 
   const oneThingChip =
     isOneThing && onClearOneThing ? (
       <button
         type="button"
         onClick={onClearOneThing}
-        className={`${chip} ${oneThingPrimary}`}
+        className={`${chip} ${oneThingOn}`}
         title="Clear as today’s One Thing"
         aria-pressed
       >
@@ -421,13 +435,13 @@ export function TaskDetailPanel({
       <button
         type="button"
         onClick={onSetOneThing}
-        className={`${chip} ${oneThingPrimary}`}
+        className={`${chip} ${oneThingOff}`}
         title="Set as today’s One Thing — the one outcome that would make today a success"
       >
         <svg className={`${iconSize} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
-        <span className="truncate">Set as Today&apos;s One Thing</span>
+        <span className="truncate">Set as One Thing</span>
       </button>
     ) : null;
 
@@ -475,17 +489,16 @@ export function TaskDetailPanel({
     </div>
   );
 
-  const dueDateBlock = (
+  const attributesRow = (
     <div className={`${pad} ${isDrawer ? "pt-3 pb-1" : "pb-1"}`}>
-      <div className="max-w-xs">{dueDateChip}</div>
+      <div className="flex flex-wrap gap-2 min-w-0 w-full">
+        <div className="flex-1 min-w-[9.5rem] max-w-xs">{dueDateChip}</div>
+        {oneThingChip ? (
+          <div className="flex-1 min-w-[9.5rem] max-w-xs">{oneThingChip}</div>
+        ) : null}
+      </div>
     </div>
   );
-
-  const oneThingBlock = oneThingChip ? (
-    <div className={`${pad} ${isDrawer ? "pt-1 pb-1" : "pb-1"}`}>
-      <div className="max-w-xs">{oneThingChip}</div>
-    </div>
-  ) : null;
 
   const moreDetailsBlock = (
     <div className={`${pad} ${isDrawer ? "pt-2 pb-2" : "pb-1"}`}>
@@ -562,11 +575,10 @@ export function TaskDetailPanel({
       </div>
     ) : null;
 
-  // Due date + One Thing stay visible; description + other meta stay under More details.
+  // Due date + One Thing stay visible as sibling attributes; meta stays under More details.
   return (
     <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
-      {dueDateBlock}
-      {oneThingBlock}
+      {attributesRow}
       {subtaskBlock}
       {moreDetailsBlock}
       {footer}

@@ -372,10 +372,10 @@ export function TaskSubtaskSection({
           <button
             type="submit"
             disabled={!newSubtaskTitle.trim()}
-            className={`font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0 self-stretch flex items-center ${
+            className={`font-semibold border transition-colors shrink-0 self-stretch flex items-center disabled:opacity-40 disabled:cursor-not-allowed ${
               spacious
-                ? "px-4 sm:px-5 text-sm rounded-xl"
-                : "px-2 py-1 text-xs rounded-md"
+                ? "px-4 sm:px-5 text-sm rounded-xl border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
+                : "px-2 py-1 text-xs rounded-md border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
             }`}
           >
             Add
