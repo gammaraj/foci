@@ -112,10 +112,39 @@ function isTransientSyncError(message: string): boolean {
     m.includes("disconnect/reset") ||
     m.includes("failed to fetch") ||
     m.includes("networkerror") ||
+    m.includes("network request failed") ||
     m.includes("load failed") ||
     m.includes("timed out") ||
-    m.includes("timeout")
+    m.includes("timeout") ||
+    m.includes("fetch failed") ||
+    m.includes("abort") ||
+    m.includes("503") ||
+    m.includes("502") ||
+    m.includes("504")
   );
+}
+
+async function withRetries<T>(
+  run: () => Promise<T>,
+  options?: { attempts?: number; label?: string },
+): Promise<T> {
+  const attempts = options?.attempts ?? 3;
+  let lastError: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await run();
+    } catch (err) {
+      lastError = err;
+      const message = err instanceof Error ? err.message : String(err);
+      if (!isTransientSyncError(message) || i === attempts - 1) throw err;
+      await new Promise((r) => setTimeout(r, 250 * (i + 1) * (i + 1)));
+      console.warn(
+        `[Foci] Retrying ${options?.label ?? "storage write"} (${i + 2}/${attempts}):`,
+        message,
+      );
+    }
+  }
+  throw lastError;
 }
 
 /** Throw if a Supabase response has an error. */
@@ -343,25 +372,27 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async saveTasks(tasks: Task[]): Promise<void> {
     if (tasks.length === 0) return;
-    const userId = await this.getUserId();
-
-    const rows = tasks.map((t) => taskToRow(t, userId));
-
-    const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
-    if (result.error) {
-      console.error("[Foci] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
-      throw new Error(result.error.message);
-    }
+    await withRetries(async () => {
+      const userId = await this.getUserId();
+      const rows = tasks.map((t) => taskToRow(t, userId));
+      const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
+      if (result.error) {
+        console.error("[Foci] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
+        throw new Error(result.error.message);
+      }
+    }, { label: "saveTasks" });
   }
 
   async saveTask(task: Task): Promise<void> {
-    const userId = await this.getUserId();
-    const row = taskToRow(task, userId);
-    const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
-    if (result.error) {
-      console.error("[Foci] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
-      throw new Error(result.error.message);
-    }
+    await withRetries(async () => {
+      const userId = await this.getUserId();
+      const row = taskToRow(task, userId);
+      const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
+      if (result.error) {
+        console.error("[Foci] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
+        throw new Error(result.error.message);
+      }
+    }, { label: "saveTask" });
   }
 
   async deleteTask(id: string): Promise<void> {

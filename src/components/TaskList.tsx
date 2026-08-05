@@ -618,15 +618,26 @@ export default function TaskList({
   }, [showToast]);
 
   /** Save a single task update (avoids re-upserting the entire array). */
-  const persistOne = useCallback(async (updated: Task[], changedTask: Task) => {
-    setTasks(updated);
-    try {
-      await saveOneTask(changedTask);
-    } catch (err) {
-      console.error("[Foci] Failed to save task:", err);
-      showToast("Failed to save task. Changes may be lost.", "error");
-    }
-  }, [showToast]);
+  const persistOne = useCallback(
+    async (updated: Task[], changedTask: Task, revertTo?: Task) => {
+      setTasks(updated);
+      try {
+        await saveOneTask(changedTask);
+      } catch (err) {
+        console.error("[Foci] Failed to save task:", err);
+        if (revertTo) {
+          setTasks((curr) => curr.map((t) => (t.id === revertTo.id ? revertTo : t)));
+        }
+        showToast("Failed to save task. Tap Retry — your edit was reverted.", "error", {
+          label: "Retry",
+          onClick: () => {
+            void persistOne(updated, changedTask, revertTo);
+          },
+        });
+      }
+    },
+    [showToast],
+  );
 
   const persistProjects = useCallback((updated: Project[]) => {
     setProjects(updated);
@@ -897,9 +908,10 @@ export default function TaskList({
       void updateTaskInSharedProject(map(task), selectedSharedProject._ownerId);
       return;
     }
+    const previous = tasks.find((t) => t.id === taskId);
     const updated = tasks.map((t) => (t.id === taskId ? map(t) : t));
     const changed = updated.find((t) => t.id === taskId);
-    if (changed) persistOne(updated, changed);
+    if (changed) persistOne(updated, changed, previous);
   };
   const addProject = (template?: ProjectTemplate) => {
     const name = (template?.label ?? newProjectName).trim().slice(0, MAX_PROJECT_NAME);
@@ -1225,10 +1237,10 @@ export default function TaskList({
         persist(updated, changed);
         saveOneTask(nextTask).catch((err) => console.error("[Foci] Failed to save recurring task:", err));
       } else {
-        persistOne(updated, changed);
+        persistOne(updated, changed, task);
       }
     } else {
-      persistOne(updated, changed);
+      persistOne(updated, changed, task);
     }
     if (activeTaskId === id) onSelectTask(null);
   };
@@ -1267,9 +1279,10 @@ export default function TaskList({
       void updateTaskInSharedProject({ ...task, dueDate: date }, selectedSharedProject._ownerId);
       return;
     }
+    const previous = tasks.find((t) => t.id === id);
     const updated = tasks.map((t) => (t.id === id ? { ...t, dueDate: date } : t));
     const changed = updated.find((t) => t.id === id)!;
-    persistOne(updated, changed);
+    persistOne(updated, changed, previous);
   };
 
   const snoozeToToday = (id: string) => {
@@ -1293,11 +1306,12 @@ export default function TaskList({
       setEditingId(null);
       return;
     }
+    const previous = tasks.find((t) => t.id === id);
     const updated = tasks.map((t) =>
       t.id === id ? { ...t, title } : t
     );
     const changed = updated.find((t) => t.id === id)!;
-    persistOne(updated, changed);
+    persistOne(updated, changed, previous);
     setEditingId(null);
   };
 
@@ -1329,11 +1343,12 @@ export default function TaskList({
   };
 
   const unarchiveTask = (id: string) => {
+    const previous = tasks.find((t) => t.id === id);
     const updated = tasks.map((t) =>
       t.id === id ? { ...t, archivedAt: undefined } : t
     );
     const changed = updated.find((t) => t.id === id)!;
-    persistOne(updated, changed);
+    persistOne(updated, changed, previous);
   };
 
   const deleteArchivedTasks = async () => {
@@ -1498,11 +1513,12 @@ export default function TaskList({
       showToast("You can't move tasks out of a shared project", "error");
       return;
     }
+    const previous = tasks.find((t) => t.id === taskId);
     const updated = tasks.map((t) =>
       t.id === taskId ? { ...t, projectId: newProjectId } : t
     );
     const changed = updated.find((t) => t.id === taskId)!;
-    persistOne(updated, changed);
+    persistOne(updated, changed, previous);
   };
 
   const handleBucketDrop = (draggedTaskId: string, target: BucketDropTarget) => {
@@ -1716,6 +1732,7 @@ export default function TaskList({
 
     let next = tasks;
     let changed: Task | null = null;
+    const previous = tasks.find((t) => t.id === taskId);
 
     if (editingId === taskId) {
       const title = editTitle.trim().slice(0, MAX_TASK_TITLE);
@@ -1763,7 +1780,7 @@ export default function TaskList({
       setNewSubtaskTitle("");
     }
 
-    if (changed) persistOne(next, changed);
+    if (changed) persistOne(next, changed, previous);
     closeTaskDetail();
   };
 

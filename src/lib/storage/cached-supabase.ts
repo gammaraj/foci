@@ -91,6 +91,39 @@ function notifyTasksUpdated(): void {
   window.dispatchEvent(new Event("tempo-tasks-updated"));
 }
 
+/**
+ * Merge a remote snapshot into the local cache without clobbering optimistic writes.
+ * Keeps local-only tasks (not yet on server) and prefers local when completion
+ * state is newer than what the background refresh returned.
+ */
+function mergeRemoteTasks(local: Task[] | null | undefined, remote: Task[]): Task[] {
+  if (!local || local.length === 0) return remote;
+  const localById = new Map(local.map((t) => [t.id, t]));
+  const remoteIds = new Set(remote.map((t) => t.id));
+
+  const merged = remote.map((remoteTask) => {
+    const localTask = localById.get(remoteTask.id);
+    if (!localTask) return remoteTask;
+
+    if (localTask.completed !== remoteTask.completed) {
+      const localAt = localTask.completedAt ?? 0;
+      const remoteAt = remoteTask.completedAt ?? 0;
+      // Local complete with a timestamp at least as new as remote → keep local.
+      if (localTask.completed && localAt >= remoteAt) return localTask;
+      // Local un-complete while remote still shows an older completion → keep local.
+      if (!localTask.completed && localAt >= remoteAt) return localTask;
+    }
+
+    // Prefer local title/order/subtasks if the rest matches completion — remote wins otherwise.
+    return remoteTask;
+  });
+
+  for (const localTask of local) {
+    if (!remoteIds.has(localTask.id)) merged.push(localTask);
+  }
+  return merged;
+}
+
 /** Clear all cache keys (call on logout). */
 export function clearOfflineCache(): void {
   if (!isBrowser()) return;
@@ -104,6 +137,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   private refreshingProjects = false;
   private refreshingTaskViewPrefs = false;
   private refreshingOneThing = false;
+  /** In-flight task writes — background refresh must not clobber these. */
+  private pendingTaskWrites = 0;
 
   // ── Settings ──────────────────────────────────────────
 
@@ -187,9 +222,12 @@ export class CachedSupabaseAdapter implements StorageAdapter {
         this.refreshingTasks = true;
         void withTimeout(this.remote.loadTasks(), REMOTE_LOAD_TIMEOUT_MS)
           .then((result) => {
+            // Don't apply a stale snapshot over optimistic completes / quick-adds.
+            if (this.pendingTaskWrites > 0) return;
             const prev = cacheGet<Task[]>(CACHE_KEYS.tasks);
-            cacheSet(CACHE_KEYS.tasks, result);
-            if (JSON.stringify(prev) !== JSON.stringify(result)) {
+            const merged = mergeRemoteTasks(prev, result);
+            cacheSet(CACHE_KEYS.tasks, merged);
+            if (JSON.stringify(prev) !== JSON.stringify(merged)) {
               notifyTasksUpdated();
             }
           })
@@ -214,7 +252,12 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveTasks(tasks: Task[]): Promise<void> {
     cacheSet(CACHE_KEYS.tasks, tasks);
-    await this.remote.saveTasks(tasks);
+    this.pendingTaskWrites += 1;
+    try {
+      await this.remote.saveTasks(tasks);
+    } finally {
+      this.pendingTaskWrites = Math.max(0, this.pendingTaskWrites - 1);
+    }
   }
 
   async saveTask(task: Task): Promise<void> {
@@ -228,7 +271,12 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     }
     cacheSet(CACHE_KEYS.tasks, cached);
 
-    await this.remote.saveTask(task);
+    this.pendingTaskWrites += 1;
+    try {
+      await this.remote.saveTask(task);
+    } finally {
+      this.pendingTaskWrites = Math.max(0, this.pendingTaskWrites - 1);
+    }
   }
 
   async deleteTask(id: string): Promise<void> {
