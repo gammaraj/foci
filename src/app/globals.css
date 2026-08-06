@@ -229,9 +229,9 @@ select {
 
 /* Shared content width — navbar, status strip, tasks, stats, blog */
 :root {
-  --app-max-width: 1920px;
-  /* Tight gutters so Cards/Buckets use more of the viewport */
-  --app-gutter: 0.75rem;
+  --app-max-width: 1800px;
+  /* Balanced gutters — usable width without hugging the edges */
+  --app-gutter: 0.875rem;
 }
 
 .app-container {
@@ -242,31 +242,31 @@ select {
 }
 @media (min-width: 640px) {
   :root {
-    --app-gutter: 1rem;
+    --app-gutter: 1.25rem;
   }
 }
 @media (min-width: 1024px) {
   :root {
-    --app-gutter: 1.25rem;
+    --app-gutter: 1.5rem;
   }
 }
 
 /* Task panel inner chrome */
 .panel-pad-x {
-  padding-inline: 0.625rem;
+  padding-inline: 0.75rem;
 }
 @media (min-width: 640px) {
   .panel-pad-x {
-    padding-inline: 0.75rem;
+    padding-inline: 1rem;
   }
 }
 
 .panel-inset-x {
-  margin-inline: 0.5rem;
+  margin-inline: 0.625rem;
 }
 @media (min-width: 640px) {
   .panel-inset-x {
-    margin-inline: 0.75rem;
+    margin-inline: 1rem;
   }
 }
 
