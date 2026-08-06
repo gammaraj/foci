@@ -1149,7 +1149,7 @@ export default function TaskCardView({
         )}
       </div>
 
-      <div className="panel-pad-x columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3.5">
+      <div className="panel-pad-x columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2 sm:gap-x-2.5">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (
