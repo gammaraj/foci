@@ -21,7 +21,7 @@ export interface OneThingCardProps {
 }
 
 const stripShell =
-  "no-print mx-3 sm:mx-4 mt-1.5 mb-1 flex items-center gap-2 min-h-[2.75rem] sm:min-h-[2.5rem] min-w-0 rounded-lg border-2 px-2.5 sm:px-3 py-1.5";
+  "no-print panel-inset-x mt-1.5 mb-1 flex items-center gap-2 min-h-[2.75rem] sm:min-h-[2.5rem] min-w-0 rounded-lg border-2 px-2.5 sm:px-3 py-1.5";
 const inlineShell =
   "no-print flex items-center gap-2 min-h-[2.5rem] sm:min-h-[2.25rem] min-w-0 max-w-full rounded-lg border px-2.5 py-1";
 
@@ -182,7 +182,7 @@ export function OneThingCard({
             className={
               compact
                 ? "absolute left-0 right-0 top-full z-40 mt-1.5"
-                : "mx-3 sm:mx-4 mt-1.5 mb-1"
+                : "panel-inset-x mt-1.5 mb-1"
             }
           >
             <OneThingHowTo compact={compact} />

@@ -56,7 +56,7 @@ export function TaskSubtaskSection({
 
   if (!hasSubtasks && !showAddForm) return null;
 
-  const pad = compact ? "px-1.5 sm:px-2" : spacious ? "px-4 sm:px-6" : "px-3 sm:px-4";
+  const pad = compact ? "px-1.5 sm:px-2" : spacious ? "px-4 sm:px-6" : "panel-pad-x";
   const indent = compact ? "pl-3 ml-1.5" : spacious ? "pl-0" : "pl-6 ml-4";
   const borderColor = compact || spacious ? "" : "border-l-2 border-blue-200/70 dark:border-blue-800/50";
   const actionReveal = compact

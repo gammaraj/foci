@@ -2330,7 +2330,7 @@ export default function TaskList({
 
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible min-w-0">
-      <div className="print-only print-header px-3 sm:px-4 pt-3">
+      <div className="print-only print-header panel-pad-x pt-3">
         <h1>Foci — Tasks ({VIEW_PRINT_LABELS[viewMode]})</h1>
         <p>
           {printSubtitle}
@@ -2349,7 +2349,7 @@ export default function TaskList({
 
       {/* Header — title · music/timer · utilities (single row) */}
       <div
-        className="panel-header-calm no-print px-3 sm:px-4 py-2 text-slate-700 dark:text-white rounded-t-2xl"
+        className="panel-header-calm no-print panel-pad-x py-2 text-slate-700 dark:text-white rounded-t-2xl"
       >
         {/* Title + focus controls + utilities */}
         <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2">
@@ -2846,7 +2846,7 @@ export default function TaskList({
 
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!projectManageOpen && viewMode === "bucket" && (
-        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden sm:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
               Drag to reorder · pin columns · manage in Projects (nav or ⋯)
@@ -2888,7 +2888,7 @@ export default function TaskList({
 
       {/* Bucket view — all projects as columns */}
       {!projectManageOpen && viewMode === "bucket" && !tasksReady && (
-        <div className="px-3 sm:px-4 pb-4 pt-1 flex gap-3 overflow-hidden">
+        <div className="panel-pad-x pb-4 pt-1 flex gap-3 overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -2943,7 +2943,7 @@ export default function TaskList({
         viewMode === "card" &&
         tasksReady &&
         (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
-        <div className="no-print hidden sm:flex px-3 sm:px-4 py-2 flex-wrap items-center gap-x-3 gap-y-2 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden sm:flex panel-pad-x py-2 flex-wrap items-center gap-x-3 gap-y-2 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex-1 min-w-0">
             <OneThingCard
               variant="inline"
@@ -2976,7 +2976,7 @@ export default function TaskList({
       )}
 
       {!projectManageOpen && viewMode === "card" && !tasksReady && (
-        <div className="px-3 sm:px-4 pb-4 pt-1 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="panel-pad-x pb-4 pt-1 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
@@ -3046,7 +3046,7 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!projectManageOpen && viewMode === "list" && isViewingSharedProject && selectedSharedProject && (
-        <div className="px-3 sm:px-4 pt-2 pb-2 border-b border-slate-200/90 dark:border-[#243350]/80 no-print">
+        <div className="panel-pad-x pt-2 pb-2 border-b border-slate-200/90 dark:border-[#243350]/80 no-print">
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/20 px-3 py-2">
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
@@ -3080,7 +3080,7 @@ export default function TaskList({
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!projectManageOpen && viewMode === "list" && (<>
       {!isViewingSharedProject && (
-      <div className="px-3 sm:px-4 pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
+      <div className="panel-pad-x pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex sm:hidden items-center gap-1.5">
           <select
@@ -3370,7 +3370,7 @@ export default function TaskList({
       </div>
       )}
 
-      <div className="task-list-composer no-print px-3 sm:px-4 py-2 space-y-1.5">
+      <div className="task-list-composer no-print panel-pad-x py-2 space-y-1.5">
         {/* Project description */}
         {!isViewingSharedProject && !isAllProjects && !isTimeFilter && currentProject && currentProject.id !== DEFAULT_PROJECT_ID && (
           <div className="space-y-2">
@@ -3521,7 +3521,7 @@ export default function TaskList({
         )}
       </div>
 
-        <div className="task-list-body px-3 sm:px-4 pt-2 pb-1.5 space-y-1.5">
+        <div className="task-list-body panel-pad-x pt-2 pb-1.5 space-y-1.5">
         {/* Loading skeleton */}
         {!tasksReady && (
           <div className="space-y-2 py-2">

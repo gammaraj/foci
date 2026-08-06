@@ -1089,7 +1089,7 @@ export default function TaskCardView({
 
   return (
     <div className="pb-4 pt-1">
-      <div className="px-3 sm:px-4 mb-2 flex flex-wrap items-center gap-2">
+      <div className="panel-pad-x mb-2 flex flex-wrap items-center gap-2">
         <label className="relative flex-1 min-w-[12rem] max-w-sm">
           <span className="sr-only">Search projects and tasks</span>
           <svg
@@ -1149,7 +1149,7 @@ export default function TaskCardView({
         )}
       </div>
 
-      <div className="px-3 sm:px-4 columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3.5">
+      <div className="panel-pad-x columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3.5">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (

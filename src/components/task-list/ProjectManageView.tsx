@@ -569,7 +569,7 @@ export default function ProjectManageView({
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-4 py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)] space-y-5">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden panel-pad-x py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)] space-y-5">
         {/* Create first — primary action, not buried under the list */}
         <section
           className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-slate-50/70 dark:bg-[#0d1526]/55 p-3 sm:p-3.5 space-y-3"

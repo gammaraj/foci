@@ -104,7 +104,7 @@ export default function OpenTaskList({
   className = "space-y-1.5",
 }: OpenTaskListProps) {
   if (tasks.length === 0) {
-    return <p className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500">{emptyMessage}</p>;
+    return <p className="panel-pad-x py-3 text-sm text-slate-400 dark:text-slate-500">{emptyMessage}</p>;
   }
 
   const sectionMeta: Record<
