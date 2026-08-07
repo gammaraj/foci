@@ -151,18 +151,21 @@ export function TaskDetailPanel({
   const isInProgress = isFocused && isTimerRunning;
 
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
 
-  // Sparse tasks: open More details so the panel doesn’t feel empty under Subtasks.
+  // Auto-open More details when meta is set; leave sparse tasks collapsed.
+  // Only on task switch so manual collapse isn’t overridden by chip edits.
   useEffect(() => {
-    const sparse =
-      !task.description?.trim() &&
-      task.priority == null &&
-      !task.kind &&
-      !task.blocked &&
-      !task.someday &&
-      !task.recurrence;
-    setDetailsOpen(sparse);
-  }, [task.id, task.description, task.priority, task.kind, task.blocked, task.someday, task.recurrence]);
+    const hasMeta =
+      task.priority != null ||
+      !!task.kind ||
+      !!task.blocked ||
+      !!task.someday ||
+      !!task.recurrence;
+    setDetailsOpen(hasMeta);
+    setDescExpanded(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on open/task switch
+  }, [task.id]);
 
   const detailsSummary = useMemo(() => {
     const bits: string[] = [];
@@ -174,7 +177,6 @@ export function TaskDetailPanel({
     if (task.blocked) bits.push("Waiting");
     if (task.someday) bits.push("Someday");
     if (task.recurrence) bits.push(task.recurrence);
-    if (task.description?.trim()) bits.push("Has description");
     return bits;
   }, [task]);
 
@@ -182,8 +184,21 @@ export function TaskDetailPanel({
     onSave?.();
   };
 
+  const DESC_PREVIEW_CHARS = 140;
+  const DESC_PREVIEW_LINES = 3;
+  const rawDesc = task.description?.trim() ?? "";
+  const descLineCount = rawDesc ? rawDesc.split("\n").length : 0;
+  const descNeedsCollapse =
+    rawDesc.length > DESC_PREVIEW_CHARS || descLineCount > DESC_PREVIEW_LINES;
+  const descPreview =
+    descNeedsCollapse && !descExpanded
+      ? rawDesc.length > DESC_PREVIEW_CHARS
+        ? `${rawDesc.slice(0, DESC_PREVIEW_CHARS).trimEnd()}…`
+        : rawDesc.split("\n").slice(0, DESC_PREVIEW_LINES).join("\n") + "…"
+      : rawDesc;
+
   const descriptionBlock = (
-    <div className={isDrawer ? "pb-1" : ""}>
+    <div className={`${pad} ${isDrawer ? "pt-1 pb-1" : "pb-1"}`}>
       {editingDesc ? (
         <textarea
           value={editDesc}
@@ -195,28 +210,54 @@ export function TaskDetailPanel({
           }}
           placeholder="Add a description..."
           maxLength={2000}
-          rows={isDrawer ? 2 : 3}
+          rows={3}
           className={`w-full px-3 py-2.5 border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y ${
             isDrawer ? "text-base sm:text-sm" : "text-sm"
           }`}
           autoFocus
         />
       ) : (
-        <button
-          type="button"
-          onClick={onStartEditDesc}
-          className={`w-full text-left px-3 ${isDrawer ? "py-2.5 min-h-[2.5rem]" : "py-2"} text-sm rounded-lg border transition-colors focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:outline-none ${
+        <div
+          className={`w-full text-left px-3 ${isDrawer ? "py-2.5 min-h-[2.5rem]" : "py-2"} text-sm rounded-lg border transition-colors ${
             task.description
-              ? "border-slate-200 dark:border-[#243350] hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              ? "border-slate-200 dark:border-[#243350]"
               : chipEmpty
           }`}
         >
           {task.description ? (
-            <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.description}</span>
+            <>
+              <button
+                type="button"
+                onClick={onStartEditDesc}
+                className="w-full text-left focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:outline-none rounded-sm"
+              >
+                <span className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">
+                  {descPreview}
+                </span>
+              </button>
+              {descNeedsCollapse && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDescExpanded((open) => !open);
+                  }}
+                  className="mt-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                >
+                  {descExpanded ? "Show less" : "Show more"}
+                </button>
+              )}
+            </>
           ) : (
-            <span className="text-slate-400 dark:text-slate-400">Add a description...</span>
+            <button
+              type="button"
+              onClick={onStartEditDesc}
+              className="w-full text-left focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:outline-none"
+            >
+              <span className="text-slate-400 dark:text-slate-400">Add a description...</span>
+            </button>
           )}
-        </button>
+        </div>
       )}
     </div>
   );
@@ -527,12 +568,7 @@ export function TaskDetailPanel({
         )}
       </button>
 
-      {detailsOpen && (
-        <div className="mt-2 space-y-3">
-          {descriptionBlock}
-          {detailsGrid}
-        </div>
-      )}
+      {detailsOpen && <div className="mt-2">{detailsGrid}</div>}
     </div>
   );
 
@@ -575,10 +611,11 @@ export function TaskDetailPanel({
       </div>
     ) : null;
 
-  // Due date + One Thing stay visible as sibling attributes; meta stays under More details.
+  // Description sits above subtasks; meta stays under More details.
   return (
     <div onClick={(e) => e.stopPropagation()} className={wrapperClass}>
       {attributesRow}
+      {descriptionBlock}
       {subtaskBlock}
       {moreDetailsBlock}
       {footer}
