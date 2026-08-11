@@ -131,19 +131,19 @@ export default function AccountSharingModal({
 
     // Basic email validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast("Please enter a valid email address", "error");
+      showToast("Please enter a valid email address", "info");
       return;
     }
 
     // Check if already a collaborator
     if (collaborators.some((c) => c.email.toLowerCase() === email)) {
-      showToast("This person already has access to your account", "error");
+      showToast("This person already has access to your account", "info");
       return;
     }
 
     // Check if already invited
     if (pendingInvites.some((i) => (i.inviteeEmail ?? "").toLowerCase() === email)) {
-      showToast("An invite has already been sent to this email", "error");
+      showToast("An invite has already been sent to this email", "info");
       return;
     }
 
@@ -200,7 +200,7 @@ export default function AccountSharingModal({
       const storage = getStorage();
       await storage.cancelAccountInvite(inviteId);
       setPendingInvites((prev) => prev.filter((i) => i.id !== inviteId));
-      showToast("Invite cancelled", "success");
+      showToast("Invite cancelled", "info");
     } catch (err) {
       showToast("Failed to cancel invite", "error");
     }

@@ -198,11 +198,11 @@ export default function TaskList({
     (taskId: string) => {
       const source = tasks.find((t) => t.id === taskId);
       if (!source || !canBeOneThing(source)) {
-        showToast("Pick an open, actionable task", "error");
+        showToast("Pick an open, actionable task", "info");
         return;
       }
       persistOneThing({ taskId, date: getToday() });
-      showToast("Set as today’s One Thing");
+      showToast("Set as today’s One Thing", "success");
     },
     [tasks, persistOneThing, showToast],
   );
@@ -214,7 +214,7 @@ export default function TaskList({
   const changeOneThingPick = useCallback(() => {
     persistOneThing(null);
     setOneThingPromptDismissed(false);
-    showToast("Pick another task as your One Thing");
+    showToast("Pick another task as your One Thing", "info");
   }, [persistOneThing, showToast]);
 
   const viewBeforePlanRef = useRef<TaskViewMode>("card");
@@ -914,7 +914,7 @@ export default function TaskList({
   const assertCanEditShared = (): boolean => {
     if (!isViewingSharedProject || !selectedSharedProject) return true;
     if (canEditSharedProject) return true;
-    showToast("You have view-only access to this project", "error");
+    showToast("You have view-only access to this project", "info");
     return false;
   };
 
@@ -951,9 +951,9 @@ export default function TaskList({
     if (template) {
       const newTasks = templateToTasks(template, project.id);
       void persist([...tasks, ...newTasks]);
-      showToast(`Created ${name} with ${newTasks.length} tasks`);
+      showToast(`Created ${name} with ${newTasks.length} tasks`, "success");
     } else {
-      showToast(`Created ${name} — add your first task`);
+      showToast(`Created ${name} — add your first task`, "success");
     }
     setNewProjectName("");
     setForceVisibleProjectIds((prev) => {
@@ -1105,7 +1105,7 @@ export default function TaskList({
     options?: { openDetail?: boolean },
   ) => {
     if (isViewingSharedProject) {
-      showToast("You can't add tasks to a shared project", "error");
+      showToast("You can't add tasks to a shared project", "info");
       return;
     }
     const title = titleRaw.trim().slice(0, MAX_TASK_TITLE);
@@ -1267,7 +1267,7 @@ export default function TaskList({
 
   const deleteTask = async (id: string) => {
     if (isViewingSharedProject) {
-      showToast("You can't delete tasks in a shared project", "error");
+      showToast("You can't delete tasks in a shared project", "info");
       return;
     }
     const task = tasks.find((t) => t.id === id);
@@ -1307,7 +1307,7 @@ export default function TaskList({
 
   const snoozeToToday = (id: string) => {
     setDueDate(id, getToday());
-    showToast("Moved to today");
+    showToast("Moved to today", "success");
   };
 
   const startEditing = (task: Task, titleOverride?: string) => {
@@ -1530,7 +1530,7 @@ export default function TaskList({
 
   const moveTaskToProject = (taskId: string, newProjectId: string) => {
     if (isViewingSharedProject) {
-      showToast("You can't move tasks out of a shared project", "error");
+      showToast("You can't move tasks out of a shared project", "info");
       return;
     }
     const previous = tasks.find((t) => t.id === taskId);
@@ -1546,7 +1546,7 @@ export default function TaskList({
     if (!updated) {
       showToast(
         "Drag within the same section to reorder, or drop on another project column to move.",
-        "error"
+        "info",
       );
       return;
     }
@@ -1578,7 +1578,7 @@ export default function TaskList({
       return { ...t, blocked: false };
     });
     if (blocked) {
-      showToast("Marked as waiting");
+      showToast("Marked as waiting", "info");
       if (oneThingPref?.taskId === taskId) clearOneThingPick();
     }
   };
@@ -1589,7 +1589,7 @@ export default function TaskList({
       return { ...t, someday: false };
     });
     if (someday) {
-      showToast("Moved to Someday");
+      showToast("Moved to Someday", "success");
       if (oneThingPref?.taskId === taskId) clearOneThingPick();
     }
   };
@@ -3173,7 +3173,7 @@ export default function TaskList({
         </div>
 
         {/* Desktop: horizontal scrolling project tabs */}
-        <div className="hidden sm:block relative" ref={projectTabsContainerRef}>
+        <div className="hidden sm:flex relative items-center gap-2" ref={projectTabsContainerRef}>
           <div
             ref={projectTabMeasureRef}
             className="absolute left-0 top-0 -z-10 opacity-0 pointer-events-none flex items-center gap-2"
@@ -3225,7 +3225,8 @@ export default function TaskList({
               </svg>
             </button>
           </div>
-          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide pr-8">
+          <div className="relative min-w-0 flex-1">
+          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide">
           <button
             ref={allProjectsTabRef}
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
@@ -3342,27 +3343,12 @@ export default function TaskList({
             </button>
           )}
 
-          <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
-          <AddProjectButton onClick={openProjectManage} size="sm" />
-          <ListToolbarProjectMenu
-            project={listToolbarMenuProject}
-            user={user}
-            onManageProjects={openProjectManage}
-            onStartRename={(p) => {
-              startEditingProject(p);
-              openProjectManage();
-            }}
-            onShare={setShareModalProject}
-            onArchive={toggleProjectArchived}
-            onDelete={deleteProject}
-          />
-          </div>
           </div>
           {/* Fade hint for scrollable overflow */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-[#111827] to-transparent" />
 
           {showOverflowProjectMenu && overflowProjectTabs.length > 0 && (
-            <div className="absolute right-10 top-full mt-1 w-64 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-lg z-50 overflow-hidden animate-slide-up">
+            <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-lg z-50 overflow-hidden animate-slide-up">
               <div className="max-h-64 overflow-y-auto py-1">
                 {overflowProjectTabs.map((p) => {
                   const count = tasks.filter((t) => t.projectId === p.id && !t.completed).length;
@@ -3390,6 +3376,23 @@ export default function TaskList({
               </div>
             </div>
           )}
+          </div>
+
+          <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
+            <AddProjectButton onClick={openProjectManage} size="sm" />
+            <ListToolbarProjectMenu
+              project={listToolbarMenuProject}
+              user={user}
+              onManageProjects={openProjectManage}
+              onStartRename={(p) => {
+                startEditingProject(p);
+                openProjectManage();
+              }}
+              onShare={setShareModalProject}
+              onArchive={toggleProjectArchived}
+              onDelete={deleteProject}
+            />
+          </div>
         </div>
 
       </div>

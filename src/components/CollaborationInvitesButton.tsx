@@ -118,7 +118,7 @@ export default function CollaborationInvitesButton() {
     try {
       await declineInvite(inviteId);
       setProjectInvites((prev) => prev.filter((i) => i.id !== inviteId));
-      showToast("Invite declined", "success");
+      showToast("Invite declined", "info");
     } catch {
       showToast("Failed to decline invite", "error");
     } finally {
@@ -146,7 +146,7 @@ export default function CollaborationInvitesButton() {
     try {
       await declineAccountInvite(inviteId);
       setAccountInvites((prev) => prev.filter((i) => i.id !== inviteId));
-      showToast("Invite declined", "success");
+      showToast("Invite declined", "info");
     } catch {
       showToast("Failed to decline invite", "error");
     } finally {

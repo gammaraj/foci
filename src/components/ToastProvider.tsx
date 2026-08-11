@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
 
-type ToastType = "error" | "success" | "info";
+export type ToastType = "error" | "success" | "info";
 
 interface Toast {
   id: string;
@@ -29,26 +29,70 @@ export function showToastGlobal(message: string, type: ToastType = "error") {
   globalShowToast?.(message, type);
 }
 
+function ToastIcon({ type }: { type: ToastType }) {
+  if (type === "success") {
+    return (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+      </svg>
+    );
+  }
+  if (type === "info") {
+    return (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+      />
+    </svg>
+  );
+}
+
+const toastChrome: Record<ToastType, string> = {
+  success: "bg-emerald-600 text-white shadow-lg shadow-emerald-950/25",
+  info: "bg-slate-700 text-slate-50 shadow-lg shadow-slate-950/30 dark:bg-slate-600",
+  error: "bg-red-600 text-white shadow-lg shadow-red-950/25",
+};
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  const showToast = useCallback((message: string, type: ToastType = "error", action?: { label: string; onClick: () => void }) => {
-    const id = crypto.randomUUID();
-    setToasts((prev) => {
-      if (prev.some((t) => t.message === message)) return prev;
-      return [...prev.slice(-4), { id, message, type, action }];
-    });
-    const timer = setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-      timers.current.delete(id);
-    }, 5000);
-    timers.current.set(id, timer);
-  }, []);
+  const showToast = useCallback(
+    (message: string, type: ToastType = "info", action?: { label: string; onClick: () => void }) => {
+      const id = crypto.randomUUID();
+      setToasts((prev) => {
+        if (prev.some((t) => t.message === message)) return prev;
+        return [...prev.slice(-4), { id, message, type, action }];
+      });
+      const duration = type === "error" ? 6000 : 4000;
+      const timer = setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+        timers.current.delete(id);
+      }, duration);
+      timers.current.set(id, timer);
+    },
+    [],
+  );
 
   useEffect(() => {
     globalShowToast = showToast;
-    return () => { globalShowToast = null; };
+    return () => {
+      globalShowToast = null;
+    };
   }, [showToast]);
 
   const dismiss = (id: string) => {
@@ -60,44 +104,45 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const iconMap: Record<ToastType, string> = {
-    error: "⚠️",
-    success: "✓",
-    info: "ℹ",
-  };
-  const colorMap: Record<ToastType, string> = {
-    error: "bg-red-600",
-    success: "bg-green-600",
-    info: "bg-blue-600",
-  };
-
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      {/* Toast container */}
-      <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm">
+      <div
+        className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] sm:w-auto"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`${colorMap[toast.type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up text-sm`}
-            role="alert"
+            className={`${toastChrome[toast.type]} px-3.5 py-3 rounded-xl shadow-lg flex items-start gap-2.5 animate-slide-up text-sm font-medium leading-snug`}
+            role={toast.type === "error" ? "alert" : "status"}
           >
-            <span className="flex-shrink-0">{iconMap[toast.type]}</span>
-            <span className="flex-1">{toast.message}</span>
+            <span className="mt-0.5 flex-shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/20">
+              <ToastIcon type={toast.type} />
+            </span>
+            <span className="flex-1 min-w-0 pt-0.5">{toast.message}</span>
             {toast.action && (
               <button
-                onClick={() => { toast.action!.onClick(); dismiss(toast.id); }}
-                className="flex-shrink-0 font-semibold text-white underline underline-offset-2 hover:no-underline ml-1"
+                type="button"
+                onClick={() => {
+                  toast.action!.onClick();
+                  dismiss(toast.id);
+                }}
+                className="flex-shrink-0 font-semibold underline underline-offset-2 hover:no-underline ml-1 pt-0.5"
               >
                 {toast.action.label}
               </button>
             )}
             <button
+              type="button"
               onClick={() => dismiss(toast.id)}
-              className="flex-shrink-0 text-white/70 hover:text-white ml-2"
+              className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity -mr-0.5 p-0.5 rounded"
               aria-label="Dismiss"
             >
-              ✕
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         ))}

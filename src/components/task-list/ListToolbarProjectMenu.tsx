@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/types";
 
 interface ListToolbarProjectMenuProps {
@@ -16,8 +16,8 @@ interface ListToolbarProjectMenuProps {
 }
 
 /**
- * ⋮ control for the list project toolbar. Always opens a real menu — never
- * navigates on the button click itself (that was navigating to ?projects=1).
+ * ⋮ control for the list project toolbar. Renders a fixed-position menu so it
+ * isn’t clipped by nearby scroll containers.
  */
 export function ListToolbarProjectMenu({
   project,
@@ -30,45 +30,72 @@ export function ListToolbarProjectMenu({
   className = "",
 }: ListToolbarProjectMenuProps) {
   const [open, setOpen] = useState(false);
-  const [openUp, setOpenUp] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const placeMenu = () => {
+    const btn = buttonRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const width = 168;
+    const left = Math.min(Math.max(8, rect.right - width), window.innerWidth - width - 8);
+    const spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow < 220) {
+      setCoords({ bottom: window.innerHeight - rect.top + 4, left });
+    } else {
+      setCoords({ top: rect.bottom + 4, left });
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setCoords(null);
+      return;
+    }
+    placeMenu();
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    const close = (e: Event) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("touchstart", close, { passive: true });
+    const onReposition = () => placeMenu();
+    // Defer so the opening click doesn’t immediately close the menu.
+    const t = window.setTimeout(() => {
+      document.addEventListener("pointerdown", onPointerDown);
+    }, 0);
     document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onReposition);
+    window.addEventListener("scroll", onReposition, true);
     return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("touchstart", close);
+      window.clearTimeout(t);
+      document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onReposition);
+      window.removeEventListener("scroll", onReposition, true);
     };
   }, [open]);
-
-  const toggleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!open && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setOpenUp(window.innerHeight - rect.bottom < 220);
-    }
-    setOpen((v) => !v);
-  };
 
   const hasProjectActions = !!project && (!!onStartRename || !!onShare || !!onArchive || !!onDelete);
 
   return (
-    <div className={`relative shrink-0 ${className}`.trim()} ref={menuRef}>
+    <div className={`relative shrink-0 ${className}`.trim()} ref={rootRef}>
       <button
         ref={buttonRef}
         type="button"
-        onClick={toggleOpen}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
         className={`flex-shrink-0 touch-target-sm p-2 sm:p-1.5 rounded-lg transition-colors ${
           open
             ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
@@ -83,11 +110,11 @@ export function ListToolbarProjectMenu({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
         </svg>
       </button>
-      {open && (
+      {open && coords && (
         <div
-          className={`absolute right-0 z-40 min-w-[10rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-lg ${
-            openUp ? "bottom-full mb-1" : "top-full mt-1"
-          }`}
+          ref={panelRef}
+          className="fixed z-[9998] min-w-[10.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-xl"
+          style={{ top: coords.top, bottom: coords.bottom, left: coords.left }}
           role="menu"
         >
           {hasProjectActions && project && onStartRename && (
