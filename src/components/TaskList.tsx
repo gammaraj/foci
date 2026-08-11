@@ -343,6 +343,7 @@ export default function TaskList({
   }, [selectedProjectId]);
 
   const [hideEmptyCardProjects, setHideEmptyCardProjects] = useState(true);
+  const [cardQuery, setCardQuery] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -2558,8 +2559,8 @@ export default function TaskList({
       {!focusMode && !projectManageOpen && (
       <div className="no-print panel-pad-x py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-slate-200/90 dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:flex items-center justify-between gap-3 min-w-0">
-            <div className="flex items-center gap-2 min-w-0" data-tour="time-filters">
+          <div className="no-print hidden sm:flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2 shrink-0 min-w-0" data-tour="time-filters">
               <label htmlFor="desktop-time-scope" className="app-section-label leading-none text-slate-500 dark:text-slate-400 shrink-0">
                 When
               </label>
@@ -2593,6 +2594,32 @@ export default function TaskList({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
+              )}
+            </div>
+
+            <div className="flex-1 min-w-0 flex justify-center px-1">
+              {viewMode === "card" && (
+                <label className="relative w-full max-w-md min-w-0">
+                  <span className="sr-only">Search projects and tasks</span>
+                  <svg
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+                  </svg>
+                  <input
+                    type="search"
+                    value={cardQuery}
+                    onChange={(e) => setCardQuery(e.target.value)}
+                    placeholder="Filter projects or tasks…"
+                    className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-blue-500"
+                    aria-label="Filter projects or tasks"
+                    data-tour="card-filter"
+                  />
+                </label>
               )}
             </div>
 
@@ -2998,6 +3025,8 @@ export default function TaskList({
           highlightProjectId={highlightProjectId}
           forceVisibleProjectIds={forceVisibleProjectIds}
           autoQuickAddProjectId={autoQuickAddProjectId}
+          cardQuery={cardQuery}
+          onCardQueryChange={setCardQuery}
         />
       )}
 

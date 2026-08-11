@@ -98,6 +98,9 @@ interface TaskCardViewProps {
   forceVisibleProjectIds?: ReadonlySet<string>;
   /** Open the Quick Add form for this project card. */
   autoQuickAddProjectId?: string | null;
+  /** Controlled Cards search (desktop lives in When/Layout; mobile keeps an in-view field). */
+  cardQuery?: string;
+  onCardQueryChange?: (value: string) => void;
 }
 
 function CardTaskMoreMenu({
@@ -995,9 +998,13 @@ export default function TaskCardView({
   highlightProjectId = null,
   forceVisibleProjectIds,
   autoQuickAddProjectId = null,
+  cardQuery: cardQueryProp,
+  onCardQueryChange,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
-  const [cardQuery, setCardQuery] = useState("");
+  const [cardQueryLocal, setCardQueryLocal] = useState("");
+  const cardQuery = cardQueryProp ?? cardQueryLocal;
+  const setCardQuery = onCardQueryChange ?? setCardQueryLocal;
 
   useEffect(() => {
     setCollapsedIds(loadCollapsedProjectIds());
@@ -1087,10 +1094,16 @@ export default function TaskCardView({
   );
   const collapsedVisibleCount = visibleProjects.filter((p) => collapsedIds.has(p.id)).length;
 
+  const showSecondaryTools =
+    (!suppressOverdueBanner && overdueCount > 0 && !!onViewOverdue) ||
+    (!!onToggleHideEmptyProjects && emptyProjectCount > 0 && !query) ||
+    collapsedVisibleCount > 0 ||
+    !!query;
+
   return (
     <div className="pb-4 pt-1">
-      <div className="panel-pad-x mb-2 flex flex-wrap items-center gap-2">
-        <label className="relative flex-1 min-w-[12rem] max-w-sm">
+      <div className="panel-pad-x mb-2 sm:hidden">
+        <label className="relative block w-full">
           <span className="sr-only">Search projects and tasks</span>
           <svg
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500"
@@ -1110,6 +1123,9 @@ export default function TaskCardView({
             aria-label="Filter projects or tasks"
           />
         </label>
+      </div>
+      {showSecondaryTools && (
+      <div className="panel-pad-x mb-2 flex flex-wrap items-center gap-2">
         {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (
           <button
             type="button"
@@ -1148,6 +1164,7 @@ export default function TaskCardView({
           </span>
         )}
       </div>
+      )}
 
       <div className="panel-pad-x columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3">
         {previewProjects.map((project, projectIndex) => {
