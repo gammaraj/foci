@@ -26,6 +26,7 @@ import {
 import TaskPanelMenu from "@/components/TaskPanelMenu";
 import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
+import { FocusBarTitle, FocusBarActions } from "@/components/AppFocusBar";
 
 const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
@@ -119,7 +120,6 @@ export default function TaskList({
   onToggleFullscreen,
   focusMode,
   onOpenSettings,
-  focusStrip,
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -2377,190 +2377,139 @@ export default function TaskList({
         </p>
       </div>
 
-      {/* Header — title · music/timer · utilities (single row) */}
-      <div
-        className="panel-header-calm no-print panel-pad-x py-2 text-slate-700 dark:text-white rounded-t-2xl"
-      >
-        {/* Title + focus controls + utilities */}
-        <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2">
-          <div className="min-w-0 shrink">
-            {projectManageOpen ? (
-              <>
-                <button
-                  type="button"
-                  onClick={backFromProjectsManage}
-                  className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1 transition-colors touch-target-sm -ml-2 px-2 py-1 rounded-lg"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back to {VIEW_RETURN_LABELS[viewBeforeManageRef.current] ?? "tasks"}
-                </button>
-                <h2 className="text-base sm:text-lg font-semibold leading-tight">Projects</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal normal-case tracking-normal mt-0.5 line-clamp-1">
-                  {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
-                  {pinnedProjectCount > 0 && (
-                    <span className="text-amber-600 dark:text-amber-300">
-                      {" "}
-                      · {pinnedProjectCount} pinned
-                    </span>
-                  )}
-                  {" "}— pin ★ · open in List · rename, archive, import
-                </p>
-              </>
-            ) : (
-              <>
-            {listReturnView && viewMode === "list" && (
+      {/* Title + actions live in the shared App Focus Bar */}
+      <FocusBarTitle>
+        <div className="min-w-0 text-slate-700 dark:text-white">
+          {projectManageOpen ? (
+            <>
               <button
                 type="button"
-                onClick={backFromProjectList}
-                className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-1 transition-colors"
+                onClick={backFromProjectsManage}
+                className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-0.5 transition-colors touch-target-sm -ml-1 px-1.5 py-0.5 rounded-lg"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
+                Back to {VIEW_RETURN_LABELS[viewBeforeManageRef.current] ?? "tasks"}
               </button>
-            )}
-            <h2
-              className="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white"
-              title={
-                !focusMode && (viewMode === "list" || viewMode === "bucket" || viewMode === "card")
-                  ? viewMode === "card"
-                    ? sortedProjects.length >= 2
-                      ? "Top priorities per project · drag ⋮⋮ to reorder"
-                      : "Top priorities per project at a glance"
-                    : viewMode === "bucket"
-                      ? isTimeFilter
-                        ? [
-                            timeScopeDescription,
-                            `${bucketDatedCount} due`,
-                            bucketUndatedCount > 0 ? `${bucketUndatedCount} no date` : null,
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")
-                        : "All projects side by side"
-                      : isTimeFilter
-                        ? `${timeScopeDescription ?? "Scheduled tasks"} · tasks without a due date appear below`
-                        : "Pick a task, then hit Focus to start your session"
-                  : undefined
-              }
-            >
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              <span className="shrink-0">
-                Tasks
-                {viewMode === "plan" && (
-                  <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal">
-                    {" "}· Smart Plan
+              <h2 className="text-base sm:text-lg font-semibold leading-tight">Projects</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
+                {pinnedProjectCount > 0 && (
+                  <span className="text-amber-600 dark:text-amber-300">
+                    {" "}· {pinnedProjectCount} pinned
                   </span>
                 )}
-              </span>
-              {showUrgencySummary && (
-                <TaskUrgencySummary
-                  compact
-                  className="no-print ml-0.5 min-w-0 flex-1"
-                  overdueCount={overdueTasks.length}
-                  dueTodayCount={dueExactlyTodayCount}
-                  worstOverdue={worstOverdue}
-                  onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
-                  onViewToday={() => selectProject(TODAY_FILTER_ID)}
-                  onJumpToWorst={jumpToWorstOverdue}
-                />
+              </p>
+            </>
+          ) : (
+            <>
+              {listReturnView && viewMode === "list" && (
+                <button
+                  type="button"
+                  onClick={backFromProjectList}
+                  className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-0.5 transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
+                </button>
               )}
-              {!focusMode && !projectManageOpen && (
-                <DoneTodayTally
-                  compact
-                  count={doneProgress.today}
-                  weekCount={doneProgress.week}
-                  monthCount={doneProgress.month}
-                  pulse={tallyPulse}
-                  onClick={scrollToDoneToday}
-                  className="no-print ml-0.5"
-                />
-              )}
-            </h2>
-              </>
-            )}
-          </div>
-
-          {focusStrip && !projectManageOpen && (
-            <div className="no-print hidden sm:flex flex-1 min-w-0 justify-center overflow-visible px-1">
-              {focusStrip}
-            </div>
-          )}
-
-          {/* Utilities — keep out of the filter/view cluster */}
-          <div className="no-print flex items-center gap-0.5 flex-shrink-0">
-            {!projectManageOpen && (
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
-                title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
-                aria-label="Print current view"
-                data-tour="print-tasks"
-              >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              <h2 className="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <span className="hidden md:inline">Print</span>
-              </button>
-            )}
-            {onOpenSettings && (
-              <TaskPanelMenu
-                user={user}
-                onOpenSettings={onOpenSettings}
-                onToggleFullscreen={onToggleFullscreen}
-                isFullscreen={isFullscreen}
-                templates={PROJECT_TEMPLATES}
-                onSelectTemplate={addProject}
-                onPrint={handlePrint}
-                printDisabled={projectManageOpen}
-              />
-            )}
-            {onToggleFullscreen && (
-              <button
-                onClick={onToggleFullscreen}
-                className={`no-print hidden sm:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
-                title={isFullscreen ? "Exit expand" : "Expand tasks"}
-                aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
-              >
-                {isFullscreen ? (
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9L4 4m0 0h4M4 4v4m11-1V3m0 0h-4m4 0v4M4 15v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
+                <span className="shrink-0">
+                  Tasks
+                  {viewMode === "plan" && (
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal"> · Smart Plan</span>
+                  )}
+                </span>
+                {showUrgencySummary && (
+                  <TaskUrgencySummary
+                    compact
+                    className="no-print ml-0.5 min-w-0 flex-1"
+                    overdueCount={overdueTasks.length}
+                    dueTodayCount={dueExactlyTodayCount}
+                    worstOverdue={worstOverdue}
+                    onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
+                    onViewToday={() => selectProject(TODAY_FILTER_ID)}
+                    onJumpToWorst={jumpToWorstOverdue}
+                  />
                 )}
-              </button>
-            )}
-          </div>
+                {!focusMode && !projectManageOpen && (
+                  <DoneTodayTally
+                    compact
+                    count={doneProgress.today}
+                    weekCount={doneProgress.week}
+                    monthCount={doneProgress.month}
+                    pulse={tallyPulse}
+                    onClick={scrollToDoneToday}
+                    className="no-print ml-0.5"
+                  />
+                )}
+              </h2>
+            </>
+          )}
         </div>
+      </FocusBarTitle>
 
-        {/* Mobile: music + timer get their own row so the title stays readable */}
-        {focusStrip && !projectManageOpen && (
-          <div className="no-print sm:hidden mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-[#243350]/80">
-            {focusStrip}
-          </div>
-        )}
+      <FocusBarActions>
+        <div className="no-print flex items-center gap-0.5 flex-shrink-0">
+          {!projectManageOpen && (
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
+              title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
+              aria-label="Print current view"
+              data-tour="print-tasks"
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              <span className="hidden md:inline">Print</span>
+            </button>
+          )}
+          {onOpenSettings && (
+            <TaskPanelMenu
+              user={user}
+              onOpenSettings={onOpenSettings}
+              onToggleFullscreen={onToggleFullscreen}
+              isFullscreen={isFullscreen}
+              templates={PROJECT_TEMPLATES}
+              onSelectTemplate={addProject}
+              onPrint={handlePrint}
+              printDisabled={projectManageOpen}
+            />
+          )}
+          {onToggleFullscreen && (
+            <button
+              onClick={onToggleFullscreen}
+              className={`no-print hidden sm:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+              title={isFullscreen ? "Exit expand" : "Expand tasks"}
+              aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
+            >
+              {isFullscreen ? (
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9L4 4m0 0h4M4 4v4m11-1V3m0 0h-4m4 0v4M4 15v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
+      </FocusBarActions>
 
-        {/* Layout primary · time filter secondary (not competing blue pills) */}
+      {/* Card toolbar — When / Layout (title is in App Focus Bar) */}
+      {!focusMode && !projectManageOpen && (
+      <div className="no-print panel-pad-x py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-slate-200/90 dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:flex items-center justify-between gap-3 mt-1.5 pt-1.5 border-t border-slate-200/90 dark:border-blue-400/15 min-w-0">
+          <div className="no-print hidden sm:flex items-center justify-between gap-3 min-w-0">
             <div className="flex items-center gap-2 min-w-0" data-tour="time-filters">
               <label htmlFor="desktop-time-scope" className="app-section-label leading-none text-slate-500 dark:text-slate-400 shrink-0">
                 When
@@ -2707,6 +2656,7 @@ export default function TaskList({
         )}
 
       </div>
+      )}
 
       {projectManageOpen && (
         <ProjectManageView

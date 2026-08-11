@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import AppNavbar from "@/components/AppNavbar";
+import { FocusBarTitle, FocusBarActions } from "@/components/AppFocusBar";
 import {
   loadStreakHistory,
   loadTasks,
@@ -547,48 +547,44 @@ export default function StatsPage() {
 
   if (!loaded) {
     return (
-      <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#070b16]">
-        <AppNavbar />
-        <div className="app-container py-12 text-center text-slate-500 dark:text-slate-400">
-          <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
-        </div>
+      <div className="app-container py-12 text-center text-slate-500 dark:text-slate-400">
+        <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
       </div>
     );
   }
 
   return (
-    <div className="app-shell min-h-screen bg-slate-50 dark:bg-[#070b16]">
-      <AppNavbar />
-
-      <main className="app-container py-6 sm:py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 sm:mb-8">
-          <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-              Stats &amp; Analytics
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Focus habits, session trends, and task backlog health
-            </p>
-          </div>
-          {/* Range toggle */}
-          <div className="flex gap-1.5 bg-slate-100 dark:bg-[#162a4a] rounded-lg p-1 self-start sm:self-auto shrink-0">
-            {([7, 30] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRange(r)}
-                className={`px-3 sm:px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  range === r
-                    ? "bg-white dark:bg-[#0f1b33] text-slate-900 dark:text-white shadow-sm"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                }`}
-              >
-                {r}D
-              </button>
-            ))}
-          </div>
+    <>
+      <FocusBarTitle>
+        <div className="min-w-0">
+          <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-800 dark:text-white">
+            Stats
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+            Focus habits, sessions, and backlog health
+          </p>
         </div>
+      </FocusBarTitle>
+      <FocusBarActions>
+        <div className="flex gap-1 bg-slate-100 dark:bg-[#162a4a] rounded-lg p-0.5 shrink-0">
+          {([7, 30] as const).map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRange(r)}
+              className={`px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-medium rounded-md transition-all ${
+                range === r
+                  ? "bg-white dark:bg-[#0f1b33] text-slate-900 dark:text-white shadow-sm"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+              }`}
+            >
+              {r}D
+            </button>
+          ))}
+        </div>
+      </FocusBarActions>
 
+      <main className="app-container py-4 sm:py-6">
         {/* Summary cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <StatCard
@@ -892,6 +888,6 @@ export default function StatsPage() {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }
