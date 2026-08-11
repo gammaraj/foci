@@ -99,7 +99,7 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
 const FILTER_TAB_ACTIVE =
   "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
 const FILTER_TAB_INACTIVE =
-  "text-slate-600 dark:text-white/85 hover:text-blue-800 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10";
+  "text-slate-600 dark:text-slate-200 hover:text-blue-800 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
