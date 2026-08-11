@@ -2707,6 +2707,54 @@ export default function TaskList({
       </div>
       )}
 
+      {/* Time scope + One Thing — shared strip under When/Layout on every layout */}
+      {!projectManageOpen && isTimeFilter && timeScopeDescription && (
+        <div className="no-print">
+        <TimeFilterBanner
+          description={timeScopeDescription}
+          datedCount={scopedDatedOpenCount}
+          undatedCount={scopedUndatedOpenCount}
+          overdueCount={overdueTasks.length}
+          projectName={
+            viewMode === "list" && projectFilterId !== ALL_PROJECTS_ID
+              ? timeFilterActiveProject?.name
+              : undefined
+          }
+          onClear={() => selectProject(ALL_PROJECTS_ID)}
+        />
+        </div>
+      )}
+
+      {!projectManageOpen && viewMode !== "plan" && tasksReady && (
+        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
+          <OneThingCard
+            status={oneThingResolved.status}
+            task={oneThingResolved.task}
+            projectName={
+              oneThingResolved.task
+                ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
+                : undefined
+            }
+            hasOpenTasks={allOpenCount > 0}
+            isTimerRunning={isTimerRunning}
+            isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
+            onFocus={() => {
+              if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
+            }}
+            onComplete={() => {
+              if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
+            }}
+            onChange={changeOneThingPick}
+            onClear={clearOneThingPick}
+            onDismissEmpty={
+              oneThingResolved.status === "unset"
+                ? () => setOneThingPromptDismissed(true)
+                : undefined
+            }
+          />
+        )
+      )}
+
       {projectManageOpen && (
         <ProjectManageView
           sortedProjects={sortedProjects}
@@ -2791,88 +2839,6 @@ export default function TaskList({
         />
       )}
 
-      {/* Time scope banner — card, bucket, and list */}
-      {!projectManageOpen && isTimeFilter && timeScopeDescription && (
-        <div className="no-print">
-        <TimeFilterBanner
-          description={timeScopeDescription}
-          datedCount={scopedDatedOpenCount}
-          undatedCount={scopedUndatedOpenCount}
-          overdueCount={overdueTasks.length}
-          projectName={
-            viewMode === "list" && projectFilterId !== ALL_PROJECTS_ID
-              ? timeFilterActiveProject?.name
-              : undefined
-          }
-          onClear={() => selectProject(ALL_PROJECTS_ID)}
-        />
-        </div>
-      )}
-
-      {/* The One Thing — full strip outside Cards (Cards folds it into the toolbar on desktop) */}
-      {!projectManageOpen && viewMode !== "plan" && viewMode !== "card" && tasksReady && (
-        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
-          <OneThingCard
-            status={oneThingResolved.status}
-            task={oneThingResolved.task}
-            projectName={
-              oneThingResolved.task
-                ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
-                : undefined
-            }
-            hasOpenTasks={allOpenCount > 0}
-            isTimerRunning={isTimerRunning}
-            isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
-            onFocus={() => {
-              if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
-            }}
-            onComplete={() => {
-              if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
-            }}
-            onChange={changeOneThingPick}
-            onClear={clearOneThingPick}
-            onDismissEmpty={
-              oneThingResolved.status === "unset"
-                ? () => setOneThingPromptDismissed(true)
-                : undefined
-            }
-          />
-        )
-      )}
-
-      {/* Cards mobile: keep One Thing as its own strip */}
-      {!projectManageOpen && viewMode === "card" && tasksReady && (
-        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
-          <div className="sm:hidden">
-            <OneThingCard
-              status={oneThingResolved.status}
-              task={oneThingResolved.task}
-              projectName={
-                oneThingResolved.task
-                  ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
-                  : undefined
-              }
-              hasOpenTasks={allOpenCount > 0}
-              isTimerRunning={isTimerRunning}
-              isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
-              onFocus={() => {
-                if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
-              }}
-              onComplete={() => {
-                if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
-              }}
-              onChange={changeOneThingPick}
-              onClear={clearOneThingPick}
-              onDismissEmpty={
-                oneThingResolved.status === "unset"
-                  ? () => setOneThingPromptDismissed(true)
-                  : undefined
-              }
-            />
-          </div>
-        )
-      )}
-
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!projectManageOpen && viewMode === "bucket" && (
         <div className="no-print hidden sm:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
@@ -2910,7 +2876,6 @@ export default function TaskList({
                 </select>
               </>
             )}
-            <AddProjectButton onClick={openProjectManage} size="sm" />
           </div>
         </div>
       )}
@@ -2965,43 +2930,6 @@ export default function TaskList({
           scrollToProjectToken={bucketScrollToken}
           renderBelowTask={preparingPrint ? () => null : renderGridSubtasks}
         />
-      )}
-
-      {/* Card toolbar — One Thing on desktop; project admin lives in nav / ⋯ */}
-      {!projectManageOpen &&
-        viewMode === "card" &&
-        tasksReady &&
-        (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
-        <div className="no-print hidden sm:flex panel-pad-x py-2 flex-wrap items-center gap-x-3 gap-y-2 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
-          <div className="flex-1 min-w-0">
-            <OneThingCard
-              variant="inline"
-              status={oneThingResolved.status}
-              task={oneThingResolved.task}
-              projectName={
-                oneThingResolved.task
-                  ? projects.find((p) => p.id === oneThingResolved.task!.projectId)?.name
-                  : undefined
-              }
-              hasOpenTasks={allOpenCount > 0}
-              isTimerRunning={isTimerRunning}
-              isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
-              onFocus={() => {
-                if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
-              }}
-              onComplete={() => {
-                if (oneThingResolved.task) toggleComplete(oneThingResolved.task.id);
-              }}
-              onChange={changeOneThingPick}
-              onClear={clearOneThingPick}
-              onDismissEmpty={
-                oneThingResolved.status === "unset"
-                  ? () => setOneThingPromptDismissed(true)
-                  : undefined
-              }
-            />
-          </div>
-        </div>
       )}
 
       {!projectManageOpen && viewMode === "card" && !tasksReady && (
@@ -3377,8 +3305,8 @@ export default function TaskList({
           )}
           </div>
 
+          {/* + Project lives in When/Layout row — keep ⋯ menu only here */}
           <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
-            <AddProjectButton onClick={openProjectManage} size="sm" />
             <ListToolbarProjectMenu
               project={listToolbarMenuProject}
               user={user}

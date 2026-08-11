@@ -16,14 +16,18 @@ export interface OneThingCardProps {
   onChange: () => void;
   onClear: () => void;
   onDismissEmpty?: () => void;
-  /** `strip` = full-width bar; `inline` = compact chip for toolbar rows. */
+  /**
+   * `strip` — full-width bar under When/Layout (default everywhere).
+   * `inline` — same chrome, for embedding in a toolbar row (Cards desktop).
+   */
   variant?: "strip" | "inline";
 }
 
-const stripShell =
-  "no-print panel-inset-x mt-1.5 mb-1 flex items-center gap-2 min-h-[2.75rem] sm:min-h-[2.5rem] min-w-0 rounded-lg border-2 px-2.5 sm:px-3 py-1.5";
-const inlineShell =
-  "no-print flex items-center gap-2 min-h-[2.5rem] sm:min-h-[2.25rem] min-w-0 max-w-full rounded-lg border px-2.5 py-1";
+/** Shared shell — one look on Cards, List, Buckets, Calendar. */
+const shellBase =
+  "no-print flex items-center gap-2 min-h-[2.5rem] sm:min-h-[2.25rem] min-w-0 rounded-lg border px-2.5 py-1";
+const stripShell = `${shellBase} panel-inset-x mt-1.5 mb-1`;
+const inlineShell = `${shellBase} max-w-full`;
 
 function StarIcon({ className }: { className?: string }) {
   return (
@@ -47,13 +51,9 @@ function ChevronIcon({ open, className }: { open: boolean; className?: string })
   );
 }
 
-function OneThingHowTo({ compact }: { compact: boolean }) {
+function OneThingHowTo() {
   return (
-    <div
-      className={`rounded-lg border border-blue-300/70 dark:border-blue-600/50 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg ${
-        compact ? "p-3 text-xs leading-relaxed" : "p-3.5 text-sm leading-relaxed"
-      }`}
-    >
+    <div className="rounded-lg border border-blue-300/70 dark:border-blue-600/50 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg p-3 text-xs leading-relaxed">
       <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
       <ol className="mt-1.5 list-decimal pl-4 space-y-1 text-slate-600 dark:text-slate-300">
         <li>Open any open task (click its name).</li>
@@ -84,7 +84,6 @@ export function OneThingCard({
   variant = "strip",
 }: OneThingCardProps) {
   const shell = variant === "inline" ? inlineShell : stripShell;
-  const compact = variant === "inline";
   const [detailsOpen, setDetailsOpen] = useState(false);
   const detailsId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -111,27 +110,14 @@ export function OneThingCard({
   }, [detailsOpen, closeDetails]);
 
   if (status === "unset") {
-    const howToShort = hasOpenTasks
-      ? compact
-        ? "Open a task → Set as One Thing"
-        : "Open a task → Set as Today’s One Thing"
-      : "Add a task, then set it as your One Thing";
     const prompt = hasOpenTasks
-      ? compact
-        ? howToShort
-        : "What’s the one thing that would make today a success?"
-      : howToShort;
+      ? "Open a task → Set as One Thing"
+      : "Add a task, then set it as your One Thing";
 
     return (
-      <div
-        ref={rootRef}
-        data-tour="one-thing"
-        className={compact ? "relative min-w-0 max-w-full" : "relative"}
-      >
+      <div ref={rootRef} data-tour="one-thing" className="relative min-w-0">
         <div
-          className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 ${
-            compact ? "" : "shadow-sm shadow-blue-900/20"
-          }`}
+          className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55`}
         >
           <button
             type="button"
@@ -139,22 +125,17 @@ export function OneThingCard({
             aria-expanded={detailsOpen}
             aria-controls={detailsId}
             className={`flex items-center justify-center gap-2 min-w-0 text-left rounded-md outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
-              compact ? "" : "gap-2.5"
-            } ${onDismissEmpty ? "px-7" : ""}`}
+              onDismissEmpty ? "px-7" : ""
+            }`}
             title="How to set Today’s One Thing"
           >
             <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
               <StarIcon className="w-3 h-3" />
-              {compact ? "One Thing" : <>Today&apos;s One Thing</>}
+              One Thing
             </span>
             <span className="min-w-0 truncate text-sm font-medium text-blue-950 dark:text-blue-50">
               {prompt}
             </span>
-            {hasOpenTasks && !compact && (
-              <span className="hidden sm:inline text-xs font-semibold text-blue-800 dark:text-blue-200/90">
-                {howToShort}
-              </span>
-            )}
             <ChevronIcon
               open={detailsOpen}
               className="w-3.5 h-3.5 shrink-0 text-blue-800 dark:text-blue-200/90"
@@ -180,12 +161,12 @@ export function OneThingCard({
             role="region"
             aria-label="Today’s One Thing details"
             className={
-              compact
+              variant === "inline"
                 ? "absolute left-0 right-0 top-full z-40 mt-1.5"
                 : "panel-inset-x mt-1.5 mb-1"
             }
           >
-            <OneThingHowTo compact={compact} />
+            <OneThingHowTo />
           </div>
         )}
       </div>
@@ -198,7 +179,7 @@ export function OneThingCard({
         data-tour="one-thing"
         className={`${shell} border-slate-200 dark:border-emerald-500/40 bg-slate-50 dark:bg-emerald-500/10 border-l-[3px] border-l-emerald-500 dark:border-l-emerald-400`}
       >
-        <div className={`flex items-center gap-2 min-w-0 flex-1 ${compact ? "" : "justify-center gap-2.5"}`}>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           <span className="inline-flex items-center shrink-0 rounded-md bg-slate-700 dark:bg-emerald-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
             Done
           </span>
@@ -224,17 +205,15 @@ export function OneThingCard({
     return (
       <div
         data-tour="one-thing"
-        className={`${shell} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55 ${
-          compact ? "" : "shadow-sm shadow-blue-900/20"
-        }`}
+        className={`${shell} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55`}
       >
-        <div className={`flex items-center gap-2 min-w-0 flex-1 ${compact ? "" : "justify-center gap-2.5"}`}>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           <span
             className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white"
             title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
           >
             <StarIcon className="w-3 h-3" />
-            {compact ? "One Thing" : <>Today&apos;s One Thing</>}
+            One Thing
           </span>
           <p
             className="min-w-0 truncate text-sm font-semibold text-blue-950 dark:text-white"
@@ -257,7 +236,7 @@ export function OneThingCard({
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
               <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
             </svg>
-            {compact ? (isFocused ? "On" : "Focus") : isFocused ? "Focused" : "Focus"}
+            {isFocused ? "On" : "Focus"}
           </button>
           <button
             type="button"
@@ -266,15 +245,13 @@ export function OneThingCard({
           >
             Done
           </button>
-          {!compact && (
-            <button
-              type="button"
-              onClick={onChange}
-              className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-blue-900 dark:text-blue-100 hover:underline"
-            >
-              Change
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onChange}
+            className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-blue-900 dark:text-blue-100 hover:underline"
+          >
+            Change
+          </button>
           <button
             type="button"
             onClick={onClear}
