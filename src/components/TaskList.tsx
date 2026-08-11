@@ -69,6 +69,7 @@ import {
   reorderProjects,
   reorderSubtasks,
   moveProjectInDisplayOrder,
+  resolveProjectColor,
 } from "@/components/task-list/utils";
 import { OneThingCard } from "@/components/task-list/OneThingCard";
 import {
@@ -2307,6 +2308,24 @@ export default function TaskList({
     !isTimeFilter &&
     (viewMode === "list" || viewMode === "card" || viewMode === "bucket");
 
+  /** Opened a single project from Cards/Buckets/etc. — sticky bar should name the project. */
+  const isListDrillIn = !!listReturnView && viewMode === "list";
+  const drillInProject =
+    isListDrillIn && !isAllProjects && !isTimeFilter
+      ? isViewingSharedProject
+        ? selectedSharedProject
+        : currentProject
+      : null;
+  const drillInOpenCount = drillInProject
+    ? (isViewingSharedProject ? currentSharedProjectTasks : tasks).filter(
+        (t) =>
+          !t.archivedAt &&
+          !t.completed &&
+          (isViewingSharedProject || t.projectId === drillInProject.id),
+      ).length
+    : 0;
+  const drillReturnLabel = VIEW_RETURN_LABELS[listReturnView ?? "card"] ?? "Cards";
+
   const mobileTimeScope = isTimeFilter ? selectedProjectId : ALL_PROJECTS_ID;
 
   const cardProjectCounts = useMemo(() => {
@@ -2385,7 +2404,7 @@ export default function TaskList({
               <button
                 type="button"
                 onClick={backFromProjectsManage}
-                className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-0.5 transition-colors touch-target-sm -ml-1 px-1.5 py-0.5 rounded-lg"
+                className="no-print inline-flex items-center gap-1.5 px-2 py-1 mb-1 text-sm font-semibold rounded-lg text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors touch-target-sm"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -2404,28 +2423,58 @@ export default function TaskList({
             </>
           ) : (
             <>
-              {listReturnView && viewMode === "list" && (
+              {isListDrillIn && (
                 <button
                   type="button"
                   onClick={backFromProjectList}
-                  className="no-print inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-0.5 transition-colors"
+                  className="no-print inline-flex items-center gap-1.5 px-2 py-1 mb-1 text-sm font-semibold rounded-lg text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                  title={`Return to ${drillReturnLabel} view`}
+                  aria-label={`Back to ${drillReturnLabel}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Back to {VIEW_RETURN_LABELS[listReturnView] ?? "tasks"}
+                  Back to {drillReturnLabel}
                 </button>
               )}
               <h2 className="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                <span className="shrink-0">
-                  Tasks
-                  {viewMode === "plan" && (
-                    <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal"> · Smart Plan</span>
-                  )}
-                </span>
+                {drillInProject ? (
+                  <>
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/15"
+                      style={{ backgroundColor: resolveProjectColor(drillInProject) }}
+                      aria-hidden
+                    />
+                    <span className="truncate min-w-0" title={drillInProject.name}>
+                      {drillInProject.name}
+                    </span>
+                    {isViewingSharedProject && (
+                      <span className="shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal">
+                        · shared
+                      </span>
+                    )}
+                    {drillInOpenCount > 0 && (
+                      <span className="shrink-0 text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400 normal-case tracking-normal">
+                        · {drillInOpenCount} open
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <span className="shrink-0">
+                      Tasks
+                      {viewMode === "plan" && (
+                        <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal"> · Smart Plan</span>
+                      )}
+                      {isListDrillIn && isAllProjects && (
+                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal"> · All projects</span>
+                      )}
+                    </span>
+                  </>
+                )}
                 {showUrgencySummary && (
                   <TaskUrgencySummary
                     compact
@@ -2438,7 +2487,7 @@ export default function TaskList({
                     onJumpToWorst={jumpToWorstOverdue}
                   />
                 )}
-                {!focusMode && !projectManageOpen && (
+                {!focusMode && !projectManageOpen && !drillInProject && (
                   <DoneTodayTally
                     compact
                     count={doneProgress.today}
