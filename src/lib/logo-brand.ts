@@ -1,6 +1,7 @@
 /** Foci brand — ink + electric blue. Keep SVG, React, and OG assets in sync. */
 
-export const FOCI_LOGO_BG = "#070b16";
+/** Dark logo tile — lifted above page navy (#070b16) so the mark reads as a badge */
+export const FOCI_LOGO_BG = "#0f172a";
 
 /** Light-mode logo tile — soft blue-white so the mark matches a light navbar */
 export const FOCI_LOGO_BG_LIGHT = "#eff6ff";
@@ -12,24 +13,24 @@ export const FOCI_BRAND_CYAN = "#2563eb";
 export const FOCI_BRAND_ORANGE = FOCI_BRAND_CYAN;
 
 export const FOCI_RING_COLORS = {
-  dim: "#1d4ed8",    // blue-700 — dim arc segment
-  mid: "#2563eb",    // blue-600 — main arc
-  bright: "#3b82f6", // blue-500 — highlight
-  glow: "#bfdbfe",   // blue-200 — glow/shimmer
+  dim: "#2563eb",    // blue-600 — dim arc segment
+  mid: "#3b82f6",    // blue-500 — main arc
+  bright: "#60a5fa", // blue-400 — highlight
+  glow: "#dbeafe",   // blue-100 — glow/shimmer
 } as const;
 
 /** Aperture center dot — wordmark "i" tittle matches this on all surfaces */
-export const FOCI_LOGO_DOT = "#3b82f6"; // blue-500
+export const FOCI_LOGO_DOT = "#60a5fa"; // blue-400
 
 /** Wordmark on white/light pages — blue-700, strong on #fff */
 export const FOCI_WORDMARK_ON_LIGHT = "#1d4ed8";
 
-/** Wordmark on dark nav — blue-400 */
-export const FOCI_WORDMARK_ON_DARK = "#60a5fa";
+/** Wordmark on dark nav — blue-300 */
+export const FOCI_WORDMARK_ON_DARK = "#93c5fd";
 
 /** Decorative wordmark gradient for OG / social (dark backgrounds only) */
 export const FOCI_WORDMARK_GRADIENT_DARK_BG_CSS =
-  "linear-gradient(90deg, #3b82f6 0%, #2563eb 55%, #1d4ed8 100%)";
+  "linear-gradient(90deg, #60a5fa 0%, #3b82f6 55%, #2563eb 100%)";
 
 /** @deprecated Use FOCI_WORDMARK_GRADIENT_DARK_BG_CSS — kept for OG exports */
 export const FOCI_WORDMARK_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
@@ -41,12 +42,11 @@ export const FOCI_LOGO_SVG_STOPS = FOCI_RING_COLORS;
 
 /** Blue glow — dark chrome, hero on navy, OG tiles */
 export const FOCI_LOGO_SHADOW_DARK =
-  "shadow-[0_2px_10px_rgba(0,0,0,0.35),0_0_22px_rgba(59,130,246,0.38)] ring-1 ring-blue-400/40";
+  "shadow-[0_2px_12px_rgba(0,0,0,0.4),0_0_28px_rgba(59,130,246,0.52)] ring-1 ring-blue-400/55";
 
 /** Flat frame — light pages, app store, PWA prompt (no muddy glow) */
 export const FOCI_LOGO_SHADOW_LIGHT =
-  "shadow-md shadow-slate-900/10 ring-1 ring-blue-600/25";
-
+  "shadow-md shadow-slate-900/10 ring-1 ring-blue-600/30";
 /** @deprecated Prefer getFociLogoShadow(surface) */
 export const FOCI_LOGO_SHADOW = FOCI_LOGO_SHADOW_DARK;
 

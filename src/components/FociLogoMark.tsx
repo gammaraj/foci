@@ -51,7 +51,7 @@ export function FociLogoMark({
         </linearGradient>
       </defs>
       <rect width="32" height="32" rx={tileRx} fill={tileFill} />
-      <circle cx="16" cy="16" r={r} stroke={mid} strokeOpacity={0.14} strokeWidth={stroke} fill="none" />
+      <circle cx="16" cy="16" r={r} stroke={mid} strokeOpacity={0.22} strokeWidth={stroke} fill="none" />
       <circle
         cx="16"
         cy="16"
@@ -63,7 +63,7 @@ export function FociLogoMark({
         strokeDasharray={dash}
         transform="rotate(-90 16 16)"
       />
-      <circle cx="16" cy="16" r={innerR} stroke={mid} strokeOpacity={0.2} strokeWidth={1} fill="none" />
+      <circle cx="16" cy="16" r={innerR} stroke={bright} strokeOpacity={0.32} strokeWidth={1} fill="none" />
       <circle cx="16" cy="16" r={dotR} fill={FOCI_LOGO_DOT} />
     </svg>
   );
