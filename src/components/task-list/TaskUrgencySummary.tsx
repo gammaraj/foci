@@ -55,13 +55,6 @@ export function TaskUrgencySummary({
 
   const pad = compact ? "px-1.5 py-0.5 rounded-md text-xs" : "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm";
 
-  const worstPillClass =
-    worstOverdue && worstOverdue.daysLate >= 5
-      ? "urgency-pill--critical"
-      : worstOverdue && worstOverdue.daysLate >= 3
-        ? "urgency-pill--solid"
-        : "urgency-pill";
-
   return (
     <div
       className={`urgency-summary-bar inline-flex items-center gap-1.5 max-w-full overflow-x-auto scrollbar-hide ${className}`}
@@ -105,15 +98,11 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={handleWorst}
-          className={`${worstPillClass} inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer hover:brightness-110 ${compact ? "max-w-[7.5rem]" : "max-w-[14rem]"}`}
+          className={`urgency-pill inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer ${compact ? "max-w-[7.5rem]" : "max-w-[14rem]"}`}
           title={worstTitle}
           aria-label={worstTitle}
         >
-          <span
-            className={`inline-flex items-center justify-center h-4 sm:h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${
-              worstOverdue.daysLate >= 3 ? "bg-black/20 text-white" : "urgency-chip--mid"
-            }`}
-          >
+          <span className="inline-flex items-center justify-center h-4 sm:h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap urgency-chip--mid">
             {formatOverdueChip(worstOverdue.daysLate)}
           </span>
           <span className="leading-none truncate min-w-0">

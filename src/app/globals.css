@@ -778,22 +778,6 @@ select {
 .urgency-pill:hover {
   background: color-mix(in srgb, var(--urgency) 10%, white);
 }
-.urgency-pill--solid {
-  border: 1px solid transparent;
-  background: var(--urgency);
-  color: #fff;
-}
-.urgency-pill--solid:hover {
-  background: var(--urgency-strong);
-}
-.urgency-pill--critical {
-  border: 1px solid transparent;
-  background: var(--urgency-strong);
-  color: #fff;
-}
-.urgency-pill--critical:hover {
-  background: #7a113f;
-}
 .dark .urgency-pill {
   border-color: rgba(244, 114, 182, 0.35);
   background: rgba(176, 23, 92, 0.18);
@@ -801,19 +785,6 @@ select {
 }
 .dark .urgency-pill:hover {
   background: rgba(176, 23, 92, 0.28);
-}
-.dark .urgency-pill--solid {
-  background: #db2777;
-  color: #fff;
-}
-.dark .urgency-pill--solid:hover {
-  background: #be185d;
-}
-.dark .urgency-pill--critical {
-  background: #be185d;
-}
-.dark .urgency-pill--critical:hover {
-  background: #9d174d;
 }
 
 /* Overdue surfaces — Cards look: left accent only, no full magenta wash */
