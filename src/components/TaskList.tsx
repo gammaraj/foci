@@ -51,6 +51,7 @@ import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
+import { ListToolbarProjectMenu } from "@/components/task-list/ListToolbarProjectMenu";
 import { MobileTaskToolbar } from "@/components/task-list/MobileTaskToolbar";
 import {
   MAX_TASK_TITLE,
@@ -232,16 +233,34 @@ export default function TaskList({
   }, [searchParams]);
 
   const openProjectManage = useCallback(() => {
-    viewBeforeManageRef.current =
-      viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
+    // Prefer returning to cards/buckets/calendar over a list drill-in.
+    const fromParam = searchParams.get("from");
+    const fromView =
+      fromParam === "bucket" || fromParam === "calendar" || fromParam === "card" || fromParam === "plan"
+        ? fromParam
+        : null;
+    const preferReturn =
+      fromView ??
+      drillReturnViewRef.current ??
+      (viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
         ? viewMode
-        : "card";
+        : "card");
+    viewBeforeManageRef.current = preferReturn === "list" ? "card" : preferReturn;
     if (searchParams.get("projects") === "1") {
       setProjectManageOpen(true);
       return;
     }
-    // Push so browser Back closes Projects and returns to the prior view.
-    router.push(appHref((p) => p.set("projects", "1")), { scroll: false });
+    // Push so browser Back closes Projects. Clear drill-in params so we don't
+    // stack ?project=&from=&projects=1 (3-dot was navigating without a menu).
+    router.push(
+      appHref((p) => {
+        p.delete("project");
+        p.delete("from");
+        p.delete("task");
+        p.set("projects", "1");
+      }),
+      { scroll: false },
+    );
   }, [viewMode, searchParams, router, appHref]);
 
   const closeProjectManage = useCallback(() => {
@@ -918,12 +937,13 @@ export default function TaskList({
     if (!name) return;
     const usedColors = projects.map((p) => p.color).filter(Boolean);
     const nextColor = PROJECT_COLORS.find((c) => !usedColors.includes(c)) ?? PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
-    const maxOrder = Math.max(0, ...projects.map((p) => p.order ?? 0));
+    const orders = projects.map((p) => p.order ?? 0);
+    const minOrder = orders.length > 0 ? Math.min(...orders) : 0;
     const project: Project = {
       id: crypto.randomUUID(),
       name,
       color: nextColor,
-      order: maxOrder + 1,
+      order: minOrder - 1,
       createdAt: Date.now(),
       ...(template?.description ? { description: template.description } : {}),
     };
@@ -1790,6 +1810,16 @@ export default function TaskList({
   const archivedProjects = projects.filter((p) => p.archived);
   const sortedProjects = sortProjectsForDisplay(activeProjects);
   const pinnedProjectCount = sortedProjects.filter((p) => p.favorite).length;
+  /** Concrete project for list ⋮ menu (drill-in / single-project scope). */
+  const listToolbarMenuProject =
+    !isAllProjects &&
+    selectedProjectId !== TODAY_FILTER_ID &&
+    selectedProjectId !== THIS_WEEK_FILTER_ID &&
+    selectedProjectId !== THIS_MONTH_FILTER_ID &&
+    selectedProjectId !== THIS_YEAR_FILTER_ID &&
+    !selectedProjectId.startsWith("shared:")
+      ? sortedProjects.find((p) => p.id === selectedProjectId) ?? null
+      : null;
   const isTodayFilter = selectedProjectId === TODAY_FILTER_ID;
   const isThisWeekFilter = selectedProjectId === THIS_WEEK_FILTER_ID;
   const isThisMonthFilter = selectedProjectId === THIS_MONTH_FILTER_ID;
@@ -3128,20 +3158,18 @@ export default function TaskList({
 
           {/* Projects admin */}
           <AddProjectButton onClick={openProjectManage} size="sm" className="sm:hidden" />
-          <button
-            onClick={openProjectManage}
-            className={`flex-shrink-0 touch-target-sm p-2 rounded-lg transition-colors ${
-              projectManageOpen
-                ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
-                : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
-            }`}
-            title="Manage projects"
-            aria-label="Manage projects"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
-            </svg>
-          </button>
+          <ListToolbarProjectMenu
+            project={listToolbarMenuProject}
+            user={user}
+            onManageProjects={openProjectManage}
+            onStartRename={(p) => {
+              startEditingProject(p);
+              openProjectManage();
+            }}
+            onShare={setShareModalProject}
+            onArchive={toggleProjectArchived}
+            onDelete={deleteProject}
+          />
         </div>
 
         {/* Desktop: horizontal scrolling project tabs */}
@@ -3316,21 +3344,18 @@ export default function TaskList({
 
           <div ref={projectTabsToolbarRef} className="flex items-center gap-2 flex-shrink-0">
           <AddProjectButton onClick={openProjectManage} size="sm" />
-          {/* Projects admin */}
-          <button
-            onClick={openProjectManage}
-            className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
-              projectManageOpen
-                ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
-                : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
-            }`}
-            title="Manage projects"
-            aria-label="Manage projects"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
-            </svg>
-          </button>
+          <ListToolbarProjectMenu
+            project={listToolbarMenuProject}
+            user={user}
+            onManageProjects={openProjectManage}
+            onStartRename={(p) => {
+              startEditingProject(p);
+              openProjectManage();
+            }}
+            onShare={setShareModalProject}
+            onArchive={toggleProjectArchived}
+            onDelete={deleteProject}
+          />
           </div>
           </div>
           {/* Fade hint for scrollable overflow */}
@@ -3469,6 +3494,7 @@ export default function TaskList({
           <DueDateField
             value={newTaskDueDate || undefined}
             onChange={(date) => setNewTaskDueDate(date ?? "")}
+            requireExplicitPick={!newTaskDueDate}
             ariaLabel={newTaskDueDate ? `Due date: ${formatDueDate(newTaskDueDate)}. Click to change.` : "Set due date"}
             className={`flex items-center gap-1 min-w-0 flex-1 sm:flex-shrink-0 sm:max-w-[9.5rem] h-full px-2.5 py-2 text-sm border rounded-lg transition-colors ${
               newTaskDueDate

@@ -9,6 +9,7 @@ import {
   formatDueDate,
   isDueDateOverdue,
 } from "@/components/task-list/utils";
+import { DueDateField } from "@/components/task-list/DueDateField";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
 import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePicker";
 import type { ProjectTemplate } from "@/lib/templates";
@@ -487,13 +488,17 @@ function ProjectRow({
                     Share
                   </button>
                 )}
-                <input
-                  type="date"
-                  value={project.dueDate ?? ""}
-                  onChange={(e) => onUpdateDueDate(project.id, e.target.value || undefined)}
-                  className="px-2 py-1 text-xs rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-600 dark:text-slate-300"
-                  title="Project due date"
-                />
+                <DueDateField
+                  value={project.dueDate}
+                  onChange={(date) => onUpdateDueDate(project.id, date)}
+                  requireExplicitPick={!project.dueDate}
+                  ariaLabel="Project due date"
+                  className="inline-flex items-center px-2 py-1 text-xs rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-600 dark:text-slate-300"
+                >
+                  <span title="Project due date">
+                    {project.dueDate ? formatDueDate(project.dueDate) : "Due date"}
+                  </span>
+                </DueDateField>
                 <button
                   type="button"
                   onClick={() => onArchive(project.id)}
