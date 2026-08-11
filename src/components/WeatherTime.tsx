@@ -147,7 +147,7 @@ export default function WeatherTime({ compact = false, embedded = false, nav = f
   if (nav) {
     return (
       <div
-        className="nav-chrome-meta flex items-center justify-center gap-1.5 min-w-0 max-w-full"
+        className="nav-chrome-meta flex items-center justify-center gap-2.5 sm:gap-3 min-w-0 max-w-full"
         title={weatherTitle || undefined}
         aria-label={weatherTitle ? `Local time and weather: ${formatClock(now)}. ${weatherTitle}` : `Local time ${formatClock(now)}`}
       >
@@ -159,7 +159,7 @@ export default function WeatherTime({ compact = false, embedded = false, nav = f
         </span>
         {weather && (
           <>
-            <span className="h-3.5 w-px bg-slate-200/90 dark:bg-white/10 shrink-0 mx-0.5" aria-hidden />
+            <span className="h-3.5 w-px bg-slate-200/90 dark:bg-white/10 shrink-0 mx-1.5 sm:mx-2" aria-hidden />
             <span className="text-[0.875rem] leading-none shrink-0" aria-hidden>
               {weather.icon}
             </span>
