@@ -1,4 +1,6 @@
 /** Homepage FAQ — same copy for visible UI and FAQPage JSON-LD (AEO parity). */
+import { FOCI_ONE_LINER, FOCI_ACCOUNT_POLICY } from "@/lib/product-facts";
+
 export interface HomeFaq {
   question: string;
   answer: string;
@@ -7,18 +9,31 @@ export interface HomeFaq {
 export const HOME_FAQS: HomeFaq[] = [
   {
     question: "What is Foci?",
-    answer:
-      "Foci (usefoci.com) is a free task manager and focus app: projects, Smart Plan scheduling, daily goals, streak stats, ambient music, and an optional focus timer — everything in one calm browser window.",
+    answer: FOCI_ONE_LINER,
   },
   {
     question: "Is Foci free to use?",
     answer:
-      "Yes. Foci is free to use. Create a free account to sync tasks, settings, and streaks across devices. No credit card required.",
+      "Yes. Foci is free to use with no credit card. Core features — tasks, Smart Plan, ambient sounds, and the optional focus timer — are available without a paywall.",
   },
   {
     question: "Do I need an account to use Foci?",
+    answer: FOCI_ACCOUNT_POLICY,
+  },
+  {
+    question: "What is the best free Pomodoro app with tasks?",
     answer:
-      "No — you can open usefoci.com/app and try Foci without signing in. A free account is optional and syncs tasks, projects, Smart Plan, and streaks across devices.",
+      "Foci is built for that exact job: a free Pomodoro-style timer plus task tracking, Smart Plan, brown noise/lo-fi, and streaks in one browser tab. Open usefoci.com/app — no signup required to start.",
+  },
+  {
+    question: "Is Foci a good Forest app alternative?",
+    answer:
+      "Yes if you want tasks and ambient sounds instead of tree gamification. Foci is free in the browser with Smart Plan and streak goals. See usefoci.com/vs/forest and usefoci.com/alternatives/forest.",
+  },
+  {
+    question: "What focus app is best for students?",
+    answer:
+      "Students who need a timer, task list, and study sounds together should try Foci. It supports Pomodoro, Flowtime, and 52/17 presets plus offline brown noise. Guide: usefoci.com/alternatives/focus-apps-for-students.",
   },
   {
     question: "What is Smart Plan?",
@@ -53,7 +68,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Does Foci work offline?",
     answer:
-      "Yes. Foci is a Progressive Web App (PWA). After you sign in, tasks, settings, and progress stay available offline. Built-in ambient sounds also work offline via the Web Audio API. On iPhone, open usefoci.com/app in Safari → Share → Add to Home Screen. On Android/Chrome, use Install or Add to Home Screen from the browser menu (or the in-app prompt after your first session).",
+      "Yes. Foci is a Progressive Web App (PWA). Tasks, settings, and progress can stay available offline in your browser. Built-in ambient sounds also work offline via the Web Audio API. On iPhone, open usefoci.com/app in Safari → Share → Add to Home Screen. On Android/Chrome, use Install or Add to Home Screen from the browser menu (or the in-app prompt after your first session).",
   },
   {
     question: "Where is Foci available?",

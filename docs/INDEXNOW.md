@@ -55,27 +55,14 @@ Trigger IndexNow submissions when:
 - ✅ Updating core pages (homepage, app page)
 - ✅ After deployment of significant changes
 
-## Integration Examples
+### After deploy (recommended)
 
-### In a Deployment Script
-
-```typescript
-// scripts/post-deploy.ts
-import { getAllPosts } from "@/lib/blog";
-import { notifyBlogPosts, notifyCorePages } from "@/lib/indexnow";
-
-async function notifySearchEngines() {
-  // Notify core pages
-  await notifyCorePages();
-  
-  // Notify all blog posts
-  const posts = getAllPosts();
-  const slugs = posts.map(p => p.slug);
-  await notifyBlogPosts(slugs);
-}
-
-notifySearchEngines();
+```bash
+# Direct IndexNow API (uses public key file) — or set INDEXNOW_API_SECRET to hit /api/indexnow
+npm run notify:indexnow
 ```
+
+This submits homepage, `/app`, `/blog`, `/about`, `/feed.xml`, evergreen `/vs/*` + `/alternatives/*`, `llms*.txt`, and every blog post URL.
 
 ### In a Content Management System
 

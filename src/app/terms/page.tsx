@@ -57,8 +57,8 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">The service</h2>
             <p>
               Foci is a free focus productivity web app (tasks, Smart Plan, ambient sounds, optional
-              timer, and related features). A free account is required to use the product and sync
-              across devices.
+              timer, and related features). You can use the app without an account; a free account is
+              optional to sync across devices.
             </p>
           </section>
 

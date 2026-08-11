@@ -4,11 +4,18 @@ import AppNavbar from "@/components/AppNavbar";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
+import {
+  SITE_URL,
+  FOCI_ONE_LINER,
+  FOCI_ACCOUNT_POLICY,
+  FOCI_SAME_AS,
+  PRODUCT_DATE_MODIFIED,
+} from "@/lib/product-facts";
 
-const siteUrl = "https://usefoci.com";
+const siteUrl = SITE_URL;
 const title = "About Foci — Free Focus Timer & Task App";
 const description =
-  "Foci is a free focus system: Pomodoro timer, tasks, ambient sounds, and streaks in one calm browser window. Built for students, developers, and deep work — worldwide, no signup required.";
+  "Foci is a free focus system: Pomodoro timer, tasks, ambient sounds, and streaks in one calm browser window. Built for students, developers, and deep work — worldwide. No signup required to start.";
 
 export const metadata: Metadata = {
   title: absolutePageTitle(title),
@@ -40,14 +47,14 @@ const aboutJsonLd = {
   name: title,
   url: `${siteUrl}/about`,
   description,
+  dateModified: PRODUCT_DATE_MODIFIED,
   mainEntity: {
     "@type": "Organization",
     name: "Foci",
     url: siteUrl,
     logo: `${siteUrl}/logo.svg`,
-    sameAs: ["https://twitter.com/usefoci"],
-    description:
-      "Foci builds a free all-in-one focus system: Pomodoro timer, task tracking, Smart Plan, ambient music, and streak stats — available worldwide at usefoci.com.",
+    sameAs: [...FOCI_SAME_AS],
+    description: FOCI_ONE_LINER,
     areaServed: { "@type": "Place", name: "Worldwide" },
     knowsLanguage: "en",
   },
@@ -71,9 +78,38 @@ export default function AboutPage() {
             Foci — {FOCI_TAGLINE_CALM}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-            Foci is a free focus system for people who want one calm window for deep work:
-            timer, tasks, ambient sound, and streaks — without juggling five apps.
+            {FOCI_ONE_LINER}
           </p>
+
+          <section className="mt-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/40 p-5 space-y-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-white">Product facts</h2>
+            <ul className="space-y-2">
+              <li>
+                <strong className="text-slate-800 dark:text-slate-200">Product:</strong> Foci
+              </li>
+              <li>
+                <strong className="text-slate-800 dark:text-slate-200">URL:</strong>{" "}
+                <a href={siteUrl} className="text-blue-600 dark:text-blue-400 hover:underline">
+                  usefoci.com
+                </a>
+              </li>
+              <li>
+                <strong className="text-slate-800 dark:text-slate-200">Price:</strong> Free (no credit card)
+              </li>
+              <li>
+                <strong className="text-slate-800 dark:text-slate-200">Account:</strong>{" "}
+                {FOCI_ACCOUNT_POLICY}
+              </li>
+              <li>
+                <strong className="text-slate-800 dark:text-slate-200">Audience:</strong> Students,
+                developers, writers, and knowledge workers worldwide
+              </li>
+              <li>
+                <strong className="text-slate-800 dark:text-slate-200">Last updated:</strong>{" "}
+                {PRODUCT_DATE_MODIFIED}
+              </li>
+            </ul>
+          </section>
 
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Why we built Foci</h2>
@@ -85,7 +121,8 @@ export default function AboutPage() {
             </p>
             <p>
               A free account keeps tasks, settings, and streaks synced across devices — useful
-              when you move between laptop and phone.
+              when you move between laptop and phone. You can try the full app first without signing
+              in.
             </p>
           </section>
 
@@ -133,8 +170,18 @@ export default function AboutPage() {
                 </Link>
               </li>
               <li>
+                <Link href="/vs/forest" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  Foci vs Forest
+                </Link>
+              </li>
+              <li>
+                <Link href="/alternatives/pomodoro-apps" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  Best free Pomodoro apps
+                </Link>
+              </li>
+              <li>
                 <Link href="/blog/best-free-pomodoro-apps-2026" className="text-blue-600 dark:text-blue-400 hover:underline">
-                  Best free Pomodoro apps 2026
+                  Best free Pomodoro apps 2026 (deep dive)
                 </Link>
               </li>
               <li>
@@ -145,6 +192,16 @@ export default function AboutPage() {
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   @usefoci on X
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/gammaraj/foci"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  GitHub
                 </a>
               </li>
             </ul>

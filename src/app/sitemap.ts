@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
+import { allCompareLandings } from "@/lib/compare-landings";
+import { PRODUCT_DATE_MODIFIED, SITE_URL } from "@/lib/product-facts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = "https://usefoci.com";
+  const siteUrl = SITE_URL;
   const now = new Date();
-  const productRefresh = new Date("2026-08-01");
+  const productRefresh = new Date(PRODUCT_DATE_MODIFIED);
 
   const allPosts = getAllPosts();
   const mostRecentPostDate = allPosts.length > 0
@@ -44,6 +46,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: comparisonSlugs.has(post.slug) ? 0.85 : 0.75,
     images: [`${siteUrl}/blog/${post.slug}/opengraph-image`],
   }));
+
+  const evergreen = allCompareLandings().map((page) => {
+    const path = page.kind === "vs" ? `/vs/${page.slug}` : `/alternatives/${page.slug}`;
+    return {
+      url: `${siteUrl}${path}`,
+      lastModified: siteContentDate,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+      images: [`${siteUrl}/opengraph-image`],
+    };
+  });
 
   return [
     {
@@ -87,6 +100,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
+      url: `${siteUrl}/feed.xml`,
+      lastModified: mostRecentPostDate,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
       url: `${siteUrl}/llms.txt`,
       lastModified: siteContentDate,
       changeFrequency: "weekly",
@@ -98,6 +117,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.6,
     },
+    ...evergreen,
     ...posts,
   ];
 }

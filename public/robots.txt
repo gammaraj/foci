@@ -4,6 +4,7 @@ Disallow: /auth/
 Disallow: /api/
 Disallow: /login
 Disallow: /stats
+Disallow: /theme-lab
 Disallow: /sentry-example-page
 
 # LLM / AI content files
@@ -80,5 +81,6 @@ Allow: /
 # LLM / AI discovery files
 # https://usefoci.com/llms.txt
 # https://usefoci.com/llms-full.txt
+# RSS: https://usefoci.com/feed.xml
 
 Sitemap: https://usefoci.com/sitemap.xml

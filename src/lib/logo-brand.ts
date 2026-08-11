@@ -57,7 +57,7 @@ export function getFociLogoShadow(surface: "dark" | "light"): string {
 export const FOCI_TAGLINE_FOCUS = "FOCUS · FLOW · FINISH";
 export const FOCI_TAGLINE_CALM = "deep work, one calm window";
 
-/** Homepage H1 — tasks first; account required. */
+/** Homepage H1 — tasks first; guest use OK, account optional for sync. */
 export const FOCI_HERO_HEADLINE = "Plan your day. Finish your tasks.";
 
 /** Wordmark typography — Plus Jakarta Sans; bold not extrabold (less early-2010s chunk). */

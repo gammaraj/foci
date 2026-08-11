@@ -55,7 +55,7 @@ function OneThingHowTo() {
   return (
     <div className="rounded-lg border border-blue-300/70 dark:border-blue-600/50 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg p-3 text-xs leading-relaxed text-center">
       <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
-      <ol className="mt-1.5 list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-300">
+      <ol className="mt-1.5 mx-auto w-fit list-decimal list-inside space-y-1 text-left text-slate-600 dark:text-slate-300">
         <li>Open any open task (click its name).</li>
         <li>
           Tap <span className="font-semibold text-blue-700 dark:text-blue-300">Set as Today&apos;s One Thing</span>.

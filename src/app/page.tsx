@@ -12,15 +12,21 @@ import HomeAppMockup from "@/components/HomeAppMockup";
 import HomeFaq from "@/components/HomeFaq";
 import { FOCI_HERO_HEADLINE } from "@/lib/logo-brand";
 import { homeFaqsToJsonLd } from "@/lib/home-faqs";
+import {
+  SITE_URL,
+  FOCI_ONE_LINER,
+  FOCI_SHORT_DESCRIPTION,
+  FOCI_SAME_AS,
+  PRODUCT_DATE_MODIFIED,
+} from "@/lib/product-facts";
 
-const siteUrl = "https://usefoci.com";
+const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   title: {
     absolute: "Foci – Free Task Manager & Focus App",
   },
-  description:
-    "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer. Create a free account at usefoci.com.",
+  description: FOCI_SHORT_DESCRIPTION,
   alternates: { canonical: "/" },
 };
 
@@ -35,11 +41,10 @@ const orgJsonLd = {
   name: "Foci",
   url: siteUrl,
   logo: `${siteUrl}/logo.svg`,
-  sameAs: ["https://twitter.com/usefoci"],
+  sameAs: [...FOCI_SAME_AS],
   areaServed: { "@type": "Place", name: "Worldwide" },
   knowsLanguage: "en",
-  description:
-    "Foci builds a free all-in-one focus system: task tracking, Smart Plan, ambient music, streaks, and an optional focus timer — usefoci.com.",
+  description: FOCI_ONE_LINER,
   foundingDate: "2025",
 };
 
@@ -48,7 +53,7 @@ const webSiteJsonLd = {
   "@type": "WebSite",
   name: "Foci",
   url: siteUrl,
-  description: "Free all-in-one focus system: task tracking, Smart Plan, daily goals, streak stats, built-in ambient music, and an optional focus timer.",
+  description: FOCI_SHORT_DESCRIPTION,
   inLanguage: "en-US",
   audience: { "@type": "Audience", audienceType: "Students, developers, writers, remote workers, and knowledge workers worldwide" },
 };
@@ -62,11 +67,11 @@ const jsonLd = {
   operatingSystem: "Any",
   browserRequirements: "Requires a modern web browser with JavaScript enabled",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/OnlineOnly" },
-  description: "Foci is a free all-in-one focus system: task tracking, Smart Plan scheduling, daily goals, streak stats, built-in ambient music, and an optional focus timer — everything you need to stay productive, in one calm window.",
+  description: FOCI_ONE_LINER,
   image: `${siteUrl}/opengraph-image`,
   inLanguage: "en-US",
   areaServed: { "@type": "Place", name: "Worldwide" },
-  dateModified: "2026-08-01",
+  dateModified: PRODUCT_DATE_MODIFIED,
   featureList: [
     "Task tracking with projects, subtasks, and automatic per-task time logging",
     "Smart Plan: algorithmic day-by-day task scheduling based on due dates and daily goals",
@@ -121,7 +126,7 @@ const howToJsonLd = {
   name: "How to Use Foci to Stay Focused and Productive",
   description: "A step-by-step guide to using Foci — a free task manager with Smart Plan, ambient music, streaks, and an optional focus timer.",
   step: [
-    { "@type": "HowToStep", name: "Create your free account", text: "Visit usefoci.com and create a free account to sync tasks, settings, and streaks across devices." },
+    { "@type": "HowToStep", name: "Open the app", text: "Visit usefoci.com/app — no signup required to start. Optionally create a free account later to sync across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
     { "@type": "HowToStep", name: "Plan your day", text: "Use Smart Plan to turn due dates and daily goals into a day-by-day execution plan. Switch between Cards, list, kanban, and calendar views." },
     { "@type": "HowToStep", name: "Focus when you need it", text: "Optionally start a focus session with presets like Classic Pomodoro (25/5), Deep Work (50/10), or 52/17. Turn on ambient sound if you like. Time is logged per-task." },

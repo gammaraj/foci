@@ -140,6 +140,20 @@ export async function notifyCorePages(): Promise<{
   error?: string;
   submitted?: number;
 }> {
-  const urls = [SITE_URL, `${SITE_URL}/app`, `${SITE_URL}/blog`];
+  const urls = [
+    SITE_URL,
+    `${SITE_URL}/app`,
+    `${SITE_URL}/blog`,
+    `${SITE_URL}/about`,
+    `${SITE_URL}/feed.xml`,
+    `${SITE_URL}/vs/forest`,
+    `${SITE_URL}/vs/todoist`,
+    `${SITE_URL}/vs/focusatwill`,
+    `${SITE_URL}/alternatives/forest`,
+    `${SITE_URL}/alternatives/pomodoro-apps`,
+    `${SITE_URL}/alternatives/focus-apps-for-students`,
+    `${SITE_URL}/llms.txt`,
+    `${SITE_URL}/llms-full.txt`,
+  ];
   return submitUrlsToIndexNow(urls);
 }

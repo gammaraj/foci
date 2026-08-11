@@ -46,17 +46,19 @@ export default function PrivacyPage() {
             Last updated: {lastUpdated}
           </p>
           <p className="mt-5 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            Foci requires a free account. This policy explains what data we store when you
-            sign in, how cloud sync works, and what we do not do.
+            You can use Foci without an account (data stays in your browser). When you create a free
+            account, this policy explains what data we store, how cloud sync works, and what we do
+            not do.
           </p>
 
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Your account &amp; sync</h2>
             <p>
-              When you create a free account, Foci uses Supabase for authentication and cloud
-              sync of tasks, settings, and streak/session data so you can use Foci across devices.
-              Email (or other auth provider details you choose) is used to sign you in and protect
-              your account. The app may also keep a local cache on your device for offline use.
+              Guest use stores tasks and settings locally on your device. When you create a free
+              account, Foci uses Supabase for authentication and cloud sync of tasks, settings, and
+              streak/session data so you can use Foci across devices. Email (or other auth provider
+              details you choose) is used to sign you in and protect your account. The app may also
+              keep a local cache on your device for offline use.
             </p>
           </section>
 

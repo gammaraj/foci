@@ -32,6 +32,7 @@ function validateSitemap(postSlugs) {
     "`${siteUrl}/about`",
     "`${siteUrl}/privacy`",
     "`${siteUrl}/terms`",
+    "`${siteUrl}/feed.xml`",
     "`${siteUrl}/llms.txt`",
     "`${siteUrl}/llms-full.txt`",
   ];
