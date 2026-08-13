@@ -38,8 +38,11 @@ export function DueDateField({
 }: DueDateFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const pickerOpenedRef = useRef(false);
-  /** Ignore auto-today commits for a brief window after opening an empty picker. */
-  const suppressTodayUntilRef = useRef(0);
+  /**
+   * Ignore only the synthetic "today" some browsers stamp in synchronously (or on
+   * the next macrotask) when an empty picker opens — not real user picks of today.
+   */
+  const suppressAutoTodayRef = useRef(false);
   const valueAtOpenRef = useRef(value ?? "");
 
   const mustPickExplicitly = requireExplicitPick ?? !value;
@@ -48,9 +51,15 @@ export function DueDateField({
     e.stopPropagation();
     valueAtOpenRef.current = value ?? "";
     pickerOpenedRef.current = true;
-    // Some browsers emit today immediately (sync or right after open) for empty inputs.
+    // Catch sync / immediate auto-commits only. A longer window blocked intentional
+    // "Today" taps (calendar default + Done) which often land within a few hundred ms.
     if (mustPickExplicitly && !value) {
-      suppressTodayUntilRef.current = Date.now() + 300;
+      suppressAutoTodayRef.current = true;
+      queueMicrotask(() => {
+        setTimeout(() => {
+          suppressAutoTodayRef.current = false;
+        }, 0);
+      });
     }
     // Do not call showPicker()/click() here — this handler runs on a real user click
     // of the date input, which already opens the native picker. Re-clicking can
@@ -78,14 +87,14 @@ export function DueDateField({
             mustPickExplicitly &&
             !valueAtOpenRef.current &&
             next === getToday() &&
-            Date.now() < suppressTodayUntilRef.current
+            suppressAutoTodayRef.current
           ) {
             e.currentTarget.value = "";
             return;
           }
 
           pickerOpenedRef.current = false;
-          suppressTodayUntilRef.current = 0;
+          suppressAutoTodayRef.current = false;
           blurDateInput(inputRef.current);
           if (!next) {
             if (value) onChange(undefined);
@@ -96,7 +105,7 @@ export function DueDateField({
         onClick={handleOpenPicker}
         onBlur={() => {
           pickerOpenedRef.current = false;
-          suppressTodayUntilRef.current = 0;
+          suppressAutoTodayRef.current = false;
         }}
         className="absolute inset-0 z-10 w-full h-full cursor-pointer touch-manipulation opacity-0 text-base"
         aria-label={ariaLabel}
