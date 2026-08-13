@@ -4,7 +4,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { isAuthLockError } from "@/lib/supabase/auth-errors";
-import { activateSupabaseStorage, activateLocalStorage } from "@/lib/storage";
+import {
+  activateSupabaseStorage,
+  activateLocalStorage,
+  hasOfflineCache,
+} from "@/lib/storage";
 
 interface AuthContextType {
   user: User | null;
@@ -51,17 +55,29 @@ async function getSessionWithLockRetry(
   return { session: null, error: lastError };
 }
 
+/**
+ * Prefer the cached Supabase adapter whenever we still have a session, or
+ * when offline with a warm cache — so tasks can paint without the network.
+ */
+async function ensureOfflineCapableStorage(sessionUser: User | null) {
+  const offline =
+    typeof navigator !== "undefined" && navigator.onLine === false;
+
+  if (sessionUser || (offline && hasOfflineCache())) {
+    await activateSupabaseStorage();
+  } else {
+    // Keep foci_cache_* intact — only explicit logout clears it.
+    activateLocalStorage();
+  }
+}
+
 async function applyAuthState(
   sessionUser: User | null,
   setUser: (u: User | null) => void,
   setLoading: (v: boolean) => void,
 ) {
   try {
-    if (sessionUser) {
-      await activateSupabaseStorage();
-    } else {
-      activateLocalStorage();
-    }
+    await ensureOfflineCapableStorage(sessionUser);
   } catch (err) {
     console.error("[Foci] Storage activation failed:", err);
   }
@@ -79,9 +95,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const safetyTimeout = setTimeout(() => {
       if (!cancelled) {
-        console.warn("[Foci] Auth init timed out; continuing as guest");
-        setLoading(false);
-        activateLocalStorage();
+        console.warn("[Foci] Auth init timed out; continuing with offline/guest storage");
+        // Never wipe foci_cache_* here — that is what keeps tasks available offline.
+        void ensureOfflineCapableStorage(null)
+          .catch(() => activateLocalStorage())
+          .finally(() => {
+            if (!cancelled) setLoading(false);
+          });
       }
     }, AUTH_INIT_TIMEOUT_MS);
 
@@ -117,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    activateLocalStorage();
+    activateLocalStorage({ clearCache: true });
     setUser(null);
     window.location.href = "/";
   };

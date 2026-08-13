@@ -175,6 +175,15 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   private async getUserId(): Promise<string> {
     if (this.cachedUserId) return this.cachedUserId;
+    // Prefer local session so offline / flaky networks still resolve the user id.
+    // getUser() always hits the Auth server and can hang or fail offline.
+    const {
+      data: { session },
+    } = await this.supabase.auth.getSession();
+    if (session?.user) {
+      this.cachedUserId = session.user.id;
+      return session.user.id;
+    }
     const {
       data: { user },
     } = await this.supabase.auth.getUser();

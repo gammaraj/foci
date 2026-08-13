@@ -12,19 +12,33 @@ export { SupabaseStorageAdapter } from "./supabase";
 
 import { LocalStorageAdapter } from "./local";
 import { SupabaseStorageAdapter } from "./supabase";
-import { CachedSupabaseAdapter, clearOfflineCache } from "./cached-supabase";
+import { CachedSupabaseAdapter, clearOfflineCache, hasOfflineCache } from "./cached-supabase";
 import type { StorageAdapter } from "./types";
 import { createClient } from "../supabase/client";
+
+export { hasOfflineCache };
 
 // ── Adapter registry ────────────────────────────────────
 const localAdapter = new LocalStorageAdapter();
 let supabaseAdapter: SupabaseStorageAdapter | null = null;
 let currentAdapter: StorageAdapter = localAdapter;
 
+const MIGRATION_TIMEOUT_MS = 8_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error("Storage migration timed out")), ms);
+    }),
+  ]);
+}
+
 /**
  * Switch to the Supabase adapter (call after user logs in).
- * Migrates any existing local data to Supabase before clearing localStorage.
- * Returns a Promise that resolves when activation + migration is complete.
+ * Activates the cached adapter immediately so offline loads work, then
+ * migrates any existing guest localStorage data in the background when online.
+ * Returns a Promise that resolves once the adapter is ready (not after migration).
  */
 let activatingPromise: Promise<void> | null = null;
 export function activateSupabaseStorage(): Promise<void> {
@@ -34,105 +48,118 @@ export function activateSupabaseStorage(): Promise<void> {
 }
 
 async function doActivateSupabase(): Promise<void> {
-
   try {
     const supabase = createClient();
     supabaseAdapter = new SupabaseStorageAdapter(supabase);
+    // Install cache-first adapter before any network so offline paint works.
     currentAdapter = new CachedSupabaseAdapter(supabaseAdapter);
 
-    // Migrate local data to Supabase if any exists
-    if (typeof window !== "undefined") {
-      try {
-        const localTasks = localStorage.getItem("foci_tasks") || localStorage.getItem("tempo_tasks");
-        const localProjects = localStorage.getItem("foci_projects") || localStorage.getItem("tempo_projects");
-        const localSettings = localStorage.getItem("foci_settings") || localStorage.getItem("tempo_settings");
-        const localStreak = localStorage.getItem("foci_streak_history") || localStorage.getItem("tempo_streak_history");
-        const localGoal = localStorage.getItem("foci_daily_goal") || localStorage.getItem("tempo_daily_goal");
+    if (typeof window === "undefined") return;
 
-        // Only migrate if there's local data and Supabase has no tasks yet
-        if (localTasks) {
-          const existingTasks = await supabaseAdapter.loadTasks();
-          if (existingTasks.length === 0) {
-            const tasks = JSON.parse(localTasks);
-            if (Array.isArray(tasks) && tasks.length > 0) {
-              await supabaseAdapter.saveTasks(tasks);
-            }
-            if (localProjects) {
-              const projects = JSON.parse(localProjects);
-              if (Array.isArray(projects) && projects.length > 0) {
-                await supabaseAdapter.saveProjects(projects);
-              }
-            }
-            if (localSettings) {
-              await supabaseAdapter.saveSettings(JSON.parse(localSettings));
-            }
-            if (localStreak) {
-              await supabaseAdapter.saveStreakHistory(JSON.parse(localStreak));
-            }
-            if (localGoal) {
-              await supabaseAdapter.saveDailyGoalData(JSON.parse(localGoal));
-            }
+    const online = typeof navigator === "undefined" || navigator.onLine !== false;
+    // Guest → account migration needs the network; skip while offline.
+    if (!online) return;
 
-            const legacyDefaultView = localStorage.getItem("foci_default_task_view");
-            const legacyLastView = localStorage.getItem("foci_task_view_mode");
-            const legacyExplicit = localStorage.getItem("foci_task_view_explicit") === "1";
-            if (legacyDefaultView || legacyLastView || legacyExplicit) {
-              const { isDefaultTaskView } = await import("../task-view-preference");
-              await supabaseAdapter.saveTaskViewPreferences({
-                ...(isDefaultTaskView(legacyDefaultView) ? { defaultTaskView: legacyDefaultView } : {}),
-                ...(isDefaultTaskView(legacyLastView) ? { lastTaskView: legacyLastView } : {}),
-                ...(legacyExplicit ? { taskViewExplicit: true } : {}),
-              });
-            }
-
-            const localOneThing = localStorage.getItem("foci_one_thing");
-            if (localOneThing) {
-              try {
-                const { parseOneThingPreference } = await import("../one-thing");
-                const pref = parseOneThingPreference(JSON.parse(localOneThing));
-                if (pref) await supabaseAdapter.saveOneThing(pref);
-              } catch { /* ignore bad local one-thing */ }
-            }
-          }
-        }
-
-        // Clear local storage only after successful migration
-        const keys = [
-          "foci_settings",
-          "foci_daily_goal",
-          "foci_streak_history",
-          "foci_tasks",
-          "foci_projects",
-          "foci_selected_project",
-          "foci_task_view_prefs",
-          "foci_default_task_view",
-          "foci_task_view_mode",
-          "foci_task_view_explicit",
-          "foci_one_thing",
-          "tempo_settings",
-          "tempo_daily_goal",
-          "tempo_streak_history",
-          "tempo_tasks",
-          "tempo_projects",
-          "tempo_selected_project",
-        ];
-        keys.forEach((k) => localStorage.removeItem(k));
-      } catch {
-        // Migration failed — keep local data as fallback
-      }
+    try {
+      await withTimeout(migrateGuestDataIfNeeded(supabaseAdapter), MIGRATION_TIMEOUT_MS);
+    } catch {
+      // Migration failed or timed out — keep offline cache + guest keys as fallback
     }
   } finally {
     activatingPromise = null;
   }
 }
 
+async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promise<void> {
+  const localTasks = localStorage.getItem("foci_tasks") || localStorage.getItem("tempo_tasks");
+  const localProjects = localStorage.getItem("foci_projects") || localStorage.getItem("tempo_projects");
+  const localSettings = localStorage.getItem("foci_settings") || localStorage.getItem("tempo_settings");
+  const localStreak = localStorage.getItem("foci_streak_history") || localStorage.getItem("tempo_streak_history");
+  const localGoal = localStorage.getItem("foci_daily_goal") || localStorage.getItem("tempo_daily_goal");
+
+  // Only migrate if there's local data and Supabase has no tasks yet
+  if (localTasks) {
+    const existingTasks = await adapter.loadTasks();
+    if (existingTasks.length === 0) {
+      const tasks = JSON.parse(localTasks);
+      if (Array.isArray(tasks) && tasks.length > 0) {
+        await adapter.saveTasks(tasks);
+      }
+      if (localProjects) {
+        const projects = JSON.parse(localProjects);
+        if (Array.isArray(projects) && projects.length > 0) {
+          await adapter.saveProjects(projects);
+        }
+      }
+      if (localSettings) {
+        await adapter.saveSettings(JSON.parse(localSettings));
+      }
+      if (localStreak) {
+        await adapter.saveStreakHistory(JSON.parse(localStreak));
+      }
+      if (localGoal) {
+        await adapter.saveDailyGoalData(JSON.parse(localGoal));
+      }
+
+      const legacyDefaultView = localStorage.getItem("foci_default_task_view");
+      const legacyLastView = localStorage.getItem("foci_task_view_mode");
+      const legacyExplicit = localStorage.getItem("foci_task_view_explicit") === "1";
+      if (legacyDefaultView || legacyLastView || legacyExplicit) {
+        const { isDefaultTaskView } = await import("../task-view-preference");
+        await adapter.saveTaskViewPreferences({
+          ...(isDefaultTaskView(legacyDefaultView) ? { defaultTaskView: legacyDefaultView } : {}),
+          ...(isDefaultTaskView(legacyLastView) ? { lastTaskView: legacyLastView } : {}),
+          ...(legacyExplicit ? { taskViewExplicit: true } : {}),
+        });
+      }
+
+      const localOneThing = localStorage.getItem("foci_one_thing");
+      if (localOneThing) {
+        try {
+          const { parseOneThingPreference } = await import("../one-thing");
+          const pref = parseOneThingPreference(JSON.parse(localOneThing));
+          if (pref) await adapter.saveOneThing(pref);
+        } catch { /* ignore bad local one-thing */ }
+      }
+    }
+  }
+
+  // Clear guest keys only after successful migration path (or when none needed).
+  // If localTasks existed but remote already had data, still clear guest keys
+  // so we don't keep re-attempting; signed-in data lives in foci_cache_*.
+  const keys = [
+    "foci_settings",
+    "foci_daily_goal",
+    "foci_streak_history",
+    "foci_tasks",
+    "foci_projects",
+    "foci_selected_project",
+    "foci_task_view_prefs",
+    "foci_default_task_view",
+    "foci_task_view_mode",
+    "foci_task_view_explicit",
+    "foci_one_thing",
+    "tempo_settings",
+    "tempo_daily_goal",
+    "tempo_streak_history",
+    "tempo_tasks",
+    "tempo_projects",
+    "tempo_selected_project",
+  ];
+  keys.forEach((k) => localStorage.removeItem(k));
+}
+
 /**
- * Switch back to localStorage (call after user logs out).
+ * Switch back to localStorage (guest mode).
+ * Only wipe the signed-in offline cache on explicit logout — auth timeouts
+ * and offline fallbacks must keep foci_cache_* so tasks still load.
  */
-export function activateLocalStorage(): void {
+export function activateLocalStorage(options?: { clearCache?: boolean }): void {
   supabaseAdapter = null;
   currentAdapter = localAdapter;
-  clearOfflineCache();
+  if (options?.clearCache) {
+    clearOfflineCache();
+  }
 }
 
 /**

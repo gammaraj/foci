@@ -7,7 +7,8 @@
  *   immediately, refresh Supabase in the background, notify on change.
  *   Cold cache: try Supabase → cache → return; on failure use cache/defaults.
  * - Writes: always update localStorage cache first (so data is never lost),
- *           then attempt Supabase write (fire-and-forget error logging on failure).
+ *           then attempt Supabase write. If the device is offline, keep the
+ *           local write and sync when back online; other errors still throw.
  */
 
 import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
@@ -44,6 +45,22 @@ const CACHE_KEYS = {
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
+}
+
+function isLikelyOffline(): boolean {
+  return isBrowser() && navigator.onLine === false;
+}
+
+async function syncOrKeepLocal(label: string, write: () => Promise<void>): Promise<void> {
+  try {
+    await write();
+  } catch (err) {
+    if (isLikelyOffline()) {
+      console.warn(`[Foci] Offline: ${label} saved locally, sync pending`, err);
+      return;
+    }
+    throw err;
+  }
 }
 
 function cacheSet(key: string, value: unknown): void {
@@ -130,6 +147,11 @@ export function clearOfflineCache(): void {
   Object.values(CACHE_KEYS).forEach((k) => localStorage.removeItem(k));
 }
 
+/** True when a previous session left tasks (or projects) in the offline cache. */
+export function hasOfflineCache(): boolean {
+  return cacheHas(CACHE_KEYS.tasks) || cacheHas(CACHE_KEYS.projects);
+}
+
 export class CachedSupabaseAdapter implements StorageAdapter {
   constructor(private remote: StorageAdapter) {}
 
@@ -154,7 +176,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveSettings(settings: Settings): Promise<void> {
     cacheSet(CACHE_KEYS.settings, settings);
-    await this.remote.saveSettings(settings);
+    await syncOrKeepLocal("settings", () => this.remote.saveSettings(settings));
   }
 
   // ── Daily Goal ────────────────────────────────────────
@@ -178,7 +200,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveDailyGoalData(data: DailyGoalData): Promise<void> {
     cacheSet(CACHE_KEYS.dailyGoal, data);
-    await this.remote.saveDailyGoalData(data);
+    await syncOrKeepLocal("daily goal", () => this.remote.saveDailyGoalData(data));
   }
 
   // ── Streak History ────────────────────────────────────
@@ -195,7 +217,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveStreakHistory(history: StreakHistory): Promise<void> {
     cacheSet(CACHE_KEYS.streakHistory, history);
-    await this.remote.saveStreakHistory(history);
+    await syncOrKeepLocal("streak history", () => this.remote.saveStreakHistory(history));
   }
 
   async recordDayCompletion(
@@ -209,7 +231,9 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     cached.days[dateKey] = { sessionCount, goalMet, timestamp: Date.now() };
     cacheSet(CACHE_KEYS.streakHistory, cached);
 
-    await this.remote.recordDayCompletion(date, sessionCount, goalMet);
+    await syncOrKeepLocal("day completion", () =>
+      this.remote.recordDayCompletion(date, sessionCount, goalMet),
+    );
   }
 
   // ── Tasks ─────────────────────────────────────────────
@@ -254,7 +278,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     cacheSet(CACHE_KEYS.tasks, tasks);
     this.pendingTaskWrites += 1;
     try {
-      await this.remote.saveTasks(tasks);
+      await syncOrKeepLocal("tasks", () => this.remote.saveTasks(tasks));
     } finally {
       this.pendingTaskWrites = Math.max(0, this.pendingTaskWrites - 1);
     }
@@ -273,7 +297,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
     this.pendingTaskWrites += 1;
     try {
-      await this.remote.saveTask(task);
+      await syncOrKeepLocal("task", () => this.remote.saveTask(task));
     } finally {
       this.pendingTaskWrites = Math.max(0, this.pendingTaskWrites - 1);
     }
@@ -283,7 +307,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
     cacheSet(CACHE_KEYS.tasks, cached.filter((t) => t.id !== id));
 
-    await this.remote.deleteTask(id);
+    await syncOrKeepLocal("task delete", () => this.remote.deleteTask(id));
   }
 
   async deleteTasks(ids: string[]): Promise<void> {
@@ -292,7 +316,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
     cacheSet(CACHE_KEYS.tasks, cached.filter((t) => !idSet.has(t.id)));
 
-    await this.remote.deleteTasks(ids);
+    await syncOrKeepLocal("task deletes", () => this.remote.deleteTasks(ids));
   }
 
   // ── Projects ──────────────────────────────────────────
@@ -334,17 +358,20 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveProjects(projects: Project[]): Promise<void> {
     cacheSet(CACHE_KEYS.projects, projects);
-    await this.remote.saveProjects(projects);
+    await syncOrKeepLocal("projects", () => this.remote.saveProjects(projects));
   }
 
   async deleteProject(id: string): Promise<void> {
     const cached = cacheGet<Project[]>(CACHE_KEYS.projects) ?? [];
     cacheSet(CACHE_KEYS.projects, cached.filter((p) => p.id !== id));
 
-    await this.remote.deleteProject(id);
+    await syncOrKeepLocal("project delete", () => this.remote.deleteProject(id));
   }
 
   async loadSelectedProjectId(): Promise<string> {
+    if (cacheHas(CACHE_KEYS.selectedProject)) {
+      return cacheGet<string>(CACHE_KEYS.selectedProject) ?? ALL_PROJECTS_ID;
+    }
     try {
       const result = await this.remote.loadSelectedProjectId();
       cacheSet(CACHE_KEYS.selectedProject, result);
@@ -356,7 +383,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveSelectedProjectId(id: string): Promise<void> {
     cacheSet(CACHE_KEYS.selectedProject, id);
-    await this.remote.saveSelectedProjectId(id);
+    await syncOrKeepLocal("selected project", () => this.remote.saveSelectedProjectId(id));
   }
 
   async loadTaskViewPreferences(): Promise<TaskViewPreferences> {
@@ -391,7 +418,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     const current = cacheGet<TaskViewPreferences>(CACHE_KEYS.taskViewPrefs) ?? { ...DEFAULT_TASK_VIEW_PREFERENCES };
     const merged = { ...current, ...prefs };
     cacheSet(CACHE_KEYS.taskViewPrefs, merged);
-    await this.remote.saveTaskViewPreferences(prefs);
+    await syncOrKeepLocal("task view prefs", () => this.remote.saveTaskViewPreferences(prefs));
   }
 
   async loadOneThing(): Promise<OneThingPreference | null> {
@@ -421,7 +448,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveOneThing(pref: OneThingPreference | null): Promise<void> {
     cacheSet(CACHE_KEYS.oneThing, pref);
-    await this.remote.saveOneThing(pref);
+    await syncOrKeepLocal("one thing", () => this.remote.saveOneThing(pref));
   }
 
   // ── Collaboration (delegate to remote, no caching) ────────
