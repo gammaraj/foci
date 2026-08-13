@@ -191,14 +191,24 @@ export const OVERDUE_ROW_CLASS = "card-row--overdue";
 export function openDatePicker(input: HTMLInputElement | null) {
   if (!input) return;
   try {
+    // Some browsers only surface the calendar after the input is focused.
+    input.focus({ preventScroll: true });
+  } catch {
+    /* ignore */
+  }
+  try {
     if (typeof input.showPicker === "function") {
       input.showPicker();
       return;
     }
   } catch {
-    // showPicker blocked or unsupported
+    // Already open, blocked, or unsupported — fall through
   }
-  input.click();
+  try {
+    input.click();
+  } catch {
+    /* ignore */
+  }
 }
 
 export function getNextDueDate(currentDue: string | undefined, recurrence: RecurrenceType): string {

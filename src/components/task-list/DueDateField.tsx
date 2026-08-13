@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { getToday } from "@/lib/dates";
+import { openDatePicker } from "@/components/task-list/utils";
 
 interface DueDateFieldProps {
   value?: string;
@@ -24,9 +25,9 @@ function blurDateInput(input: HTMLInputElement | null) {
 }
 
 /**
- * Invisible date input over a visible label. The input stays a real hit target so
- * mobile browsers can open the native picker; programmatic showPicker on a
- * clipped/sr-only input often no-ops on Safari/Chrome mobile.
+ * Visible chip + explicit open button. The native date input keeps a real layout
+ * box (needed for showPicker on mobile) but does not steal clicks — opacity-0
+ * date inputs often focus without opening a calendar on desktop Chrome.
  */
 export function DueDateField({
   value,
@@ -40,16 +41,36 @@ export function DueDateField({
   /**
    * Swallow only a synchronous auto-"today" stamp some browsers emit when an
    * empty picker opens. Cleared on the next microtask so real picks (including
-   * Today) always commit. Do not gate on blur/opened flags — native pickers
-   * often fire blur before change, which rejected every empty-field pick.
+   * Today) always commit.
    */
   const ignoreSyncTodayRef = useRef(false);
 
   const mustPickExplicitly = requireExplicitPick ?? !value;
 
+  const handleOpenPicker = (e: MouseEvent | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (mustPickExplicitly && !value) {
+      ignoreSyncTodayRef.current = true;
+      queueMicrotask(() => {
+        ignoreSyncTodayRef.current = false;
+      });
+    }
+    openDatePicker(inputRef.current);
+  };
+
   return (
     <div className={`relative ${className}`.trim()}>
       {children}
+      <button
+        type="button"
+        className="absolute inset-0 z-10 w-full h-full cursor-pointer touch-manipulation bg-transparent border-0 p-0"
+        aria-label={ariaLabel}
+        onClick={handleOpenPicker}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") handleOpenPicker(e);
+        }}
+      />
       <input
         ref={inputRef}
         type="date"
@@ -78,18 +99,10 @@ export function DueDateField({
           }
           onChange(next);
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (mustPickExplicitly && !value) {
-            ignoreSyncTodayRef.current = true;
-            queueMicrotask(() => {
-              ignoreSyncTodayRef.current = false;
-            });
-          }
-        }}
-        className="absolute inset-0 z-10 w-full h-full cursor-pointer touch-manipulation opacity-0 text-base"
-        aria-label={ariaLabel}
+        // Real box for showPicker; no hit testing — the button above owns clicks.
+        className="absolute inset-0 z-0 w-full h-full opacity-0 pointer-events-none text-base"
         tabIndex={-1}
+        aria-hidden
       />
     </div>
   );
