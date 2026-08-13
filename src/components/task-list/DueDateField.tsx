@@ -37,34 +37,15 @@ export function DueDateField({
   requireExplicitPick,
 }: DueDateFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const pickerOpenedRef = useRef(false);
   /**
-   * Ignore only the synthetic "today" some browsers stamp in synchronously (or on
-   * the next macrotask) when an empty picker opens — not real user picks of today.
+   * Swallow only a synchronous auto-"today" stamp some browsers emit when an
+   * empty picker opens. Cleared on the next microtask so real picks (including
+   * Today) always commit. Do not gate on blur/opened flags — native pickers
+   * often fire blur before change, which rejected every empty-field pick.
    */
-  const suppressAutoTodayRef = useRef(false);
-  const valueAtOpenRef = useRef(value ?? "");
+  const ignoreSyncTodayRef = useRef(false);
 
   const mustPickExplicitly = requireExplicitPick ?? !value;
-
-  const handleOpenPicker = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-    valueAtOpenRef.current = value ?? "";
-    pickerOpenedRef.current = true;
-    // Catch sync / immediate auto-commits only. A longer window blocked intentional
-    // "Today" taps (calendar default + Done) which often land within a few hundred ms.
-    if (mustPickExplicitly && !value) {
-      suppressAutoTodayRef.current = true;
-      queueMicrotask(() => {
-        setTimeout(() => {
-          suppressAutoTodayRef.current = false;
-        }, 0);
-      });
-    }
-    // Do not call showPicker()/click() here — this handler runs on a real user click
-    // of the date input, which already opens the native picker. Re-clicking can
-    // double-fire and auto-commit today on some browsers.
-  };
 
   return (
     <div className={`relative ${className}`.trim()}>
@@ -78,23 +59,18 @@ export function DueDateField({
           const next = e.target.value;
           if (next === (value ?? "")) return;
 
-          if (mustPickExplicitly && !pickerOpenedRef.current) {
-            e.currentTarget.value = value ?? "";
-            return;
-          }
-
           if (
             mustPickExplicitly &&
-            !valueAtOpenRef.current &&
+            !value &&
             next === getToday() &&
-            suppressAutoTodayRef.current
+            ignoreSyncTodayRef.current
           ) {
-            e.currentTarget.value = "";
+            // Ignore synthetic open-time today; keep controlled value empty.
+            ignoreSyncTodayRef.current = false;
             return;
           }
 
-          pickerOpenedRef.current = false;
-          suppressAutoTodayRef.current = false;
+          ignoreSyncTodayRef.current = false;
           blurDateInput(inputRef.current);
           if (!next) {
             if (value) onChange(undefined);
@@ -102,10 +78,14 @@ export function DueDateField({
           }
           onChange(next);
         }}
-        onClick={handleOpenPicker}
-        onBlur={() => {
-          pickerOpenedRef.current = false;
-          suppressAutoTodayRef.current = false;
+        onClick={(e) => {
+          e.stopPropagation();
+          if (mustPickExplicitly && !value) {
+            ignoreSyncTodayRef.current = true;
+            queueMicrotask(() => {
+              ignoreSyncTodayRef.current = false;
+            });
+          }
         }}
         className="absolute inset-0 z-10 w-full h-full cursor-pointer touch-manipulation opacity-0 text-base"
         aria-label={ariaLabel}
