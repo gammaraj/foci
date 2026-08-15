@@ -667,7 +667,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card project-surface project-accent-edge rounded-lg px-2.5 py-2 sm:px-3 sm:py-2.5 min-w-0 flex flex-col gap-1 sm:gap-1.5 break-inside-avoid mb-2.5 sm:mb-3.5 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card project-surface project-accent-edge rounded-xl px-2.5 py-2.5 sm:px-3.5 sm:py-3 min-w-0 flex flex-col gap-1.5 sm:gap-2 break-inside-avoid mb-3 sm:mb-4 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-100/95 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
         project.favorite && !collapsed
@@ -1119,7 +1119,7 @@ export default function TaskCardView({
             value={cardQuery}
             onChange={(e) => setCardQuery(e.target.value)}
             placeholder="Filter projects or tasks…"
-            className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-slate-300 dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 shadow-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
             aria-label="Filter projects or tasks"
           />
         </label>

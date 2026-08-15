@@ -39,7 +39,7 @@ const THEMES: ThemePalette[] = [
     name: "Current cyan",
     pitch: "What you ship today — calm SaaS teal.",
     chrome: "#0b1121",
-    pageLight: "#d8e0ea",
+    pageLight: "#e8eef6",
     pageDark: "#0a0f1a",
     surfaceLight: "#ffffff",
     surfaceDark: "#111827",

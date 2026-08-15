@@ -5,8 +5,8 @@
   "lang": "en",
   "start_url": "/app",
   "display": "standalone",
-  "background_color": "#d8e0ed",
-  "theme_color": "#d8e0ed",
+  "background_color": "#e8eef6",
+  "theme_color": "#e8eef6",
   "icons": [
     {
       "src": "/favicon.svg",

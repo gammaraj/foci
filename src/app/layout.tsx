@@ -126,7 +126,7 @@ export const metadata: Metadata = {
 };
 
 // Match app-shell colors immediately so PWA splash → first paint doesn't flash black→white.
-const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||localStorage.getItem("tempo_theme");var dark=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);var root=document.documentElement;if(dark){root.classList.add("dark");root.style.backgroundColor="#070b16";root.style.colorScheme="dark"}else{root.style.backgroundColor="#d8e0ed";root.style.colorScheme="light"}}catch(e){}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||localStorage.getItem("tempo_theme");var dark=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);var root=document.documentElement;if(dark){root.classList.add("dark");root.style.backgroundColor="#070b16";root.style.colorScheme="dark"}else{root.style.backgroundColor="#e8eef6";root.style.colorScheme="light"}}catch(e){}})()`;
 
 const swRegisterScript = `(function(){if(!("serviceWorker"in navigator))return;var h=location.hostname;var isLocal=h==="localhost"||h==="127.0.0.1"||h.endsWith(".local");var p=location.protocol;if(p==="app:"||p==="file:"||!window.isSecureContext)return;window.addEventListener("load",function(){if(isLocal){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});if(window.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})})}return}navigator.serviceWorker.register("/sw.js").catch(function(){})})})()`;
 
@@ -146,7 +146,7 @@ export default async function RootLayout({
         <link rel="help" href="/llms.txt" type="text/plain" />
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
       </head>
-      <body className={`${fontSans.className} min-h-screen bg-slate-50 dark:bg-[#070b16] antialiased`}>
+      <body className={`${fontSans.className} min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16] antialiased`}>
         {/* SSR + client-dismissed splash — do not remove via DOM APIs (breaks soft nav). */}
         <BootSplash />
         {SAFE_GA_ID && (

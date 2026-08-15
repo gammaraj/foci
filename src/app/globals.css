@@ -11,20 +11,24 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode — soft cool wash; elevated panels stay white for clear layers */
-  --page-bg: #d8e0ed;
-  --surface-border: #a4b8d4;
+  /* Light mode — airy cool wash; white plates + soft elevation */
+  --page-bg: #e8eef6;
+  --surface-border: #b7c6db;
   --surface-bg: #ffffff;
   --panel-header-bg: #ffffff;
-  --seg-track-bg: #e8eef7;
-  --surface-muted: #eef2f8;
+  --seg-track-bg: #e2eaf5;
+  --surface-muted: #f4f7fb;
   --project-surface-bg: #ffffff;
-  --project-surface-border: #b6c6dc;
+  --project-surface-border: #c5d2e4;
   --project-surface-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.05),
-    0 8px 20px -10px rgba(15, 23, 42, 0.18);
-  --task-row-border: #c5d3e8;
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 12px -2px rgba(15, 23, 42, 0.07),
+    0 14px 32px -12px rgba(15, 23, 42, 0.12);
+  --task-row-border: #d0dceb;
   --task-row-bg: #f8fafc;
+  --control-border: #b6c5da;
+  --control-border-focus: #3b82f6;
+  --radius-card: 0.875rem;
   /* Cool berry urgency — pink-leaning so it sits with brand blue (not warm fire-engine red) */
   --urgency: #b0175c;
   --urgency-strong: #8e1249;
@@ -46,7 +50,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: #d8e0ed;
+  background: #e8eef6;
   color: #334155;
   font-family: system-ui, -apple-system, sans-serif;
   transition: opacity 0.18s ease;
@@ -316,7 +320,7 @@ select {
 /* Status strip below navbar — flat page surface (no gradient wash) */
 .status-strip {
   border-bottom: 1px solid var(--surface-border);
-  box-shadow: 0 6px 16px -14px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 8px 20px -16px rgba(15, 23, 42, 0.18);
   background: var(--page-bg);
 }
 :root:not(.dark) .status-strip {
@@ -330,11 +334,10 @@ select {
 
 /* Focus strip card — weather | timer | music with clear zones */
 .status-strip-card {
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-card);
   background: #ffffff;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 6px 16px -10px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--project-surface-shadow);
 }
 .dark .status-strip-card {
   border-color: #243350;
@@ -345,7 +348,7 @@ select {
   background: transparent;
 }
 .status-strip-zone--side {
-  background: rgba(191, 212, 245, 0.4);
+  background: color-mix(in srgb, #bfdbfe 28%, #ffffff);
 }
 .dark .status-strip-zone--side {
   background: rgba(15, 23, 42, 0.35);
@@ -395,10 +398,10 @@ select {
 
 /* Inset segmented controls on panel headers */
 .app-seg-track {
-  background: var(--seg-track-bg, #e8eef7);
-  border-radius: 0.5rem;
-  padding: 0.125rem;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+  background: var(--seg-track-bg, #e2eaf5);
+  border-radius: 0.625rem;
+  padding: 0.1875rem;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.4);
 }
 .dark .app-seg-track {
   /* Self-contained — must not rely on .panel-header-calm (Layout lives outside it now) */
@@ -416,9 +419,10 @@ select {
 .app-surface {
   background: var(--surface-muted);
   border: 1px solid var(--surface-border);
+  border-radius: var(--radius-card);
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 10px 28px -12px rgba(15, 23, 42, 0.16);
+    0 1px 2px rgba(15, 23, 42, 0.03),
+    0 8px 24px -10px rgba(15, 23, 42, 0.12);
 }
 .dark .app-surface {
   background: #111827;
@@ -432,7 +436,18 @@ select {
 .project-surface {
   background: var(--project-surface-bg);
   border: 1px solid var(--project-surface-border);
+  border-radius: var(--radius-card);
   box-shadow: var(--project-surface-shadow);
+}
+:root:not(.dark) .project-surface {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+:root:not(.dark) .project-surface:hover {
+  border-color: #aebfd6;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 6px 16px -2px rgba(15, 23, 42, 0.08),
+    0 18px 36px -12px rgba(15, 23, 42, 0.14);
 }
 .dark .project-surface {
   background: #16233a;
