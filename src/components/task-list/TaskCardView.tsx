@@ -101,6 +101,8 @@ interface TaskCardViewProps {
   /** Controlled Cards search (desktop lives in When/Layout; mobile keeps an in-view field). */
   cardQuery?: string;
   onCardQueryChange?: (value: string) => void;
+  /** Empty-state CTA — opens Projects create. */
+  onAddProject?: () => void;
 }
 
 function CardTaskMoreMenu({
@@ -1000,6 +1002,7 @@ export default function TaskCardView({
   autoQuickAddProjectId = null,
   cardQuery: cardQueryProp,
   onCardQueryChange,
+  onAddProject,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
   const [cardQueryLocal, setCardQueryLocal] = useState("");
@@ -1230,11 +1233,11 @@ export default function TaskCardView({
       </div>
 
       {visibleProjects.length === 0 && (
-        <p className="px-4 py-6 text-sm text-center text-slate-500 dark:text-slate-400">
+        <div className="px-4 py-6 text-sm text-center text-slate-500 dark:text-slate-400 space-y-3">
           {query ? (
-            <>No projects or tasks match “{cardQuery.trim()}”.</>
+            <p>No projects or tasks match “{cardQuery.trim()}”.</p>
           ) : hideEmptyProjects ? (
-            <>
+            <p>
               No projects with open tasks.
               {emptyProjectCount > 0 && onToggleHideEmptyProjects && (
                 <>
@@ -1248,11 +1251,25 @@ export default function TaskCardView({
                   </button>
                 </>
               )}
-            </>
+            </p>
           ) : (
-            "No projects yet."
+            <>
+              <p>No projects yet.</p>
+              {onAddProject && (
+                <button
+                  type="button"
+                  onClick={onAddProject}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add project
+                </button>
+              )}
+            </>
           )}
-        </p>
+        </div>
       )}
     </div>
   );

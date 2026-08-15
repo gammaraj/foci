@@ -26,6 +26,13 @@ const STEPS: Step[] = [
     position: "top",
   },
   {
+    target: "[data-tour='add-project']",
+    title: "Add a project",
+    description:
+      "Tap Add project to create one — name it yourself or pick a template with preset tasks. Quick Add on a card is for tasks inside that project.",
+    position: "bottom",
+  },
+  {
     target: "[data-tour='view-modes']",
     title: "Views",
     description:
@@ -64,15 +71,24 @@ const STEPS: Step[] = [
     target: "[data-tour='task-panel-menu']",
     title: "Templates, Smart Plan & settings",
     description:
-      "Open ⋯ for Project templates, Import tasks, Settings, and to replay this tour. Use Layout → Plan for Smart Plan. Top nav Projects manages pin, share, and create.",
+      "Open ⋯ for Project templates, Import tasks, Settings, and to replay this tour. Use Layout → Plan for Smart Plan. Menu → Projects also opens create and manage.",
     position: "bottom",
   },
 ];
 
+function queryVisibleTourTarget(selector: string): Element | null {
+  const nodes = document.querySelectorAll(selector);
+  for (const el of nodes) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) return el;
+  }
+  return null;
+}
+
 function waitForTourStart(onReady: () => void): () => void {
   let cancelled = false;
   const waitForTargets = () => {
-    const firstTarget = document.querySelector(STEPS[0].target);
+    const firstTarget = queryVisibleTourTarget(STEPS[0].target);
     if (firstTarget && !cancelled) {
       onReady();
     } else if (!cancelled) {
@@ -95,7 +111,14 @@ export default function OnboardingTour() {
     // Wait for auth to resolve
     if (authLoading) return;
 
-    // Check if already completed (works for both guest and authenticated users)
+    // Authenticated: only Supabase metadata — don't use account age or guest
+    // localStorage, so email-confirm delays and prior guest use still get the tour.
+    if (user) {
+      if (user.user_metadata?.onboarding_done) return;
+      return waitForTourStart(() => setCurrentStep(0));
+    }
+
+    // Guest: localStorage only
     if (
       localStorage.getItem(ONBOARDING_STORAGE_KEY) ||
       localStorage.getItem(ONBOARDING_LEGACY_STORAGE_KEY)
@@ -103,21 +126,6 @@ export default function OnboardingTour() {
       return;
     }
 
-    // For authenticated users: check Supabase metadata and account age
-    if (user) {
-      if (user.user_metadata?.onboarding_done) return;
-      // Only show for new signups: skip if account older than 5 minutes
-      const createdAt = new Date(user.created_at).getTime();
-      if (Date.now() - createdAt > 5 * 60 * 1000) {
-        localStorage.setItem(ONBOARDING_STORAGE_KEY, "1");
-        const supabase = createClient();
-        supabase.auth.updateUser({ data: { onboarding_done: true } })
-          .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
-        return;
-      }
-    }
-
-    // Show tour for both guest users and new authenticated users
     return waitForTourStart(() => setCurrentStep(0));
   }, [user, authLoading]);
 
@@ -148,7 +156,7 @@ export default function OnboardingTour() {
     if (currentStep < 0 || currentStep >= STEPS.length) return;
 
     const step = STEPS[currentStep];
-    const el = document.querySelector(step.target);
+    const el = queryVisibleTourTarget(step.target);
     if (!el) {
       // Skip to next step if target not found
       if (currentStep < STEPS.length - 1) {
@@ -187,7 +195,7 @@ export default function OnboardingTour() {
   if (currentStep < 0 || currentStep >= STEPS.length) return null;
 
   const step = STEPS[currentStep];
-  const targetEl = document.querySelector(step.target);
+  const targetEl = queryVisibleTourTarget(step.target);
 
   return (
     <>

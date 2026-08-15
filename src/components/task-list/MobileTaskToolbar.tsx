@@ -90,7 +90,7 @@ export function MobileTaskToolbar({
   const timeFilterActive = selectedScope !== ALL_PROJECTS_ID;
 
   return (
-    <div className="no-print sm:hidden mt-1.5" data-tour="time-filters">
+    <div className="no-print sm:hidden mt-1.5 space-y-1.5" data-tour="time-filters">
       <div className="flex items-center gap-1.5 min-w-0">
         <label className="sr-only" htmlFor="mobile-view-mode">
           Layout
@@ -165,36 +165,36 @@ export function MobileTaskToolbar({
           </>
         )}
 
-        {onAddProject && (
-          <button
-            type="button"
-            onClick={onAddProject}
-            className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1.5 min-h-[2.25rem] rounded-md border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-            data-tour="add-project"
-            title="Add a new project"
-            aria-label="Add project"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="text-xs font-semibold hidden min-[400px]:inline">Project</span>
-          </button>
-        )}
-
         <button
           type="button"
           onClick={onManageProjects}
           className="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[2.25rem] rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
           data-tour="manage-projects"
-          title="Projects — manage, create, import"
-          aria-label="Projects"
+          title="Projects — manage, pin, share, import"
+          aria-label="Manage projects"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
           </svg>
-          <span className="text-xs font-semibold hidden min-[380px]:inline">All</span>
+          <span className="text-xs font-semibold">All</span>
         </button>
       </div>
+
+      {onAddProject && (
+        <button
+          type="button"
+          onClick={onAddProject}
+          className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[2.5rem] rounded-lg border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+          data-tour="add-project"
+          title="Add a new project"
+          aria-label="Add project"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add project
+        </button>
+      )}
     </div>
   );
 }

@@ -3057,6 +3057,7 @@ export default function TaskList({
           autoQuickAddProjectId={autoQuickAddProjectId}
           cardQuery={cardQuery}
           onCardQueryChange={setCardQuery}
+          onAddProject={openProjectManage}
         />
       )}
 
@@ -3562,11 +3563,23 @@ export default function TaskList({
                   ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` 
                   : "Your task list is empty"}
               </p>
-              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto">
+              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto mb-4">
                 {isTimeFilter 
                   ? "Add a task above to get started" 
                   : "Add your first task above, or start a project from a template"}
               </p>
+              {!isTimeFilter && (
+                <button
+                  type="button"
+                  onClick={openProjectManage}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add project
+                </button>
+              )}
             </div>
             {!isTimeFilter && (
               <ProjectTemplatePicker variant="cards" onSelect={addProject} />

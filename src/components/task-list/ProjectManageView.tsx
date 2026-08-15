@@ -562,6 +562,13 @@ export default function ProjectManageView({
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
   const [showArchived, setShowArchived] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const newProjectInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Focus create field when Projects opens so Add project is one tap + type.
+    const id = window.setTimeout(() => newProjectInputRef.current?.focus(), 50);
+    return () => window.clearTimeout(id);
+  }, []);
 
   const toggleExpanded = (id: string) => {
     setExpandedIds((prev) => {
@@ -612,6 +619,7 @@ export default function ProjectManageView({
             className="flex gap-2"
           >
             <input
+              ref={newProjectInputRef}
               type="text"
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
