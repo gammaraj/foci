@@ -738,7 +738,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       
     if (error) {
       if (error.code === "23505") { // unique violation
-        throw new Error("An invite has already been sent to this email");
+        throw new Error("An invite is already pending for this email");
       }
       console.error("[Foci] inviteCollaborator error:", error);
       throw new Error(error.message);
@@ -1371,7 +1371,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       
     if (error) {
       if (error.code === "23505") {
-        throw new Error("An invite has already been sent to this email");
+        throw new Error("An invite is already pending for this email");
       }
       console.error("[Foci] inviteAccountCollaborator error:", error);
       throw new Error(error.message);

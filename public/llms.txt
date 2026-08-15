@@ -261,13 +261,13 @@ A: Yes. Foci displays your local weather, temperature, live clock, and date abov
 A: Yes. Foci includes 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill — alongside built-in offline ambient sounds and SoundCloud Indian classical music.
 
 **Q: Can I collaborate with others on Foci?**
-A: Yes. Foci supports two types of collaboration: Account collaboration (invite team members to your entire account with viewer or editor roles) and Project collaboration (share specific projects with customizable access levels). All invites are managed through email with role-based permissions.
+A: Yes. Foci supports account collaboration (share all current and future projects with viewer or editor roles) and project collaboration (share one project). Invites are saved in-app — Foci does not send invite emails yet. You copy a short invite message and share it yourself; the invitee signs in at usefoci.com/app and accepts under the people icon.
 
 **Q: How do collaboration invites work in Foci?**
-A: Send account or project collaboration invites via email. Recipients see invites via the Sharing / invites control in the navbar and can accept or decline. Account invites grant access to all projects (role-dependent), while project invites are scoped to specific projects. Invites expire automatically for security.
+A: Enter their email, choose viewer or editor, and save the invite. Foci copies invite text for you to paste in email or chat. Recipients accept or decline under Sharing (people icon) in the navbar. Account invites grant access to all projects (role-dependent); project invites are scoped to one project. Invites expire automatically. There are no public invite links.
 
 **Q: Does Foci have a notification system?**
-A: Yes. Enable browser notifications in Settings for session-complete alerts. Upcoming and overdue task reminders appear in the app, and collaboration invites show in the navbar Sharing control with a badge when pending.
+A: Yes. Enable browser notifications in Settings for session-complete alerts. An in-app due/overdue bell lists tasks due today or late, and collaboration invites show under the people icon with a badge when pending. Shared project tasks refresh while you view them (polling), not live multiplayer editing.
 
 **Q: Can I switch between light and dark mode?**
 A: Yes. Use the sun/moon button in the navbar for one-click light ↔ dark. In your profile menu, Appearance also cycles Light → Dark → System (follow OS preference).
@@ -374,8 +374,9 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - `src/components/TaskImportExport.tsx` – Import tasks from Google Tasks, Todoist, Asana, Notion, CSV with destination picker and new/existing project preview. Export as JSON/CSV.
 - `src/components/AmbientSounds.tsx` – Ambient sounds (rain, café, white/brown noise), lo-fi radio, and Indian classical music via SoundCloud.
 - `src/components/ThemeToggle.tsx` – One-click light/dark theme toggle in the navbar.
-- `src/components/DueDateReminders.tsx` – Notification bell with upcoming and overdue task alerts.
-- `src/lib/collaboration.ts` – Account and project collaboration logic with role-based access control.
+- `src/components/DueRemindersButton.tsx` – In-app due/overdue tray (navbar bell) with Today jump.
+- `src/components/DueDateReminders.tsx` – Optional daily browser notifications for due/overdue digests.
+- `src/lib/collaboration-invite.ts` – Copyable invite message helpers (no email send yet).
 - `supabase/migrations/` – Database schema migrations including user_profiles, account_invites, collaboration_invites.
 - `src/hooks/useTimer.ts` – Core timer logic hook (work/break cycles, callbacks).
 - `src/lib/types.ts` – TypeScript type definitions (Settings, Task, TimerStatus, etc.).

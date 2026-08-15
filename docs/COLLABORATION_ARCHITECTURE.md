@@ -1,8 +1,8 @@
 # Foci Collaboration Architecture
 
-> **Status:** Implemented (May 2026)  
+> **Status:** Implemented (sharing UI + DB); invite **email delivery not shipped** (copy-text flow).  
 > **Author:** GitHub Copilot  
-> **Date:** April 13, 2026 (design); shipped incrementally through May 2026
+> **Date:** April 13, 2026 (design); shipped incrementally through May 2026; messaging updated August 2026
 
 This document outlines the architecture for adding task collaboration to Foci, enabling users to share tasks and projects with collaborators.
 
@@ -404,12 +404,13 @@ async inviteCollaborator(projectId: string, email: string, role: 'viewer' | 'edi
     
   if (error) {
     if (error.code === '23505') { // unique violation
-      throw new Error('An invite has already been sent to this email');
+      throw new Error('An invite is already pending for this email');
     }
     throw error;
   }
   
-  // TODO: Send email notification via Supabase Edge Function
+  // TODO (future): Send email via AWS SES once usefoci.com domain mail is set up.
+  // v1: owner copies invite text from the Share modal.
 }
 
 async acceptInvite(inviteId: string): Promise<void> {
@@ -517,8 +518,8 @@ async getSharedProjects(): Promise<Project[]> {
 ┌─────────────────────────────────────────────────────────────────┐
 │  4. System creates invite record                                │
 │     ├── If user exists: link invitee_id                         │
-│     ├── Send email notification (Edge Function)                 │
-│     └── Show success toast: "Invite sent to alice@example.com"  │
+│     ├── Copy invite text for the owner to paste (no email yet)  │
+│     └── Toast: "Invite saved… copy the message"                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -526,9 +527,9 @@ async getSharedProjects(): Promise<Project[]> {
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  1. Invitee receives notification                               │
-│     ├── Email with "Accept Invite" link                         │
-│     └── OR sees badge on notification bell in app               │
+│  1. Invitee learns about the invite                             │
+│     ├── Owner pastes copied invite text (email/chat)            │
+│     └── AND/OR they already use Foci and see the people badge   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -742,10 +743,11 @@ drop table if exists public.user_profiles cascade;
 - [ ] InvitesPanel in NotificationBell
 
 ### Phase 3: Invite Flow (2-3 days)
-- [ ] Invite creation and validation
-- [ ] Accept/decline functionality
-- [ ] Email notifications (Supabase Edge Function)
-- [ ] Pending invites management
+- [x] Invite creation and validation
+- [x] Accept/decline functionality
+- [x] Copyable invite text (owner shares manually)
+- [ ] Email notifications (AWS SES — blocked on foci domain mailbox)
+- [x] Pending invites management
 
 ### Phase 4: Polish (2-3 days)
 - [ ] Loading states and error handling

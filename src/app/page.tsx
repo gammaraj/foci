@@ -96,7 +96,7 @@ const jsonLd = {
     "Projects and subtasks for organized workflows",
     "Browser notifications and motivational quotes",
     "Installable PWA — works offline",
-    "Cloud sync across devices",
+    "Optional free account for cloud sync across devices",
     "Dark mode support",
     "Brown noise generator for deep focus and ADHD support",
     "Project color coding and due date tracking",
@@ -114,9 +114,9 @@ const jsonLd = {
     "Collapsible timer panel for full-width task management",
     "Guided onboarding tour for new users (replay via Take product tour)",
     "Daily goal presets: Light (4), Standard (8), Intense (12)",
-    "Account collaboration with role-based permissions",
-    "Project collaboration invites for team workflows",
-    "Notification bell for invite alerts and reminders",
+    "Account collaboration with viewer/editor roles (in-app invites; copy invite text)",
+    "Project sharing with viewer/editor roles (no public invite links)",
+    "In-app bells for collaboration invites and due/overdue reminders",
   ],
 };
 
@@ -172,7 +172,7 @@ export default function LandingPage() {
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200/70 dark:border-blue-700/40 text-xs font-semibold text-blue-700 dark:text-blue-300 tracking-wide uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden />
-              Free · Syncs across devices
+              Free · Optional sync with account
             </span>
           </div>
 
@@ -217,7 +217,7 @@ export default function LandingPage() {
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>Sync across devices</span>
+              <span>Optional sync with free account</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden>

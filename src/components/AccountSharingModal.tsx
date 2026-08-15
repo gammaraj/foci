@@ -147,7 +147,7 @@ export default function AccountSharingModal({
 
     // Check if already invited
     if (pendingInvites.some((i) => (i.inviteeEmail ?? "").toLowerCase() === email)) {
-      showToast("An invite has already been sent to this email", "info");
+      showToast("An invite is already pending for this email", "info");
       return;
     }
 

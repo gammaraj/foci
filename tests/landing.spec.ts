@@ -7,7 +7,7 @@ test.describe("Landing Page", () => {
 
   test("renders hero headline and subtitle", async ({ page }) => {
     await expect(page.locator("h1")).toContainText("Plan your day. Finish your tasks.");
-    await expect(page.getByText("Free · Syncs across devices")).toBeVisible();
+    await expect(page.getByText("Free · Optional sync with account")).toBeVisible();
     await expect(
       page.getByText("Organize projects, plan the day, and finish what matters"),
     ).toBeVisible();

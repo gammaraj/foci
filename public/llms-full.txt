@@ -259,6 +259,15 @@ A: Yes. Foci displays your local weather, temperature, live clock, and date abov
 **Q: Does Foci have Spotify playlists?**
 A: Yes. Foci includes 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill — alongside built-in offline ambient sounds and SoundCloud Indian classical music.
 
+**Q: Can I collaborate with others on Foci?**
+A: Yes. Foci supports account collaboration (share all current and future projects with viewer or editor roles) and project collaboration (share one project). Invites are saved in-app — Foci does not send invite emails yet. You copy a short invite message and share it yourself; the invitee signs in at usefoci.com/app and accepts under the people icon.
+
+**Q: How do collaboration invites work in Foci?**
+A: Enter their email, choose viewer or editor, and save the invite. Foci copies invite text for you to paste in email or chat. Recipients accept or decline under Sharing (people icon) in the navbar. Account invites grant access to all projects (role-dependent); project invites are scoped to one project. Invites expire automatically. There are no public invite links.
+
+**Q: Does Foci have a notification system?**
+A: Yes. Enable browser notifications in Settings for session-complete alerts. An in-app due/overdue bell lists tasks due today or late, and collaboration invites show under the people icon with a badge when pending. Shared project tasks refresh while you view them (polling), not live multiplayer editing.
+
 **Q: What are the best ADHD focus tools?**
 A: Foci is designed to work with ADHD brains. Its timer externalizes time perception, task tracking removes the burden on working memory, brown noise provides sensory anchoring, and the daily goal system creates visible momentum. Read more at usefoci.com/blog/adhd-focus-strategies.
 
