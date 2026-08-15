@@ -170,7 +170,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
               <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />
               {/* Logged-in: brand rhythm. Logged-out: omit so the hero owns the value prop. */}
               {user ? (
-                <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap`}>
+                <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap hidden min-[380px]:block [@media(max-height:500px)]:hidden`}>
                   {FOCI_TAGLINE_FOCUS}
                 </p>
               ) : null}
@@ -178,14 +178,14 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           </Link>
 
           {centerSlot ? (
-            <div className="hidden sm:flex flex-1 min-w-0 items-center justify-center px-1 sm:px-2">
+            <div className="hidden roomy:flex flex-1 min-w-0 items-center justify-center px-1 sm:px-2">
               {centerSlot}
             </div>
           ) : (
-            <div className="hidden sm:block flex-1 min-w-0" aria-hidden />
+            <div className="hidden roomy:block flex-1 min-w-0" aria-hidden />
           )}
 
-          <div className="hidden sm:flex items-center gap-1 flex-shrink-0 ml-auto">
+          <div className="hidden roomy:flex items-center gap-1 flex-shrink-0 ml-auto">
             <div className="flex items-center gap-0.5">
               {navLinks.map((link) => renderNavLink(link))}
             </div>
@@ -220,7 +220,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             )}
           </div>
 
-          <div className="flex sm:hidden items-center gap-0.5 ml-auto">
+          <div className="flex roomy:hidden items-center gap-0.5 ml-auto">
             <ThemeToggle className={`${chromeBtnPad} touch-target-sm`} />
             {onOpenSettings && (
               <button
@@ -253,7 +253,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
         </div>
 
         {menuOpen && (
-          <div className="sm:hidden mt-3 pb-1 border-t nav-chrome-menu">
+          <div className="roomy:hidden mt-3 pb-1 border-t nav-chrome-menu">
             {toolbarSlot && (
               <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b nav-chrome-menu">
                 {toolbarSlot}

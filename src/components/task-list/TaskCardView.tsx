@@ -1105,7 +1105,7 @@ export default function TaskCardView({
 
   return (
     <div className="pb-4 pt-1">
-      <div className="panel-pad-x mb-2 sm:hidden">
+      <div className="panel-pad-x mb-2 roomy:hidden">
         <label className="relative block w-full">
           <span className="sr-only">Search projects and tasks</span>
           <svg

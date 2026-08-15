@@ -132,16 +132,16 @@ export default function AppFocusBar() {
     <div className="no-print border-b border-slate-200/80 dark:border-[#243350]/80 bg-white/80 dark:bg-[#0c1424]/90 backdrop-blur-sm">
       <div className="app-container py-2">
         <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2 panel-header-calm rounded-xl px-2.5 sm:px-3 py-1.5">
-          <div id={TITLE_HOST_ID} className="min-w-0 shrink" />
+          <div id={TITLE_HOST_ID} className="min-w-0 shrink overflow-x-auto scrollbar-hide" />
 
-          <div className="no-print hidden sm:flex flex-1 min-w-0 justify-center overflow-visible px-1">
+          <div className="no-print hidden roomy:flex flex-1 min-w-0 justify-center overflow-hidden px-1">
             {focusStrip}
           </div>
 
           <div id={ACTIONS_HOST_ID} className="no-print flex items-center gap-0.5 flex-shrink-0 justify-end" />
         </div>
 
-        <div className="no-print sm:hidden mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-[#243350]/80">
+        <div className="no-print roomy:hidden mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-[#243350]/80">
           {focusStrip}
         </div>
       </div>

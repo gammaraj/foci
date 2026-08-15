@@ -2541,7 +2541,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={handlePrint}
-              className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
+              className="hidden roomy:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
               title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
               aria-label="Print current view"
               data-tour="print-tasks"
@@ -2567,7 +2567,7 @@ export default function TaskList({
           {onToggleFullscreen && (
             <button
               onClick={onToggleFullscreen}
-              className={`no-print hidden sm:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+              className={`no-print hidden roomy:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
               title={isFullscreen ? "Exit expand" : "Expand tasks"}
               aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
             >
@@ -2589,7 +2589,7 @@ export default function TaskList({
       {!focusMode && !projectManageOpen && (
       <div className="no-print panel-pad-x py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-slate-200/90 dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
-          <div className="no-print hidden sm:flex items-center gap-3 min-w-0">
+          <div className="no-print hidden roomy:flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-2 shrink-0 min-w-0" data-tour="time-filters">
               <label htmlFor="desktop-time-scope" className="app-section-label leading-none text-slate-500 dark:text-slate-400 shrink-0">
                 When
@@ -2749,7 +2749,7 @@ export default function TaskList({
         )}
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
-          <p className="no-print sm:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
+          <p className="no-print roomy:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
             <span className="flex-1 truncate">Drag tasks to reorder · ▲▼ moves projects</span>
             <button
               type="button"
@@ -2898,7 +2898,7 @@ export default function TaskList({
 
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!projectManageOpen && viewMode === "bucket" && (
-        <div className="no-print hidden sm:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden roomy:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
               Drag to reorder · pin columns · manage in Projects (nav or ⋯)
@@ -3099,7 +3099,7 @@ export default function TaskList({
       {!isViewingSharedProject && (
       <div className="panel-pad-x pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
-        <div className="flex sm:hidden items-center gap-1.5">
+        <div className="flex roomy:hidden items-center gap-1.5">
           <select
             value={isTimeFilter ? projectFilterId : selectedProjectId}
             onChange={(e) => {
@@ -3144,7 +3144,7 @@ export default function TaskList({
           </select>
 
           {/* Projects admin */}
-          <AddProjectButton onClick={openProjectManage} size="sm" className="sm:hidden" />
+          <AddProjectButton onClick={openProjectManage} size="sm" className="roomy:hidden" />
           <ListToolbarProjectMenu
             project={listToolbarMenuProject}
             user={user}
@@ -3160,7 +3160,7 @@ export default function TaskList({
         </div>
 
         {/* Desktop: horizontal scrolling project tabs */}
-        <div className="hidden sm:flex relative items-center gap-2" ref={projectTabsContainerRef}>
+        <div className="hidden roomy:flex relative items-center gap-2" ref={projectTabsContainerRef}>
           <div
             ref={projectTabMeasureRef}
             className="absolute left-0 top-0 -z-10 opacity-0 pointer-events-none flex items-center gap-2"

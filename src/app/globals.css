@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
+/* Desktop chrome only when there's room in BOTH axes — phone landscape stays compact. */
+@custom-variant roomy (@media (min-width: 768px) and (min-height: 500px));
 
 /* ===== Custom Properties ===== */
 :root {

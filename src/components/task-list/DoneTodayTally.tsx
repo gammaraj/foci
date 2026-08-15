@@ -67,7 +67,7 @@ export function DoneTodayTally({
         <span className={todayNumClass}>
           {count} today
         </span>
-        <span className={`font-medium ${mutedSepClass} hidden min-[400px]:inline`}>
+        <span className={`font-medium ${mutedSepClass} hidden roomy:inline`}>
           · <span className={periodNumClass}>{weekCount}</span>w ·{" "}
           <span className={periodNumClass}>{monthCount}</span>mo
         </span>
