@@ -2632,7 +2632,7 @@ export default function TaskList({
                 <label className="relative w-full max-w-md min-w-0">
                   <span className="sr-only">Search projects and tasks</span>
                   <svg
-                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500"
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -2645,7 +2645,7 @@ export default function TaskList({
                     value={cardQuery}
                     onChange={(e) => setCardQuery(e.target.value)}
                     placeholder="Filter projects or tasks…"
-                    className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-blue-500"
+                    className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-md border border-slate-300 dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 dark:focus:border-blue-400"
                     aria-label="Filter projects or tasks"
                     data-tour="card-filter"
                   />
