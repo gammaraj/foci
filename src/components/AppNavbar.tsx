@@ -100,9 +100,9 @@ export default function AppNavbar({
           focusMode ? undefined : (
             <div
               className={
-              {user
-                ? "flex items-center justify-center gap-6 lg:gap-10 xl:gap-12 min-w-0 w-full max-w-3xl"
-                : "flex items-center justify-end min-w-0 w-full"
+                user
+                  ? "flex items-center justify-center gap-6 lg:gap-10 xl:gap-12 min-w-0 w-full max-w-3xl"
+                  : "flex items-center justify-end min-w-0 w-full"
               }
             >
               {user ? (
