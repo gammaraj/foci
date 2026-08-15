@@ -337,7 +337,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.workMin
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -363,7 +363,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.breakMin
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -388,7 +388,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.inactivityMin
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -414,7 +414,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.dailyGoal
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -527,7 +527,7 @@ export default function SettingsPanel({
                             console.error("[Foci] Failed to save task view preference:", err);
                           }
                         }}
-                        className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+                        className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
                       >
                         {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
                           <option key={opt.value} value={opt.value}>

@@ -372,7 +372,7 @@ function ProjectRow({
                   if (e.key === "Escape") onCancelRename();
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 text-sm border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                className="w-full px-2 py-1 text-sm border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
                 autoFocus
               />
             ) : (
@@ -581,7 +581,7 @@ export default function ProjectManageView({
 
   return (
     <div className="flex flex-col min-h-0">
-      <div className="flex-1 overflow-y-auto overflow-x-hidden panel-pad-x py-3 pb-6 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)] space-y-5">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden panel-pad-x py-3 pb-10 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)] space-y-5">
         {/* Create first — primary action, not buried under the list */}
         <section
           className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-slate-50/70 dark:bg-[#0d1526]/55 p-3 sm:p-3.5 space-y-3"
@@ -625,7 +625,7 @@ export default function ProjectManageView({
               onChange={(e) => setNewProjectName(e.target.value)}
               placeholder="Project name…"
               maxLength={MAX_PROJECT_NAME}
-              className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+              className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
               aria-label="New project name"
             />
             <button

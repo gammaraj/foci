@@ -218,7 +218,7 @@ export default function OpenTaskList({
                     if (e.key === "Escape") onCancelEdit();
                   }}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none"
+                  className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
                   autoFocus
                 />
               ) : (

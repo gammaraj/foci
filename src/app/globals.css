@@ -495,6 +495,7 @@ select {
 .app-shell {
   font-size: 0.9375rem;
   line-height: 1.5;
+  color: #0f172a;
 }
 @media (min-width: 640px) {
   .app-shell {
@@ -593,6 +594,7 @@ select {
 .dark .app-shell {
   --app-text-muted: #a8b6c9;
   --seg-track-bg: #1a2d4a;
+  color: #e2e8f0;
 }
 .dark .app-shell .app-text-meta {
   color: var(--app-text-muted);

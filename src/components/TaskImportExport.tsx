@@ -567,7 +567,7 @@ export default function TaskImportExport({
                     onChange={(e) =>
                       setDestination({ mode: "existing", projectId: e.target.value })
                     }
-                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] dark:text-white"
+                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-white text-slate-900 dark:bg-[#131d30] dark:text-white"
                   >
                     {availableProjects.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -598,7 +598,7 @@ export default function TaskImportExport({
                     }}
                     placeholder="Project name"
                     maxLength={MAX_PROJECT_NAME}
-                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
                   />
                 )}
               </span>

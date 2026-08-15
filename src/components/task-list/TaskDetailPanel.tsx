@@ -16,7 +16,7 @@ const chipIdle =
 const chipEmpty =
   "border-dashed border-slate-200 dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500";
 const selectControl =
-  "flex-1 w-full min-w-0 max-w-full bg-transparent dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer";
+  "flex-1 w-full min-w-0 max-w-full bg-transparent text-slate-800 dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer";
 
 export interface TaskDetailPanelProps {
   task: Task;
@@ -211,7 +211,7 @@ export function TaskDetailPanel({
           placeholder="Add a description..."
           maxLength={2000}
           rows={3}
-          className={`w-full px-3 py-2.5 border border-blue-300 rounded-lg bg-white dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y ${
+          className={`w-full px-3 py-2.5 border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y ${
             isDrawer ? "text-base sm:text-sm" : "text-sm"
           }`}
           autoFocus

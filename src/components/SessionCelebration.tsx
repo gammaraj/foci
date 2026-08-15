@@ -56,7 +56,7 @@ export default function SessionCelebration({
                     key={id}
                     type="button"
                     onClick={() => { onFeedback(id); onDismiss(); }}
-                    className="px-2.5 py-1 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                    className="px-2.5 py-1 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] bg-white text-slate-700 dark:bg-[#131d30] dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-800 dark:hover:text-blue-200"
                   >
                     {label}
                   </button>

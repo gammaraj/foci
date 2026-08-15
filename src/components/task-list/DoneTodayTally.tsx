@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { STATUS_PILL_COMPACT } from "@/components/task-list/TaskUrgencySummary";
 
 interface DoneTodayTallyProps {
   count: number;
@@ -49,7 +50,7 @@ export function DoneTodayTally({
       <button
         type="button"
         onClick={onClick}
-        className={`inline-flex items-center gap-1 px-1.5 sm:px-2 min-h-[1.75rem] rounded-md text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 transition-all border ${tone} ${pulseRing} ${className}`}
+        className={`${STATUS_PILL_COMPACT} border ${tone} ${pulseRing} ${className}`}
         title="Done today · this week · this month — tap to show completed tasks"
         aria-label={ariaLabel}
         data-done-today-tally

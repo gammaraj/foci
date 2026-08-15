@@ -47,6 +47,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
 
       root.classList.toggle("dark", resolved === "dark");
+      // Keep in sync with the boot theme script — stale color-scheme makes
+      // buttons inherit light text on light backgrounds (invisible labels).
+      root.style.colorScheme = resolved;
+      root.style.backgroundColor = resolved === "dark" ? "#070b16" : "#e8eef6";
       setResolvedTheme(resolved);
     };
 

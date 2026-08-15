@@ -23,6 +23,10 @@ interface TaskUrgencySummaryProps {
   compact?: boolean;
 }
 
+/** Shared sizing so late / today / worst / done-today tablets align. */
+export const STATUS_PILL_COMPACT =
+  "inline-flex items-center justify-center gap-1 h-7 min-h-[1.75rem] px-2 rounded-md text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 transition-colors";
+
 /** Urgency summary bar — horizontal scroll when chips overflow. */
 export function TaskUrgencySummary({
   overdueCount,
@@ -53,11 +57,13 @@ export function TaskUrgencySummary({
     else onViewOverdue?.();
   };
 
-  const pad = compact ? "px-1.5 py-0.5 rounded-md text-xs" : "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm";
+  const pad = compact
+    ? STATUS_PILL_COMPACT
+    : "inline-flex items-center gap-1.5 px-2.5 py-1.5 min-h-[2rem] rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 transition-colors";
 
   return (
     <div
-      className={`urgency-summary-bar inline-flex items-center gap-1.5 max-w-full overflow-x-auto scrollbar-hide ${className}`}
+      className={`urgency-summary-bar inline-flex items-center gap-1.5 max-w-full min-w-0 overflow-x-auto overflow-y-hidden scrollbar-hide ${className}`}
       role="status"
       aria-label={aria}
     >
@@ -65,11 +71,11 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={onViewOverdue}
-          className={`urgency-pill inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors`}
+          className={`urgency-pill ${pad}`}
           title={`${overdueCount} overdue — view all`}
         >
           {!compact && (
-            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full urgency-chip--mid text-xs font-bold tabular-nums leading-none">
+            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full urgency-chip--mid text-xs font-bold tabular-nums leading-none shrink-0">
               {overdueCount}
             </span>
           )}
@@ -81,11 +87,11 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={onViewToday}
-          className={`inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-medium whitespace-nowrap shrink-0 border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 transition-colors ${compact ? "" : "shadow-sm"}`}
+          className={`${pad} border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 ${compact ? "" : "shadow-sm"}`}
           title={`${dueTodayCount} due today`}
         >
           {!compact && (
-            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none">
+            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none shrink-0">
               {dueTodayCount}
             </span>
           )}
@@ -98,21 +104,23 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={handleWorst}
-          className={`urgency-pill inline-flex items-center gap-1 sm:gap-1.5 ${pad} font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer ${compact ? "max-w-[7.5rem]" : "max-w-[14rem]"}`}
+          className={`urgency-pill ${pad} cursor-pointer ${compact ? "max-w-[9rem]" : "max-w-[14rem]"}`}
           title={worstTitle}
           aria-label={worstTitle}
         >
-          <span className="inline-flex items-center justify-center h-4 sm:h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap urgency-chip--mid">
+          {/* Outline pill only — nested solid chip was getting clipped by the done-today tally */}
+          <span className="leading-none tabular-nums font-bold shrink-0">
             {formatOverdueChip(worstOverdue.daysLate)}
           </span>
-          <span className="leading-none truncate min-w-0">
-            {compact ? worstLabel : (
-              <>
-                {worstOverdue.projectName}
-                <span className="font-medium opacity-90"> — jump</span>
-              </>
-            )}
-          </span>
+          {!compact && (
+            <span className="leading-none truncate min-w-0">
+              {worstOverdue.projectName}
+              <span className="font-medium opacity-90"> — jump</span>
+            </span>
+          )}
+          {compact && worstLabel && (
+            <span className="leading-none truncate min-w-0 font-medium">{worstLabel}</span>
+          )}
         </button>
       )}
     </div>

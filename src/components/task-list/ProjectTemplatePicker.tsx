@@ -27,7 +27,7 @@ export function ProjectTemplatePicker({
           <button
             key={tpl.label}
             type="button"
-            className="w-full text-left px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
+            className="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
             onClick={() => onSelect(tpl)}
           >
             <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export function ProjectTemplatePicker({
             key={tpl.label}
             type="button"
             onClick={() => onSelect(tpl)}
-            className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors touch-target-sm"
+            className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] bg-white text-slate-700 dark:bg-[#131d30] dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-800 dark:hover:text-blue-200 transition-colors touch-target-sm"
             title={`${tpl.description} · ${tpl.tasks.length} tasks`}
           >
             {tpl.emoji} {tpl.label}

@@ -363,7 +363,7 @@ export function TaskSubtaskSection({
             onChange={(e) => onNewSubtaskTitleChange(e.target.value)}
             placeholder="Add a subtask…"
             enterKeyHint="done"
-            className={`flex-1 min-w-0 dark:text-white outline-none ${
+            className={`flex-1 min-w-0 text-slate-900 dark:text-white outline-none ${
               spacious
                 ? "px-3.5 py-3 text-base sm:text-sm border border-slate-200 dark:border-[#243350] rounded-xl bg-white dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40 shadow-sm"
                 : "px-2 py-1 text-sm border border-slate-200 dark:border-[#243350] rounded-md bg-white dark:bg-[#131d30] focus:border-blue-400"

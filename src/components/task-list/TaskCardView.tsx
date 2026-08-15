@@ -447,7 +447,7 @@ function CardTaskRow({
               if (e.key === "Escape") onCancelEdit?.();
             }}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-[#131d30] dark:text-white outline-none"
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
             autoFocus
             aria-label="Edit task title"
           />
