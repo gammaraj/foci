@@ -47,7 +47,6 @@ export function TaskUrgencySummary({
         ? `${overdueCount} overdue`
         : `${dueTodayCount} due today`;
 
-  const worstLabel = worstOverdue?.projectName ?? null;
   const worstTitle = worstOverdue
     ? `Open ${worstOverdue.projectName}: “${worstOverdue.title}” (${formatOverdueLabel(worstOverdue.daysLate)})`
     : undefined;
@@ -104,22 +103,27 @@ export function TaskUrgencySummary({
         <button
           type="button"
           onClick={handleWorst}
-          className={`urgency-pill ${pad} cursor-pointer ${compact ? "max-w-[9rem]" : "max-w-[14rem]"}`}
+          className={
+            compact
+              ? `${STATUS_PILL_COMPACT} urgency-chip--mid cursor-pointer shadow-none`
+              : `urgency-pill ${pad} cursor-pointer max-w-[14rem]`
+          }
           title={worstTitle}
           aria-label={worstTitle}
         >
-          {/* Outline pill only — nested solid chip was getting clipped by the done-today tally */}
-          <span className="leading-none tabular-nums font-bold shrink-0">
-            {formatOverdueChip(worstOverdue.daysLate)}
-          </span>
-          {!compact && (
-            <span className="leading-none truncate min-w-0">
-              {worstOverdue.projectName}
-              <span className="font-medium opacity-90"> — jump</span>
-            </span>
-          )}
-          {compact && worstLabel && (
-            <span className="leading-none truncate min-w-0 font-medium">{worstLabel}</span>
+          {compact ? (
+            // Compact title row: days-late only — project name was truncating the pill to a sliver
+            <span className="leading-none tabular-nums font-bold">{formatOverdueChip(worstOverdue.daysLate)}</span>
+          ) : (
+            <>
+              <span className="inline-flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none whitespace-nowrap shrink-0 urgency-chip--mid">
+                {formatOverdueChip(worstOverdue.daysLate)}
+              </span>
+              <span className="leading-none truncate min-w-0">
+                {worstOverdue.projectName}
+                <span className="font-medium opacity-90"> — jump</span>
+              </span>
+            </>
           )}
         </button>
       )}

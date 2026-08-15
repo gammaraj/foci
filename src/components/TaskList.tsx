@@ -2509,7 +2509,7 @@ export default function TaskList({
                 {showUrgencySummary && (
                   <TaskUrgencySummary
                     compact
-                    className="no-print ml-0.5 min-w-0 flex-1 basis-0"
+                    className="no-print ml-0.5 shrink-0"
                     overdueCount={overdueTasks.length}
                     dueTodayCount={dueExactlyTodayCount}
                     worstOverdue={worstOverdue}
