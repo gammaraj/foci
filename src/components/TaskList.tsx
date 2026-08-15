@@ -61,7 +61,6 @@ import {
   formatDuration,
   formatDueDate,
   isDueDateOverdue,
-  getDaysOverdue,
   getNextDueDate,
   projectTabTooltip,
   projectTabLabel,
@@ -1893,27 +1892,6 @@ export default function TaskList({
   ).length;
   const allOpenCount = tasks.filter((t) => !t.completed && !t.archivedAt).length;
   const overdueTasks = tasks.filter((t) => !t.archivedAt && !t.completed && isActionableOverdue(t));
-  const worstOverdue = (() => {
-    if (overdueTasks.length === 0) return null;
-    let worst = overdueTasks[0];
-    let worstDays = worst.dueDate ? getDaysOverdue(worst.dueDate) : 0;
-    for (const t of overdueTasks) {
-      if (!t.dueDate) continue;
-      const days = getDaysOverdue(t.dueDate);
-      if (days > worstDays) {
-        worst = t;
-        worstDays = days;
-      }
-    }
-    if (!worst.dueDate || worstDays < 1) return null;
-    const project = projects.find((p) => p.id === worst.projectId);
-    return {
-      daysLate: worstDays,
-      title: worst.title,
-      projectName: project?.name ?? "Project",
-      projectId: worst.projectId,
-    };
-  })();
   const thisWeekTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfWeek));
   const thisMonthTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfMonth));
   const thisYearTasks = tasks.filter((t) => !t.archivedAt && !t.completed && t.dueDate && (t.dueDate <= endOfYear));
@@ -2377,13 +2355,6 @@ export default function TaskList({
     return () => window.clearTimeout(t);
   }, [highlightProjectId, cardJumpToken]);
 
-  const jumpToWorstOverdue = () => {
-    if (!worstOverdue?.projectId) return;
-    // Open that project’s list so the overdue task is visible — scrolling a card
-    // that’s already on screen felt like a no-op.
-    expandProjectToList(worstOverdue.projectId);
-  };
-
   const dismissCardReorderTip = () => {
     localStorage.setItem("foci-card-reorder-tip-dismissed", "1");
     setShowCardReorderTip(false);
@@ -2512,10 +2483,8 @@ export default function TaskList({
                     className="no-print ml-0.5 shrink-0"
                     overdueCount={overdueTasks.length}
                     dueTodayCount={dueExactlyTodayCount}
-                    worstOverdue={worstOverdue}
                     onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
                     onViewToday={() => selectProject(TODAY_FILTER_ID)}
-                    onJumpToWorst={jumpToWorstOverdue}
                   />
                 )}
                 {!focusMode && !projectManageOpen && !drillInProject && (
@@ -2745,11 +2714,14 @@ export default function TaskList({
           projectCounts={cardProjectCounts}
           showProjectJump={viewMode === "bucket"}
           onClearTimeFilter={() => selectProject(ALL_PROJECTS_ID)}
+          cardQuery={cardQuery}
+          onCardQueryChange={setCardQuery}
+          showCardSearch={viewMode === "card"}
         />
         )}
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
-          <p className="no-print roomy:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
+          <p className="no-print roomy:hidden land-compact:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
             <span className="flex-1 truncate">Drag tasks to reorder · ▲▼ moves projects</span>
             <button
               type="button"
@@ -3143,8 +3115,6 @@ export default function TaskList({
             )}
           </select>
 
-          {/* Projects admin */}
-          <AddProjectButton onClick={openProjectManage} size="sm" className="roomy:hidden" />
           <ListToolbarProjectMenu
             project={listToolbarMenuProject}
             user={user}

@@ -1105,7 +1105,8 @@ export default function TaskCardView({
 
   return (
     <div className="pb-4 pt-1">
-      <div className="panel-pad-x mb-2 roomy:hidden">
+      {/* Portrait phone only — landscape inlines search in MobileTaskToolbar */}
+      <div className="panel-pad-x mb-2 roomy:hidden land-compact:hidden">
         <label className="relative block w-full">
           <span className="sr-only">Search projects and tasks</span>
           <svg
@@ -1169,7 +1170,8 @@ export default function TaskCardView({
       </div>
       )}
 
-      <div className="panel-pad-x columns-1 min-[480px]:columns-2 sm:columns-3 lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3">
+      {/* 3–4 cols only when roomy; phone landscape stays at 2 so titles aren’t crushed */}
+      <div className="panel-pad-x columns-1 min-[480px]:columns-2 roomy:columns-3 roomy:lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (

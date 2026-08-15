@@ -46,12 +46,13 @@ export function DoneTodayTally({
   const pulseRing = pulse ? "ring-2 ring-emerald-400/60 scale-[1.03]" : "";
 
   if (compact) {
+    if (count <= 0 && !pulse) return null;
     return (
       <button
         type="button"
         onClick={onClick}
         className={`${STATUS_PILL_COMPACT} border ${tone} ${pulseRing} ${className}`}
-        title="Done today · this week · this month — tap to show completed tasks"
+        title={`${todayLabel} · ${weekCount} this week · ${monthCount} this month — tap to show completed`}
         aria-label={ariaLabel}
         data-done-today-tally
       >
@@ -64,13 +65,7 @@ export function DoneTodayTally({
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
         </svg>
-        <span className={todayNumClass}>
-          {count} today
-        </span>
-        <span className={`font-medium ${mutedSepClass} hidden roomy:inline`}>
-          · <span className={periodNumClass}>{weekCount}</span>w ·{" "}
-          <span className={periodNumClass}>{monthCount}</span>mo
-        </span>
+        <span className={`tabular-nums font-bold ${todayNumClass}`}>{count}</span>
       </button>
     );
   }

@@ -39,12 +39,12 @@ export default function DailyQuoteBanner({
     return (
       <div
         id="focus-dock"
-      className="no-print flex items-center justify-between roomy:justify-center gap-2 roomy:gap-3 min-w-0 w-full max-w-full relative"
+      className="no-print flex items-center justify-between roomy:justify-center land-compact:justify-center gap-2 roomy:gap-3 land-compact:gap-2.5 min-w-0 w-full max-w-full relative"
         role="status"
         aria-label="Focus timer and music"
       >
         {hasMusic && (
-          <div className="min-w-0 flex-1 roomy:flex-initial roomy:shrink flex items-center gap-1.5 overflow-hidden">
+          <div className="min-w-0 flex-1 roomy:flex-initial roomy:shrink land-compact:flex-1 land-compact:min-w-0 flex items-center gap-1.5 overflow-hidden">
             <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0 hidden xl:inline">
               Music
             </span>
@@ -53,11 +53,11 @@ export default function DailyQuoteBanner({
         )}
         {hasMusic && (
           <div
-            className="w-px self-stretch min-h-[1.75rem] roomy:min-h-0 roomy:h-5 bg-slate-200 dark:bg-[#2a3f5f] shrink-0"
+            className="w-px self-stretch min-h-[1.75rem] roomy:min-h-0 roomy:h-5 land-compact:min-h-0 land-compact:h-5 bg-slate-200 dark:bg-[#2a3f5f] shrink-0"
             aria-hidden
           />
         )}
-        <div className="relative flex items-center gap-1.5 min-w-0 flex-1 roomy:flex-initial roomy:shrink-0 justify-end roomy:justify-start overflow-hidden">
+        <div className="relative flex items-center gap-1.5 min-w-0 flex-1 roomy:flex-initial roomy:shrink-0 land-compact:flex-initial land-compact:shrink-0 justify-end roomy:justify-start land-compact:justify-start overflow-hidden">
           <span className="app-section-label text-slate-500 dark:text-slate-400 leading-none shrink-0 hidden xl:inline">
             Timer
           </span>

@@ -38,7 +38,12 @@ export function TaskUrgencySummary({
   className = "",
   compact = false,
 }: TaskUrgencySummaryProps) {
-  if (overdueCount === 0 && dueTodayCount === 0) return null;
+  // Compact title row: only “N late”. Due-today / −Nd live elsewhere (When filter, cards).
+  if (compact) {
+    if (overdueCount === 0) return null;
+  } else if (overdueCount === 0 && dueTodayCount === 0) {
+    return null;
+  }
 
   const aria =
     overdueCount > 0 && dueTodayCount > 0
@@ -64,7 +69,7 @@ export function TaskUrgencySummary({
     <div
       className={`urgency-summary-bar inline-flex items-center gap-1.5 max-w-full min-w-0 overflow-x-auto overflow-y-hidden scrollbar-hide ${className}`}
       role="status"
-      aria-label={aria}
+      aria-label={compact ? `${overdueCount} overdue` : aria}
     >
       {overdueCount > 0 && (
         <button
@@ -82,49 +87,34 @@ export function TaskUrgencySummary({
           <span className="leading-none">{compact ? "late" : "overdue"}</span>
         </button>
       )}
-      {dueTodayCount > 0 && (
+      {!compact && dueTodayCount > 0 && (
         <button
           type="button"
           onClick={onViewToday}
-          className={`${pad} border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 ${compact ? "" : "shadow-sm"}`}
+          className={`${pad} border border-orange-200/80 dark:border-orange-800/50 bg-white dark:bg-[#131d30] text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 shadow-sm`}
           title={`${dueTodayCount} due today`}
         >
-          {!compact && (
-            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none shrink-0">
-              {dueTodayCount}
-            </span>
-          )}
-          <span className="leading-none whitespace-nowrap">
-            {compact ? `${dueTodayCount} today` : "due today"}
+          <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none shrink-0">
+            {dueTodayCount}
           </span>
+          <span className="leading-none whitespace-nowrap">due today</span>
         </button>
       )}
-      {worstOverdue && worstOverdue.daysLate >= 1 && (
+      {!compact && worstOverdue && worstOverdue.daysLate >= 1 && (
         <button
           type="button"
           onClick={handleWorst}
-          className={
-            compact
-              ? `${STATUS_PILL_COMPACT} urgency-chip--mid cursor-pointer shadow-none`
-              : `urgency-pill ${pad} cursor-pointer max-w-[14rem]`
-          }
+          className={`urgency-pill ${pad} cursor-pointer max-w-[14rem]`}
           title={worstTitle}
           aria-label={worstTitle}
         >
-          {compact ? (
-            // Compact title row: days-late only — project name was truncating the pill to a sliver
-            <span className="leading-none tabular-nums font-bold">{formatOverdueChip(worstOverdue.daysLate)}</span>
-          ) : (
-            <>
-              <span className="inline-flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none whitespace-nowrap shrink-0 urgency-chip--mid">
-                {formatOverdueChip(worstOverdue.daysLate)}
-              </span>
-              <span className="leading-none truncate min-w-0">
-                {worstOverdue.projectName}
-                <span className="font-medium opacity-90"> — jump</span>
-              </span>
-            </>
-          )}
+          <span className="inline-flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none whitespace-nowrap shrink-0 urgency-chip--mid">
+            {formatOverdueChip(worstOverdue.daysLate)}
+          </span>
+          <span className="leading-none truncate min-w-0">
+            {worstOverdue.projectName}
+            <span className="font-medium opacity-90"> — jump</span>
+          </span>
         </button>
       )}
     </div>

@@ -115,7 +115,7 @@ export function OneThingCard({
       : "Add a task, then set it as your One Thing";
 
     return (
-      <div ref={rootRef} data-tour="one-thing" className="relative min-w-0">
+      <div ref={rootRef} data-tour="one-thing" className="relative min-w-0 land-compact:hidden">
         <div
           className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55`}
         >

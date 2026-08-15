@@ -43,6 +43,10 @@ interface MobileTaskToolbarProps {
   showProjectJump?: boolean;
   /** Clears active Today/Week/Month/Year scope. */
   onClearTimeFilter?: () => void;
+  /** Landscape: search shares the filter row to save vertical space. */
+  cardQuery?: string;
+  onCardQueryChange?: (value: string) => void;
+  showCardSearch?: boolean;
 }
 
 const VIEW_OPTIONS: { mode: TaskViewMode; label: string }[] = [
@@ -71,6 +75,7 @@ function scopeLabel(id: TimeScopeId): string {
 /**
  * Mobile toolbar: Layout is primary; When is a quieter secondary filter.
  * Done tally lives in the Tasks title row.
+ * On land-compact, search joins this row so cards get more vertical room.
  */
 export function MobileTaskToolbar({
   selectedScope,
@@ -85,9 +90,13 @@ export function MobileTaskToolbar({
   projectCounts,
   showProjectJump = false,
   onClearTimeFilter,
+  cardQuery = "",
+  onCardQueryChange,
+  showCardSearch = false,
 }: MobileTaskToolbarProps) {
   const showJump = showProjectJump && projects.length > 1 && !!onProjectJump;
   const timeFilterActive = selectedScope !== ALL_PROJECTS_ID;
+  const landscapeSearch = showCardSearch && !!onCardQueryChange;
 
   return (
     <div className="no-print roomy:hidden mt-1.5 space-y-1.5" data-tour="time-filters">
@@ -99,7 +108,7 @@ export function MobileTaskToolbar({
           id="mobile-view-mode"
           value={viewMode}
           onChange={(e) => onSelectViewMode(e.target.value as TaskViewMode)}
-          className={`${SELECT_PRIMARY} flex-[1.15] min-w-[5.5rem]`}
+          className={`${SELECT_PRIMARY} flex-[1.15] min-w-[5.5rem] land-compact:flex-none land-compact:max-w-[7rem]`}
           aria-label="Task layout"
           data-tour="view-modes"
         >
@@ -117,7 +126,7 @@ export function MobileTaskToolbar({
           id="mobile-time-scope"
           value={selectedScope}
           onChange={(e) => onSelectScope(e.target.value)}
-          className={`${SELECT_SECONDARY} flex-1 min-w-[4.75rem]`}
+          className={`${SELECT_SECONDARY} flex-1 min-w-[4.75rem] land-compact:flex-none land-compact:max-w-[7.5rem]`}
           aria-label="Filter tasks by due date"
         >
           <option value={ALL_PROJECTS_ID}>{scopeLabel(ALL_PROJECTS_ID)}</option>
@@ -149,7 +158,7 @@ export function MobileTaskToolbar({
               id="mobile-project-jump"
               value={projectJumpId}
               onChange={(e) => onProjectJump?.(e.target.value)}
-              className={`${SELECT_SECONDARY} flex-[1.1] min-w-[5rem]`}
+              className={`${SELECT_SECONDARY} flex-[1.1] min-w-[5rem] land-compact:max-w-[8rem]`}
               aria-label="Jump to project"
             >
               <option value="">Project…</option>
@@ -163,6 +172,30 @@ export function MobileTaskToolbar({
               })}
             </select>
           </>
+        )}
+
+        {landscapeSearch && (
+          <label className="relative hidden land-compact:block flex-1 min-w-[7rem]">
+            <span className="sr-only">Search projects and tasks</span>
+            <svg
+              className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+            </svg>
+            <input
+              type="search"
+              value={cardQuery}
+              onChange={(e) => onCardQueryChange?.(e.target.value)}
+              placeholder="Filter…"
+              className="w-full pl-7 pr-2 py-1.5 min-h-[2.25rem] text-xs rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 outline-none focus:border-blue-500"
+              aria-label="Filter projects or tasks"
+              data-tour="card-filter"
+            />
+          </label>
         )}
 
         <button

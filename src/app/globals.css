@@ -1,8 +1,16 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
-/* Desktop chrome only when there's room in BOTH axes — phone landscape stays compact. */
-@custom-variant roomy (@media (min-width: 768px) and (min-height: 500px));
+/*
+ * Chrome breakpoints (two axes):
+ * - roomy: wide enough + tall enough for desktop chrome (≥640×≥500).
+ *   Closes the old mid-tall gap (640–767×tall) that used hamburger + stacked strip.
+ * - land-compact: short viewport with enough width to pack chrome on one row (≥480×≤500).
+ *   Closes narrow phone-landscape that previously stacked the focus strip.
+ * At exactly h=500 both can match; stacked strip uses roomy:hidden land-compact:hidden.
+ */
+@custom-variant roomy (@media (min-width: 640px) and (min-height: 500px));
+@custom-variant land-compact (@media (min-width: 480px) and (max-height: 500px));
 
 /* ===== Custom Properties ===== */
 :root {

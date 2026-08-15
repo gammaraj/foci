@@ -510,7 +510,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         title="Change music source"
       >
         {activeModeTab.icon}
-        <span className="hidden sm:inline truncate max-w-[4.5rem] lg:max-w-[6.5rem]">{activeModeTab.label}</span>
+        <span className="hidden sm:inline truncate max-w-[4.5rem] land-compact:max-w-[5.5rem] lg:max-w-[6.5rem]">{activeModeTab.label}</span>
         <svg
           className={`w-3 h-3 shrink-0 text-slate-400 transition-transform ${modeMenuOpen ? "rotate-180" : ""}`}
           fill="none"
@@ -582,7 +582,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className="min-w-0 flex-1 sm:flex-initial sm:max-w-[6.5rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-1.5 sm:py-0"
+            className="min-w-0 flex-1 sm:flex-initial sm:max-w-[6.5rem] land-compact:flex-1 land-compact:max-w-[11rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-1.5 sm:py-0"
             title={nowPlayingLabel}
             aria-expanded={!collapsed}
             aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}

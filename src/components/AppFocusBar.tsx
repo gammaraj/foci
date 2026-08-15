@@ -39,6 +39,12 @@ export function FocusBarActions({ children }: { children: React.ReactNode }) {
 /**
  * Shared header under the navbar: [page title] · Music/Timer · [page actions].
  * Title/actions are filled by pages via FocusBarTitle / FocusBarActions portals.
+ *
+ * Layout modes:
+ * - title | focus | actions whenever width ≥480 (portrait mid / landscape / desktop)
+ * - stacked focus strip only on narrow phones (<480)
+ * - roomy (≥640×≥500): desktop navbar + When/Layout chrome
+ * - land-compact (≥480×≤500): denser filters, inline search, hide empty One Thing
  */
 export default function AppFocusBar() {
   const {
@@ -130,18 +136,20 @@ export default function AppFocusBar() {
 
   return (
     <div className="no-print border-b border-slate-200/80 dark:border-[#243350]/80 bg-white/80 dark:bg-[#0c1424]/90 backdrop-blur-sm">
-      <div className="app-container py-2">
-        <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2 panel-header-calm rounded-xl px-2.5 sm:px-3 py-1.5">
+      <div className="app-container py-1.5 land-compact:py-1 roomy:py-2">
+        <div className="flex items-center justify-between min-w-0 gap-1.5 sm:gap-2 panel-header-calm rounded-xl px-2.5 sm:px-3 py-1 land-compact:py-1 roomy:py-1.5">
           <div id={TITLE_HOST_ID} className="min-w-0 shrink overflow-x-auto scrollbar-hide" />
 
-          <div className="no-print hidden roomy:flex flex-1 min-w-0 justify-center overflow-hidden px-1">
+          {/* Enough width to share the title row (any orientation) */}
+          <div className="no-print hidden min-[480px]:flex flex-1 min-w-0 justify-center overflow-hidden px-1">
             {focusStrip}
           </div>
 
           <div id={ACTIONS_HOST_ID} className="no-print flex items-center gap-0.5 flex-shrink-0 justify-end" />
         </div>
 
-        <div className="no-print roomy:hidden mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-[#243350]/80">
+        {/* Narrow phones only — focus strip under title */}
+        <div className="no-print min-[480px]:hidden mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-[#243350]/80">
           {focusStrip}
         </div>
       </div>
