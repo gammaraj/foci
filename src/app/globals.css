@@ -13,20 +13,20 @@
   --secondary-color: var(--success-green);
   /* Light mode — airy cool wash; white plates + soft elevation */
   --page-bg: #e8eef6;
-  --surface-border: #b7c6db;
+  --surface-border: #d5dee9;
   --surface-bg: #ffffff;
   --panel-header-bg: #ffffff;
   --seg-track-bg: #e2eaf5;
   --surface-muted: #f4f7fb;
   --project-surface-bg: #ffffff;
-  --project-surface-border: #c5d2e4;
+  --project-surface-border: #e1e7f0;
   --project-surface-shadow:
     0 1px 2px rgba(15, 23, 42, 0.04),
     0 4px 12px -2px rgba(15, 23, 42, 0.07),
     0 14px 32px -12px rgba(15, 23, 42, 0.12);
-  --task-row-border: #d0dceb;
+  --task-row-border: #e2e8f0;
   --task-row-bg: #f8fafc;
-  --control-border: #b6c5da;
+  --control-border: #c5d0e0;
   --control-border-focus: #3b82f6;
   --radius-card: 0.875rem;
   /* Cool berry urgency — pink-leaning so it sits with brand blue (not warm fire-engine red) */
@@ -443,7 +443,7 @@ select {
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 :root:not(.dark) .project-surface:hover {
-  border-color: #aebfd6;
+  border-color: #d0dae8;
   box-shadow:
     0 1px 2px rgba(15, 23, 42, 0.04),
     0 6px 16px -2px rgba(15, 23, 42, 0.08),
