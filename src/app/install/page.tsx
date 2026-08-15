@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import AppNavbar from "@/components/AppNavbar";
 import GuideLinkHub from "@/components/GuideLinkHub";
+import InstallPageActions from "@/components/InstallPageActions";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { SITE_URL, PRODUCT_DATE_MODIFIED } from "@/lib/product-facts";
 import { FOCI_APP_INSTALL_URL } from "@/lib/pwa-install";
@@ -11,7 +12,7 @@ const siteUrl = SITE_URL;
 const path = "/install";
 const title = "Add Foci to Home Screen — iPhone & Android";
 const description =
-  "Install Foci as an app on your phone. Step-by-step: Safari Add to Home Screen on iPhone, and Chrome Install / Add to Home screen on Android. Opens full-screen and works offline.";
+  "Install Foci as an app on your phone. Android often gets one-tap Install; iPhone uses Safari Share → Add to Home Screen (Apple does not allow a one-tap web install).";
 
 export const metadata: Metadata = {
   title: absolutePageTitle(title),
@@ -65,7 +66,7 @@ const howToJsonLd = {
     {
       "@type": "HowToStep",
       name: "Android — Install or Add to Home screen",
-      text: "In Chrome, open the menu and choose Install app or Add to Home screen.",
+      text: "In Chrome, tap Install when available, or use the menu → Install app / Add to Home screen.",
       url: `${siteUrl}${path}#android`,
     },
   ],
@@ -114,31 +115,89 @@ export default function InstallPage() {
             Add Foci to your Home Screen
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-            Install Foci like an app on iPhone or Android. One tap from your home screen — full
-            screen, faster open, and offline tasks when you need them.
+            Install Foci like an app. After that, one tap from your home screen — full screen, faster
+            open, and offline tasks when you need them.
           </p>
 
-          <p id="open" className="mt-8 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            First open{" "}
-            <a
-              href={FOCI_APP_INSTALL_URL}
-              className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              usefoci.com/app
-            </a>{" "}
-            on your phone in{" "}
-            <strong className="font-semibold text-slate-800 dark:text-slate-200">Safari</strong>{" "}
-            (iPhone) or{" "}
-            <strong className="font-semibold text-slate-800 dark:text-slate-200">Chrome</strong>{" "}
-            (Android).
-          </p>
+          <div id="open">
+            <InstallPageActions />
+          </div>
+
+          <section
+            id="easier"
+            className="mt-14 scroll-mt-24 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed"
+          >
+            <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">
+              Why so many steps on iPhone?
+            </h2>
+            <p>
+              Apple does not let websites show a one-tap{" "}
+              <strong className="font-semibold text-slate-800 dark:text-slate-200">Install</strong>{" "}
+              button (Android Chrome does). On iPhone, every site — including Foci — must go through
+              Safari’s Share menu. There is no official shortcut around that.
+            </p>
+            <p className="font-semibold text-slate-800 dark:text-slate-200">
+              Easier options that do help:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  Android / Chrome:
+                </strong>{" "}
+                use the one-tap{" "}
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">Install</strong>{" "}
+                button above when it appears, or the in-app prompt after a focus session.
+              </li>
+              <li>
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  Already on a computer:
+                </strong>{" "}
+                scan the QR (or text yourself{" "}
+                <a
+                  href={FOCI_APP_INSTALL_URL}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  usefoci.com/app
+                </a>
+                ), open it in Safari on the phone, then do the three taps once.
+              </li>
+              <li>
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  Stuck in Chrome / Instagram / Gmail on iPhone:
+                </strong>{" "}
+                those browsers can’t install a real home-screen app. Tap Share →{" "}
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  Open in Safari
+                </strong>
+                , then follow the iPhone steps.
+              </li>
+              <li>
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  Lighter option:
+                </strong>{" "}
+                Safari Share →{" "}
+                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  Add Bookmark
+                </strong>{" "}
+                is fewer taps, but it stays inside Safari (no full-screen app icon). Home Screen is
+                better if you use Foci daily.
+              </li>
+            </ul>
+          </section>
 
           <section id="iphone" className="mt-14 scroll-mt-24">
             <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">
-              iPhone (Safari)
+              iPhone (Safari) — three taps, once
             </h2>
             <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
-              Chrome on iPhone cannot add a proper home-screen app — use Safari.
+              Open{" "}
+              <a
+                href={FOCI_APP_INSTALL_URL}
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                usefoci.com/app
+              </a>{" "}
+              in Safari, then:
             </p>
             <StepList
               steps={[
@@ -159,7 +218,7 @@ export default function InstallPage() {
                           <path d="M12 3l4 4h-3v8h-2V7H8l4-4zm-7 14h14v2H5v-2z" />
                         </svg>
                       </span>
-                      at the bottom of Safari (or top on iPad).
+                      at the bottom of Safari (top on iPad).
                     </>
                   ),
                 },
@@ -167,7 +226,7 @@ export default function InstallPage() {
                   title: "Add to Home Screen",
                   body: (
                     <>
-                      Scroll the sheet and tap{" "}
+                      Scroll and tap{" "}
                       <strong className="font-semibold text-slate-800 dark:text-slate-200">
                         Add to Home Screen
                       </strong>
@@ -176,14 +235,14 @@ export default function InstallPage() {
                   ),
                 },
                 {
-                  title: "Confirm Add",
+                  title: "Tap Add",
                   body: (
                     <>
-                      Optionally rename the icon, then tap{" "}
+                      Tap{" "}
                       <strong className="font-semibold text-slate-800 dark:text-slate-200">
                         Add
                       </strong>
-                      . Foci appears on your home screen like a native app.
+                      . Done — open Foci from the new icon after that.
                     </>
                   ),
                 },
@@ -193,11 +252,12 @@ export default function InstallPage() {
 
           <section id="android" className="mt-14 scroll-mt-24">
             <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">
-              Android (Chrome)
+              Android (Chrome) — often one tap
             </h2>
             <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
-              Works in Chrome and most Chromium browsers (Edge, Samsung Internet may say Install
-              site or Add page to).
+              If Chrome shows{" "}
+              <strong className="font-semibold text-slate-800 dark:text-slate-200">Install</strong>{" "}
+              (button above, banner, or in-app prompt), use that. Otherwise:
             </p>
             <StepList
               steps={[
@@ -205,11 +265,9 @@ export default function InstallPage() {
                   title: "Open the browser menu",
                   body: (
                     <>
-                      Tap the{" "}
-                      <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                        ⋮
-                      </strong>{" "}
-                      menu (top right in Chrome).
+                      Tap{" "}
+                      <strong className="font-semibold text-slate-800 dark:text-slate-200">⋮</strong>{" "}
+                      (top right in Chrome).
                     </>
                   ),
                 },
@@ -225,23 +283,7 @@ export default function InstallPage() {
                       <strong className="font-semibold text-slate-800 dark:text-slate-200">
                         Add to Home screen
                       </strong>
-                      . If you see an install banner, you can use that instead.
-                    </>
-                  ),
-                },
-                {
-                  title: "Confirm",
-                  body: (
-                    <>
-                      Tap{" "}
-                      <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                        Install
-                      </strong>{" "}
-                      or{" "}
-                      <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                        Add
-                      </strong>
-                      . Open Foci from your app drawer or home screen.
+                      , then confirm.
                     </>
                   ),
                 },
@@ -250,23 +292,11 @@ export default function InstallPage() {
           </section>
 
           <section className="mt-14 space-y-3 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Tips</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">After install</h2>
             <ul className="list-disc pl-5 space-y-2">
+              <li>Open Foci from the home-screen icon (not a browser tab) for the full-screen app.</li>
               <li>
-                After installing, open Foci from the home-screen icon (not the browser tab) for the
-                full-screen app experience.
-              </li>
-              <li>
-                Optional free account syncs tasks across devices; guest mode keeps data in the
-                browser on that phone.
-              </li>
-              <li>
-                On a computer, open Foci on your phone first, then follow the steps above — or scan
-                the QR from the in-app{" "}
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  Add to Home Screen
-                </strong>{" "}
-                prompt.
+                Optional free account syncs tasks across devices; guest mode keeps data on that phone.
               </li>
             </ul>
           </section>
