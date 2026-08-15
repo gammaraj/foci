@@ -36,6 +36,39 @@
   --urgency-border: color-mix(in srgb, #b0175c 28%, #e2e8f0);
 }
 
+/* ===== Boot splash (slow mobile / PWA open) ===== */
+.foci-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: #d8e0ed;
+  color: #334155;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: opacity 0.18s ease;
+}
+html.dark .foci-boot {
+  background: #070b16;
+  color: #e2e8f0;
+}
+.foci-boot--hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.foci-boot-mark {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.foci-boot-msg {
+  font-size: 0.95rem;
+  opacity: 0.72;
+}
+
 /* ===== Base Styles ===== */
 html {
   overflow-x: clip;
