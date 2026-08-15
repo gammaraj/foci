@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 import PageViewAnalytics from "@/components/PageViewAnalytics";
 import { AuthProvider } from "@/components/AuthProvider";
+import BootSplashDismiss from "@/components/BootSplashDismiss";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -146,6 +147,16 @@ export default async function RootLayout({
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
       </head>
       <body className={`${fontSans.className} min-h-screen bg-slate-50 dark:bg-[#070b16] antialiased`}>
+        {/* Visible before JS hydrates — avoids a blank black/white void on slow mobile data. */}
+        <div id="foci-boot" role="status" aria-live="polite" aria-label="Loading Foci">
+          <div className="foci-boot-mark">Foci</div>
+          <div className="foci-boot-msg">Loading…</div>
+        </div>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `#foci-boot{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;background:#d8e0ed;color:#334155;font-family:system-ui,-apple-system,sans-serif;transition:opacity .18s ease}html.dark #foci-boot{background:#070b16;color:#e2e8f0}.foci-boot-mark{font-size:1.75rem;font-weight:700;letter-spacing:-0.02em}.foci-boot-msg{font-size:0.95rem;opacity:0.72}`,
+          }}
+        />
         {SAFE_GA_ID && (
           <>
             <Script
@@ -174,7 +185,10 @@ export default async function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <ErrorBoundary>
-              <AuthProvider>{children}</AuthProvider>
+              <AuthProvider>
+                <BootSplashDismiss />
+                {children}
+              </AuthProvider>
             </ErrorBoundary>
           </ToastProvider>
         </ThemeProvider>

@@ -42,8 +42,9 @@ function WorkspaceChromeInner({
 
   if (loading && !hasSnapshot) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
         <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading…</p>
       </div>
     );
   }
@@ -115,8 +116,9 @@ export default function WorkspaceChrome({
     <FocusSessionProvider>
       <Suspense
         fallback={
-          <div className="flex items-center justify-center min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
+          <div className="flex flex-col items-center justify-center gap-3 min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
             <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading…</p>
           </div>
         }
       >
