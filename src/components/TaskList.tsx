@@ -2439,7 +2439,7 @@ export default function TaskList({
                   Back to {drillReturnLabel}
                 </button>
               )}
-              <h2 className="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white">
+              <h2 className="text-sm sm:text-base font-bold tracking-tight flex items-center gap-1 min-w-0 text-slate-800 dark:text-white leading-none">
                 {drillInProject ? (
                   <>
                     <span
@@ -2463,7 +2463,7 @@ export default function TaskList({
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     <span className="shrink-0">
@@ -2510,7 +2510,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={handlePrint}
-              className="hidden roomy:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
+              className="hidden roomy:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-xs font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
               title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
               aria-label="Print current view"
               data-tour="print-tasks"

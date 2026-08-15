@@ -25,7 +25,7 @@ interface TaskUrgencySummaryProps {
 
 /** Shared sizing so late / today / worst / done-today tablets align. */
 export const STATUS_PILL_COMPACT =
-  "inline-flex items-center justify-center gap-1 h-7 min-h-[1.75rem] px-2 rounded-md text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 transition-colors";
+  "inline-flex items-center justify-center gap-0.5 h-6 min-h-[1.5rem] px-1.5 rounded-md text-[11px] font-semibold tabular-nums whitespace-nowrap shrink-0 transition-colors leading-none";
 
 /** Urgency summary bar — horizontal scroll when chips overflow. */
 export function TaskUrgencySummary({

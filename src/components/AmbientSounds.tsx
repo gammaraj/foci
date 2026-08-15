@@ -503,7 +503,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       <button
         type="button"
         onClick={() => setModeMenuOpen((o) => !o)}
-        className="inline-flex items-center gap-1 px-1.5 py-1 text-xs font-medium rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/10 transition-colors whitespace-nowrap leading-none"
+        className="inline-flex items-center gap-1 px-1 py-0.5 text-xs font-medium rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/10 transition-colors whitespace-nowrap leading-none"
         aria-haspopup="listbox"
         aria-expanded={modeMenuOpen}
         aria-label={`Music source: ${activeModeLabel}. Change source`}
@@ -582,7 +582,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className="min-w-0 flex-1 sm:flex-initial sm:max-w-[6.5rem] land-compact:flex-1 land-compact:max-w-[11rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-1.5 sm:py-0"
+            className="min-w-0 flex-1 sm:flex-initial sm:max-w-[6.5rem] land-compact:flex-1 land-compact:max-w-[11rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors leading-none py-0"
             title={nowPlayingLabel}
             aria-expanded={!collapsed}
             aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}
@@ -608,7 +608,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             }
             title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
           >
-            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="lg" />
+            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="md" />
           </button>
 
           {/* Expanded music — popover so the Tasks header stays one row */}

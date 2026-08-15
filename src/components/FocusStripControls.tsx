@@ -18,9 +18,9 @@ export function MiniPlayPauseIcon({ playing, size = "md" }: { playing: boolean; 
   );
 }
 
-/** Shared dock control size — flat toolbar chrome (matches Layout tabs). */
+/** Shared dock control size — compact so the Tasks focus bar stays short. */
 const DOCK_BTN =
-  "w-8 h-8 rounded-md flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50";
+  "w-7 h-7 rounded-md flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50";
 
 export function miniPlayButtonClass(playing: boolean, dock = false, emphasizeStart = false) {
   if (dock) {

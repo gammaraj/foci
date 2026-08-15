@@ -179,7 +179,7 @@ export function FocusDockToolbar({
     <button
       type="button"
       onClick={onToggleExpanded}
-      className={`flex items-center gap-1.5 shrink-0 text-left rounded-lg px-1 -mx-1 transition-colors hover:bg-slate-100/80 dark:hover:bg-white/5 ${embedded ? "" : "flex-1 sm:flex-initial min-w-0"}`}
+      className={`flex items-center gap-1.5 shrink-0 text-left rounded-md px-0.5 transition-colors hover:bg-slate-100/80 dark:hover:bg-white/5 ${embedded ? "" : "flex-1 sm:flex-initial min-w-0"}`}
       aria-expanded={expanded}
       aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
       title={
@@ -192,7 +192,7 @@ export function FocusDockToolbar({
     >
       {embedded && workDurationMs ? (
         /* Mini progress arc replaces "Timer/Break" label when in strip */
-        <span className="relative shrink-0 w-[1.125rem] h-[1.125rem]" aria-hidden>
+        <span className="relative shrink-0 w-4 h-4" aria-hidden>
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 20 20" style={{ transform: "rotate(-90deg)" }}>
             <circle cx="10" cy="10" r={arcR} fill="none" strokeWidth="2.5" className="stroke-slate-200 dark:stroke-slate-600" />
             <circle
@@ -218,7 +218,7 @@ export function FocusDockToolbar({
         </span>
       )}
       <span
-        className={`${embedded ? "text-sm sm:text-base" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
+        className={`${embedded ? "text-sm" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
           isBreak
             ? "text-green-700 dark:text-green-300"
             : isRunning
@@ -301,10 +301,10 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`group flex items-center gap-1 sm:gap-1.5 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
+        className={`group flex items-center gap-1 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
       >
         {timerLabelButton}
-        <div className="flex items-center gap-0.5 shrink-0">
+        <div className="flex items-center gap-0 shrink-0">
           {timerControls}
           <span className="hidden sm:contents">{expandChevron}</span>
         </div>
