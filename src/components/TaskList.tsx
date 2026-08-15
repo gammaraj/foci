@@ -122,12 +122,15 @@ export default function TaskList({
   focusMode,
   onOpenSettings,
 }: TaskListProps) {
-  // Instant paint from last local snapshot — avoids empty→skeleton on slow mobile data.
-  const [bootSnapshot] = useState(() => readLocalWorkspaceSnapshot());
-  const [tasks, setTasks] = useState<Task[]>(() => bootSnapshot?.tasks ?? []);
+  // Hydration-safe: never read localStorage in useState initializers (SSR ≠ client).
+  // Snapshot paints in useLayoutEffect before the browser paints.
+  const [bootSnapshot, setBootSnapshot] = useState<ReturnType<
+    typeof readLocalWorkspaceSnapshot
+  >(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
-  const [tasksReady, setTasksReady] = useState(() => bootSnapshot != null);
+  const [tasksReady, setTasksReady] = useState(false);
   const [syncingFromServer, setSyncingFromServer] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
@@ -136,7 +139,7 @@ export default function TaskList({
   const [editTitle, setEditTitle] = useState("");
 
   // Project state
-  const [projects, setProjects] = useState<Project[]>(() => bootSnapshot?.projects ?? [DEFAULT_PROJECT]);
+  const [projects, setProjects] = useState<Project[]>([DEFAULT_PROJECT]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>(ALL_PROJECTS_ID);
   /** When viewing Today/Week/Month/Year, filters tasks within that scope (All projects or one project). */
   const [projectFilterId, setProjectFilterId] = useState<string>(ALL_PROJECTS_ID);
@@ -170,14 +173,22 @@ export default function TaskList({
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [dragProjectId, setDragProjectId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<TaskViewMode>(() =>
-    bootSnapshot ? resolveInitialTaskView(bootSnapshot.taskViewPrefs) : "card",
-  );
+  const [viewMode, setViewMode] = useState<TaskViewMode>("card");
   const [preparingPrint, setPreparingPrint] = useState(false);
-  const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(
-    () => bootSnapshot?.oneThing ?? null,
-  );
+  const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(null);
   const [oneThingPromptDismissed, setOneThingPromptDismissed] = useState(false);
+
+  // Instant paint from last local snapshot — after hydrate, before browser paint.
+  useLayoutEffect(() => {
+    const snap = readLocalWorkspaceSnapshot();
+    if (!snap) return;
+    setBootSnapshot(snap);
+    setTasks(snap.tasks);
+    setProjects(snap.projects);
+    setViewMode(resolveInitialTaskView(snap.taskViewPrefs));
+    setOneThingPref(snap.oneThing);
+    setTasksReady(true);
+  }, []);
 
   useEffect(() => {
     const onDefaultViewChanged = (e: Event) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState, type ReactNode } from "react";
+import React, { Suspense, useLayoutEffect, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import AppNavbar from "@/components/AppNavbar";
 import AppFocusBar from "@/components/AppFocusBar";
@@ -25,9 +25,11 @@ function WorkspaceChromeInner({
   onTasksImported?: (result?: ImportResult) => void;
 }) {
   const { user, loading } = useAuth();
-  // Returning users: paint chrome from local snapshot instead of a blank spinner
-  // while auth/session resolves on slow networks.
-  const [hasSnapshot] = useState(() => hasLocalWorkspaceSnapshot());
+  // Must start false on server + first client paint (no localStorage in useState).
+  const [hasSnapshot, setHasSnapshot] = useState(false);
+  useLayoutEffect(() => {
+    setHasSnapshot(hasLocalWorkspaceSnapshot());
+  }, []);
   const {
     focusMode,
     setFocusMode,

@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -69,14 +70,11 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
   const timer = useTimer({ authLoading: loading, user });
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const activeTaskIdRef = useRef<string | null>(null);
-  const [timerCollapsed, setTimerCollapsed] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("foci-timer-dock-expanded");
-      if (saved === "1") return false;
-      return true;
-    }
-    return true;
-  });
+  const [timerCollapsed, setTimerCollapsed] = useState(true);
+  useLayoutEffect(() => {
+    const saved = localStorage.getItem("foci-timer-dock-expanded");
+    if (saved === "1") setTimerCollapsed(false);
+  }, []);
   const [focusMode, setFocusMode] = useState(false);
   const [timerAnnouncement, setTimerAnnouncement] = useState("");
   const [showShortcuts, setShowShortcuts] = useState(false);
