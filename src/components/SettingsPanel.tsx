@@ -14,7 +14,8 @@ import {
   DEFAULT_VIEW_CHANGED_EVENT,
   type DefaultTaskView,
 } from "@/lib/task-view-preference";
-import { isStandaloneDisplay, openPwaInstallGuide } from "@/lib/pwa-install";
+import Link from "next/link";
+import { isStandaloneDisplay } from "@/lib/pwa-install";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -564,19 +565,16 @@ export default function SettingsPanel({
                           Add to Home Screen
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          Install Foci for one-tap access and offline tasks. On iPhone, use Share → Add to Home Screen.
+                          Install Foci for one-tap access and offline tasks. Full iPhone &amp; Android steps on the install page.
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          openPwaInstallGuide();
-                          onClose();
-                        }}
-                        className="shrink-0 px-3 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                      <Link
+                        href="/install"
+                        onClick={onClose}
+                        className="shrink-0 px-3 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
                       >
                         Show how
-                      </button>
+                      </Link>
                     </section>
                   )}
                 </>
