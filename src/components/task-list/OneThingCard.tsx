@@ -25,8 +25,8 @@ export interface OneThingCardProps {
 
 /** Shared shell — one look on Cards, List, Buckets, Calendar. */
 const shellBase =
-  "no-print flex items-center gap-2 min-h-[2.5rem] sm:min-h-[2.25rem] min-w-0 rounded-lg border px-2.5 py-1";
-const stripShell = `${shellBase} panel-inset-x mt-1.5 mb-1`;
+  "no-print flex items-center gap-1.5 min-h-[2rem] min-w-0 rounded-md border px-2 py-0.5";
+const stripShell = `${shellBase} panel-inset-x mt-1 mb-0.5`;
 const inlineShell = `${shellBase} max-w-full`;
 
 function StarIcon({ className }: { className?: string }) {
@@ -129,11 +129,11 @@ export function OneThingCard({
             }`}
             title="How to set Today’s One Thing"
           >
-            <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
-              <StarIcon className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+              <StarIcon className="w-2.5 h-2.5" />
               One Thing
             </span>
-            <span className="min-w-0 truncate text-sm font-medium text-blue-950 dark:text-blue-50">
+            <span className="min-w-0 truncate text-xs sm:text-sm font-medium text-blue-950 dark:text-blue-50">
               {prompt}
             </span>
             <ChevronIcon

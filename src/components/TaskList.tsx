@@ -2556,7 +2556,7 @@ export default function TaskList({
 
       {/* Card toolbar — When / Layout (title is in App Focus Bar) */}
       {!focusMode && !projectManageOpen && (
-      <div className="no-print panel-pad-x py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-slate-200/90 dark:border-[#243350]/80">
+      <div className="no-print panel-pad-x py-1.5 roomy:py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-slate-200/90 dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
           <div className="no-print hidden roomy:flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-2 shrink-0 min-w-0" data-tour="time-filters">

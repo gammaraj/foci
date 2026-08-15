@@ -236,7 +236,7 @@ function ProjectDragPlaceholder({
         e.preventDefault();
         if (dragOverProjectId) onProjectDrop?.(dragOverProjectId);
       }}
-      className="rounded-lg border-2 border-dashed border-blue-400/60 dark:border-blue-500/50 bg-blue-50/30 dark:bg-blue-900/10 min-h-[8rem] break-inside-avoid mb-2.5 sm:mb-3.5 transition-[opacity,transform] duration-150 ease-out"
+      className="rounded-lg border-2 border-dashed border-blue-400/60 dark:border-blue-500/50 bg-blue-50/30 dark:bg-blue-900/10 min-h-[8rem] transition-[opacity,transform] duration-150 ease-out"
     />
   );
 }
@@ -669,7 +669,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card project-surface project-accent-edge rounded-xl px-2.5 py-2.5 sm:px-3.5 sm:py-3 min-w-0 flex flex-col gap-1.5 sm:gap-2 break-inside-avoid mb-3 sm:mb-4 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card project-surface project-accent-edge rounded-xl px-2 py-2 sm:px-3.5 sm:py-3 min-w-0 flex flex-col gap-1 sm:gap-2 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-100/95 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
         project.favorite && !collapsed
@@ -1104,13 +1104,13 @@ export default function TaskCardView({
     !!query;
 
   return (
-    <div className="pb-4 pt-1">
+    <div className="pb-3 pt-0.5">
       {/* Portrait phone only — landscape inlines search in MobileTaskToolbar */}
-      <div className="panel-pad-x mb-2 roomy:hidden land-compact:hidden">
+      <div className="panel-pad-x mb-1.5 roomy:hidden land-compact:hidden">
         <label className="relative block w-full">
           <span className="sr-only">Search projects and tasks</span>
           <svg
-            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400"
+            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -1123,13 +1123,13 @@ export default function TaskCardView({
             value={cardQuery}
             onChange={(e) => setCardQuery(e.target.value)}
             placeholder="Filter projects or tasks…"
-            className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 shadow-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
+            className="w-full pl-7 pr-2.5 py-1 min-h-[1.875rem] text-xs rounded-md border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 dark:focus:border-blue-400"
             aria-label="Filter projects or tasks"
           />
         </label>
       </div>
       {showSecondaryTools && (
-      <div className="panel-pad-x mb-2 flex flex-wrap items-center gap-2">
+      <div className="panel-pad-x mb-1.5 flex flex-wrap items-center gap-2">
         {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (
           <button
             type="button"
@@ -1170,8 +1170,8 @@ export default function TaskCardView({
       </div>
       )}
 
-      {/* 3–4 cols only when roomy; phone landscape stays at 2 so titles aren’t crushed */}
-      <div className="panel-pad-x columns-1 min-[480px]:columns-2 roomy:columns-3 roomy:lg:columns-4 print:columns-2 gap-x-2.5 sm:gap-x-3">
+      {/* Grid keeps card tops aligned; CSS columns was a masonry flow that staggered rows */}
+      <div className="panel-pad-x grid grid-cols-1 min-[480px]:grid-cols-2 roomy:grid-cols-3 roomy:lg:grid-cols-4 print:grid-cols-2 gap-x-2.5 sm:gap-x-3 gap-y-2.5 sm:gap-y-3.5">
         {previewProjects.map((project, projectIndex) => {
           if (showDragPlaceholder && project.id === dragProjectId) {
             return (
