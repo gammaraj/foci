@@ -159,49 +159,6 @@ export default function InstallPage() {
             </aside>
           </div>
 
-          <section
-            id="easier"
-            className="mt-12 lg:mt-14 scroll-mt-24 max-w-3xl space-y-3 text-base text-slate-600 dark:text-slate-400 leading-relaxed"
-          >
-            <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">
-              Why so many steps on iPhone?
-            </h2>
-            <p>
-              Apple does not let websites show a one-tap{" "}
-              <strong className="font-semibold text-slate-800 dark:text-slate-200">Install</strong>{" "}
-              button (Android Chrome does). On iPhone every site must use Safari’s Share menu — there
-              is no official shortcut around that.
-            </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">Android:</strong>{" "}
-                use one-tap Install when Chrome offers it.
-              </li>
-              <li>
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  From this computer:
-                </strong>{" "}
-                scan the QR, then finish on the phone.
-              </li>
-              <li>
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  In Chrome / Instagram / Gmail on iPhone:
-                </strong>{" "}
-                Share →{" "}
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  Open in Safari
-                </strong>
-                , then install.
-              </li>
-              <li>
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
-                  Fewer taps:
-                </strong>{" "}
-                Safari Share → Add Bookmark (stays in Safari; Home Screen is better for daily use).
-              </li>
-            </ul>
-          </section>
-
           {/* Platform steps side-by-side on desktop */}
           <div className="mt-12 lg:mt-16 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
             <section id="iphone" className="scroll-mt-24 lg:pr-6 lg:border-r lg:border-slate-200 dark:lg:border-[#243350]">
