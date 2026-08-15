@@ -11,20 +11,25 @@ import {
   subscribeInstallPrompt,
 } from "@/lib/pwa-install";
 
+type InstallPageActionsProps = {
+  /** When false, parent layout owns the QR (desktop side rail). Default true. */
+  showQr?: boolean;
+};
+
 /** Optional one-tap Android install + copy/open helpers for /install. */
-export default function InstallPageActions() {
+export default function InstallPageActions({ showQr = true }: InstallPageActionsProps) {
   const [canNativeInstall, setCanNativeInstall] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [copied, setCopied] = useState(false);
   const [ios, setIos] = useState(false);
   const [standalone, setStandalone] = useState(false);
-  const [showQr, setShowQr] = useState(false);
+  const [wideEnoughForQr, setWideEnoughForQr] = useState(false);
 
   useEffect(() => {
     ensureInstallPromptCapture();
     setIos(isIosDevice());
     setStandalone(isStandaloneDisplay());
-    setShowQr(window.matchMedia("(min-width: 768px)").matches);
+    setWideEnoughForQr(window.matchMedia("(min-width: 768px)").matches);
     setCanNativeInstall(Boolean(getDeferredInstallPrompt()));
     return subscribeInstallPrompt(() => {
       setCanNativeInstall(Boolean(getDeferredInstallPrompt()));
@@ -57,14 +62,14 @@ export default function InstallPageActions() {
 
   if (standalone) {
     return (
-      <p className="mt-8 text-sm font-medium text-green-700 dark:text-green-400">
+      <p className="mt-6 text-sm font-medium text-green-700 dark:text-green-400">
         Foci is already installed on this device — open it from your home screen anytime.
       </p>
     );
   }
 
   return (
-    <div className="mt-8 space-y-4">
+    <div className="mt-6 space-y-4">
       {canNativeInstall && (
         <button
           type="button"
@@ -99,8 +104,8 @@ export default function InstallPageActions() {
         </a>
       </div>
 
-      {showQr && (
-        <div className="flex items-center gap-3 pt-1">
+      {showQr && wideEnoughForQr && (
+        <div className="flex items-center gap-3 pt-1 lg:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/install-app-qr.png"
