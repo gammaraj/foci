@@ -2,7 +2,9 @@ name: Supabase keep-alive
 
 on:
   schedule:
-    # Daily — Supabase free tier pauses after ~7 days of DB inactivity
+    # Twice daily — Supabase free tier pauses after ~7 days of DB inactivity.
+    # Offset from Vercel cron (12:00 UTC) so one path can cover the other.
+    - cron: '0 1 * * *'
     - cron: '0 13 * * *'
   workflow_dispatch:
 
@@ -10,10 +12,19 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping keep-alive endpoint
-        run: |
-          curl -fsS --retry 3 --retry-delay 10 \
-            -H "Authorization: Bearer ${CRON_SECRET}" \
-            "https://usefoci.com/api/keep-alive"
+      - name: Require CRON_SECRET
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET GitHub Actions secret is missing. Add it in repo Settings → Secrets."
+            exit 1
+          fi
+
+      - name: Ping keep-alive endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS --retry 5 --retry-delay 15 --retry-all-errors \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "https://usefoci.com/api/keep-alive"

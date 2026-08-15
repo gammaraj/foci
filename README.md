@@ -91,7 +91,7 @@ docs/            # Architecture & ops docs
 
 ## Uptime monitoring
 
-`GET /api/health` probes Supabase **PostgREST** (the same REST path Foci uses for tasks). Returns `200` when healthy, `503` when PostgREST or the DB path is failing.
+`GET /api/health` probes Supabase **PostgREST** (the same REST path Foci uses for tasks). It retries briefly on transient failures, then returns `200` when healthy or `503` when PostgREST / the DB path is still failing.
 
 ```bash
 curl -s https://usefoci.com/api/health | jq
@@ -103,15 +103,25 @@ Example alert setup (UptimeRobot, Better Stack, Checkly, etc.):
 |---------|--------|
 | URL | `https://usefoci.com/api/health` |
 | Interval | 5 minutes |
-| Alert when | HTTP status is not `200`, or response body contains `"status":"degraded"` |
+| Alert when | HTTP status is not `200` for **2–3 consecutive checks** (avoids paging on a single blip) |
+| Also useful | Response body contains `"status":"degraded"` |
 
 `HEAD /api/health` is supported for monitors that only check status codes.
+
+## Supabase keep-alive
+
+Free-tier Supabase pauses after ~7 days without DB traffic. Foci prevents that with:
+
+1. **Vercel cron** — `GET /api/keep-alive` daily at 12:00 UTC (`vercel.json`)
+2. **GitHub Actions** — same endpoint twice daily (01:00 and 13:00 UTC)
+
+Both require `CRON_SECRET` in **Vercel** (Production) and **GitHub Actions** secrets (same value). Vercel Cron sends `Authorization: Bearer $CRON_SECRET` automatically when that env var is set.
 
 ## Deployment
 
 Push to `main` → Vercel deploy + GitHub Actions CI (build, audit, lint, unit + E2E tests, content integrity).
 
-Ensure production env vars are set in Vercel (especially `INDEXNOW_API_SECRET` and Upstash for rate limits).
+Ensure production env vars are set in Vercel (`CRON_SECRET`, `INDEXNOW_API_SECRET`, and Upstash for rate limits).
 
 ## Docs
 

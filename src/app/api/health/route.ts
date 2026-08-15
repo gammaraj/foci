@@ -1,53 +1,7 @@
 import { NextResponse } from "next/server";
+import { pingPostgrest, type PostgrestPing } from "@/lib/postgrest-ping";
 
-const POSTGREST_TIMEOUT_MS = 10_000;
-
-type PostgrestCheck = {
-  ok: boolean;
-  latencyMs: number;
-  error?: string;
-};
-
-async function checkPostgrest(): Promise<PostgrestCheck> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !anonKey) {
-    return { ok: false, latencyMs: 0, error: "missing_supabase_config" };
-  }
-
-  const started = Date.now();
-  try {
-    const res = await fetch(
-      `${supabaseUrl.replace(/\/$/, "")}/rest/v1/tasks?select=id&limit=1`,
-      {
-        method: "GET",
-        headers: {
-          apikey: anonKey,
-          Authorization: `Bearer ${anonKey}`,
-          Accept: "application/json",
-        },
-        signal: AbortSignal.timeout(POSTGREST_TIMEOUT_MS),
-        cache: "no-store",
-      },
-    );
-
-    const latencyMs = Date.now() - started;
-    if (res.ok) {
-      return { ok: true, latencyMs };
-    }
-
-    return { ok: false, latencyMs, error: `http_${res.status}` };
-  } catch (err) {
-    return {
-      ok: false,
-      latencyMs: Date.now() - started,
-      error: err instanceof Error ? err.message : "request_failed",
-    };
-  }
-}
-
-function healthResponse(postgrest: PostgrestCheck, method: "GET" | "HEAD") {
+function healthResponse(postgrest: PostgrestPing, method: "GET" | "HEAD") {
   const status = postgrest.ok ? "ok" : "degraded";
   const httpStatus = postgrest.ok ? 200 : 503;
   const headers = {
@@ -71,11 +25,11 @@ function healthResponse(postgrest: PostgrestCheck, method: "GET" | "HEAD") {
 
 /** Probes Supabase PostgREST — use for uptime monitoring (UptimeRobot, Better Stack, etc.). */
 export async function GET() {
-  const postgrest = await checkPostgrest();
+  const postgrest = await pingPostgrest();
   return healthResponse(postgrest, "GET");
 }
 
 export async function HEAD() {
-  const postgrest = await checkPostgrest();
+  const postgrest = await pingPostgrest();
   return healthResponse(postgrest, "HEAD");
 }
