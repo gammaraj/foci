@@ -235,6 +235,10 @@ export default function AboutPage() {
             Home
           </Link>
           {" · "}
+          <Link href="/install" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Install
+          </Link>
+          {" · "}
           <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">
             Privacy
           </Link>

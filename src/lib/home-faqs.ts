@@ -68,7 +68,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Does Foci work offline?",
     answer:
-      "Yes. Foci is a Progressive Web App (PWA). Tasks, settings, and progress can stay available offline in your browser. Built-in ambient sounds also work offline via the Web Audio API. On iPhone, open usefoci.com/app in Safari → Share → Add to Home Screen. On Android/Chrome, use Install or Add to Home Screen from the browser menu (or the in-app prompt after your first session).",
+      "Yes. Foci is a Progressive Web App (PWA). Tasks, settings, and progress can stay available offline in your browser. Built-in ambient sounds also work offline via the Web Audio API. Full install steps: usefoci.com/install — on iPhone use Safari → Share → Add to Home Screen; on Android/Chrome use Install or Add to Home Screen.",
   },
   {
     question: "Where is Foci available?",

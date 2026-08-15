@@ -88,6 +88,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       images: [`${siteUrl}/opengraph-image`],
     },
     {
+      url: `${siteUrl}/install`,
+      lastModified: siteContentDate,
+      changeFrequency: "monthly",
+      priority: 0.85,
+      images: [`${siteUrl}/opengraph-image`],
+    },
+    {
       url: `${siteUrl}/privacy`,
       lastModified: siteContentDate,
       changeFrequency: "yearly",

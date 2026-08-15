@@ -111,6 +111,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
     : [
         { key: "features", href: "/#features", label: "Features", active: false },
         { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
+        { key: "install", href: "/install", label: "Install", active: pathname === "/install" },
         { key: "about", href: "/about", label: "About", active: pathname === "/about" },
       ];
 

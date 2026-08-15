@@ -211,6 +211,12 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
           >
             Open usefoci.com/app
           </a>
+          <a
+            href="/install"
+            className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Full install guide
+          </a>
         </div>
       </div>
     </>

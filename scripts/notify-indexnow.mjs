@@ -25,6 +25,7 @@ const urls = [
   `${SITE_URL}/app`,
   `${SITE_URL}/blog`,
   `${SITE_URL}/about`,
+  `${SITE_URL}/install`,
   `${SITE_URL}/feed.xml`,
   `${SITE_URL}/llms.txt`,
   `${SITE_URL}/llms-full.txt`,

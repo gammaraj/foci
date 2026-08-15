@@ -86,6 +86,8 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
             {" · "}
             <a href={`${SITE_URL}/about`}>About Foci</a>
             {" · "}
+            <a href={`${SITE_URL}/install`}>Add to Home Screen</a>
+            {" · "}
             <a href={`${SITE_URL}/vs/forest`}>Foci vs Forest</a>
             {" · "}
             <a href={`${SITE_URL}/alternatives/pomodoro-apps`}>Best free Pomodoro apps</a>
