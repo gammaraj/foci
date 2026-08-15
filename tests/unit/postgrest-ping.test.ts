@@ -16,7 +16,7 @@ describe("pingPostgrest", () => {
   });
 
   it("returns ok on first successful response", async () => {
-    globalThis.fetch = vi.fn().mockResolvedValue(new Response("[]", { status: 200 }));
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response("[]", { status: 200 })) as unknown as typeof fetch;
 
     const result = await pingPostgrest(3);
 
@@ -30,7 +30,7 @@ describe("pingPostgrest", () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValueOnce(new Response("nope", { status: 503 }))
-      .mockResolvedValueOnce(new Response("[]", { status: 200 }));
+      .mockResolvedValueOnce(new Response("[]", { status: 200 })) as unknown as typeof fetch;
 
     const pending = pingPostgrest(3);
     await vi.runAllTimersAsync();
@@ -43,7 +43,7 @@ describe("pingPostgrest", () => {
 
   it("returns degraded after exhausting retries", async () => {
     vi.useFakeTimers();
-    globalThis.fetch = vi.fn().mockResolvedValue(new Response("down", { status: 503 }));
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response("down", { status: 503 })) as unknown as typeof fetch;
 
     const pending = pingPostgrest(3);
     await vi.runAllTimersAsync();

@@ -17,6 +17,11 @@ import type { StorageAdapter } from "./types";
 import { createClient } from "../supabase/client";
 
 export { hasOfflineCache };
+export {
+  hasLocalWorkspaceSnapshot,
+  readLocalWorkspaceSnapshot,
+  type LocalWorkspaceSnapshot,
+} from "./local-snapshot";
 
 // ── Adapter registry ────────────────────────────────────
 const localAdapter = new LocalStorageAdapter();

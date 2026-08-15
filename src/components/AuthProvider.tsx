@@ -8,6 +8,7 @@ import {
   activateSupabaseStorage,
   activateLocalStorage,
   hasOfflineCache,
+  hasLocalWorkspaceSnapshot,
 } from "@/lib/storage";
 
 interface AuthContextType {
@@ -57,13 +58,14 @@ async function getSessionWithLockRetry(
 
 /**
  * Prefer the cached Supabase adapter whenever we still have a session, or
- * when offline with a warm cache — so tasks can paint without the network.
+ * when a warm offline/local snapshot exists — so tasks can paint without waiting
+ * on auth/network (slow mobile data).
  */
 async function ensureOfflineCapableStorage(sessionUser: User | null) {
   const offline =
     typeof navigator !== "undefined" && navigator.onLine === false;
 
-  if (sessionUser || (offline && hasOfflineCache())) {
+  if (sessionUser || hasOfflineCache() || (offline && hasLocalWorkspaceSnapshot())) {
     await activateSupabaseStorage();
   } else {
     // Keep foci_cache_* intact — only explicit logout clears it.
@@ -92,6 +94,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+
+    // Warm cache: install cache-first adapter immediately so TaskList can
+    // reconcile without waiting on getSession (often slow on mobile data).
+    if (hasOfflineCache()) {
+      void activateSupabaseStorage().catch((err) => {
+        console.warn("[Foci] Early cache adapter activate failed:", err);
+      });
+    }
 
     const safetyTimeout = setTimeout(() => {
       if (!cancelled) {

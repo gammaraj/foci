@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import dynamic from "next/dynamic";
@@ -122,10 +122,13 @@ export default function TaskList({
   focusMode,
   onOpenSettings,
 }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  // Instant paint from last local snapshot — avoids empty→skeleton on slow mobile data.
+  const [bootSnapshot] = useState(() => readLocalWorkspaceSnapshot());
+  const [tasks, setTasks] = useState<Task[]>(() => bootSnapshot?.tasks ?? []);
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
-  const [tasksReady, setTasksReady] = useState(false);
+  const [tasksReady, setTasksReady] = useState(() => bootSnapshot != null);
+  const [syncingFromServer, setSyncingFromServer] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
   const [newTaskProjectId, setNewTaskProjectId] = useState<string>(DEFAULT_PROJECT_ID);
@@ -133,7 +136,7 @@ export default function TaskList({
   const [editTitle, setEditTitle] = useState("");
 
   // Project state
-  const [projects, setProjects] = useState<Project[]>([DEFAULT_PROJECT]);
+  const [projects, setProjects] = useState<Project[]>(() => bootSnapshot?.projects ?? [DEFAULT_PROJECT]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>(ALL_PROJECTS_ID);
   /** When viewing Today/Week/Month/Year, filters tasks within that scope (All projects or one project). */
   const [projectFilterId, setProjectFilterId] = useState<string>(ALL_PROJECTS_ID);
@@ -167,9 +170,13 @@ export default function TaskList({
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [dragProjectId, setDragProjectId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<TaskViewMode>("card");
+  const [viewMode, setViewMode] = useState<TaskViewMode>(() =>
+    bootSnapshot ? resolveInitialTaskView(bootSnapshot.taskViewPrefs) : "card",
+  );
   const [preparingPrint, setPreparingPrint] = useState(false);
-  const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(null);
+  const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(
+    () => bootSnapshot?.oneThing ?? null,
+  );
   const [oneThingPromptDismissed, setOneThingPromptDismissed] = useState(false);
 
   useEffect(() => {
@@ -510,6 +517,8 @@ export default function TaskList({
 
     // Load projects (and shared projects for logged-in users)
     const loadData = async () => {
+      const paintedFromSnapshot = bootSnapshot != null;
+      if (paintedFromSnapshot) setSyncingFromServer(true);
       try {
         const [existingProjects, existing, taskViewPrefs, oneThing] = await Promise.all([
           loadProjects(),
@@ -526,8 +535,8 @@ export default function TaskList({
         }
         setOneThingPref(oneThing);
 
-        // Seed sample tasks only for logged-out users with no tasks
-        if (existing.length === 0 && !user) {
+        // Seed sample tasks only for logged-out users with no tasks and no prior snapshot
+        if (existing.length === 0 && !user && !bootSnapshot) {
           const samples: Task[] = [
             { id: crypto.randomUUID(), title: "Review project requirements", completed: false, sessions: 0, timeSpent: 0, createdAt: Date.now(), projectId: DEFAULT_PROJECT_ID, subtasks: [] },
             { id: crypto.randomUUID(), title: "Draft design mockups", completed: false, sessions: 0, timeSpent: 0, createdAt: Date.now(), projectId: DEFAULT_PROJECT_ID, subtasks: [] },
@@ -564,6 +573,8 @@ export default function TaskList({
       } catch (err) {
         console.error("[Foci] Failed to load data:", err);
         setTasksReady(true);
+      } finally {
+        setSyncingFromServer(false);
       }
     };
 
@@ -2380,6 +2391,16 @@ export default function TaskList({
 
   return (
     <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible min-w-0">
+      {(syncingFromServer || (authLoading && tasksReady)) && (
+        <div
+          className="no-print flex items-center gap-2 px-4 pt-3 text-xs font-medium text-slate-500 dark:text-slate-400"
+          role="status"
+          aria-live="polite"
+        >
+          <span className="inline-block w-3 h-3 border-2 border-slate-300 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+          Updating tasks…
+        </div>
+      )}
       <div className="print-only print-header panel-pad-x pt-3">
         <h1>Foci — Tasks ({VIEW_PRINT_LABELS[viewMode]})</h1>
         <p>

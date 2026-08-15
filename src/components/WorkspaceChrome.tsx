@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, type ReactNode } from "react";
+import React, { Suspense, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import AppNavbar from "@/components/AppNavbar";
 import AppFocusBar from "@/components/AppFocusBar";
@@ -13,6 +13,7 @@ import {
 } from "@/components/FocusSessionProvider";
 import { useAuth } from "@/components/AuthProvider";
 import type { ImportResult } from "@/components/TaskImportExport";
+import { hasLocalWorkspaceSnapshot } from "@/lib/storage";
 
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
 
@@ -24,6 +25,9 @@ function WorkspaceChromeInner({
   onTasksImported?: (result?: ImportResult) => void;
 }) {
   const { user, loading } = useAuth();
+  // Returning users: paint chrome from local snapshot instead of a blank spinner
+  // while auth/session resolves on slow networks.
+  const [hasSnapshot] = useState(() => hasLocalWorkspaceSnapshot());
   const {
     focusMode,
     setFocusMode,
@@ -36,9 +40,9 @@ function WorkspaceChromeInner({
     timerAnnouncement,
   } = useFocusSession();
 
-  if (loading) {
+  if (loading && !hasSnapshot) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
         <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
       </div>
     );
@@ -111,7 +115,7 @@ export default function WorkspaceChrome({
     <FocusSessionProvider>
       <Suspense
         fallback={
-          <div className="flex items-center justify-center min-h-screen">
+          <div className="flex items-center justify-center min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
             <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
           </div>
         }

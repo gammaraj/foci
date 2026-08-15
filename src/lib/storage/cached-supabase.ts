@@ -165,8 +165,18 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   // ── Settings ──────────────────────────────────────────
 
   async loadSettings(): Promise<Settings> {
+    if (cacheHas(CACHE_KEYS.settings)) {
+      const cached = cacheGet<Settings>(CACHE_KEYS.settings) ?? DEFAULT_SETTINGS;
+      void withTimeout(this.remote.loadSettings(), REMOTE_LOAD_TIMEOUT_MS)
+        .then((result) => cacheSet(CACHE_KEYS.settings, result))
+        .catch(() => {
+          /* keep serving cache */
+        });
+      return cached;
+    }
+
     try {
-      const result = await this.remote.loadSettings();
+      const result = await withTimeout(this.remote.loadSettings(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.settings, result);
       return result;
     } catch {
@@ -182,19 +192,33 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   // ── Daily Goal ────────────────────────────────────────
 
   async loadDailyGoalData(dailyGoal: number): Promise<DailyGoalData> {
+    const fallback = (): DailyGoalData =>
+      cacheGet<DailyGoalData>(CACHE_KEYS.dailyGoal) ?? {
+        date: new Date().toISOString().slice(0, 10),
+        sessionCount: 0,
+        streak: 0,
+        lastStreakUpdate: null,
+      };
+
+    if (cacheHas(CACHE_KEYS.dailyGoal)) {
+      const cached = fallback();
+      void withTimeout(this.remote.loadDailyGoalData(dailyGoal), REMOTE_LOAD_TIMEOUT_MS)
+        .then((result) => cacheSet(CACHE_KEYS.dailyGoal, result))
+        .catch(() => {
+          /* keep serving cache */
+        });
+      return cached;
+    }
+
     try {
-      const result = await this.remote.loadDailyGoalData(dailyGoal);
+      const result = await withTimeout(
+        this.remote.loadDailyGoalData(dailyGoal),
+        REMOTE_LOAD_TIMEOUT_MS,
+      );
       cacheSet(CACHE_KEYS.dailyGoal, result);
       return result;
     } catch {
-      return (
-        cacheGet<DailyGoalData>(CACHE_KEYS.dailyGoal) ?? {
-          date: new Date().toISOString().slice(0, 10),
-          sessionCount: 0,
-          streak: 0,
-          lastStreakUpdate: null,
-        }
-      );
+      return fallback();
     }
   }
 
@@ -206,8 +230,18 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   // ── Streak History ────────────────────────────────────
 
   async loadStreakHistory(): Promise<StreakHistory> {
+    if (cacheHas(CACHE_KEYS.streakHistory)) {
+      const cached = cacheGet<StreakHistory>(CACHE_KEYS.streakHistory) ?? { days: {} };
+      void withTimeout(this.remote.loadStreakHistory(), REMOTE_LOAD_TIMEOUT_MS)
+        .then((result) => cacheSet(CACHE_KEYS.streakHistory, result))
+        .catch(() => {
+          /* keep serving cache */
+        });
+      return cached;
+    }
+
     try {
-      const result = await this.remote.loadStreakHistory();
+      const result = await withTimeout(this.remote.loadStreakHistory(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.streakHistory, result);
       return result;
     } catch {

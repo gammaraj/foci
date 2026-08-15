@@ -124,7 +124,8 @@ export const metadata: Metadata = {
   },
 };
 
-const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||localStorage.getItem("tempo_theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`;
+// Match app-shell colors immediately so PWA splash → first paint doesn't flash black→white.
+const themeScript = `(function(){try{var t=localStorage.getItem("foci_theme")||localStorage.getItem("tempo_theme");var dark=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);var root=document.documentElement;if(dark){root.classList.add("dark");root.style.backgroundColor="#070b16";root.style.colorScheme="dark"}else{root.style.backgroundColor="#d8e0ed";root.style.colorScheme="light"}}catch(e){}})()`;
 
 const swRegisterScript = `(function(){if(!("serviceWorker"in navigator))return;var h=location.hostname;var isLocal=h==="localhost"||h==="127.0.0.1"||h.endsWith(".local");var p=location.protocol;if(p==="app:"||p==="file:"||!window.isSecureContext)return;window.addEventListener("load",function(){if(isLocal){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});if(window.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})})}return}navigator.serviceWorker.register("/sw.js").catch(function(){})})})()`;
 
