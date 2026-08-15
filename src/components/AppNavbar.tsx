@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/AuthProvider";
 import CollaborationInvitesButton from "@/components/CollaborationInvitesButton";
+import DueRemindersButton from "@/components/DueRemindersButton";
 import WhatsNewBanner from "@/components/WhatsNewBanner";
 import WeatherTime from "@/components/WeatherTime";
 import { FilantusCrossPromoBanner } from "@/components/FilantusCrossPromoBanner";
@@ -115,11 +116,10 @@ export default function AppNavbar({
           )
         }
         toolbarSlot={
-          user ? (
-            <div className="flex items-center gap-0.5">
-              <CollaborationInvitesButton />
-            </div>
-          ) : undefined
+          <div className="flex items-center gap-0.5">
+            <DueRemindersButton />
+            {user ? <CollaborationInvitesButton /> : null}
+          </div>
         }
       />
       {showSettings && settingsReady && (

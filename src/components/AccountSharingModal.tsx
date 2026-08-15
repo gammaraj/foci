@@ -4,6 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { getStorage } from "@/lib/storage";
 import type { AccountCollaboratorInfo, AccountInvite, CollaboratorRole } from "@/lib/storage";
 import { useToast } from "@/components/ToastProvider";
+import {
+  buildAccountInviteMessage,
+  copyText,
+} from "@/lib/collaboration-invite";
 
 interface AccountSharingModalProps {
   isOpen: boolean;
@@ -151,7 +155,17 @@ export default function AccountSharingModal({
     try {
       const storage = getStorage();
       await storage.inviteAccountCollaborator(email, inviteRole);
-      showToast(`Invite sent to ${email}`, "success");
+      const message = buildAccountInviteMessage({
+        inviteeEmail: email,
+        role: inviteRole,
+      });
+      const copied = await copyText(message);
+      showToast(
+        copied
+          ? `Invite saved for ${email}. Invite text copied — paste it in email or chat (Foci doesn’t send email yet).`
+          : `Invite saved for ${email}. Copy the invite text from Pending and send it yourself — Foci doesn’t email invites yet.`,
+        "success",
+      );
       setInviteEmail("");
       
       // Refresh list
@@ -162,7 +176,7 @@ export default function AccountSharingModal({
       if (collabsResult.status === "fulfilled") setCollaborators(collabsResult.value);
       if (invitesResult.status === "fulfilled") setPendingInvites(invitesResult.value);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to send invite";
+      const message = err instanceof Error ? err.message : "Failed to save invite";
       showToast(message, "error");
     } finally {
       setInviting(false);
@@ -204,6 +218,20 @@ export default function AccountSharingModal({
     } catch (err) {
       showToast("Failed to cancel invite", "error");
     }
+  };
+
+  const handleCopyInvite = async (invite: AccountInvite) => {
+    const email = invite.inviteeEmail;
+    if (!email) {
+      showToast("This invite has no email to copy", "info");
+      return;
+    }
+    const message = buildAccountInviteMessage({
+      inviteeEmail: email,
+      role: invite.role,
+    });
+    const copied = await copyText(message);
+    showToast(copied ? "Invite text copied" : "Could not copy — select and copy manually", copied ? "success" : "error");
   };
 
   if (!isOpen) return null;
@@ -277,7 +305,8 @@ export default function AccountSharingModal({
             </div>
           </div>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            They&apos;ll get an invite. Once accepted, they&apos;ll see ALL your projects, including ones you create later.
+            Foci saves the invite in-app (no email is sent). We&apos;ll copy a short message you can paste to them.
+            Once they accept, they&apos;ll see all your projects, including ones you create later.
           </p>
         </form>
 
@@ -314,12 +343,21 @@ export default function AccountSharingModal({
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleCancelInvite(invite.id)}
-                        className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200"
-                      >
-                        Cancel
-                      </button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyInvite(invite)}
+                          className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          Copy text
+                        </button>
+                        <button
+                          onClick={() => handleCancelInvite(invite.id)}
+                          className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>

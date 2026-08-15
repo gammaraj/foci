@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
+import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
 import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -853,6 +854,59 @@ export default function TaskList({
     window.addEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
     return () => window.removeEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
   }, []);
+
+  // Due/overdue tray → Today filter (and optional task detail)
+  useEffect(() => {
+    const openDue = (e: Event) => {
+      const detail = (e as CustomEvent<{ taskId?: string }>).detail;
+      selectProject(TODAY_FILTER_ID);
+      if (detail?.taskId) {
+        setExpandedTaskId(detail.taskId);
+      }
+    };
+    window.addEventListener(VIEW_DUE_TASKS_EVENT, openDue);
+    return () => window.removeEventListener(VIEW_DUE_TASKS_EVENT, openDue);
+  }, []);
+
+  // Pending due view after navigating to /app from another page
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("foci-pending-due-view");
+      if (!raw) return;
+      sessionStorage.removeItem("foci-pending-due-view");
+      const pending = JSON.parse(raw) as { taskId?: string };
+      queueMicrotask(() => {
+        window.dispatchEvent(new CustomEvent(VIEW_DUE_TASKS_EVENT, { detail: pending }));
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // Poll shared project tasks while viewing one (v1 — no Realtime yet)
+  useEffect(() => {
+    if (!selectedSharedProject || !selectedProjectId.startsWith("shared:")) return;
+
+    const refresh = () => {
+      const shared = selectedSharedProject;
+      const key = `${shared._ownerId}:${shared.id}`;
+      loadSharedProjectTasks(shared.id, shared._ownerId)
+        .then((loaded) => {
+          setSharedTasks((prev) => ({ ...prev, [key]: loaded }));
+        })
+        .catch((err) => console.error("[Foci] Shared project refresh failed:", err));
+    };
+
+    const interval = setInterval(refresh, 30_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [selectedProjectId, selectedSharedProject]);
 
   // Pending open after navigating to /app from another page
   useEffect(() => {

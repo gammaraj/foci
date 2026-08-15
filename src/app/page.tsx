@@ -107,7 +107,7 @@ const jsonLd = {
     "Calendar view that auto-sets due dates when selecting a day",
     "Expand tasks and Zen mode for distraction-free sessions",
     "Indian classical music playlists via SoundCloud for deep focus",
-    "Due date reminder notifications for upcoming and overdue tasks",
+    "In-app due/overdue tray plus optional browser notifications",
     "Project templates with preset tasks: workflows (Dev Sprint, Trip Planning, and more) plus financial planning (Financial Life Plan, Monthly Budget, Debt Payoff, Investing Setup)",
     "Compact status bar with session progress, local weather, live clock, and streak when active",
     "Curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi",

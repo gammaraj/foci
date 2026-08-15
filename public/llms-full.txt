@@ -61,7 +61,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Calendar View**: Click any date to auto-set it as a task's due date. Visual overview of deadlines across the month.
 - **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
 - **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
-- **Due Date Reminders**: Notification bell with upcoming and overdue task alerts.
+- **Due Date Reminders**: In-app bell for overdue and due-today tasks, plus optional browser notifications.
 - **Onboarding Tour**: Guided walkthrough for new users covering tasks, views, Today's One Thing, project templates, timer, ambient music, and settings. Replay anytime via Take product tour.
 - **Compact Status Bar**: Session progress (e.g. 0/8), live clock, local weather, and streak indicator when active — minimal chrome above the task list.
 - **Project Templates**: Create a new project with preset tasks. Workflow packs include Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Financial planning packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. Open ⋯ → Project templates, or pick a template when adding a project.
@@ -69,9 +69,9 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
-- **Account Collaboration**: Invite collaborators to your account with role-based permissions (viewer, editor) for team productivity.
-- **Project Collaboration**: Share specific projects with team members using invite links with customizable access levels.
-- **Notification Bell**: Real-time alerts for collaboration invites, upcoming tasks, and overdue reminders with badge counter.
+- **Account Collaboration**: Invite collaborators by email address; they accept in-app under the people icon (viewer or editor). Foci does not send invite emails yet — copy the invite text and share it yourself.
+- **Project Collaboration**: Share a specific project the same way — in-app invite + copyable message, role-based access (viewer/editor).
+- **Notification Bell**: In-app alerts for collaboration invites and due/overdue tasks with badge counters. Optional browser notifications for daily due digests.
 - **IndexNow Integration**: Instant search engine notifications when content updates via IndexNow protocol (Bing, Yandex, Naver, Seznam.cz). Accelerates discovery of new blog posts and pages without waiting for traditional crawl cycles. API endpoint at /api/indexnow with utility functions for programmatic submission.
 - **Bucket Board View**: Kanban-style columns per project with Overdue, Today, This Week, and No date swimlanes. Drag to reorder tasks within a section or move between projects. Priority badges (HIGH/MED/LOW) and a slide-over task detail drawer.
 - **Card View (default)**: Project cards with open-task counts, color accents, pin favorites, and drag-and-drop task reorder. Mobile shows overdue vs due-today urgency chips and a compact scope/view toolbar.

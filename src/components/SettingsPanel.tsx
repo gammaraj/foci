@@ -587,7 +587,8 @@ export default function SettingsPanel({
                       Share everything
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                      Give someone access to all current and future projects.
+                      Give someone access to all current and future projects. Invites are in-app only — copy the invite
+                      text and send it yourself (Foci does not email invites yet).
                     </p>
                     <button
                       type="button"
@@ -603,7 +604,8 @@ export default function SettingsPanel({
                       Share one project
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                      Invite collaborators to a specific project only.
+                      Invite collaborators to a specific project. Same flow: save invite, copy text, they accept under
+                      the people icon.
                     </p>
                     {loadingProjects ? (
                       <div className="flex justify-center py-6">
