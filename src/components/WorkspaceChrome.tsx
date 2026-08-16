@@ -52,7 +52,7 @@ function WorkspaceChromeInner({
   }
 
   return (
-    <div className="app-shell min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#070b16]">
+    <div className="app-shell min-h-screen flex flex-col dark:bg-[#070b16]">
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>

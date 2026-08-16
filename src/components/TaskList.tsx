@@ -101,15 +101,15 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
 
 /** Active time/view filters — solid brand blue; no shadow (track already frames the control). */
 const FILTER_TAB_ACTIVE =
-  "bg-blue-600 text-white font-semibold dark:bg-blue-500 dark:text-white";
+  "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-600/25 dark:bg-blue-500 dark:text-white dark:shadow-none";
 const FILTER_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]";
+  "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-white/[0.06]";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
-  "bg-blue-600 text-white font-semibold dark:bg-blue-500 dark:text-white";
+  "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-600/25 dark:bg-blue-500 dark:text-white dark:shadow-none";
 const PROJECT_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-300 bg-blue-50/90 dark:bg-[#131d30] hover:bg-blue-100 dark:hover:bg-[#1a2d4a]";
+  "text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-[#131d30] hover:bg-white dark:hover:bg-[#1a2d4a] border border-blue-100/80 dark:border-transparent";
 
 /** Pill radius = track radius − padding so the active segment nests cleanly. */
 const SEG_TAB_PAD = "px-2.5 py-1 min-h-[1.75rem] rounded text-sm font-medium transition-colors";

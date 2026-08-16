@@ -25,9 +25,16 @@ export interface OneThingCardProps {
 
 /** Shared shell — one look on Cards, List, Buckets, Calendar. */
 const shellBase =
-  "no-print flex items-center gap-1.5 min-h-[2rem] min-w-0 rounded-md border px-2 py-0.5";
+  "no-print flex items-center gap-1.5 min-h-[2rem] min-w-0 rounded-xl border px-2.5 py-1";
 const stripShell = `${shellBase} panel-inset-x mt-1 mb-0.5`;
 const inlineShell = `${shellBase} max-w-full`;
+
+/** Empty / active strip — soft in light, still clear in dark. */
+const promptShell =
+  "border-blue-200/80 dark:border-blue-600/70 bg-blue-50/75 dark:bg-blue-950/55 shadow-sm shadow-blue-900/[0.03]";
+
+const brandBadge =
+  "inline-flex items-center gap-1 shrink-0 rounded-md px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide border border-blue-200/90 dark:border-transparent bg-blue-100/90 dark:bg-blue-700 text-blue-800 dark:text-white";
 
 function StarIcon({ className }: { className?: string }) {
   return (
@@ -53,7 +60,7 @@ function ChevronIcon({ open, className }: { open: boolean; className?: string })
 
 function OneThingHowTo() {
   return (
-    <div className="rounded-lg border border-blue-300/70 dark:border-blue-600/50 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg p-3 text-xs leading-relaxed text-center">
+    <div className="rounded-xl border border-blue-200/70 dark:border-blue-600/50 bg-white/95 dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg shadow-slate-900/5 p-3 text-xs leading-relaxed text-center">
       <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
       <ol className="mt-1.5 mx-auto w-fit list-decimal list-inside space-y-1 text-left text-slate-600 dark:text-slate-300">
         <li>Open any open task (click its name).</li>
@@ -116,29 +123,27 @@ export function OneThingCard({
 
     return (
       <div ref={rootRef} data-tour="one-thing" className="relative min-w-0 land-compact:hidden">
-        <div
-          className={`${shell} relative justify-center border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55`}
-        >
+        <div className={`${shell} relative justify-center ${promptShell}`}>
           <button
             type="button"
             onClick={() => setDetailsOpen((v) => !v)}
             aria-expanded={detailsOpen}
             aria-controls={detailsId}
-            className={`flex items-center justify-center gap-2 min-w-0 text-left rounded-md outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
+            className={`flex items-center justify-center gap-2 min-w-0 text-left rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
               onDismissEmpty ? "px-7" : ""
             }`}
             title="How to set Today’s One Thing"
           >
-            <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+            <span className={brandBadge}>
               <StarIcon className="w-2.5 h-2.5" />
               One Thing
             </span>
-            <span className="min-w-0 truncate text-xs sm:text-sm font-medium text-blue-950 dark:text-blue-50">
+            <span className="min-w-0 truncate text-xs sm:text-sm font-medium text-blue-900/90 dark:text-blue-50">
               {prompt}
             </span>
             <ChevronIcon
               open={detailsOpen}
-              className="w-3.5 h-3.5 shrink-0 text-blue-800 dark:text-blue-200/90"
+              className="w-3.5 h-3.5 shrink-0 text-blue-700/80 dark:text-blue-200/90"
             />
             <span className="sr-only">{detailsOpen ? "Hide details" : "Show how to pick"}</span>
           </button>
@@ -146,7 +151,7 @@ export function OneThingCard({
             <button
               type="button"
               onClick={onDismissEmpty}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-blue-700/70 dark:text-blue-200/60 hover:text-blue-950 dark:hover:text-blue-50 hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-blue-600/60 dark:text-blue-200/60 hover:text-blue-900 dark:hover:text-blue-50 hover:bg-blue-100/80 dark:hover:bg-blue-800/40"
               aria-label="Dismiss One Thing prompt"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -177,10 +182,10 @@ export function OneThingCard({
     return (
       <div
         data-tour="one-thing"
-        className={`${shell} border-slate-200 dark:border-emerald-500/40 bg-slate-50 dark:bg-emerald-500/10 border-l-[3px] border-l-emerald-500 dark:border-l-emerald-400`}
+        className={`${shell} border-emerald-200/80 dark:border-emerald-500/40 bg-emerald-50/70 dark:bg-emerald-500/10 shadow-sm shadow-emerald-900/[0.03]`}
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="inline-flex items-center shrink-0 rounded-md bg-slate-700 dark:bg-emerald-700 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+          <span className="inline-flex items-center shrink-0 rounded-md border border-emerald-200/90 dark:border-transparent bg-emerald-100/90 dark:bg-emerald-700 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-white">
             Done
           </span>
           <p
@@ -203,13 +208,10 @@ export function OneThingCard({
 
   if (status === "active" && task) {
     return (
-      <div
-        data-tour="one-thing"
-        className={`${shell} border-blue-600 dark:border-blue-600/80 bg-blue-50 dark:bg-blue-950/55`}
-      >
+      <div data-tour="one-thing" className={`${shell} ${promptShell}`}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span
-            className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white"
+            className={brandBadge}
             title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
           >
             <StarIcon className="w-3 h-3" />
@@ -226,10 +228,10 @@ export function OneThingCard({
           <button
             type="button"
             onClick={onFocus}
-            className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-md transition-colors ${
+            className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg transition-colors ${
               isFocused
                 ? "bg-blue-600 text-white"
-                : "bg-white dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 border border-blue-300 dark:border-blue-600/60 hover:bg-blue-50 dark:hover:bg-blue-900/60"
+                : "bg-white/90 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 border border-blue-200/90 dark:border-blue-600/60 hover:bg-blue-50 dark:hover:bg-blue-900/60"
             }`}
             title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
           >
@@ -241,21 +243,21 @@ export function OneThingCard({
           <button
             type="button"
             onClick={onComplete}
-            className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
           >
             Done
           </button>
           <button
             type="button"
             onClick={onChange}
-            className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-blue-900 dark:text-blue-100 hover:underline"
+            className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-blue-800 dark:text-blue-100 hover:underline"
           >
             Change
           </button>
           <button
             type="button"
             onClick={onClear}
-            className="inline-flex items-center p-1 rounded-md text-blue-800/70 dark:text-blue-200/70 hover:text-blue-950 dark:hover:text-white hover:bg-blue-200/50 dark:hover:bg-blue-800/40"
+            className="inline-flex items-center p-1 rounded-md text-blue-700/60 dark:text-blue-200/70 hover:text-blue-950 dark:hover:text-white hover:bg-blue-100/80 dark:hover:bg-blue-800/40"
             aria-label="Clear One Thing"
             title="Clear"
           >

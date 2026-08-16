@@ -21,24 +21,26 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode — softer wash, hairline borders, airier radius */
-  --page-bg: #eef2f8;
-  --surface-border: #e6ecf4;
+  /* Light mode — luminous cool focus window (atmosphere + crisp plates) */
+  --page-bg: #e3ebf7;
+  --page-glow: #b8d0f5;
+  --page-glow-soft: #d4e4fb;
+  --surface-border: rgba(37, 99, 235, 0.1);
   --surface-bg: #ffffff;
-  --panel-header-bg: #fbfcfe;
-  --seg-track-bg: #e8eef6;
-  --surface-muted: #f5f7fb;
+  --panel-header-bg: #f8fafc; /* light tokens override via .panel-header-calm */
+  --seg-track-bg: #dde7f6;
+  --surface-muted: #eef3fb;
   --project-surface-bg: #ffffff;
-  --project-surface-border: #ebf0f6;
+  --project-surface-border: rgba(37, 99, 235, 0.09);
   --project-surface-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.03),
-    0 8px 20px -6px rgba(15, 23, 42, 0.06),
-    0 20px 40px -16px rgba(15, 23, 42, 0.1);
-  --task-row-border: #e8eef5;
-  --task-row-bg: #f8fafc;
-  --control-border: #d8e0eb;
-  --control-border-focus: #3b82f6;
-  --radius-card: 1.125rem;
+    0 1px 2px rgba(30, 64, 175, 0.04),
+    0 8px 20px -6px rgba(37, 99, 235, 0.08),
+    0 22px 44px -16px rgba(15, 23, 42, 0.1);
+  --task-row-border: rgba(37, 99, 235, 0.08);
+  --task-row-bg: #f7faff;
+  --control-border: #c5d4ea;
+  --control-border-focus: #2563eb;
+  --radius-card: 1.25rem;
   /* Cool berry urgency — pink-leaning so it sits with brand blue (not warm fire-engine red) */
   --urgency: #b0175c;
   --urgency-strong: #8e1249;
@@ -60,7 +62,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: #eef2f8;
+  background: #e3ebf7;
   color: #334155;
   font-family: system-ui, -apple-system, sans-serif;
   transition: opacity 0.18s ease;
@@ -118,14 +120,20 @@ select {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
-/* Site chrome — bright bar so brand/CTAs don't go muddy against page wash */
+/* Site chrome — frosted glass with a cool luminous tint */
 .nav-chrome {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(232, 240, 252, 0.78) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.1);
   padding-top: max(0.65rem, env(safe-area-inset-top, 0px));
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 8px 24px -18px rgba(37, 99, 235, 0.35);
 }
 .dark .nav-chrome {
   background: rgba(7, 11, 22, 0.92);
@@ -148,7 +156,8 @@ select {
 .nav-chrome-link-active {
   color: #1d4ed8;
   font-weight: 700;
-  background-color: rgba(37, 99, 235, 0.1);
+  background-color: rgba(37, 99, 235, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.14);
 }
 .dark .nav-chrome-link {
   color: #cbd5e1;
@@ -238,6 +247,9 @@ select {
 }
 .dark .nav-chrome-meta {
   color: #cbd5e1;
+}
+:root:not(.dark) .nav-chrome-meta {
+  color: #475569;
 }
 
 /* Partner promo chip — visible but subordinate to brand + CTAs */
@@ -331,10 +343,11 @@ select {
 .status-strip {
   border-bottom: 1px solid var(--surface-border);
   box-shadow: 0 8px 20px -16px rgba(15, 23, 42, 0.18);
-  background: var(--page-bg);
+  background: transparent;
 }
 :root:not(.dark) .status-strip {
-  background: var(--page-bg);
+  background: transparent;
+  border-bottom-color: rgba(37, 99, 235, 0.08);
 }
 .dark .status-strip {
   background: #0f172a;
@@ -350,7 +363,11 @@ select {
   box-shadow: var(--project-surface-shadow);
 }
 :root:not(.dark) .status-strip-card {
-  border-color: rgba(15, 23, 42, 0.05);
+  border-color: rgba(37, 99, 235, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    var(--project-surface-shadow);
 }
 .dark .status-strip-card {
   border-color: #243350;
@@ -397,13 +414,16 @@ select {
   box-shadow: none;
 }
 
-/* Toolbar strip — flat content surface (no gradient wash) */
+/* Toolbar strip — translucent plate over the atmosphere */
 .panel-header-calm {
   background: var(--panel-header-bg);
   border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 75%, transparent);
 }
 :root:not(.dark) .panel-header-calm {
-  border-bottom-color: rgba(15, 23, 42, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom-color: rgba(37, 99, 235, 0.08);
 }
 .dark .panel-header-calm {
   --panel-header-bg: rgba(17, 24, 39, 0.92);
@@ -418,6 +438,12 @@ select {
   border-radius: 0.75rem;
   padding: 0.25rem;
   box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.16);
+}
+:root:not(.dark) .app-seg-track {
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(37, 99, 235, 0.1),
+    0 1px 2px rgba(15, 23, 42, 0.03);
 }
 .dark .app-seg-track {
   /* Self-contained — must not rely on .panel-header-calm (Layout lives outside it now) */
@@ -441,10 +467,14 @@ select {
     0 10px 28px -12px rgba(15, 23, 42, 0.1);
 }
 :root:not(.dark) .app-surface {
-  border-color: rgba(15, 23, 42, 0.05);
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(37, 99, 235, 0.1);
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.02),
-    0 12px 32px -14px rgba(15, 23, 42, 0.1);
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 1px 2px rgba(30, 64, 175, 0.04),
+    0 16px 40px -18px rgba(37, 99, 235, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .dark .app-surface {
   background: #111827;
@@ -462,15 +492,17 @@ select {
   box-shadow: var(--project-surface-shadow);
 }
 :root:not(.dark) .project-surface {
-  border-color: rgba(15, 23, 42, 0.05);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  border-color: rgba(37, 99, 235, 0.1);
+  box-shadow: var(--project-surface-shadow);
+  transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
 }
 :root:not(.dark) .project-surface:hover {
-  border-color: rgba(15, 23, 42, 0.08);
+  border-color: rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
   box-shadow:
-    0 2px 4px rgba(15, 23, 42, 0.03),
-    0 10px 24px -8px rgba(15, 23, 42, 0.08),
-    0 24px 48px -18px rgba(15, 23, 42, 0.12);
+    0 2px 4px rgba(30, 64, 175, 0.05),
+    0 12px 28px -8px rgba(37, 99, 235, 0.14),
+    0 28px 52px -20px rgba(15, 23, 42, 0.12);
 }
 .dark .project-surface {
   background: #16233a;
@@ -519,6 +551,25 @@ select {
   font-size: 0.9375rem;
   line-height: 1.5;
   color: #0f172a;
+}
+/* Light atmosphere — soft sky wash behind crisp work plates */
+:root:not(.dark) .app-shell {
+  background-color: var(--page-bg);
+  background-image:
+    radial-gradient(ellipse 110% 70% at 50% -18%, rgba(147, 197, 253, 0.55), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 100% 8%, rgba(191, 219, 254, 0.4), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 0% 85%, rgba(199, 210, 254, 0.35), transparent 52%),
+    linear-gradient(180deg, #eaf1fb 0%, var(--page-bg) 42%, #e8eef8 100%);
+  background-attachment: fixed;
+}
+.dark .app-shell {
+  background-image: none;
+  background-attachment: scroll;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not(.dark) .project-surface:hover {
+    transform: none;
+  }
 }
 @media (min-width: 640px) {
   .app-shell {
@@ -756,8 +807,11 @@ select {
   overflow: hidden;
 }
 :root:not(.dark) .task-list-section-panel {
-  border-color: rgba(15, 23, 42, 0.05);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  border-color: rgba(37, 99, 235, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 4px 14px -8px rgba(37, 99, 235, 0.12);
 }
 .dark .task-list-section-panel {
   border-color: #243350;
