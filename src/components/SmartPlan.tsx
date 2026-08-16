@@ -18,30 +18,34 @@ function TaskRow({
   onSetOneThing,
   isOneThing,
   showOneThing,
+  compact,
 }: {
   st: ScoredTask;
   onStartTask: (id: string) => void;
   onSetOneThing?: (id: string) => void;
   isOneThing?: boolean;
   showOneThing?: boolean;
+  compact?: boolean;
 }) {
   const t = st.task;
   const meta: string[] = [st.projectName];
-  if (t.sessions > 0) meta.push(`${t.sessions}s (${formatDuration(t.timeSpent)})`);
+  if (!compact && t.sessions > 0) meta.push(`${t.sessions}s (${formatDuration(t.timeSpent)})`);
   if (t.subtasks && t.subtasks.length > 0) {
     meta.push(`${t.subtasks.filter((s) => s.completed).length}/${t.subtasks.length}`);
   }
 
   return (
     <div
-      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+      className={`group flex items-start gap-1.5 rounded-md transition-colors ${
+        compact ? "px-1.5 py-1.5" : "px-2 py-1.5"
+      } ${
         isOneThing
           ? "bg-blue-50/90 dark:bg-blue-950/35"
           : "hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/70"
       }`}
     >
       <span
-        className={`w-0.5 self-stretch rounded-full shrink-0 ${
+        className={`w-0.5 self-stretch rounded-full shrink-0 mt-0.5 ${
           st.overdue
             ? "bg-[var(--urgency-chip)]"
             : st.atRisk
@@ -53,7 +57,7 @@ function TaskRow({
 
       {st.projectColor ? (
         <span
-          className="w-1.5 h-1.5 rounded-full shrink-0"
+          className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5"
           style={{ backgroundColor: st.projectColor }}
           aria-hidden
         />
@@ -65,27 +69,29 @@ function TaskRow({
         onClick={() => onStartTask(t.id)}
         title="Focus this task"
       >
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{t.title}</span>
-          {isOneThing && (
-            <span className="shrink-0 text-[10px] font-semibold text-blue-700 dark:text-blue-300">One Thing</span>
-          )}
-          {st.overdue && (
-            <span className="shrink-0 text-[10px] font-semibold urgency-text--mild">Overdue</span>
-          )}
-          {st.atRisk && !st.overdue && (
-            <span className="shrink-0 text-[10px] font-semibold text-amber-600 dark:text-amber-400">Won&apos;t fit</span>
-          )}
+        <div className="flex items-start gap-1 min-w-0">
+          <span
+            className={`font-medium text-slate-800 dark:text-slate-100 ${
+              compact ? "text-xs leading-snug line-clamp-2" : "text-sm truncate"
+            }`}
+          >
+            {t.title}
+          </span>
         </div>
-        <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">{meta.join(" · ")}</p>
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+          {meta.join(" · ")}
+          {st.overdue ? " · overdue" : ""}
+          {st.atRisk && !st.overdue ? " · won't fit" : ""}
+          {isOneThing ? " · One Thing" : ""}
+        </p>
       </button>
 
-      <div className="flex items-center shrink-0 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center shrink-0 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         {showOneThing && onSetOneThing && !isOneThing && (
           <button
             type="button"
             onClick={() => onSetOneThing(t.id)}
-            className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-md"
+            className="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-md"
             title="Set as Today’s One Thing"
             aria-label={`Set ${t.title} as One Thing`}
           >
@@ -97,7 +103,7 @@ function TaskRow({
         <button
           type="button"
           onClick={() => onStartTask(t.id)}
-          className="p-1.5 text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-md"
+          className="p-1 text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-md"
           title="Focus and start timer"
           aria-label={`Focus task: ${t.title}`}
         >
@@ -110,7 +116,7 @@ function TaskRow({
   );
 }
 
-function DaySection({
+function DayColumn({
   day,
   onStartTask,
   onSetOneThing,
@@ -127,8 +133,14 @@ function DaySection({
   const totalTime = day.tasks.length * workDurationMin;
 
   return (
-    <section className="min-w-0">
-      <div className="flex items-baseline justify-between gap-2 px-1 mb-1">
+    <section
+      className={`min-w-0 flex flex-col rounded-xl border px-2 py-2 sm:px-2.5 sm:py-2.5 ${
+        isToday
+          ? "border-blue-300/80 dark:border-blue-600/45 bg-blue-50/50 dark:bg-blue-950/25"
+          : "border-slate-200/90 dark:border-[#243350] bg-slate-50/60 dark:bg-[#131d30]/80"
+      }`}
+    >
+      <div className="flex items-baseline justify-between gap-2 px-0.5 mb-1.5">
         <h3
           className={`text-xs font-semibold tracking-wide uppercase ${
             isToday ? "text-blue-700 dark:text-blue-300" : "text-slate-500 dark:text-slate-400"
@@ -137,13 +149,11 @@ function DaySection({
           {day.label}
         </h3>
         <span className="text-[11px] text-slate-400 dark:text-slate-500 tabular-nums whitespace-nowrap">
-          {day.tasks.length === 0
-            ? "Open"
-            : `${day.tasks.length} · ~${totalTime}m`}
+          {day.tasks.length === 0 ? "Open" : `${day.tasks.length} · ~${totalTime}m`}
         </span>
       </div>
       {day.tasks.length > 0 ? (
-        <div className="space-y-0.5">
+        <div className="space-y-0.5 flex-1">
           {day.tasks.map((st) => (
             <TaskRow
               key={st.task.id}
@@ -152,12 +162,13 @@ function DaySection({
               onSetOneThing={onSetOneThing}
               isOneThing={oneThingTaskId === st.task.id}
               showOneThing={isToday}
+              compact
             />
           ))}
         </div>
       ) : (
-        <p className="px-2 py-2 text-xs text-slate-400 dark:text-slate-500">
-          Capacity free — pull from backlog or add a task
+        <p className="px-1.5 py-3 text-xs text-slate-400 dark:text-slate-500">
+          Capacity free
         </p>
       )}
     </section>
@@ -219,69 +230,69 @@ export default function SmartPlan({
   };
 
   return (
-    <div className="p-3 sm:p-4 space-y-4 overflow-hidden min-w-0 max-w-3xl">
-      {/* Quiet capacity + summary — one line, not a dashboard */}
-      <div className="px-0.5 space-y-1.5">
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          Capacity {settings.dailyGoal}×{workDurationMin}m · pick today&apos;s focus
-        </p>
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <StatChip value={plan.summary.todayCount} label="today" />
-          <StatChip value={plan.summary.daysNeeded} label="days to clear" />
-          {plan.summary.overdueCount > 0 && (
-            <StatChip value={plan.summary.overdueCount} label="overdue" tone="urgency" />
-          )}
-          {plan.summary.atRiskCount > 0 && (
-            <StatChip value={plan.summary.atRiskCount} label="won't fit" tone="warn" />
-          )}
-          {plan.summary.overdueCount === 0 && plan.summary.atRiskCount === 0 && (
-            <StatChip value="On track" label="" tone="ok" />
-          )}
-        </div>
-      </div>
-
-      {/* Primary CTA — horizontal strip, fills width */}
-      {recommended && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30] px-3 py-2.5">
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Start with
-            </p>
-            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate" title={recommended.task.title}>
-              {recommended.task.title}
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-              {recommended.projectName}
-              {recommended.overdue ? " · overdue" : ""}
-              {recommendedIsOneThing ? " · your One Thing" : ""}
-            </p>
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-hidden min-w-0">
+      <div className="flex flex-col gap-3 roomy:flex-row roomy:items-center roomy:justify-between roomy:gap-4">
+        <div className="min-w-0 space-y-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Capacity {settings.dailyGoal}×{workDurationMin}m · pick today&apos;s focus
+          </p>
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <StatChip value={plan.summary.todayCount} label="today" />
+            <StatChip value={plan.summary.daysNeeded} label="days to clear" />
+            {plan.summary.overdueCount > 0 && (
+              <StatChip value={plan.summary.overdueCount} label="overdue" tone="urgency" />
+            )}
+            {plan.summary.atRiskCount > 0 && (
+              <StatChip value={plan.summary.atRiskCount} label="won't fit" tone="warn" />
+            )}
+            {plan.summary.overdueCount === 0 && plan.summary.atRiskCount === 0 && (
+              <StatChip value="On track" label="" tone="ok" />
+            )}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {onSetOneThing && !recommendedIsOneThing && (
+        </div>
+
+        {recommended && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30] px-3 py-2 min-w-0 roomy:max-w-xl roomy:flex-1">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Start with
+              </p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate" title={recommended.task.title}>
+                {recommended.task.title}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {recommended.projectName}
+                {recommended.overdue ? " · overdue" : ""}
+                {recommendedIsOneThing ? " · your One Thing" : ""}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {onSetOneThing && !recommendedIsOneThing && (
+                <button
+                  type="button"
+                  onClick={() => onSetOneThing(recommended.task.id)}
+                  className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-md border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-[#1a2d4a] transition-colors"
+                >
+                  One Thing
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => onSetOneThing(recommended.task.id)}
-                className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-md border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-[#1a2d4a] transition-colors"
+                onClick={commitToday}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               >
-                One Thing
+                Focus
               </button>
-            )}
-            <button
-              type="button"
-              onClick={commitToday}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              Focus
-            </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Day schedule — same rhythm for every day */}
+      {/* Day columns — fill width like Cards */}
       {plan.days.length > 0 ? (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 roomy:grid-cols-3 roomy:lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3">
           {plan.days.map((day) => (
-            <DaySection
+            <DayColumn
               key={day.date}
               day={day}
               onStartTask={onStartTask}
@@ -325,9 +336,9 @@ export default function SmartPlan({
             </svg>
           </button>
           {backlogOpen && (
-            <div className="mt-1 space-y-0.5 opacity-80">
+            <div className="mt-2 grid grid-cols-1 min-[480px]:grid-cols-2 roomy:grid-cols-3 gap-1 opacity-90">
               {plan.unscheduled.map((st) => (
-                <TaskRow key={st.task.id} st={st} onStartTask={onStartTask} />
+                <TaskRow key={st.task.id} st={st} onStartTask={onStartTask} compact />
               ))}
             </div>
           )}
