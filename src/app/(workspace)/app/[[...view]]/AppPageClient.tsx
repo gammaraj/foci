@@ -13,7 +13,7 @@ import BoostLogikPromo from "@/components/BoostLogikPromo";
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
 const FeatureTour = dynamic(() => import("@/components/FeatureTour"));
 
-export default function AppPage() {
+export default function AppPageClient() {
   return (
     <Suspense
       fallback={

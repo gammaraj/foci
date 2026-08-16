@@ -15,6 +15,7 @@ import {
   FOCI_TAGLINE_ON_LIGHT,
   FOCI_WORDMARK_NAV,
 } from "@/lib/logo-brand";
+import { isTasksAppPath } from "@/lib/task-view-url";
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
   onOpenSettings?: () => void;
@@ -73,17 +74,18 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
   const wordmarkTone = isLight ? "light" : "dark";
   const taglineClass = isLight ? FOCI_TAGLINE_ON_LIGHT : FOCI_TAGLINE_ON_DARK;
 
-  const projectsOpen = pathname === "/app" && searchParams.get("projects") === "1";
+  const onTasksApp = isTasksAppPath(pathname);
+  const projectsOpen = onTasksApp && searchParams.get("projects") === "1";
 
   const openProjects = (e: React.MouseEvent) => {
-    if (pathname === "/app") {
+    if (onTasksApp) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("foci-open-project-menu"));
     }
   };
 
   const closeProjectsIfOpen = (e: React.MouseEvent) => {
-    if (pathname === "/app" && projectsOpen) {
+    if (onTasksApp && projectsOpen) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("foci-close-project-menu"));
     }
@@ -95,7 +97,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           key: "tasks",
           href: "/app",
           label: "Tasks",
-          active: pathname === "/app" && !projectsOpen,
+          active: onTasksApp && !projectsOpen,
           onClick: closeProjectsIfOpen,
         },
         { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" },
@@ -119,7 +121,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
 
   const goHomeCards = (e: React.MouseEvent) => {
     if (!user) return;
-    if (pathname === "/app") {
+    if (onTasksApp) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("foci-go-home-cards"));
       setMenuOpen(false);

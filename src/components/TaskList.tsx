@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
@@ -37,6 +37,10 @@ import {
   resolveInitialTaskView,
   type DefaultTaskView,
 } from "@/lib/task-view-preference";
+import {
+  buildAppHref,
+  parseTaskViewFromPath,
+} from "@/lib/task-view-url";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import TaskCardView from "@/components/task-list/TaskCardView";
 import { applyBucketDrop, moveCardTaskInProject, type BucketDropTarget } from "@/components/task-list/bucket-order";
@@ -180,11 +184,17 @@ export default function TaskList({
   // Instant paint from last local snapshot — after hydrate, before browser paint.
   useLayoutEffect(() => {
     const snap = readLocalWorkspaceSnapshot();
+    const pathView = parseTaskViewFromPath(window.location.pathname);
+    if (pathView) {
+      setViewMode(pathView);
+    }
     if (!snap) return;
     setBootSnapshot(snap);
     setTasks(snap.tasks);
     setProjects(snap.projects);
-    setViewMode(resolveInitialTaskView(snap.taskViewPrefs));
+    if (!pathView) {
+      setViewMode(resolveInitialTaskView(snap.taskViewPrefs));
+    }
     setOneThingPref(snap.oneThing);
     setTasksReady(true);
   }, []);
@@ -243,14 +253,16 @@ export default function TaskList({
   /** User picked a layout this session — don't let async prefs load clobber it (e.g. Plan → Cards). */
   const viewModeUserChosenRef = useRef(false);
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const appHref = useCallback((mutate: (params: URLSearchParams) => void) => {
-    const params = new URLSearchParams(searchParams.toString());
-    mutate(params);
-    const q = params.toString();
-    return q ? `/app?${q}` : "/app";
-  }, [searchParams]);
+  const appHref = useCallback(
+    (mutate: (params: URLSearchParams) => void, mode?: TaskViewMode | null) => {
+      const pathMode = mode === undefined ? parseTaskViewFromPath(pathname) ?? viewMode : mode;
+      return buildAppHref(pathMode, searchParams, mutate);
+    },
+    [pathname, viewMode, searchParams],
+  );
 
   const openProjectManage = useCallback(() => {
     // Prefer returning to cards/buckets/calendar over a list drill-in.
@@ -309,22 +321,17 @@ export default function TaskList({
     viewModeUserChosenRef.current = true;
     wasProjectDrillInRef.current = false;
     taskDetailPushedRef.current = false;
-    if (
-      searchParams.get("project") ||
-      searchParams.get("from") ||
-      searchParams.get("task") ||
-      searchParams.get("projects")
-    ) {
-      router.replace(
-        appHref((p) => {
-          p.delete("project");
-          p.delete("from");
-          p.delete("task");
-          p.delete("projects");
-        }),
-        { scroll: false },
-      );
-    }
+
+    router.replace(
+      buildAppHref(mode, searchParams, (p) => {
+        p.delete("project");
+        p.delete("from");
+        p.delete("task");
+        p.delete("projects");
+      }),
+      { scroll: false },
+    );
+
     if (mode === "plan") {
       setViewMode((prev) => {
         if (prev !== "plan") {
@@ -350,7 +357,7 @@ export default function TaskList({
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
     persistTaskView(mode);
-  }, [persistTaskView, searchParams, router, appHref]);
+  }, [persistTaskView, searchParams, router]);
 
   // Default due date when adding from Today / Week / Month / Year views
   useEffect(() => {
@@ -419,8 +426,7 @@ export default function TaskList({
     wasProjectDrillInRef.current = false;
     taskDetailPushedRef.current = false;
     selectViewMode("card");
-    router.replace("/app", { scroll: false });
-  }, [selectViewMode, router]);
+  }, [selectViewMode]);
 
   useEffect(() => {
     const open = () => openProjectManage();
@@ -437,15 +443,20 @@ export default function TaskList({
   }, [openProjectManage, closeProjectManage, goHomeCards]);
 
   // Sync navigable overlays from the URL so browser Back restores prior UI.
+  // Layout mode comes from `/app/cards` (etc). Do not depend on viewMode — that caused
+  // Plan clicks to race with drill-in restore and bounce to the previous tab.
   useEffect(() => {
     const shouldOpenProjects = searchParams.get("projects") === "1";
     setProjectManageOpen((wasOpen) => {
       if (wasOpen === shouldOpenProjects) return wasOpen;
       if (shouldOpenProjects) {
+        const pathView = parseTaskViewFromPath(pathname);
         viewBeforeManageRef.current =
-          viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
-            ? viewMode
-            : "card";
+          pathView && pathView !== "plan"
+            ? pathView
+            : viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
+              ? viewMode
+              : "card";
       }
       return shouldOpenProjects;
     });
@@ -455,6 +466,8 @@ export default function TaskList({
 
     const drillProject = searchParams.get("project");
     const fromParam = searchParams.get("from");
+    const pathView = parseTaskViewFromPath(pathname);
+
     if (drillProject) {
       if (
         fromParam === "bucket" ||
@@ -464,7 +477,7 @@ export default function TaskList({
       ) {
         drillReturnViewRef.current = fromParam;
       } else if (!wasProjectDrillInRef.current) {
-        drillReturnViewRef.current = "card";
+        drillReturnViewRef.current = pathView && pathView !== "list" ? pathView : "card";
       }
       wasProjectDrillInRef.current = true;
       setSelectedSharedProject(null);
@@ -479,6 +492,29 @@ export default function TaskList({
       setSelectedProjectId(ALL_PROJECTS_ID);
       saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
       setViewMode(returnTo);
+      if (returnTo === "plan") loadSettings().then(setPlanSettings);
+      if (pathView !== returnTo) {
+        router.replace(
+          buildAppHref(returnTo, searchParams, (p) => {
+            p.delete("project");
+            p.delete("from");
+          }),
+          { scroll: false },
+        );
+      }
+    } else if (pathView) {
+      viewModeUserChosenRef.current = true;
+      setViewMode((prev) => {
+        if (prev === pathView) return prev;
+        if (pathView === "plan" && prev !== "plan") {
+          viewBeforePlanRef.current =
+            prev === "calendar" || prev === "list" || prev === "bucket" || prev === "card"
+              ? prev
+              : "card";
+        }
+        return pathView;
+      });
+      if (pathView === "plan") loadSettings().then(setPlanSettings);
     }
 
     const taskId = searchParams.get("task");
@@ -496,7 +532,9 @@ export default function TaskList({
         return null;
       });
     }
-  }, [searchParams, viewMode]);
+    // viewMode intentionally omitted — URL is the source of truth for layout.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-sync on navigation
+  }, [searchParams, pathname, router]);
 
   useEffect(() => {
     try {
@@ -543,7 +581,9 @@ export default function TaskList({
         const drillingIn =
           typeof window !== "undefined" &&
           new URLSearchParams(window.location.search).get("project");
-        if (!drillingIn && !viewModeUserChosenRef.current) {
+        const pathView =
+          typeof window !== "undefined" ? parseTaskViewFromPath(window.location.pathname) : null;
+        if (!drillingIn && !viewModeUserChosenRef.current && !pathView) {
           setViewMode(resolveInitialTaskView(taskViewPrefs));
         }
         setOneThingPref(oneThing);
@@ -714,17 +754,19 @@ export default function TaskList({
         id === THIS_MONTH_FILTER_ID ||
         id === THIS_YEAR_FILTER_ID;
       if (id === ALL_PROJECTS_ID || isTimeScope) {
+        const returnMode = drillReturnViewRef.current;
         wasProjectDrillInRef.current = false;
         setListReturnView(null);
+        setViewMode(returnMode);
         router.replace(
-          appHref((p) => {
+          buildAppHref(returnMode, searchParams, (p) => {
             p.delete("project");
             p.delete("from");
           }),
           { scroll: false },
         );
       } else if (id !== drilled) {
-        router.replace(appHref((p) => p.set("project", id)), { scroll: false });
+        router.replace(appHref((p) => p.set("project", id), "list"), { scroll: false });
       }
     }
   };
@@ -738,7 +780,7 @@ export default function TaskList({
           : viewMode;
     drillReturnViewRef.current = from === "list" ? "card" : from;
     router.push(
-      appHref((p) => {
+      buildAppHref("list", searchParams, (p) => {
         p.delete("projects");
         p.delete("task");
         p.set("project", projectId);
@@ -746,7 +788,7 @@ export default function TaskList({
       }),
       { scroll: false },
     );
-  }, [viewMode, listReturnView, router, appHref]);
+  }, [viewMode, listReturnView, router, searchParams]);
 
   const reloadAfterImport = useCallback(async (result?: {
     tasks: Task[];
@@ -781,10 +823,10 @@ export default function TaskList({
     const returnTo = listReturnView ?? "card";
     setSelectedProjectId(ALL_PROJECTS_ID);
     saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
-    setViewMode(returnTo);
     setListReturnView(null);
     wasProjectDrillInRef.current = false;
-  }, [listReturnView, searchParams, router]);
+    selectViewMode(returnTo);
+  }, [listReturnView, searchParams, router, selectViewMode]);
 
   const selectProjectScope = (projectId: string) => {
     const timeScope =
@@ -2730,13 +2772,7 @@ export default function TaskList({
                   <span className="hidden lg:inline">Calendar</span>
                 </button>
                 <button
-                  onClick={() => {
-                    if (viewMode === "plan") {
-                      selectViewMode(viewBeforePlanRef.current);
-                    } else {
-                      selectViewMode("plan");
-                    }
-                  }}
+                  onClick={() => selectViewMode("plan")}
                   className={`${SEG_TAB_ICON_PAD} ${viewMode === "plan" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
                   title="Smart Plan — schedule your day"
                   aria-label="Smart Plan"
