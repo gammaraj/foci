@@ -26,28 +26,38 @@ function TaskRow({
   showOneThing?: boolean;
 }) {
   const t = st.task;
-  const subtaskProgress =
-    t.subtasks && t.subtasks.length > 0
-      ? `${t.subtasks.filter((s) => s.completed).length}/${t.subtasks.length}`
-      : null;
+  const meta: string[] = [st.projectName];
+  if (t.sessions > 0) meta.push(`${t.sessions}s (${formatDuration(t.timeSpent)})`);
+  if (t.subtasks && t.subtasks.length > 0) {
+    meta.push(`${t.subtasks.filter((s) => s.completed).length}/${t.subtasks.length}`);
+  }
 
   return (
     <div
-      className={`group flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-2 rounded-lg transition-colors ${
-        st.overdue
-          ? "border-l-2 border-[var(--urgency-chip)]"
-          : st.atRisk
-            ? "border-l-2 border-amber-600"
-            : ""
-      } ${isOneThing ? "bg-blue-50/80 dark:bg-blue-950/30" : "hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"}`}
+      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+        isOneThing
+          ? "bg-blue-50/90 dark:bg-blue-950/35"
+          : "hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/70"
+      }`}
     >
-      {st.projectColor && (
+      <span
+        className={`w-0.5 self-stretch rounded-full shrink-0 ${
+          st.overdue
+            ? "bg-[var(--urgency-chip)]"
+            : st.atRisk
+              ? "bg-amber-500"
+              : "bg-transparent"
+        }`}
+        aria-hidden
+      />
+
+      {st.projectColor ? (
         <span
-          className="w-2 h-2 rounded-full flex-shrink-0"
+          className="w-1.5 h-1.5 rounded-full shrink-0"
           style={{ backgroundColor: st.projectColor }}
-          aria-hidden="true"
+          aria-hidden
         />
-      )}
+      ) : null}
 
       <button
         type="button"
@@ -55,43 +65,27 @@ function TaskRow({
         onClick={() => onStartTask(t.id)}
         title="Focus this task"
       >
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0">
           <span className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{t.title}</span>
           {isOneThing && (
-            <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300">
-              One Thing
-            </span>
+            <span className="shrink-0 text-[10px] font-semibold text-blue-700 dark:text-blue-300">One Thing</span>
           )}
           {st.overdue && (
-            <span className="text-[10px] font-semibold urgency-chip--soft px-1.5 py-0.5 rounded flex-shrink-0">
-              Overdue
-            </span>
+            <span className="shrink-0 text-[10px] font-semibold urgency-text--mild">Overdue</span>
           )}
           {st.atRisk && !st.overdue && (
-            <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
-              Won&apos;t fit
-            </span>
+            <span className="shrink-0 text-[10px] font-semibold text-amber-600 dark:text-amber-400">Won&apos;t fit</span>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 mt-0.5">
-          <span className="text-xs text-slate-400 dark:text-slate-300">{st.projectName}</span>
-          {t.sessions > 0 && (
-            <span className="text-xs text-slate-400 dark:text-slate-300">
-              · {t.sessions}s ({formatDuration(t.timeSpent)})
-            </span>
-          )}
-          {subtaskProgress && (
-            <span className="text-xs text-slate-400 dark:text-slate-300">· {subtaskProgress}</span>
-          )}
-        </div>
+        <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">{meta.join(" · ")}</p>
       </button>
 
-      <div className="flex items-center gap-0.5 shrink-0">
+      <div className="flex items-center shrink-0 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         {showOneThing && onSetOneThing && !isOneThing && (
           <button
             type="button"
             onClick={() => onSetOneThing(t.id)}
-            className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-md"
             title="Set as Today’s One Thing"
             aria-label={`Set ${t.title} as One Thing`}
           >
@@ -103,11 +97,11 @@ function TaskRow({
         <button
           type="button"
           onClick={() => onStartTask(t.id)}
-          className="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+          className="p-1.5 text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-md"
           title="Focus and start timer"
           aria-label={`Focus task: ${t.title}`}
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path d="M8 5v14l11-7z" />
           </svg>
         </button>
@@ -133,20 +127,19 @@ function DaySection({
   const totalTime = day.tasks.length * workDurationMin;
 
   return (
-    <div className={`mb-3 sm:mb-4 ${isToday ? "rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-blue-50/40 dark:bg-blue-950/20 p-2.5 sm:p-3" : ""}`}>
-      <div className="flex items-center justify-between mb-1.5 px-0.5 gap-2">
+    <section className="min-w-0">
+      <div className="flex items-baseline justify-between gap-2 px-1 mb-1">
         <h3
-          className={`text-sm font-semibold flex-shrink-0 ${
-            isToday ? "text-blue-700 dark:text-blue-300" : "text-slate-700 dark:text-slate-200"
+          className={`text-xs font-semibold tracking-wide uppercase ${
+            isToday ? "text-blue-700 dark:text-blue-300" : "text-slate-500 dark:text-slate-400"
           }`}
         >
           {day.label}
-          {!isToday && day.label !== "Tomorrow" && (
-            <span className="ml-1.5 text-xs font-normal text-slate-400 dark:text-slate-500">{day.date}</span>
-          )}
         </h3>
-        <span className="text-xs text-slate-400 dark:text-slate-300 flex-shrink-0 whitespace-nowrap">
-          {day.tasks.length} task{day.tasks.length !== 1 ? "s" : ""} · ~{totalTime}m
+        <span className="text-[11px] text-slate-400 dark:text-slate-500 tabular-nums whitespace-nowrap">
+          {day.tasks.length === 0
+            ? "Open"
+            : `${day.tasks.length} · ~${totalTime}m`}
         </span>
       </div>
       {day.tasks.length > 0 ? (
@@ -163,11 +156,37 @@ function DaySection({
           ))}
         </div>
       ) : (
-        <div className="px-3 py-3 text-sm text-slate-400 dark:text-slate-300 italic">
-          Capacity free — add a task or pull from backlog
-        </div>
+        <p className="px-2 py-2 text-xs text-slate-400 dark:text-slate-500">
+          Capacity free — pull from backlog or add a task
+        </p>
       )}
-    </div>
+    </section>
+  );
+}
+
+function StatChip({
+  value,
+  label,
+  tone = "neutral",
+}: {
+  value: string | number;
+  label: string;
+  tone?: "neutral" | "urgency" | "warn" | "ok";
+}) {
+  const valueClass =
+    tone === "urgency"
+      ? "urgency-text--mild"
+      : tone === "warn"
+        ? "text-amber-600 dark:text-amber-400"
+        : tone === "ok"
+          ? "text-emerald-600 dark:text-emerald-400"
+          : "text-slate-800 dark:text-slate-100";
+
+  return (
+    <span className="inline-flex items-baseline gap-1 min-w-0">
+      <span className={`text-sm font-semibold tabular-nums ${valueClass}`}>{value}</span>
+      <span className="text-xs text-slate-500 dark:text-slate-400">{label}</span>
+    </span>
   );
 }
 
@@ -200,116 +219,100 @@ export default function SmartPlan({
   };
 
   return (
-    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-hidden min-w-0">
-      <div className="px-0.5">
-        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Smart Plan</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
-          Spreads open work across days using your capacity ({settings.dailyGoal} session
-          {settings.dailyGoal !== 1 ? "s" : ""}/day × {workDurationMin}m). Use it to pick today&apos;s focus — not as a
-          calendar to edit.
+    <div className="p-3 sm:p-4 space-y-4 overflow-hidden min-w-0 max-w-3xl">
+      {/* Quiet capacity + summary — one line, not a dashboard */}
+      <div className="px-0.5 space-y-1.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Capacity {settings.dailyGoal}×{workDurationMin}m · pick today&apos;s focus
         </p>
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <StatChip value={plan.summary.todayCount} label="today" />
+          <StatChip value={plan.summary.daysNeeded} label="days to clear" />
+          {plan.summary.overdueCount > 0 && (
+            <StatChip value={plan.summary.overdueCount} label="overdue" tone="urgency" />
+          )}
+          {plan.summary.atRiskCount > 0 && (
+            <StatChip value={plan.summary.atRiskCount} label="won't fit" tone="warn" />
+          )}
+          {plan.summary.overdueCount === 0 && plan.summary.atRiskCount === 0 && (
+            <StatChip value="On track" label="" tone="ok" />
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl px-3 py-2.5 text-center">
-          <div className="text-lg font-bold text-slate-800 dark:text-white tabular-nums">{plan.summary.todayCount}</div>
-          <div className="text-xs text-slate-500 dark:text-slate-300">Today</div>
-        </div>
-        <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl px-3 py-2.5 text-center">
-          <div className="text-lg font-bold text-slate-800 dark:text-white tabular-nums">{plan.summary.daysNeeded}</div>
-          <div className="text-xs text-slate-500 dark:text-slate-300">Days to clear</div>
-        </div>
-        {plan.summary.overdueCount > 0 && (
-          <div className="rounded-xl px-3 py-2.5 text-center urgency-surface border">
-            <div className="text-lg font-bold urgency-text--mild tabular-nums">{plan.summary.overdueCount}</div>
-            <div className="text-xs urgency-text--mild">Overdue</div>
-          </div>
-        )}
-        {plan.summary.atRiskCount > 0 && (
-          <div className="bg-amber-50 dark:bg-amber-900/15 rounded-xl px-3 py-2.5 text-center">
-            <div className="text-lg font-bold text-amber-600 dark:text-amber-400 tabular-nums">
-              {plan.summary.atRiskCount}
-            </div>
-            <div className="text-xs text-amber-500 dark:text-amber-400">Won&apos;t fit</div>
-          </div>
-        )}
-        {plan.summary.overdueCount === 0 && plan.summary.atRiskCount === 0 && (
-          <>
-            <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl px-3 py-2.5 text-center">
-              <div className="text-lg font-bold text-slate-800 dark:text-white tabular-nums">{plan.summary.totalTasks}</div>
-              <div className="text-xs text-slate-500 dark:text-slate-300">Open</div>
-            </div>
-            <div className="bg-slate-50 dark:bg-[#131d30] rounded-xl px-3 py-2.5 text-center col-span-2 sm:col-span-1">
-              <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">On track</div>
-              <div className="text-xs text-slate-500 dark:text-slate-300">No overdue</div>
-            </div>
-          </>
-        )}
-      </div>
-
+      {/* Primary CTA — horizontal strip, fills width */}
       {recommended && (
-        <div className="rounded-xl border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 px-3 py-3">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200">
-            Recommended for today
-          </p>
-          <p className="mt-1 text-sm font-semibold text-blue-950 dark:text-white truncate" title={recommended.task.title}>
-            {recommended.task.title}
-          </p>
-          <p className="text-xs text-blue-800/80 dark:text-blue-200/80 mt-0.5">
-            {recommended.projectName}
-            {recommended.overdue ? " · overdue" : ""}
-            {recommendedIsOneThing ? " · already your One Thing" : ""}
-          </p>
-          <div className="mt-2.5 flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30] px-3 py-2.5">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Start with
+            </p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate" title={recommended.task.title}>
+              {recommended.task.title}
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+              {recommended.projectName}
+              {recommended.overdue ? " · overdue" : ""}
+              {recommendedIsOneThing ? " · your One Thing" : ""}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
             {onSetOneThing && !recommendedIsOneThing && (
               <button
                 type="button"
                 onClick={() => onSetOneThing(recommended.task.id)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-white dark:bg-blue-900/50 text-blue-800 dark:text-blue-100 border border-blue-300 dark:border-blue-600/60 hover:bg-blue-100/80 dark:hover:bg-blue-900/70 transition-colors"
+                className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-md border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-[#1a2d4a] transition-colors"
               >
-                Set as One Thing
+                One Thing
               </button>
             )}
             <button
               type="button"
               onClick={commitToday}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
-              {recommendedIsOneThing ? "Focus now" : "One Thing + Focus"}
+              Focus
             </button>
           </div>
         </div>
       )}
 
+      {/* Day schedule — same rhythm for every day */}
       {plan.days.length > 0 ? (
-        plan.days.map((day) => (
-          <DaySection
-            key={day.date}
-            day={day}
-            onStartTask={onStartTask}
-            onSetOneThing={onSetOneThing}
-            oneThingTaskId={oneThingTaskId}
-            workDurationMin={workDurationMin}
-          />
-        ))
+        <div className="space-y-4">
+          {plan.days.map((day) => (
+            <DaySection
+              key={day.date}
+              day={day}
+              onStartTask={onStartTask}
+              onSetOneThing={onSetOneThing}
+              oneThingTaskId={oneThingTaskId}
+              workDurationMin={workDurationMin}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="text-center py-8 text-slate-400 dark:text-slate-300">
+        <div className="py-10 text-center">
           <p className="text-sm font-medium text-slate-600 dark:text-slate-200">All clear</p>
-          <p className="text-xs mt-1">No open tasks to schedule. Add work from Cards or List.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            No open tasks to schedule. Add work from Cards or List.
+          </p>
         </div>
       )}
 
       {plan.unscheduled.length > 0 && (
-        <div className="mt-1">
+        <div className="border-t border-slate-200/80 dark:border-[#243350]/80 pt-3">
           <button
             type="button"
             onClick={() => setBacklogOpen((o) => !o)}
-            className="flex items-center gap-2 mb-1.5 px-0.5 text-left w-full group"
+            className="flex items-center gap-2 w-full text-left px-1"
             aria-expanded={backlogOpen}
           >
-            <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300">Backlog</h3>
-            <span className="text-xs text-slate-400 dark:text-slate-400">
-              {plan.unscheduled.length} beyond this window
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Beyond window
+            </span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 tabular-nums">
+              {plan.unscheduled.length}
             </span>
             <svg
               className={`w-3.5 h-3.5 text-slate-400 ml-auto transition-transform ${backlogOpen ? "rotate-180" : ""}`}
@@ -322,7 +325,7 @@ export default function SmartPlan({
             </svg>
           </button>
           {backlogOpen && (
-            <div className="space-y-0.5 opacity-80">
+            <div className="mt-1 space-y-0.5 opacity-80">
               {plan.unscheduled.map((st) => (
                 <TaskRow key={st.task.id} st={st} onStartTask={onStartTask} />
               ))}

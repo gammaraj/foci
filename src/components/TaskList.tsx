@@ -240,6 +240,8 @@ export default function TaskList({
   const drillReturnViewRef = useRef<TaskViewMode>("card");
   const wasProjectDrillInRef = useRef(false);
   const taskDetailPushedRef = useRef(false);
+  /** User picked a layout this session — don't let async prefs load clobber it (e.g. Plan → Cards). */
+  const viewModeUserChosenRef = useRef(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -304,6 +306,7 @@ export default function TaskList({
   const [tallyPulse, setTallyPulse] = useState(false);
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
+    viewModeUserChosenRef.current = true;
     wasProjectDrillInRef.current = false;
     taskDetailPushedRef.current = false;
     if (
@@ -540,7 +543,7 @@ export default function TaskList({
         const drillingIn =
           typeof window !== "undefined" &&
           new URLSearchParams(window.location.search).get("project");
-        if (!drillingIn) {
+        if (!drillingIn && !viewModeUserChosenRef.current) {
           setViewMode(resolveInitialTaskView(taskViewPrefs));
         }
         setOneThingPref(oneThing);
@@ -2728,15 +2731,10 @@ export default function TaskList({
                 </button>
                 <button
                   onClick={() => {
-                    if (viewMode !== "plan") {
-                      viewBeforePlanRef.current =
-                        viewMode === "calendar" || viewMode === "list" || viewMode === "bucket" || viewMode === "card"
-                          ? viewMode
-                          : "card";
-                      setViewMode("plan");
-                      loadSettings().then(setPlanSettings);
-                    } else {
+                    if (viewMode === "plan") {
                       selectViewMode(viewBeforePlanRef.current);
+                    } else {
+                      selectViewMode("plan");
                     }
                   }}
                   className={`${SEG_TAB_ICON_PAD} ${viewMode === "plan" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
