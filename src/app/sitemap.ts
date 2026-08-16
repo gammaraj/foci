@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
 import { allCompareLandings } from "@/lib/compare-landings";
 import { PRODUCT_DATE_MODIFIED, SITE_URL } from "@/lib/product-facts";
+import { TASK_VIEW_SEGMENTS } from "@/lib/task-view-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = SITE_URL;
@@ -58,6 +59,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
+  const appLayouts = TASK_VIEW_SEGMENTS.map((segment) => ({
+    url: `${siteUrl}/app/${segment}`,
+    lastModified: siteContentDate,
+    changeFrequency: "weekly" as const,
+    priority: segment === "plan" || segment === "cards" ? 0.92 : 0.88,
+    images: [`${siteUrl}/opengraph-image`],
+  }));
+
   return [
     {
       url: siteUrl,
@@ -73,6 +82,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
       images: [`${siteUrl}/opengraph-image`],
     },
+    ...appLayouts,
     {
       url: `${siteUrl}/blog`,
       lastModified: mostRecentPostDate,

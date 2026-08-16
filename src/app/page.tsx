@@ -74,7 +74,9 @@ const jsonLd = {
   dateModified: PRODUCT_DATE_MODIFIED,
   featureList: [
     "Task tracking with projects, subtasks, and automatic per-task time logging",
-    "Smart Plan: algorithmic day-by-day task scheduling based on due dates and daily goals",
+    "Smart Plan: day-by-day scheduling from due dates and capacity, with One Thing and Focus actions",
+    "Shareable layouts: /app/cards, /app/buckets, /app/list, /app/calendar, /app/plan",
+    "Done tally for completions today, this week, and this month",
     "Card view (default): project cards with drag-and-drop task reorder and slide-over task detail drawer",
     "Bucket board view: kanban columns per project with drag-and-drop reorder and cross-project moves",
     "List and calendar task views",
@@ -128,7 +130,7 @@ const howToJsonLd = {
   step: [
     { "@type": "HowToStep", name: "Open the app", text: "Visit usefoci.com/app — no signup required to start. Optionally create a free account later to sync across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
-    { "@type": "HowToStep", name: "Plan your day", text: "Use Smart Plan to turn due dates and daily goals into a day-by-day execution plan. Switch between Cards, list, kanban, and calendar views." },
+    { "@type": "HowToStep", name: "Plan your day", text: "Open Smart Plan (usefoci.com/app/plan) to turn due dates and daily capacity into a day-by-day schedule. Set Today's One Thing and start Focus. Or switch Cards, Buckets, List, and Calendar via Layout." },
     { "@type": "HowToStep", name: "Focus when you need it", text: "Optionally start a focus session with presets like Classic Pomodoro (25/5), Deep Work (50/10), or 52/17. Turn on ambient sound if you like. Time is logged per-task." },
     { "@type": "HowToStep", name: "Build your streak", text: "Hit your daily session goal and watch your streak grow. Track progress with stats, charts, and a calendar view." },
   ],
@@ -276,7 +278,11 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Plan your day</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Smart Plan schedules work from due dates and daily goals. Use Cards, list, kanban, or calendar — and an optional focus timer when a session helps.
+                Smart Plan schedules work from due dates and daily capacity — set One Thing and Focus from{" "}
+                <a href="/app/plan" className="underline underline-offset-2 hover:text-slate-700 dark:hover:text-slate-200">
+                  /app/plan
+                </a>
+                . Use Cards, Buckets, List, or Calendar — and an optional focus timer when a session helps.
               </p>
             </div>
 
@@ -311,7 +317,7 @@ export default function LandingPage() {
             {[
               {
                 title: "Tasks + projects, same screen",
-                desc: "Cards, list, kanban, and calendar views — organize work without leaving focus.",
+                desc: "Cards, Buckets, List, Calendar, and Smart Plan — shareable /app/… layout URLs.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 ),
@@ -319,7 +325,7 @@ export default function LandingPage() {
               },
               {
                 title: "Smart Plan scheduling",
-                desc: "Day-by-day task plan from due dates and daily goals — no AI required.",
+                desc: "Day-by-day capacity plan with One Thing and Focus — open /app/plan anytime.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 ),

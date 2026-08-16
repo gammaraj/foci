@@ -38,7 +38,12 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "What is Smart Plan?",
     answer:
-      "Smart Plan is Foci's algorithmic day-by-day task scheduler. It uses your tasks, due dates, and daily session goals to prioritize overdue and at-risk work and distribute sessions across days — no AI required.",
+      "Smart Plan is Foci's algorithmic day-by-day task scheduler at usefoci.com/app/plan. It uses your tasks, due dates, and daily session capacity to prioritize overdue and at-risk work, recommend Today's One Thing, and start Focus — no AI required.",
+  },
+  {
+    question: "What task views does Foci have?",
+    answer:
+      "Cards (default), Buckets (kanban), List, Calendar, and Smart Plan. Each has a shareable URL: usefoci.com/app/cards, /app/buckets, /app/list, /app/calendar, and /app/plan.",
   },
   {
     question: "Can I import tasks from Todoist, Notion, Asana, or Google Tasks?",

@@ -24,12 +24,15 @@ const appJsonLd = {
   dateModified: PRODUCT_DATE_MODIFIED,
   featureList: [
     "Task tracking with projects, subtasks, and per-task time logging",
-    "Smart Plan day-by-day scheduling",
+    "Smart Plan day-by-day scheduling with One Thing and Focus actions",
+    "Shareable layout URLs: /app/cards, /app/buckets, /app/list, /app/calendar, /app/plan",
+    "Today's One Thing daily priority",
+    "Done tally for today, this week, and this month",
     "Pomodoro, Flowtime, and 52/17 timer presets",
     "Offline ambient sounds including brown noise, rain, and café",
     "Live lo-fi streams and curated Spotify playlists",
     "Daily goals and streak tracking",
-    "Card, list, bucket (kanban), and calendar views",
+    "Card, list, bucket (kanban), calendar, and Smart Plan views",
     "Import from Todoist, Notion, Asana, Google Tasks",
     "Installable PWA with offline support",
     "Optional free account for cross-device sync",
@@ -55,18 +58,39 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
           <ol>
             <li>Open {SITE_URL}/app (no signup required to start).</li>
             <li>Add tasks and organize them into projects — or start from a project template.</li>
-            <li>Use Smart Plan to prioritize overdue and at-risk work across your week.</li>
+            <li>
+              Open Smart Plan at {SITE_URL}/app/plan to schedule the week, set Today&apos;s One Thing, and start Focus.
+            </li>
             <li>Optionally start a focus session (Pomodoro 25/5, Deep Work 50/10, or 52/17).</li>
             <li>Turn on brown noise, rain, café, or lo-fi while you work.</li>
             <li>Hit your daily goal and build a streak. Create a free account only if you want sync.</li>
           </ol>
+          <h2>Task layouts</h2>
+          <ul>
+            <li>
+              <a href={`${SITE_URL}/app/cards`}>Cards</a> — default project cards
+            </li>
+            <li>
+              <a href={`${SITE_URL}/app/buckets`}>Buckets</a> — kanban columns
+            </li>
+            <li>
+              <a href={`${SITE_URL}/app/list`}>List</a> — grind through open work
+            </li>
+            <li>
+              <a href={`${SITE_URL}/app/calendar`}>Calendar</a> — due dates
+            </li>
+            <li>
+              <a href={`${SITE_URL}/app/plan`}>Smart Plan</a> — capacity schedule + One Thing
+            </li>
+          </ul>
           <h2>Features</h2>
           <ul>
             <li>Timer presets: Pomodoro (25/5), Deep Work (50/10), 52/17, Ultra Focus (90/20)</li>
             <li>Task tracking with automatic per-task session logging</li>
-            <li>Smart Plan algorithmic day-by-day scheduling</li>
+            <li>Smart Plan algorithmic day-by-day scheduling with Focus / One Thing actions</li>
+            <li>Done tally: completions today, this week, and this month</li>
             <li>Offline ambient sounds: rain, café, white noise, brown noise</li>
-            <li>Card, list, bucket (kanban), and calendar views</li>
+            <li>Card, list, bucket (kanban), calendar, and Smart Plan views</li>
             <li>Import tasks from Todoist, Notion, Asana, or Google Tasks</li>
             <li>Optional free account to sync streaks across devices</li>
           </ul>

@@ -2,7 +2,7 @@
 title: Foci – Complete Focus System Documentation
 description: Comprehensive LLM-optimized documentation for Foci, including full feature descriptions, FAQ, blog posts, and technical architecture.
 url: https://usefoci.com
-version: 2026-08-15
+version: 2026-08-16
 content_type: full
 related: /llms.txt (summary version)
 contact: https://usefoci.com
@@ -24,7 +24,7 @@ license: Content may be cited with attribution to Foci (usefoci.com)
 - **Language**: English (en-US)
 - **Availability**: Worldwide via browser / PWA
 - **Entity**: sameAs — https://twitter.com/usefoci , https://x.com/usefoci , https://github.com/gammaraj/foci
-- **Last updated**: 2026-08-11
+- **Last updated**: 2026-08-16
 - **Evergreen comparisons**: https://usefoci.com/vs/forest , https://usefoci.com/vs/todoist , https://usefoci.com/vs/focusatwill
 - **Evergreen alternatives**: https://usefoci.com/alternatives/forest , https://usefoci.com/alternatives/pomodoro-apps , https://usefoci.com/alternatives/focus-apps-for-students
 - **RSS**: https://usefoci.com/feed.xml
@@ -51,9 +51,11 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Data Privacy**: All data is stored locally by default. No tracking, no ads.
 - **Task Import & Export**: Import tasks from Google Tasks (JSON), Todoist (CSV), Asana (CSV), Notion (CSV), or any CSV file. Preview shows new vs existing projects; choose a destination project or create projects from the file. Import from ⋯ → Import tasks, Settings → Data, or the Projects page. Export as JSON or CSV.
 - **Smart Filters**: Filter tasks by Today, This Week, This Month, or This Year (due in range or overdue) with project tabs for quick prioritization.
-- **Smart Plan**: Algorithmic day-by-day task scheduler. Analyzes tasks, due dates, and daily session goals to generate an execution plan. Flags overdue and at-risk items. No AI required.
+- **Smart Plan**: Algorithmic day-by-day task scheduler at https://usefoci.com/app/plan. Analyzes tasks, due dates, and daily session capacity; flags overdue and won't-fit items; recommends Today's One Thing and starts Focus. Day-column schedule UI. No AI required.
 - **Project Metadata**: Assign colors, due dates, and descriptions to projects. Archive completed projects to keep their tasks. Deleting a project permanently deletes its tasks. Color-coded dots for visual organization.
-- **Tasks vs Projects**: Tasks is where you work (Cards, List, Buckets, Calendar). Projects in the top nav is where you manage, create, import, and delete projects.
+- **Tasks vs Projects**: Tasks is where you work (Cards, Buckets, List, Calendar, Plan). Projects in the top nav is where you manage, create, import, and delete projects.
+- **Layout URLs**: Shareable deep links — https://usefoci.com/app/cards , /app/buckets , /app/list , /app/calendar , /app/plan (bare /app uses your default view).
+- **Done tally**: Header chip shows completions today, this week, and this month; tap to jump to completed work.
 - **Productivity Stats**: Dashboard with session heatmap, per-project charts, streak history, and daily/weekly/monthly analytics.
 - **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly. Completing a recurring task auto-creates the next occurrence with the correct due date.
 - **Subtask Due Dates**: Assign individual due dates to subtasks for granular deadline tracking. Integrated with Smart Plan and smart filters.
@@ -87,10 +89,11 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 
 1. Visit https://usefoci.com/app (no signup required to start) or create a free account to sync.
 2. Add tasks and organize them into projects — or start from a project template (workflows or financial planning packs).
-3. Open Settings to configure work duration, break duration, and daily session goal.
-4. Select a task, turn on ambient music if you like, and press Start.
-5. When the timer ends, take a break. Foci handles the transition automatically.
-6. Hit your daily goal and build your streak. Track progress with stats and charts.
+3. Open Smart Plan (Layout → Plan, or https://usefoci.com/app/plan) to schedule the week, set Today's One Thing, and Focus.
+4. Open Settings to configure work duration, break duration, and daily session goal.
+5. Select a task, turn on ambient music if you like, and press Start.
+6. When the timer ends, take a break. Foci handles the transition automatically.
+7. Hit your daily goal and build your streak. Track progress with the done tally and Stats.
 
 ## Geographic availability (GEO)
 
@@ -185,7 +188,13 @@ A: Yes. Foci supports importing tasks from Google Tasks (JSON), Todoist (CSV), A
 A: Yes. Export all your tasks as JSON (for re-importing into Foci) or CSV (for spreadsheets or other apps) from the Settings panel under Import & Export Tasks.
 
 **Q: What is Smart Plan?**
-A: Smart Plan is Foci's built-in task scheduler. It analyzes your tasks, due dates, and daily session goals to generate a day-by-day execution plan. It prioritizes overdue and at-risk tasks, distributes work across days based on your capacity, and shows a clear schedule you can follow. No AI required — it's a fast, algorithmic approach.
+A: Smart Plan is Foci's built-in task scheduler at usefoci.com/app/plan. It analyzes your tasks, due dates, and daily session capacity to generate a day-by-day schedule, flags overdue and won't-fit work, recommends Today's One Thing, and lets you start Focus in one click. No AI required — it's a fast algorithmic approach.
+
+**Q: What task layout URLs does Foci have?**
+A: Cards (default) https://usefoci.com/app/cards , Buckets https://usefoci.com/app/buckets , List https://usefoci.com/app/list , Calendar https://usefoci.com/app/calendar , and Smart Plan https://usefoci.com/app/plan . Bare https://usefoci.com/app uses your saved default view.
+
+**Q: Does Foci show how much I finished today vs this week?**
+A: Yes. The Tasks header done tally shows completions for today, this week, and this month. Tap it to jump to completed work.
 
 **Q: Can I organize tasks with project colors?**
 A: Yes. Each project in Foci can have a custom color, due date, and description. Color-coded dots appear on project tabs and in task lists for quick visual identification. You can archive completed projects to keep their tasks, or delete a project to permanently remove it and all of its tasks.
@@ -281,7 +290,7 @@ A: Yes. Drag project tabs on desktop to reorder them, or open Manage projects (�
 A: Yes. Switch to Bucket view for project columns with Overdue, Today, This Week, and No date swimlanes. Drag tasks to reorder within a section or drop on another project column to move. The task detail drawer covers Save, Focus, due dates, and subtasks.
 
 **Q: What is the default task view in Foci?**
-A: Card view is the default — each project is a card listing open tasks. Drag tasks to reorder. Switch to Buckets, List, Calendar, or Smart Plan anytime.
+A: Card view is the default — each project is a card listing open tasks (https://usefoci.com/app/cards). Drag tasks to reorder. Switch to Buckets, List, Calendar, or Smart Plan anytime via Layout or the shareable /app/… URLs.
 
 **Q: How do I edit task details in Foci?**
 A: Open a task to the detail panel. Set description, due date, priority, waiting/someday, recurrence, and project. Use Focus in the panel to start the timer; tap Save to commit drafts and close.
@@ -318,7 +327,8 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 
 - `src/app/layout.tsx` – Root layout with SEO metadata and structured data.
 - `src/app/page.tsx` – Landing page with feature overview.
-- `src/app/app/page.tsx` – Main app with timer, controls, tasks, and settings.
+- `src/app/(workspace)/app/[[...view]]/page.tsx` – Validates /app/cards-style layout segments; workspace UI lives in the app layout.
+- `src/app/(workspace)/app/AppPageClient.tsx` – Main app client (timer context, TaskList).
 - `src/app/login/page.tsx` – Authentication page.
 - `src/components/CircularTimer.tsx` – SVG-based circular countdown display.
 - `src/components/TimerControls.tsx` – Start, pause, and reset buttons.
@@ -335,7 +345,9 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - `src/components/TaskPanelQuote.tsx` – Daily motivational quote (navbar variant on /app).
 - `src/components/Navbar.tsx` – Site header with logo, optional center slot (daily quote), and nav links.
 - `src/lib/smartplan.ts` – Smart Plan scoring algorithm and day-by-day task distribution engine.
-- `src/components/SmartPlan.tsx` – Smart Plan UI with summary cards, day sections, and task rows.
+- `src/components/SmartPlan.tsx` – Smart Plan UI: capacity summary, Start with / One Thing / Focus, day columns.
+- `src/lib/task-view-url.ts` – Layout path helpers (/app/cards → card mode, etc.).
+- `src/components/task-list/DoneTodayTally.tsx` – Done today / this week / this month header tally.
 - `src/components/TaskImportExport.tsx` – Import tasks from Google Tasks, Todoist, Asana, Notion, CSV with destination picker and new/existing project preview. Export as JSON/CSV.
 - `src/components/OnboardingTour.tsx` – Guided product tour (replay via Take product tour).
 - `src/components/WeatherTime.tsx` – Local weather, temperature, live clock, and date widget.
@@ -354,6 +366,11 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - About: https://usefoci.com/about
 - Install (Add to Home Screen): https://usefoci.com/install
 - App: https://usefoci.com/app
+- App · Cards: https://usefoci.com/app/cards
+- App · Buckets: https://usefoci.com/app/buckets
+- App · List: https://usefoci.com/app/list
+- App · Calendar: https://usefoci.com/app/calendar
+- App · Smart Plan: https://usefoci.com/app/plan
 - Stats: https://usefoci.com/stats
 - Blog: https://usefoci.com/blog
 - RSS: https://usefoci.com/feed.xml
