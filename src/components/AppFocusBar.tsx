@@ -135,9 +135,9 @@ export default function AppFocusBar() {
   );
 
   return (
-    <div className="no-print border-b border-slate-200/80 dark:border-[#243350]/80 bg-white/80 dark:bg-[#0c1424]/90 backdrop-blur-sm">
+    <div className="no-print border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 bg-white/75 dark:bg-[#0c1424]/90 backdrop-blur-sm">
       <div className="app-container py-1 land-compact:py-0.5">
-        <div className="flex items-center justify-between min-w-0 gap-1 panel-header-calm rounded-lg px-2 sm:px-2.5 py-0.5">
+        <div className="flex items-center justify-between min-w-0 gap-1 panel-header-calm rounded-xl px-2 sm:px-2.5 py-0.5">
           <div id={TITLE_HOST_ID} className="min-w-0 shrink overflow-x-auto scrollbar-hide" />
 
           {/* Enough width to share the title row (any orientation) */}
@@ -149,7 +149,7 @@ export default function AppFocusBar() {
         </div>
 
         {/* Narrow phones only — focus strip under title */}
-        <div className="no-print min-[480px]:hidden mt-0.5 pt-0.5 border-t border-slate-200/70 dark:border-[#243350]/70">
+        <div className="no-print min-[480px]:hidden mt-0.5 pt-0.5 border-t border-[color:var(--surface-border)] dark:border-[#243350]/70">
           {focusStrip}
         </div>
       </div>

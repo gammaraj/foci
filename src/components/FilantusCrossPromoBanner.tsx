@@ -421,11 +421,11 @@ export function FilantusCrossPromoBanner({
             <span className="block text-[12px] font-semibold tracking-tight truncate leading-tight text-slate-700 dark:text-slate-200">
               {ad.name}
             </span>
-            <span className="block text-xs font-medium truncate leading-tight text-slate-500 dark:text-slate-400">
+            <span className="block text-[10px] font-medium truncate leading-tight text-slate-500 dark:text-slate-400">
               {ad.headline}
             </span>
           </span>
-          <span className="shrink-0 text-xs font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap text-slate-600 dark:text-slate-300 border border-slate-300/80 dark:border-slate-600/70 group-hover:border-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+          <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap text-slate-600 dark:text-slate-300 border border-slate-300/80 dark:border-slate-600/70 group-hover:border-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
             Try →
           </span>
         </a>

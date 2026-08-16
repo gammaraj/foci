@@ -670,7 +670,7 @@ function ProjectCard({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`group/card project-surface project-accent-edge rounded-xl px-2 py-2 sm:px-3.5 sm:py-3 min-w-0 flex flex-col gap-1 sm:gap-2 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
+      className={`group/card project-surface project-accent-edge rounded-2xl px-2 py-2 sm:px-3.5 sm:py-3 min-w-0 flex flex-col gap-1 sm:gap-2 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
       } ${collapsed ? "bg-slate-100/95 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
         project.favorite && !collapsed
@@ -685,7 +685,7 @@ function ProjectCard({
       data-collapsed={collapsed ? "true" : "false"}
     >
       <header
-        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-300/80 dark:border-[#243350]/80 ${
+        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80 ${
           collapsed ? "pb-0 mb-0 border-b-0" : ""
         }`}
         style={{

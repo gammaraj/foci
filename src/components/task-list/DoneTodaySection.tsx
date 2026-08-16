@@ -45,9 +45,9 @@ export function DoneTodaySection({
       <button
         type="button"
         onClick={() => setCollapsed((c) => !c)}
-        className={`w-full flex items-center gap-1.5 text-left mb-1.5 transition-colors rounded-md border ${
+        className={`w-full flex items-center gap-1.5 text-left mb-1.5 transition-colors rounded-lg border ${
           compact ? "px-2 py-1.5" : "px-2.5 py-1.5"
-        } bg-emerald-100 dark:bg-emerald-950/80 border-emerald-400/70 dark:border-emerald-600/55 text-emerald-900 dark:text-emerald-100 hover:bg-emerald-200/90 dark:hover:bg-emerald-900/70`}
+        } bg-emerald-50 dark:bg-emerald-950/80 border-emerald-200/80 dark:border-emerald-600/55 text-emerald-900 dark:text-emerald-100 hover:bg-emerald-100/90 dark:hover:bg-emerald-900/70`}
         aria-expanded={!collapsed}
       >
         <svg

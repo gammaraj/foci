@@ -21,24 +21,24 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode — airy cool wash; white plates + soft elevation */
-  --page-bg: #e8eef6;
-  --surface-border: #d5dee9;
+  /* Light mode — softer wash, hairline borders, airier radius */
+  --page-bg: #eef2f8;
+  --surface-border: #e6ecf4;
   --surface-bg: #ffffff;
-  --panel-header-bg: #ffffff;
-  --seg-track-bg: #e2eaf5;
-  --surface-muted: #f4f7fb;
+  --panel-header-bg: #fbfcfe;
+  --seg-track-bg: #e8eef6;
+  --surface-muted: #f5f7fb;
   --project-surface-bg: #ffffff;
-  --project-surface-border: #e1e7f0;
+  --project-surface-border: #ebf0f6;
   --project-surface-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 4px 12px -2px rgba(15, 23, 42, 0.07),
-    0 14px 32px -12px rgba(15, 23, 42, 0.12);
-  --task-row-border: #e2e8f0;
+    0 1px 2px rgba(15, 23, 42, 0.03),
+    0 8px 20px -6px rgba(15, 23, 42, 0.06),
+    0 20px 40px -16px rgba(15, 23, 42, 0.1);
+  --task-row-border: #e8eef5;
   --task-row-bg: #f8fafc;
-  --control-border: #c5d0e0;
+  --control-border: #d8e0eb;
   --control-border-focus: #3b82f6;
-  --radius-card: 0.875rem;
+  --radius-card: 1.125rem;
   /* Cool berry urgency — pink-leaning so it sits with brand blue (not warm fire-engine red) */
   --urgency: #b0175c;
   --urgency-strong: #8e1249;
@@ -60,7 +60,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: #e8eef6;
+  background: #eef2f8;
   color: #334155;
   font-family: system-ui, -apple-system, sans-serif;
   transition: opacity 0.18s ease;
@@ -120,12 +120,12 @@ select {
 
 /* Site chrome — bright bar so brand/CTAs don't go muddy against page wash */
 .nav-chrome {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
   padding-top: max(0.65rem, env(safe-area-inset-top, 0px));
-  box-shadow: none;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 .dark .nav-chrome {
   background: rgba(7, 11, 22, 0.92);
@@ -349,6 +349,9 @@ select {
   background: #ffffff;
   box-shadow: var(--project-surface-shadow);
 }
+:root:not(.dark) .status-strip-card {
+  border-color: rgba(15, 23, 42, 0.05);
+}
 .dark .status-strip-card {
   border-color: #243350;
   background: rgba(19, 29, 48, 0.92);
@@ -397,7 +400,10 @@ select {
 /* Toolbar strip — flat content surface (no gradient wash) */
 .panel-header-calm {
   background: var(--panel-header-bg);
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 75%, transparent);
+}
+:root:not(.dark) .panel-header-calm {
+  border-bottom-color: rgba(15, 23, 42, 0.05);
 }
 .dark .panel-header-calm {
   --panel-header-bg: rgba(17, 24, 39, 0.92);
@@ -409,9 +415,9 @@ select {
 /* Inset segmented controls — quiet track, one loud selected pill (no competing blue ring) */
 .app-seg-track {
   background: var(--seg-track-bg, #e8eef6);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: 0.25rem;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.16);
 }
 .dark .app-seg-track {
   /* Self-contained — must not rely on .panel-header-calm (Layout lives outside it now) */
@@ -431,8 +437,14 @@ select {
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-card);
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.03),
-    0 8px 24px -10px rgba(15, 23, 42, 0.12);
+    0 1px 2px rgba(15, 23, 42, 0.02),
+    0 10px 28px -12px rgba(15, 23, 42, 0.1);
+}
+:root:not(.dark) .app-surface {
+  border-color: rgba(15, 23, 42, 0.05);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.02),
+    0 12px 32px -14px rgba(15, 23, 42, 0.1);
 }
 .dark .app-surface {
   background: #111827;
@@ -450,14 +462,15 @@ select {
   box-shadow: var(--project-surface-shadow);
 }
 :root:not(.dark) .project-surface {
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border-color: rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 :root:not(.dark) .project-surface:hover {
-  border-color: #d0dae8;
+  border-color: rgba(15, 23, 42, 0.08);
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 6px 16px -2px rgba(15, 23, 42, 0.08),
-    0 18px 36px -12px rgba(15, 23, 42, 0.14);
+    0 2px 4px rgba(15, 23, 42, 0.03),
+    0 10px 24px -8px rgba(15, 23, 42, 0.08),
+    0 24px 48px -18px rgba(15, 23, 42, 0.12);
 }
 .dark .project-surface {
   background: #16233a;
@@ -658,6 +671,19 @@ select {
     line-height: 1.2;
   }
 }
+/* Partner ad rotator keeps its designed micro type */
+#filantus-banner [class*="text-[9px]"] {
+  font-size: 9px;
+  line-height: 1.15;
+}
+#filantus-banner [class*="text-[10px]"] {
+  font-size: 10px;
+  line-height: 1.15;
+}
+#filantus-banner [class*="text-[12px]"] {
+  font-size: 12px;
+  line-height: 1.15;
+}
 
 /* Inline status lines (weather, filter summary, etc.) — gap replaces cramped · glue */
 .app-inline-meta {
@@ -724,10 +750,14 @@ select {
 }
 
 .task-list-section-panel {
-  border-radius: 0.75rem;
-  border: 1px solid var(--task-row-border, #c5d3e8);
+  border-radius: 1rem;
+  border: 1px solid var(--task-row-border, #e8eef5);
   background: var(--task-row-bg, #f8fafc);
   overflow: hidden;
+}
+:root:not(.dark) .task-list-section-panel {
+  border-color: rgba(15, 23, 42, 0.05);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
 }
 .dark .task-list-section-panel {
   border-color: #243350;

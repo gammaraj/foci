@@ -2686,7 +2686,7 @@ export default function TaskList({
 
       {/* Card toolbar — When / Layout (title is in App Focus Bar) */}
       {!focusMode && !projectManageOpen && (
-      <div className="no-print panel-pad-x py-1.5 roomy:py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-slate-200/90 dark:border-[#243350]/80">
+      <div className="no-print panel-pad-x py-1.5 roomy:py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-[color:var(--surface-border)] dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
           <div className="no-print hidden roomy:flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-2 shrink-0 min-w-0" data-tour="time-filters">
@@ -2991,7 +2991,7 @@ export default function TaskList({
 
       {/* Bucket toolbar — desktop only (mobile uses MobileTaskToolbar) */}
       {!projectManageOpen && viewMode === "bucket" && (
-        <div className="no-print hidden roomy:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-200/80 dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
+        <div className="no-print hidden roomy:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-[color:var(--surface-border)] dark:border-[#243350]/80 bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
               Drag to reorder · pin columns · manage in Projects (nav or ⋯)
@@ -3156,7 +3156,7 @@ export default function TaskList({
 
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!projectManageOpen && viewMode === "list" && isViewingSharedProject && selectedSharedProject && (
-        <div className="panel-pad-x pt-2 pb-2 border-b border-slate-200/90 dark:border-[#243350]/80 no-print">
+        <div className="panel-pad-x pt-2 pb-2 border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 no-print">
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/20 px-3 py-2">
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
@@ -3190,7 +3190,7 @@ export default function TaskList({
       {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
       {!projectManageOpen && viewMode === "list" && (<>
       {!isViewingSharedProject && (
-      <div className="panel-pad-x pt-1 pb-1.5 relative border-b border-slate-200/90 dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
+      <div className="panel-pad-x pt-1 pb-1.5 relative border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex roomy:hidden items-center gap-1.5">
           <select
