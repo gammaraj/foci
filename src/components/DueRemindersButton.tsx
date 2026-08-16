@@ -150,7 +150,7 @@ export default function DueRemindersButton() {
         </svg>
         {badgeCount > 0 && (
           <span
-            className={`absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] px-0.5 flex items-center justify-center rounded-full text-[10px] font-bold text-white ${
+            className={`absolute -top-0.5 -right-0.5 min-w-[1.15rem] h-[1.15rem] px-0.5 flex items-center justify-center rounded-full text-xs font-bold text-white ${
               overdueCount > 0 ? "bg-rose-600" : "bg-orange-500"
             }`}
           >
@@ -168,7 +168,7 @@ export default function DueRemindersButton() {
           <div className="sticky top-0 flex items-center justify-between gap-2 px-3 py-2.5 border-b border-slate-200/80 dark:border-[#243350] bg-white/95 dark:bg-[#131d30]/95 backdrop-blur-sm">
             <div>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Due & overdue</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {overdueCount} overdue · {todayCount} today
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function DueRemindersButton() {
                   >
                     <div className="flex items-start gap-2 min-w-0">
                       <span
-                        className={`mt-0.5 shrink-0 inline-flex items-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums ${
+                        className={`mt-0.5 shrink-0 inline-flex items-center h-5 px-1.5 rounded text-xs font-bold tabular-nums ${
                           kind === "overdue"
                             ? "bg-rose-600 text-white"
                             : "bg-orange-500 text-white"
@@ -212,7 +212,7 @@ export default function DueRemindersButton() {
                         <span className="block text-sm font-medium text-slate-800 dark:text-slate-100 truncate">
                           {task.title}
                         </span>
-                        <span className="block text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                        <span className="block text-xs text-slate-500 dark:text-slate-400 truncate">
                           {projectName}
                         </span>
                       </span>

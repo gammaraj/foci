@@ -77,7 +77,7 @@ export function TaskExpansionDrawer({
       >
         <header className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200/80 dark:border-[#243350] shrink-0 min-w-0">
           <div className="min-w-0 flex-1 overflow-hidden">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
               Task details
             </p>
             {canEditTitle ? (

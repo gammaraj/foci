@@ -285,7 +285,7 @@ export default function CollaborationInvitesButton() {
                 {/* Pending invites */}
                 {inviteCount > 0 && (
                   <div className="border-b border-slate-200 dark:border-[#2a3a5c]">
-                    <p className="px-4 pt-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                    <p className="px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       Pending invites
                     </p>
                     <ul className="divide-y divide-slate-100 dark:divide-[#2a3a5c]">
@@ -348,7 +348,7 @@ export default function CollaborationInvitesButton() {
 
                 {/* Shared projects */}
                 <div>
-                  <p className="px-4 pt-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                  <p className="px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                     Shared with you
                   </p>
                   {sharedCount === 0 ? (
@@ -386,7 +386,7 @@ export default function CollaborationInvitesButton() {
                                 <span className="block text-sm font-medium text-slate-900 dark:text-white truncate">
                                   {sp.name}
                                 </span>
-                                <span className="block text-[11px] text-slate-400">
+                                <span className="block text-xs text-slate-500 dark:text-slate-400">
                                   {sp._myRole === "editor" ? "Can edit" : "View only"}
                                 </span>
                               </span>

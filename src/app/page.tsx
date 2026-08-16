@@ -516,7 +516,7 @@ export default function LandingPage() {
             SEO workspace on BoostLogik
           </a>
         </p>
-        <p className="text-sm text-slate-400 dark:text-slate-600">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400">
             About
           </Link>

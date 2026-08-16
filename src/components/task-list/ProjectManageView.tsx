@@ -662,7 +662,7 @@ export default function ProjectManageView({
               <h3 id="projects-shared-heading" className="app-section-label text-slate-400">
                 Shared with me
               </h3>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 {sharedProjects.length} project{sharedProjects.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -710,7 +710,7 @@ export default function ProjectManageView({
               Your projects
             </h3>
             {sortedProjects.length >= 2 && (
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+              <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
                 Drag ⋮⋮ to reorder · ★ to pin
               </p>
             )}

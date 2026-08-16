@@ -14,6 +14,7 @@ import {
   MAX_TASK_TITLE,
   OVERDUE_ROW_CLASS,
   overdueDayChipClass,
+  META_CHIP_CLASS,
   resolveProjectColor,
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
@@ -274,7 +275,7 @@ function CardDuePrefix({ task }: { task: Task }) {
 
   return (
     <span
-      className={`shrink-0 inline-flex items-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap border ${tone}`}
+      className={`${META_CHIP_CLASS} border ${tone}`}
       title={
         blocked
           ? "Waiting on external blocker"
@@ -463,7 +464,7 @@ function CardTaskRow({
           >
             {overdue && (
               <span
-                className={`shrink-0 inline-flex items-center justify-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${overdueDayChipClass(daysLate)}`}
+                className={`${META_CHIP_CLASS} ${overdueDayChipClass(daysLate)}`}
                 title={overdueLabel ?? "Overdue"}
                 aria-label={overdueLabel ?? "Overdue"}
               >

@@ -78,7 +78,7 @@ function TaskRow({
             {t.title}
           </span>
         </div>
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
           {meta.join(" · ")}
           {st.overdue ? " · overdue" : ""}
           {st.atRisk && !st.overdue ? " · won't fit" : ""}
@@ -148,7 +148,7 @@ function DayColumn({
         >
           {day.label}
         </h3>
-        <span className="text-[11px] text-slate-400 dark:text-slate-500 tabular-nums whitespace-nowrap">
+        <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">
           {day.tasks.length === 0 ? "Open" : `${day.tasks.length} · ~${totalTime}m`}
         </span>
       </div>
@@ -254,7 +254,7 @@ export default function SmartPlan({
         {recommended && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30] px-3 py-2 min-w-0 roomy:max-w-xl roomy:flex-1">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Start with
               </p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white truncate" title={recommended.task.title}>
@@ -322,7 +322,7 @@ export default function SmartPlan({
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               Beyond window
             </span>
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 tabular-nums">
+            <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
               {plan.unscheduled.length}
             </span>
             <svg

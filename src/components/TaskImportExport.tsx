@@ -666,7 +666,7 @@ export default function TaskImportExport({
               <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1 rounded-md bg-white/60 dark:bg-[#0f172a]/40 px-2.5 py-2 border border-blue-100 dark:border-blue-900/40">
                 {projectPlan.createNew.map((name) => (
                   <li key={`new:${name}`} className="flex items-start gap-1.5">
-                    <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+                    <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold uppercase tracking-wide bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
                       New
                     </span>
                     <span>
@@ -676,7 +676,7 @@ export default function TaskImportExport({
                 ))}
                 {projectPlan.matchExisting.map(({ fileName, existingName }) => (
                   <li key={`ex:${fileName}`} className="flex items-start gap-1.5">
-                    <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300">
+                    <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold uppercase tracking-wide bg-slate-200 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300">
                       Existing
                     </span>
                     <span>

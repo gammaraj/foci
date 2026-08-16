@@ -178,7 +178,7 @@ export default function BlogIndexPage() {
 
       <footer className="mt-auto py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
         <GuideLinkHub variant="footer" className="mb-4" />
-        <p className="text-xs text-slate-400 dark:text-slate-600">Built for focus.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Built for focus.</p>
       </footer>
     </div>
   );

@@ -25,7 +25,7 @@ interface TaskUrgencySummaryProps {
 
 /** Shared sizing so late / today / worst / done-today tablets align. */
 export const STATUS_PILL_COMPACT =
-  "inline-flex items-center justify-center gap-0.5 h-6 min-h-[1.5rem] px-1.5 rounded-md text-[11px] font-semibold tabular-nums whitespace-nowrap shrink-0 transition-colors leading-none";
+  "inline-flex items-center justify-center gap-0.5 h-7 min-h-[1.75rem] px-1.5 sm:px-2 rounded-md text-xs sm:text-[13px] font-semibold tabular-nums whitespace-nowrap shrink-0 transition-colors leading-none";
 
 /** Urgency summary bar — horizontal scroll when chips overflow. */
 export function TaskUrgencySummary({
@@ -108,7 +108,7 @@ export function TaskUrgencySummary({
           title={worstTitle}
           aria-label={worstTitle}
         >
-          <span className="inline-flex items-center justify-center h-5 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none whitespace-nowrap shrink-0 urgency-chip--mid">
+          <span className="inline-flex items-center justify-center h-5 px-1.5 rounded text-xs font-bold tabular-nums leading-none whitespace-nowrap shrink-0 urgency-chip--mid">
             {formatOverdueChip(worstOverdue.daysLate)}
           </span>
           <span className="leading-none truncate min-w-0">

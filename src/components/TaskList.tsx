@@ -1365,6 +1365,8 @@ export default function TaskList({
           ),
           "success",
         );
+        setTallyPulse(true);
+        window.setTimeout(() => setTallyPulse(false), 900);
       }
       if (activeTaskId === id) onSelectTask(null);
       return;
@@ -2838,7 +2840,7 @@ export default function TaskList({
         )}
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
-          <p className="no-print roomy:hidden land-compact:hidden mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
+          <p className="no-print roomy:hidden land-compact:hidden mt-1 text-xs text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
             <span className="flex-1 truncate">Drag tasks to reorder · ▲▼ moves projects</span>
             <button
               type="button"

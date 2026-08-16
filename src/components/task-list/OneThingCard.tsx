@@ -129,7 +129,7 @@ export function OneThingCard({
             }`}
             title="How to set Today’s One Thing"
           >
-            <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            <span className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
               <StarIcon className="w-2.5 h-2.5" />
               One Thing
             </span>
@@ -180,7 +180,7 @@ export function OneThingCard({
         className={`${shell} border-slate-200 dark:border-emerald-500/40 bg-slate-50 dark:bg-emerald-500/10 border-l-[3px] border-l-emerald-500 dark:border-l-emerald-400`}
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="inline-flex items-center shrink-0 rounded-md bg-slate-700 dark:bg-emerald-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+          <span className="inline-flex items-center shrink-0 rounded-md bg-slate-700 dark:bg-emerald-700 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
             Done
           </span>
           <p
@@ -209,7 +209,7 @@ export function OneThingCard({
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span
-            className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white"
+            className="inline-flex items-center gap-1 shrink-0 rounded-md bg-blue-800 dark:bg-blue-700 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white"
             title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
           >
             <StarIcon className="w-3 h-3" />

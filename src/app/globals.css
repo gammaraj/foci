@@ -237,7 +237,7 @@ select {
   font-variant-numeric: tabular-nums;
 }
 .dark .nav-chrome-meta {
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
 /* Partner promo chip — visible but subordinate to brand + CTAs */
@@ -593,7 +593,7 @@ select {
   }
 }
 
-/* Light mode: darken grey UI copy on white cards (slate-400/500 are too faint) */
+/* Muted grey UI copy — lift slate-400/500 so meta stays readable */
 :root:not(.dark) .app-shell {
   --app-text-muted: #475569;
   --app-text-muted-strong: #334155;
@@ -602,7 +602,8 @@ select {
   color: var(--app-text-muted);
 }
 .dark .app-shell {
-  --app-text-muted: #a8b6c9;
+  --app-text-muted: #cbd5e1;
+  --app-text-muted-strong: #e2e8f0;
   --seg-track-bg: #1a2d4a;
   color: #e2e8f0;
 }
@@ -625,6 +626,37 @@ select {
 :root:not(.dark) .app-shell textarea::placeholder {
   color: #64748b;
   opacity: 1;
+}
+/* Dark: slate-400/500 are too dim on navy — remap like light mode */
+.dark .app-shell .text-slate-400 {
+  color: var(--app-text-muted);
+}
+.dark .app-shell .text-slate-500 {
+  color: var(--app-text-muted);
+}
+.dark .app-shell [class*="text-slate-400/"] {
+  color: #94a3b8;
+}
+.dark .app-shell [class*="text-slate-500/"] {
+  color: #a8b6c9;
+}
+.dark .app-shell input::placeholder,
+.dark .app-shell textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+/* Arbitrary 10–11px utilities bypass .text-xs remaps — floor them */
+.app-shell [class*="text-[10px]"],
+.app-shell [class*="text-[11px]"] {
+  font-size: 0.75rem;
+  line-height: 1.15;
+}
+@media (min-width: 640px) {
+  .app-shell [class*="text-[10px]"],
+  .app-shell [class*="text-[11px]"] {
+    font-size: 0.8125rem;
+    line-height: 1.2;
+  }
 }
 
 /* Inline status lines (weather, filter summary, etc.) — gap replaces cramped · glue */
@@ -1105,6 +1137,36 @@ select {
 @keyframes celebrationPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
+}
+
+/* Done tally: brief celebration when a task is completed */
+@keyframes doneTallyPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+  35% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.35);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.done-tally-pulse {
+  animation: doneTallyPulse 0.85s ease-out;
+  border-color: rgb(52 211 153) !important;
+  background-color: rgb(167 243 208 / 0.95) !important;
+  color: rgb(6 78 59) !important;
+}
+
+.dark .done-tally-pulse {
+  border-color: rgb(110 231 183) !important;
+  background-color: rgb(6 95 70 / 0.95) !important;
+  color: rgb(209 250 229) !important;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.45), 0 0 18px rgba(16, 185, 129, 0.35);
 }
 
 @keyframes slideUp {

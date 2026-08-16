@@ -112,7 +112,7 @@ export default function PrivacyPage() {
       </main>
 
       <footer className="py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
-        <p className="text-sm text-slate-400 dark:text-slate-600">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400">
             Home
           </Link>

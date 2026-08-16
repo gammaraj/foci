@@ -185,6 +185,10 @@ export function overdueDayChipClass(daysLate: number): string {
   return "urgency-chip--soft";
 }
 
+/** Shared size for due / overdue meta chips — readable floor (no 10px). */
+export const META_CHIP_CLASS =
+  "inline-flex items-center justify-center shrink-0 h-5 min-h-[1.25rem] px-1.5 rounded text-xs font-bold tabular-nums leading-none tracking-normal whitespace-nowrap";
+
 /** Left-rail overdue row — no full wash (Cards look). */
 export const OVERDUE_ROW_CLASS = "card-row--overdue";
 

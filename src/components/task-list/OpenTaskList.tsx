@@ -3,7 +3,7 @@
 import React from "react";
 import type { Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, OVERDUE_ROW_CLASS, overdueDayChipClass } from "@/components/task-list/utils";
+import { formatDueDate, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -237,7 +237,7 @@ export default function OpenTaskList({
               {oneThingTaskId === task.id && <OneThingBadge />}
               {isOverdue && (
                 <span
-                  className={`inline-flex items-center justify-center h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${overdueDayChipClass(daysLate)}`}
+                  className={`${META_CHIP_CLASS} ${overdueDayChipClass(daysLate)}`}
                   title={overdueLabel ?? "Overdue"}
                   aria-label={overdueLabel ?? "Overdue"}
                 >

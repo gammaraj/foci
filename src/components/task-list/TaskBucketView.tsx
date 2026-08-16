@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, OVERDUE_ROW_CLASS, overdueDayChipClass, resolveProjectColor } from "@/components/task-list/utils";
+import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -169,7 +169,7 @@ function DueBadge({
   const interactive = !!(taskId && onSetDueDate);
 
   const badgeClass = overdue
-    ? `inline-flex items-center justify-center shrink-0 h-4 px-1.5 rounded text-[10px] font-bold tabular-nums leading-none tracking-normal whitespace-nowrap ${overdueDayChipClass(daysLate)} ${interactive ? "cursor-pointer" : ""}`
+    ? `${META_CHIP_CLASS} ${overdueDayChipClass(daysLate)} ${interactive ? "cursor-pointer" : ""}`
     : `inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
         compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
       } ${
