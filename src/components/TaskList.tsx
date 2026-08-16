@@ -129,6 +129,10 @@ export default function TaskList({
 }: TaskListProps) {
   // Hydration-safe: never read localStorage in useState initializers (SSR ≠ client).
   // Snapshot paints in useLayoutEffect before the browser paints.
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [bootSnapshot, setBootSnapshot] = useState<LocalWorkspaceSnapshot | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, loading: authLoading } = useAuth();
@@ -176,7 +180,10 @@ export default function TaskList({
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [dragProjectId, setDragProjectId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<TaskViewMode>("card");
+  // Prefer URL layout on first paint so remounts don't flash Cards.
+  const [viewMode, setViewMode] = useState<TaskViewMode>(
+    () => parseTaskViewFromPath(pathname) ?? "card",
+  );
   const [preparingPrint, setPreparingPrint] = useState(false);
   const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(null);
   const [oneThingPromptDismissed, setOneThingPromptDismissed] = useState(false);
@@ -254,9 +261,6 @@ export default function TaskList({
   const viewModeUserChosenRef = useRef(false);
   /** Layout we’re navigating to — ignore stale pathname until the URL catches up (prevents tab flicker). */
   const pendingViewModeRef = useRef<TaskViewMode | null>(null);
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const appHref = useCallback(
     (mutate: (params: URLSearchParams) => void, mode?: TaskViewMode | null) => {

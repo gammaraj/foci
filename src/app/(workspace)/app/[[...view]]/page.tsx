@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { isTaskViewSegment } from "@/lib/task-view-url";
-import AppPageClient from "./AppPageClient";
 
+/** Validates `/app/cards`-style segments. Workspace UI lives in the parent layout. */
 export default async function AppViewPage({
   params,
 }: {
@@ -11,5 +11,5 @@ export default async function AppViewPage({
   if (view && view.length > 0 && (view.length > 1 || !isTaskViewSegment(view[0]))) {
     notFound();
   }
-  return <AppPageClient />;
+  return null;
 }
