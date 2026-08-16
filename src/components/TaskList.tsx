@@ -252,6 +252,8 @@ export default function TaskList({
   const taskDetailPushedRef = useRef(false);
   /** User picked a layout this session — don't let async prefs load clobber it (e.g. Plan → Cards). */
   const viewModeUserChosenRef = useRef(false);
+  /** Layout we’re navigating to — ignore stale pathname until the URL catches up (prevents tab flicker). */
+  const pendingViewModeRef = useRef<TaskViewMode | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -319,19 +321,11 @@ export default function TaskList({
 
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     viewModeUserChosenRef.current = true;
+    pendingViewModeRef.current = mode;
     wasProjectDrillInRef.current = false;
     taskDetailPushedRef.current = false;
 
-    router.replace(
-      buildAppHref(mode, searchParams, (p) => {
-        p.delete("project");
-        p.delete("from");
-        p.delete("task");
-        p.delete("projects");
-      }),
-      { scroll: false },
-    );
-
+    // Paint the new layout immediately — don't wait on the router (avoids blank/flicker).
     if (mode === "plan") {
       setViewMode((prev) => {
         if (prev !== "plan") {
@@ -343,21 +337,29 @@ export default function TaskList({
         return "plan";
       });
       loadSettings().then(setPlanSettings);
-      setListReturnView(null);
-      setExpandedTaskId(null);
-      setExpandedSubtasksTaskId(null);
-      setNewSubtaskTitle("");
-      setEditingSubtaskId(null);
-      return;
+    } else {
+      setViewMode(mode);
+      persistTaskView(mode);
     }
-    setViewMode(mode);
     setListReturnView(null);
     setExpandedTaskId(null);
     setExpandedSubtasksTaskId(null);
     setNewSubtaskTitle("");
     setEditingSubtaskId(null);
-    persistTaskView(mode);
-  }, [persistTaskView, searchParams, router]);
+
+    const nextHref = buildAppHref(mode, searchParams, (p) => {
+      p.delete("project");
+      p.delete("from");
+      p.delete("task");
+      p.delete("projects");
+    });
+    const currentHref = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+    if (nextHref !== currentHref) {
+      router.replace(nextHref, { scroll: false });
+    } else {
+      pendingViewModeRef.current = null;
+    }
+  }, [persistTaskView, searchParams, router, pathname]);
 
   // Default due date when adding from Today / Week / Month / Year views
   useEffect(() => {
@@ -491,30 +493,41 @@ export default function TaskList({
       setListReturnView(null);
       setSelectedProjectId(ALL_PROJECTS_ID);
       saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
-      setViewMode(returnTo);
-      if (returnTo === "plan") loadSettings().then(setPlanSettings);
-      if (pathView !== returnTo) {
-        router.replace(
-          buildAppHref(returnTo, searchParams, (p) => {
-            p.delete("project");
-            p.delete("from");
-          }),
-          { scroll: false },
-        );
+      // Don't stomp an in-flight layout click (e.g. Plan while leaving a project drill).
+      if (pendingViewModeRef.current && pendingViewModeRef.current !== returnTo) {
+        /* keep pending view */
+      } else {
+        pendingViewModeRef.current = null;
+        setViewMode(returnTo);
+        if (returnTo === "plan") loadSettings().then(setPlanSettings);
+        if (pathView !== returnTo) {
+          router.replace(
+            buildAppHref(returnTo, searchParams, (p) => {
+              p.delete("project");
+              p.delete("from");
+            }),
+            { scroll: false },
+          );
+        }
       }
     } else if (pathView) {
-      viewModeUserChosenRef.current = true;
-      setViewMode((prev) => {
-        if (prev === pathView) return prev;
-        if (pathView === "plan" && prev !== "plan") {
-          viewBeforePlanRef.current =
-            prev === "calendar" || prev === "list" || prev === "bucket" || prev === "card"
-              ? prev
-              : "card";
-        }
-        return pathView;
-      });
-      if (pathView === "plan") loadSettings().then(setPlanSettings);
+      // While router.replace is in flight, pathname/searchParams can update out of sync.
+      // Ignore a stale path that disagrees with the layout we just selected.
+      if (!pendingViewModeRef.current || pendingViewModeRef.current === pathView) {
+        pendingViewModeRef.current = null;
+        viewModeUserChosenRef.current = true;
+        setViewMode((prev) => {
+          if (prev === pathView) return prev;
+          if (pathView === "plan" && prev !== "plan") {
+            viewBeforePlanRef.current =
+              prev === "calendar" || prev === "list" || prev === "bucket" || prev === "card"
+                ? prev
+                : "card";
+          }
+          return pathView;
+        });
+        if (pathView === "plan") loadSettings().then(setPlanSettings);
+      }
     }
 
     const taskId = searchParams.get("task");
