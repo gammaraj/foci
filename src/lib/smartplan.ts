@@ -7,27 +7,30 @@ export interface ScoredTask {
   task: Task;
   projectName: string;
   projectColor?: string;
-  score: number;          // higher = more urgent
+  score: number; // higher = more urgent
   daysUntilDue: number | null;
-  atRisk: boolean;        // not enough days to finish before deadline
+  atRisk: boolean; // cannot fit before deadline at current capacity
   overdue: boolean;
 }
 
 export interface DayPlan {
-  date: string;           // YYYY-MM-DD
-  label: string;          // "Today", "Tomorrow", "Wed Mar 25", etc.
+  date: string; // YYYY-MM-DD
+  label: string; // "Today", "Tomorrow", "Wed Mar 25", etc.
   tasks: ScoredTask[];
-  sessionSlots: number;   // how many sessions planned this day
+  sessionSlots: number; // how many sessions planned this day
 }
 
 export interface SmartPlanResult {
   days: DayPlan[];
-  unscheduled: ScoredTask[];  // tasks with no due date, shown after scheduled
+  unscheduled: ScoredTask[];
+  /** Best task to make Today’s One Thing (today’s first planned, else top overdue). */
+  recommended: ScoredTask | null;
   summary: {
     totalTasks: number;
     atRiskCount: number;
     overdueCount: number;
     daysNeeded: number;
+    todayCount: number;
   };
 }
 
@@ -63,20 +66,17 @@ function scoreTask(
   const projectName = project?.name ?? "General";
   const projectColor = project?.color;
 
-  // Determine the effective due date (task due date takes priority, then project)
   const effectiveDue = task.dueDate ?? project?.dueDate;
   const daysUntilDue = effectiveDue ? diffDays(effectiveDue, today) : null;
   const overdue = daysUntilDue !== null && daysUntilDue < 0;
 
-  // Score components (higher = more urgent)
   let score = 0;
 
-  // 1. Due date urgency (0-100 pts)
   if (daysUntilDue !== null) {
     if (overdue) {
-      score += 100 + Math.abs(daysUntilDue) * 5; // overdue gets highest priority
+      score += 100 + Math.abs(daysUntilDue) * 5;
     } else if (daysUntilDue === 0) {
-      score += 95; // due today
+      score += 95;
     } else if (daysUntilDue <= 1) {
       score += 85;
     } else if (daysUntilDue <= 3) {
@@ -88,12 +88,10 @@ function scoreTask(
     }
   }
 
-  // 2. Task already has work invested (5-15 pts) — momentum bonus
   if (task.sessions > 0) {
     score += Math.min(15, 5 + task.sessions * 2);
   }
 
-  // 3. Subtask completion ratio — nearly done tasks get a bump (0-10 pts)
   if (task.subtasks && task.subtasks.length > 0) {
     const done = task.subtasks.filter((s) => s.completed).length;
     const ratio = done / task.subtasks.length;
@@ -102,15 +100,16 @@ function scoreTask(
     }
   }
 
-  // At risk: has a due date but likely won't finish in time
-  // (we estimate 1 session per task as minimum)
-  const atRisk = daysUntilDue !== null && daysUntilDue >= 0 && daysUntilDue <= 0;
-
-  return { task, projectName, projectColor, score, daysUntilDue, atRisk, overdue };
+  // atRisk is set during scheduling when a due task cannot fit before its deadline
+  return { task, projectName, projectColor, score, daysUntilDue, atRisk: false, overdue };
 }
 
 // ── Plan Generation ──────────────────────────────────────
 
+/**
+ * Build a day-by-day focus schedule from open tasks and daily session capacity.
+ * Overdue work lands today; dated work packs toward deadlines; undated fills leftover slots.
+ */
 export function generateSmartPlan(
   tasks: Task[],
   projects: Project[],
@@ -120,21 +119,17 @@ export function generateSmartPlan(
   const today = getToday();
   const projectMap = new Map(projects.map((p) => [p.id, p]));
 
-  // Filter to incomplete, non-archived, actionable tasks
   const activeTasks = tasks.filter((t) => !t.completed && !t.archivedAt && !t.blocked && !t.someday);
 
-  // Score all tasks
   const scored = activeTasks
     .map((t) => scoreTask(t, projectMap.get(t.projectId), today))
     .sort((a, b) => b.score - a.score);
 
-  const dailyGoal = settings.dailyGoal || 3;
+  const dailyGoal = Math.max(1, settings.dailyGoal || 3);
 
-  // Separate: tasks with due dates vs without
   const withDue = scored.filter((s) => s.daysUntilDue !== null);
   const withoutDue = scored.filter((s) => s.daysUntilDue === null);
 
-  // Build day slots
   const dayMap = new Map<string, DayPlan>();
   for (let i = 0; i < planDays; i++) {
     const d = addDays(new Date(), i);
@@ -147,8 +142,6 @@ export function generateSmartPlan(
     });
   }
 
-  // Schedule tasks with due dates — place them as late as possible but before deadline
-  // Sort by due date ascending (earliest deadline first)
   const dueTasksSorted = [...withDue].sort((a, b) => {
     const aDue = a.task.dueDate ?? "";
     const bDue = b.task.dueDate ?? "";
@@ -162,11 +155,9 @@ export function generateSmartPlan(
     const effectiveDue = st.task.dueDate ?? projectMap.get(st.task.projectId)?.dueDate;
     if (!effectiveDue) continue;
 
-    // Find the latest available day on or before the due date
     let placed = false;
     const dueDiff = diffDays(effectiveDue, today);
 
-    // For overdue tasks, place on today
     if (dueDiff < 0) {
       const todayPlan = dayMap.get(today);
       if (todayPlan) {
@@ -176,7 +167,6 @@ export function generateSmartPlan(
         placed = true;
       }
     } else {
-      // Try to place on the due date or earlier if that day is full
       for (let d = Math.min(dueDiff, planDays - 1); d >= 0; d--) {
         const dateStr = formatDateLocal(addDays(new Date(), d));
         const day = dayMap.get(dateStr);
@@ -190,13 +180,11 @@ export function generateSmartPlan(
       }
     }
 
-    // Mark at-risk if couldn't be placed before deadline
     if (!placed) {
       st.atRisk = true;
     }
   }
 
-  // Fill remaining slots with non-due-date tasks (by score)
   for (const st of withoutDue) {
     for (const [, day] of dayMap) {
       if (day.sessionSlots < dailyGoal) {
@@ -208,28 +196,36 @@ export function generateSmartPlan(
     }
   }
 
-  // Collect unscheduled
+  // Highest urgency first within each day
+  for (const day of dayMap.values()) {
+    day.tasks.sort((a, b) => b.score - a.score);
+  }
+
   const unscheduled = scored.filter((s) => !scheduled.has(s.task.id));
 
-  // Build result — only include days that have tasks or are today/tomorrow
-  const days = Array.from(dayMap.values()).filter(
-    (d, i) => d.tasks.length > 0 || i < 2
-  );
+  const days = Array.from(dayMap.values()).filter((d, i) => d.tasks.length > 0 || i < 2);
+
+  const todayPlan = dayMap.get(today);
+  const recommended =
+    todayPlan?.tasks[0] ??
+    scored.find((s) => s.overdue) ??
+    scored[0] ??
+    null;
 
   const overdueCount = scored.filter((s) => s.overdue).length;
   const atRiskCount = scored.filter((s) => s.atRisk).length;
-
-  // How many work days needed to clear all tasks
   const daysNeeded = Math.ceil(activeTasks.length / dailyGoal);
 
   return {
     days,
     unscheduled,
+    recommended,
     summary: {
       totalTasks: activeTasks.length,
       atRiskCount,
       overdueCount,
       daysNeeded,
+      todayCount: todayPlan?.tasks.length ?? 0,
     },
   };
 }

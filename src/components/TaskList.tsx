@@ -96,19 +96,20 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
   plan: "Smart Plan",
 };
 
-/** Active time/view filters — solid brand blue for clear selection. */
+/** Active time/view filters — solid brand blue; no shadow (track already frames the control). */
 const FILTER_TAB_ACTIVE =
-  "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
+  "bg-blue-600 text-white font-semibold dark:bg-blue-500 dark:text-white";
 const FILTER_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-200 hover:text-blue-800 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10";
+  "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]";
 
 /** Soft outline for project scope (distinct from Add / Start buttons). */
 const PROJECT_TAB_ACTIVE =
-  "bg-blue-600 text-white shadow-sm font-semibold dark:bg-blue-500 dark:text-white";
+  "bg-blue-600 text-white font-semibold dark:bg-blue-500 dark:text-white";
 const PROJECT_TAB_INACTIVE =
   "text-slate-600 dark:text-slate-300 bg-blue-50/90 dark:bg-[#131d30] hover:bg-blue-100 dark:hover:bg-[#1a2d4a]";
 
-const SEG_TAB_PAD = "px-2 py-1 min-h-[2rem] rounded-md text-sm font-medium transition-colors";
+/** Pill radius = track radius − padding so the active segment nests cleanly. */
+const SEG_TAB_PAD = "px-2.5 py-1 min-h-[1.75rem] rounded text-sm font-medium transition-colors";
 const SEG_TAB_ICON_PAD = `inline-flex items-center gap-1.5 ${SEG_TAB_PAD} whitespace-nowrap`;
 
 export default function TaskList({
@@ -2680,7 +2681,7 @@ export default function TaskList({
               <span className="app-section-label leading-none self-center text-slate-500 dark:text-slate-400 shrink-0">
                 Layout
               </span>
-              <div className="app-seg-track flex items-center gap-0.5">
+              <div className="app-seg-track flex items-center gap-0" role="group" aria-label="Layout">
                 <button
                   onClick={() => selectViewMode("card")}
                   className={`${SEG_TAB_ICON_PAD} ${viewMode === "card" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
@@ -2891,6 +2892,8 @@ export default function TaskList({
           projects={projects}
           settings={planSettings}
           onStartTask={onStartTask}
+          onSetOneThing={setAsOneThing}
+          oneThingTaskId={oneThingResolved.status === "active" ? oneThingResolved.task?.id ?? null : null}
         />
       )}
 

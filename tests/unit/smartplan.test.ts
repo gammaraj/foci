@@ -57,4 +57,28 @@ describe("generateSmartPlan", () => {
     const todayPlan = plan.days.find((d) => d.date === today);
     expect(todayPlan?.tasks[0]?.task.id).toBe("high");
   });
+
+  it("recommends today's top planned task as One Thing candidate", () => {
+    const today = getToday();
+    const tasks = [
+      task({ id: "a", title: "A", dueDate: today, sessions: 0 }),
+      task({ id: "b", title: "B", dueDate: today, sessions: 3 }),
+    ];
+    const plan = generateSmartPlan(tasks, projects, settings);
+    expect(plan.recommended?.task.id).toBe("b");
+    expect(plan.summary.todayCount).toBeGreaterThan(0);
+  });
+
+  it("marks due tasks at risk when they cannot fit before the deadline", () => {
+    const today = getToday();
+    // dailyGoal=2, three tasks all due today → only two session slots before deadline
+    const tasks = [
+      task({ id: "1", title: "One", dueDate: today }),
+      task({ id: "2", title: "Two", dueDate: today }),
+      task({ id: "3", title: "Three", dueDate: today }),
+    ];
+    const plan = generateSmartPlan(tasks, projects, settings, 7);
+    expect(plan.summary.atRiskCount).toBe(1);
+    expect(plan.unscheduled.some((s) => s.atRisk)).toBe(true);
+  });
 });
