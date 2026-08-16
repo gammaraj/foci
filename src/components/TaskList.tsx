@@ -7,7 +7,6 @@ import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjec
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
-import dynamic from "next/dynamic";
 import ConfirmModal from "@/components/ConfirmModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { PROJECT_TEMPLATES, templateToTasks, type ProjectTemplate } from "@/lib/templates";
@@ -29,7 +28,7 @@ import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
 import { FocusBarTitle, FocusBarActions } from "@/components/AppFocusBar";
 
-const SmartPlan = dynamic(() => import("@/components/SmartPlan"));
+import SmartPlan from "@/components/SmartPlan";
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
 import type { TaskListProps, TaskViewMode } from "@/components/task-list/types";
 import {
@@ -261,6 +260,8 @@ export default function TaskList({
   const viewModeUserChosenRef = useRef(false);
   /** Layout we’re navigating to — ignore stale pathname until the URL catches up (prevents tab flicker). */
   const pendingViewModeRef = useRef<TaskViewMode | null>(null);
+  /** True while our own router.replace for a layout tab is in flight — never mirror path→state then. */
+  const ownLayoutNavRef = useRef(false);
 
   const appHref = useCallback(
     (mutate: (params: URLSearchParams) => void, mode?: TaskViewMode | null) => {
@@ -326,10 +327,11 @@ export default function TaskList({
   const selectViewMode = useCallback((mode: TaskViewMode) => {
     viewModeUserChosenRef.current = true;
     pendingViewModeRef.current = mode;
+    ownLayoutNavRef.current = true;
     wasProjectDrillInRef.current = false;
     taskDetailPushedRef.current = false;
 
-    // Paint the new layout immediately — don't wait on the router (avoids blank/flicker).
+    // Paint the new layout immediately — URL sync must not overwrite until path matches.
     if (mode === "plan") {
       setViewMode((prev) => {
         if (prev !== "plan") {
@@ -362,6 +364,7 @@ export default function TaskList({
       router.replace(nextHref, { scroll: false });
     } else {
       pendingViewModeRef.current = null;
+      ownLayoutNavRef.current = false;
     }
   }, [persistTaskView, searchParams, router, pathname]);
 
@@ -499,12 +502,15 @@ export default function TaskList({
       saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
       // Don't stomp an in-flight layout click (e.g. Plan while leaving a project drill).
       if (pendingViewModeRef.current && pendingViewModeRef.current !== returnTo) {
-        /* keep pending view */
+        /* keep pending view — selectViewMode already painted it */
       } else {
         pendingViewModeRef.current = null;
+        ownLayoutNavRef.current = false;
         setViewMode(returnTo);
         if (returnTo === "plan") loadSettings().then(setPlanSettings);
         if (pathView !== returnTo) {
+          ownLayoutNavRef.current = true;
+          pendingViewModeRef.current = returnTo;
           router.replace(
             buildAppHref(returnTo, searchParams, (p) => {
               p.delete("project");
@@ -515,10 +521,15 @@ export default function TaskList({
         }
       }
     } else if (pathView) {
-      // While router.replace is in flight, pathname/searchParams can update out of sync.
-      // Ignore a stale path that disagrees with the layout we just selected.
-      if (!pendingViewModeRef.current || pendingViewModeRef.current === pathView) {
-        pendingViewModeRef.current = null;
+      // Own tab click: state is already correct — only clear the guard when the URL catches up.
+      // Never setViewMode from a stale path (that flashed Cards while opening Plan).
+      if (ownLayoutNavRef.current || pendingViewModeRef.current) {
+        if (pathView === pendingViewModeRef.current) {
+          pendingViewModeRef.current = null;
+          ownLayoutNavRef.current = false;
+        }
+      } else {
+        // Browser back/forward or shared link — adopt the path.
         viewModeUserChosenRef.current = true;
         setViewMode((prev) => {
           if (prev === pathView) return prev;
