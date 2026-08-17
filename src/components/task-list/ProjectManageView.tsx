@@ -346,15 +346,24 @@ function ProjectRow({
           <div className="w-9 flex-shrink-0" aria-hidden />
         )}
 
-        <input
-          type="color"
-          value={resolveProjectColor(project)}
-          onChange={(e) => onUpdateColor(project.id, e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          className="w-8 h-8 sm:w-4 sm:h-4 rounded-full border-0 cursor-pointer p-0 appearance-none bg-transparent flex-shrink-0 touch-target-sm [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
+        <label
+          className="relative flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full cursor-pointer hover:bg-slate-100/80 dark:hover:bg-white/5 transition-colors"
           title="Change color"
-          aria-label={`Color for ${project.name}`}
-        />
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span
+            className="pointer-events-none w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-1 ring-black/15 dark:ring-white/20 shadow-sm"
+            style={{ backgroundColor: resolveProjectColor(project) }}
+            aria-hidden
+          />
+          <input
+            type="color"
+            value={resolveProjectColor(project)}
+            onChange={(e) => onUpdateColor(project.id, e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            aria-label={`Color for ${project.name}`}
+          />
+        </label>
 
         <button
           type="button"
@@ -572,14 +581,17 @@ export default function ProjectManageView({
     return () => window.clearTimeout(id);
   }, []);
 
-  // Persist missing accents so manage/cards don't all fall back to the same blue swatch.
+  // Persist missing / legacy-bright accents so swatches use the muted palette.
   const didBackfillColors = useRef(false);
   useEffect(() => {
     if (didBackfillColors.current) return;
-    const missing = sortedProjects.filter((p) => !p.color);
-    if (missing.length === 0) return;
+    const toFix = sortedProjects.filter((p) => {
+      if (!p.color) return true;
+      return resolveProjectColor(p) !== p.color;
+    });
+    if (toFix.length === 0) return;
     didBackfillColors.current = true;
-    for (const p of missing) {
+    for (const p of toFix) {
       onUpdateColor(p.id, resolveProjectColor(p));
     }
   }, [sortedProjects, onUpdateColor]);

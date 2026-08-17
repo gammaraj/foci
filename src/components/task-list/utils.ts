@@ -1,10 +1,15 @@
 import type { Project, RecurrenceType, Subtask } from "@/lib/types";
-import { PROJECT_COLORS } from "@/lib/types";
+import { LEGACY_PROJECT_COLOR_MAP, PROJECT_COLORS } from "@/lib/types";
 import { getToday, getTomorrow, formatDateLocal } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
 export const MAX_VISIBLE_PROJECT_TABS = 3; // initial floor before width measurement
+
+/** Prefer muted palette; remap legacy bright accents when present. */
+export function normalizeProjectColor(color: string): string {
+  return LEGACY_PROJECT_COLOR_MAP[color] ?? LEGACY_PROJECT_COLOR_MAP[color.toLowerCase()] ?? color;
+}
 
 /** Reorder subtasks by id. Returns a new array, or null when the move is invalid. */
 export function reorderSubtasks(
@@ -24,7 +29,7 @@ export function reorderSubtasks(
 
 /** Stable accent color for every project — uses saved color or a deterministic fallback. */
 export function resolveProjectColor(project: Pick<Project, "id" | "color">): string {
-  if (project.color) return project.color;
+  if (project.color) return normalizeProjectColor(project.color);
   let hash = 0;
   for (let i = 0; i < project.id.length; i++) {
     hash = (hash * 31 + project.id.charCodeAt(i)) | 0;
@@ -36,8 +41,8 @@ export function resolveProjectColor(project: Pick<Project, "id" | "color">): str
 export function pickProjectColor(projects: Pick<Project, "color">[]): string {
   const counts = new Map<string, number>(PROJECT_COLORS.map((c) => [c, 0]));
   for (const p of projects) {
-    const c = p.color;
-    if (!c) continue;
+    if (!p.color) continue;
+    const c = normalizeProjectColor(p.color);
     if (counts.has(c)) counts.set(c, (counts.get(c) ?? 0) + 1);
   }
   let best = PROJECT_COLORS[0];

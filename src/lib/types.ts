@@ -35,10 +35,33 @@ export type TimerStatus =
   | "break"
   | "completed";
 
+/** Muted project accents — readable on light/dark without neon saturation. */
 export const PROJECT_COLORS = [
-  "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
-  "#ec4899", "#06b6d4", "#f97316", "#14b8a6", "#6366f1",
+  "#6b8cce", // dusty blue
+  "#5f9a86", // sage green
+  "#c4a35a", // soft amber
+  "#c47a7a", // dusty rose
+  "#8b7eb8", // muted violet
+  "#c486a8", // dusty pink
+  "#5e9eab", // slate cyan
+  "#c48d62", // soft terracotta
+  "#5f9e91", // muted teal
+  "#7a7fbf", // soft indigo
 ];
+
+/** Map previous bright palette → muted (existing saved colors). */
+export const LEGACY_PROJECT_COLOR_MAP: Record<string, string> = {
+  "#3b82f6": "#6b8cce",
+  "#10b981": "#5f9a86",
+  "#f59e0b": "#c4a35a",
+  "#ef4444": "#c47a7a",
+  "#8b5cf6": "#8b7eb8",
+  "#ec4899": "#c486a8",
+  "#06b6d4": "#5e9eab",
+  "#f97316": "#c48d62",
+  "#14b8a6": "#5f9e91",
+  "#6366f1": "#7a7fbf",
+};
 
 export interface Project {
   id: string;
