@@ -25,6 +25,7 @@ import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
+import { AddProjectButton } from "@/components/task-list/AddProjectButton";
 
 const COLLAPSED_PROJECTS_KEY = "foci-collapsed-card-projects";
 
@@ -1259,16 +1260,7 @@ export default function TaskCardView({
             <>
               <p>No projects yet.</p>
               {onAddProject && (
-                <button
-                  type="button"
-                  onClick={onAddProject}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add project
-                </button>
+                <AddProjectButton onClick={onAddProject} />
               )}
             </>
           )}

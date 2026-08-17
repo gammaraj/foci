@@ -3660,16 +3660,7 @@ export default function TaskList({
                   : "Add your first task above, or start a project from a template"}
               </p>
               {!isTimeFilter && (
-                <button
-                  type="button"
-                  onClick={openProjectManage}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add project
-                </button>
+                <AddProjectButton onClick={openProjectManage} />
               )}
             </div>
             {!isTimeFilter && (

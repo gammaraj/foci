@@ -1,31 +1,40 @@
-/** Shared “Add project” control — opens Projects manage (create is at the top). */
+/** Shared “Add project” control — solid primary CTA (opens Projects manage). */
 export function AddProjectButton({
   onClick,
   size = "md",
   className = "",
+  label = "Add project",
+  shortLabel,
 }: {
   onClick: () => void;
   size?: "sm" | "md";
   className?: string;
+  label?: string;
+  /** When set, shown below `min-[380px]`; icon-only otherwise keeps toolbar compact. */
+  shortLabel?: string;
 }) {
   const pad =
     size === "sm"
-      ? "gap-1 px-2 py-1.5 min-h-[2rem] text-xs"
-      : "gap-1.5 px-2.5 py-1.5 min-h-[2.25rem] text-sm";
+      ? "gap-1 px-2.5 py-1.5 min-h-[2rem] text-xs"
+      : "gap-1.5 px-3 py-2 min-h-[2.25rem] text-sm";
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 inline-flex items-center justify-center ${pad} font-semibold rounded-lg border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:border-blue-400 dark:hover:border-blue-500 transition-colors ${className}`}
+      className={`shrink-0 inline-flex items-center justify-center ${pad} font-semibold rounded-full bg-blue-600 text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 hover:shadow-md hover:shadow-blue-600/25 active:bg-blue-800 transition-[color,background-color,box-shadow] dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-white dark:shadow-blue-900/40 ${className}`}
       title="Add a new project"
       aria-label="Add project"
       data-tour="add-project"
     >
       <svg className={size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M12 4v16m8-8H4" />
       </svg>
-      <span>Add project</span>
+      {shortLabel ? (
+        <span className="hidden min-[380px]:inline">{shortLabel}</span>
+      ) : (
+        <span>{label}</span>
+      )}
     </button>
   );
 }

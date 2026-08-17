@@ -2,6 +2,7 @@
 
 import type { Project } from "@/lib/types";
 import type { TaskViewMode } from "@/components/task-list/types";
+import { AddProjectButton } from "@/components/task-list/AddProjectButton";
 import {
   ALL_PROJECTS_ID,
   TODAY_FILTER_ID,
@@ -212,19 +213,7 @@ export function MobileTaskToolbar({
         </button>
 
         {onAddProject && (
-          <button
-            type="button"
-            onClick={onAddProject}
-            className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-blue-300/80 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-            data-tour="add-project"
-            title="Add a new project"
-            aria-label="Add project"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="hidden min-[380px]:inline">Project</span>
-          </button>
+          <AddProjectButton onClick={onAddProject} size="sm" shortLabel="Project" />
         )}
       </div>
     </div>
