@@ -38,6 +38,8 @@ export const GOAL_PRESETS: GoalPreset[] = [
 
 export interface ProjectTemplate {
   label: string;
+  /** Compact chip label (chips row); falls back to `label`. */
+  shortLabel?: string;
   emoji: string;
   description: string;
   /** Optional grouping for pickers (e.g. Finance). */
@@ -51,6 +53,7 @@ export type TaskTemplate = ProjectTemplate;
 export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   {
     label: "Morning Routine",
+    shortLabel: "Morning",
     emoji: "🌅",
     description: "Start your day right",
     category: "workflow",
@@ -58,6 +61,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Study Session",
+    shortLabel: "Study",
     emoji: "📚",
     description: "Structured learning block",
     category: "workflow",
@@ -65,6 +69,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Dev Sprint",
+    shortLabel: "Dev Sprint",
     emoji: "💻",
     description: "Focused coding workflow",
     category: "workflow",
@@ -72,6 +77,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Writing Block",
+    shortLabel: "Writing",
     emoji: "✍️",
     description: "Focused writing session",
     category: "workflow",
@@ -79,6 +85,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Meeting Prep",
+    shortLabel: "Meeting",
     emoji: "📋",
     description: "Get ready for meetings",
     category: "workflow",
@@ -86,6 +93,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Weekly Review",
+    shortLabel: "Review",
     emoji: "📊",
     description: "End-of-week reflection",
     category: "workflow",
@@ -93,6 +101,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Trip Planning",
+    shortLabel: "Trip",
     emoji: "✈️",
     description: "Focused travel prep — pair with Wandering Hermit itineraries",
     category: "workflow",
@@ -110,6 +119,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Financial Life Plan",
+    shortLabel: "Life Plan",
     emoji: "🧭",
     description: "End-to-end money system: cash flow, protection, debt, investing, and goals",
     category: "finance",
@@ -136,6 +146,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Monthly Budget",
+    shortLabel: "Budget",
     emoji: "💵",
     description: "Review income, spending, and savings",
     category: "finance",
@@ -150,6 +161,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Debt Payoff",
+    shortLabel: "Debt",
     emoji: "📉",
     description: "Organize and attack debt",
     category: "finance",
@@ -164,6 +176,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Emergency Fund",
+    shortLabel: "Emergency",
     emoji: "🛟",
     description: "Build a cash safety net",
     category: "finance",
@@ -177,6 +190,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Investing Setup",
+    shortLabel: "Investing",
     emoji: "📈",
     description: "Get accounts and contributions in order",
     category: "finance",
@@ -191,6 +205,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Tax Prep",
+    shortLabel: "Tax Prep",
     emoji: "🧾",
     description: "Gather documents and file with less stress",
     category: "finance",
@@ -205,6 +220,7 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
   {
     label: "Net Worth Review",
+    shortLabel: "Net Worth",
     emoji: "🧮",
     description: "Snapshot assets, liabilities, and goals",
     category: "finance",

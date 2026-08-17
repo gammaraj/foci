@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, PROJECT_COLORS, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
+import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
@@ -73,6 +73,7 @@ import {
   reorderSubtasks,
   moveProjectInDisplayOrder,
   resolveProjectColor,
+  pickProjectColor,
 } from "@/components/task-list/utils";
 import { OneThingCard } from "@/components/task-list/OneThingCard";
 import {
@@ -1000,15 +1001,16 @@ export default function TaskList({
     }
   }, []);
 
-  // Leave a shared project (or entire account share)
+  // Remove collaborator access to a shared project (or entire account share)
   const handleLeaveSharedProject = async (shared: SharedProject) => {
     const isAccountShare = shared._shareSource === "account";
+    const ownerLabel = shared._ownerName || shared._ownerEmail;
     setPendingConfirm({
-      title: isAccountShare ? "Leave shared account" : "Leave project",
+      title: isAccountShare ? "Remove account access?" : "Remove your access?",
       message: isAccountShare
-        ? `Leave all projects from ${shared._ownerName || shared._ownerEmail}? You will lose access to every project they share with you.`
-        : `Are you sure you want to leave "${shared.name}"? You will lose access to this project and its tasks.`,
-      confirmLabel: "Leave",
+        ? `Remove access to all projects from ${ownerLabel}? You won’t see their shared projects anymore.`
+        : `Remove your access to “${shared.name}”? You won’t see this project or its tasks anymore.`,
+      confirmLabel: "Remove access",
       onConfirm: async () => {
         try {
           if (isAccountShare) {
@@ -1028,9 +1030,9 @@ export default function TaskList({
             setSelectedSharedProject(null);
             setSelectedProjectId(TODAY_FILTER_ID);
           }
-          showToast(isAccountShare ? "Left shared account" : "Left shared project", "success");
+          showToast(isAccountShare ? "Account access removed" : "Access removed", "success");
         } catch (err) {
-          const message = err instanceof Error ? err.message : "Failed to leave";
+          const message = err instanceof Error ? err.message : "Couldn’t remove access";
           showToast(message, "error");
         }
         setPendingConfirm(null);
@@ -1084,8 +1086,7 @@ export default function TaskList({
   const addProject = (template?: ProjectTemplate) => {
     const name = (template?.label ?? newProjectName).trim().slice(0, MAX_PROJECT_NAME);
     if (!name) return;
-    const usedColors = projects.map((p) => p.color).filter(Boolean);
-    const nextColor = PROJECT_COLORS.find((c) => !usedColors.includes(c)) ?? PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
+    const nextColor = pickProjectColor(projects);
     const orders = projects.map((p) => p.order ?? 0);
     const minOrder = orders.length > 0 ? Math.min(...orders) : 0;
     const project: Project = {
@@ -3179,9 +3180,10 @@ export default function TaskList({
             <button
               type="button"
               onClick={() => handleLeaveSharedProject(selectedSharedProject)}
-              className="shrink-0 text-xs font-medium text-red-500 hover:underline"
+              className="shrink-0 inline-flex items-center px-2 py-1 rounded-md text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+              title="Stop seeing this project — removes your collaborator access"
             >
-              Leave
+              Remove access
             </button>
           </div>
         </div>

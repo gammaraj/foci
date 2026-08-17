@@ -32,6 +32,26 @@ export function resolveProjectColor(project: Pick<Project, "id" | "color">): str
   return PROJECT_COLORS[Math.abs(hash) % PROJECT_COLORS.length];
 }
 
+/** Next palette color with the fewest current uses (avoids a sea of blue). */
+export function pickProjectColor(projects: Pick<Project, "color">[]): string {
+  const counts = new Map<string, number>(PROJECT_COLORS.map((c) => [c, 0]));
+  for (const p of projects) {
+    const c = p.color;
+    if (!c) continue;
+    if (counts.has(c)) counts.set(c, (counts.get(c) ?? 0) + 1);
+  }
+  let best = PROJECT_COLORS[0];
+  let bestCount = Number.POSITIVE_INFINITY;
+  for (const c of PROJECT_COLORS) {
+    const n = counts.get(c) ?? 0;
+    if (n < bestCount) {
+      best = c;
+      bestCount = n;
+    }
+  }
+  return best;
+}
+
 /** Favorites first, then manual order, then name. */
 export function sortProjectsForDisplay(projects: Project[]): Project[] {
   return [...projects].sort((a, b) => {

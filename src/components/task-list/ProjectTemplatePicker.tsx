@@ -11,6 +11,10 @@ interface ProjectTemplatePickerProps {
   className?: string;
 }
 
+function chipLabel(tpl: ProjectTemplate) {
+  return tpl.shortLabel ?? tpl.label;
+}
+
 export function ProjectTemplatePicker({
   onSelect,
   variant = "chips",
@@ -81,20 +85,30 @@ export function ProjectTemplatePicker({
     );
   }
 
-  // chips
+  // chips — always one row; compact labels + horizontal scroll so every template stays reachable
   return (
-    <div className={`space-y-2 ${className}`}>
-      <p className="text-xs text-slate-500 dark:text-slate-400">Or start from a template:</p>
-      <div className="flex flex-wrap gap-1.5">
+    <div className={`space-y-1.5 min-w-0 ${className}`}>
+      <div className="flex items-baseline justify-between gap-2 px-0.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400">Or start from a template:</p>
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 roomy:hidden">Swipe for more</p>
+      </div>
+      <div
+        className="flex flex-nowrap items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-hide overscroll-x-contain scroll-smooth pb-0.5"
+        role="list"
+        aria-label="Project templates"
+      >
         {templates.map((tpl) => (
           <button
             key={tpl.label}
             type="button"
+            role="listitem"
             onClick={() => onSelect(tpl)}
-            className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] bg-white text-slate-700 dark:bg-[#131d30] dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-800 dark:hover:text-blue-200 transition-colors touch-target-sm"
-            title={`${tpl.description} · ${tpl.tasks.length} tasks`}
+            className="shrink-0 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border border-slate-200/90 dark:border-[#243350] bg-white/90 text-slate-700 dark:bg-[#131d30] dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-800 dark:hover:text-blue-200 transition-colors whitespace-nowrap"
+            title={`${tpl.label} — ${tpl.description} · ${tpl.tasks.length} tasks`}
+            aria-label={`${tpl.label}, ${tpl.tasks.length} tasks`}
           >
-            {tpl.emoji} {tpl.label}
+            <span aria-hidden>{tpl.emoji}</span>
+            <span>{chipLabel(tpl)}</span>
           </button>
         ))}
       </div>

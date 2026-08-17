@@ -3,11 +3,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
 import type { SharedProject } from "@/lib/storage";
-import { DEFAULT_PROJECT_ID, PROJECT_COLORS } from "@/lib/types";
+import { DEFAULT_PROJECT_ID } from "@/lib/types";
 import {
   MAX_PROJECT_NAME,
   formatDueDate,
   isDueDateOverdue,
+  resolveProjectColor,
 } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { ProjectTaskCounts } from "@/components/task-list/ProjectTaskCounts";
@@ -347,11 +348,12 @@ function ProjectRow({
 
         <input
           type="color"
-          value={project.color || PROJECT_COLORS[0]}
+          value={resolveProjectColor(project)}
           onChange={(e) => onUpdateColor(project.id, e.target.value)}
           onClick={(e) => e.stopPropagation()}
           className="w-8 h-8 sm:w-4 sm:h-4 rounded-full border-0 cursor-pointer p-0 appearance-none bg-transparent flex-shrink-0 touch-target-sm [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
           title="Change color"
+          aria-label={`Color for ${project.name}`}
         />
 
         <button
@@ -570,6 +572,18 @@ export default function ProjectManageView({
     return () => window.clearTimeout(id);
   }, []);
 
+  // Persist missing accents so manage/cards don't all fall back to the same blue swatch.
+  const didBackfillColors = useRef(false);
+  useEffect(() => {
+    if (didBackfillColors.current) return;
+    const missing = sortedProjects.filter((p) => !p.color);
+    if (missing.length === 0) return;
+    didBackfillColors.current = true;
+    for (const p of missing) {
+      onUpdateColor(p.id, resolveProjectColor(p));
+    }
+  }, [sortedProjects, onUpdateColor]);
+
   const toggleExpanded = (id: string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
@@ -666,11 +680,17 @@ export default function ProjectManageView({
                 {sharedProjects.length} project{sharedProjects.length !== 1 ? "s" : ""}
               </span>
             </div>
-            <div className="space-y-1">
+            <div
+              className={
+                sharedProjects.length > 1
+                  ? "grid grid-cols-1 md:grid-cols-2 gap-2 items-start"
+                  : "space-y-1"
+              }
+            >
               {sharedProjects.map((sp) => (
                 <div
                   key={`${sp._ownerId}:${sp.id}`}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-blue-100 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-blue-100 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors min-w-0"
                 >
                   <button
                     type="button"
@@ -694,9 +714,27 @@ export default function ProjectManageView({
                   <button
                     type="button"
                     onClick={() => onLeaveShared(sp)}
-                    className="text-xs text-red-500 hover:underline shrink-0"
+                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                    title={
+                      sp._shareSource === "account"
+                        ? "Remove access to all projects from this person"
+                        : "Remove your access to this project"
+                    }
+                    aria-label={
+                      sp._shareSource === "account"
+                        ? `Remove account access from ${sp._ownerName || sp._ownerEmail}`
+                        : `Remove access to ${sp.name}`
+                    }
                   >
-                    {sp._shareSource === "account" ? "Leave account" : "Leave"}
+                    <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                    <span className="hidden sm:inline">Remove access</span>
                   </button>
                 </div>
               ))}
@@ -721,7 +759,7 @@ export default function ProjectManageView({
             </p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 items-start">
             {sortedProjects.map((project, index) => {
               const openTasks = sortOpenTasks(
                 tasks.filter((t) => t.projectId === project.id && !t.completed && !t.archivedAt),
@@ -735,7 +773,7 @@ export default function ProjectManageView({
               return (
                 <div
                   key={project.id}
-                  className={isExpanded ? "md:col-span-2" : "min-w-0"}
+                  className={isExpanded ? "md:col-span-2 xl:col-span-3 min-w-0" : "min-w-0"}
                 >
                   <ProjectRow
                     project={project}
