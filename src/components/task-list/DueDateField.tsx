@@ -1,6 +1,13 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  type ChangeEvent,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import { getToday } from "@/lib/dates";
 import { openDatePicker } from "@/components/task-list/utils";
 
@@ -15,6 +22,19 @@ interface DueDateFieldProps {
    * mobile browsers fire `change` with today as soon as the picker opens.
    */
   requireExplicitPick?: boolean;
+}
+
+/** Mobile / touch UIs often stamp today asynchronously after showPicker — far past a microtask. */
+const MOBILE_AUTO_TODAY_IGNORE_MS = 700;
+
+function isCoarsePointer(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (window.matchMedia("(pointer: coarse)").matches) return true;
+  } catch {
+    /* ignore */
+  }
+  return navigator.maxTouchPoints > 0;
 }
 
 function blurDateInput(input: HTMLInputElement | null) {
@@ -39,22 +59,70 @@ export function DueDateField({
 }: DueDateFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   /**
-   * Swallow only a synchronous auto-"today" stamp some browsers emit when an
-   * empty picker opens. Cleared on the next microtask so real picks (including
-   * Today) always commit.
+   * Swallow auto-"today" stamps some browsers emit when an empty picker opens.
+   * Desktop: microtask window. Mobile: longer window — stamps often arrive
+   * hundreds of ms after showPicker. Cleared by timer only (not on first swallow)
+   * so delayed duplicate stamps stay blocked. Intentional Today after the window
+   * still commits.
    */
-  const ignoreSyncTodayRef = useRef(false);
+  const ignoreAutoTodayRef = useRef(false);
+  const ignoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mustPickExplicitly = requireExplicitPick ?? !value;
+
+  useEffect(() => {
+    return () => {
+      if (ignoreTimerRef.current) clearTimeout(ignoreTimerRef.current);
+    };
+  }, []);
+
+  const armIgnoreAutoToday = () => {
+    ignoreAutoTodayRef.current = true;
+    if (ignoreTimerRef.current) clearTimeout(ignoreTimerRef.current);
+    ignoreTimerRef.current = null;
+
+    if (isCoarsePointer()) {
+      ignoreTimerRef.current = setTimeout(() => {
+        ignoreAutoTodayRef.current = false;
+        ignoreTimerRef.current = null;
+      }, MOBILE_AUTO_TODAY_IGNORE_MS);
+    } else {
+      queueMicrotask(() => {
+        ignoreAutoTodayRef.current = false;
+      });
+    }
+  };
+
+  const handleDateEvent = (e: ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    const next = e.target.value;
+    if (next === (value ?? "")) return;
+
+    if (mustPickExplicitly && !value && next === getToday() && ignoreAutoTodayRef.current) {
+      // Ignore synthetic open-time today; keep controlled value empty.
+      // Do not remount — that would dismiss the still-open native picker.
+      e.target.value = "";
+      return;
+    }
+
+    ignoreAutoTodayRef.current = false;
+    if (ignoreTimerRef.current) {
+      clearTimeout(ignoreTimerRef.current);
+      ignoreTimerRef.current = null;
+    }
+    blurDateInput(inputRef.current);
+    if (!next) {
+      if (value) onChange(undefined);
+      return;
+    }
+    onChange(next);
+  };
 
   const handleOpenPicker = (e: MouseEvent | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (mustPickExplicitly && !value) {
-      ignoreSyncTodayRef.current = true;
-      queueMicrotask(() => {
-        ignoreSyncTodayRef.current = false;
-      });
+      armIgnoreAutoToday();
     }
     openDatePicker(inputRef.current);
   };
@@ -75,30 +143,7 @@ export function DueDateField({
         ref={inputRef}
         type="date"
         value={value ?? ""}
-        onChange={(e) => {
-          e.stopPropagation();
-          const next = e.target.value;
-          if (next === (value ?? "")) return;
-
-          if (
-            mustPickExplicitly &&
-            !value &&
-            next === getToday() &&
-            ignoreSyncTodayRef.current
-          ) {
-            // Ignore synthetic open-time today; keep controlled value empty.
-            ignoreSyncTodayRef.current = false;
-            return;
-          }
-
-          ignoreSyncTodayRef.current = false;
-          blurDateInput(inputRef.current);
-          if (!next) {
-            if (value) onChange(undefined);
-            return;
-          }
-          onChange(next);
-        }}
+        onChange={handleDateEvent}
         // Real box for showPicker; no hit testing — the button above owns clicks.
         className="absolute inset-0 z-0 w-full h-full opacity-0 pointer-events-none text-base"
         tabIndex={-1}

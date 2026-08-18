@@ -210,7 +210,7 @@ export function TaskDetailPanel({
           }}
           placeholder="Add a description..."
           maxLength={2000}
-          rows={3}
+          rows={2}
           className={`w-full px-3 py-2.5 border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y ${
             isDrawer ? "text-base sm:text-sm" : "text-sm"
           }`}
