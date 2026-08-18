@@ -2570,7 +2570,7 @@ export default function TaskList({
                   Back to {drillReturnLabel}
                 </button>
               )}
-              <h2 className="text-sm sm:text-base font-bold tracking-tight flex items-center gap-1 min-w-0 text-slate-800 dark:text-white leading-none">
+              <h2 className="text-sm sm:text-base font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
                 {drillInProject ? (
                   <>
                     <span
@@ -2608,26 +2608,31 @@ export default function TaskList({
                     </span>
                   </>
                 )}
-                {showUrgencySummary && (
-                  <TaskUrgencySummary
-                    compact
-                    className="no-print ml-0.5 shrink-0"
-                    overdueCount={overdueTasks.length}
-                    dueTodayCount={dueExactlyTodayCount}
-                    onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
-                    onViewToday={() => selectProject(TODAY_FILTER_ID)}
-                  />
-                )}
-                {!focusMode && !projectManageOpen && !drillInProject && (
-                  <DoneTodayTally
-                    compact
-                    count={doneProgress.today}
-                    weekCount={doneProgress.week}
-                    monthCount={doneProgress.month}
-                    pulse={tallyPulse}
-                    onClick={scrollToDoneToday}
-                    className="no-print ml-0.5 shrink-0"
-                  />
+                {(showUrgencySummary ||
+                  (!focusMode && !projectManageOpen && !drillInProject)) && (
+                  <span className="no-print inline-flex items-center gap-2 ml-1.5 sm:ml-2 shrink-0 min-w-0">
+                    {showUrgencySummary && (
+                      <TaskUrgencySummary
+                        compact
+                        className="shrink-0"
+                        overdueCount={overdueTasks.length}
+                        dueTodayCount={dueExactlyTodayCount}
+                        onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
+                        onViewToday={() => selectProject(TODAY_FILTER_ID)}
+                      />
+                    )}
+                    {!focusMode && !projectManageOpen && !drillInProject && (
+                      <DoneTodayTally
+                        compact
+                        count={doneProgress.today}
+                        weekCount={doneProgress.week}
+                        monthCount={doneProgress.month}
+                        pulse={tallyPulse}
+                        onClick={scrollToDoneToday}
+                        className="shrink-0"
+                      />
+                    )}
+                  </span>
                 )}
               </h2>
             </>

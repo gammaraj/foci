@@ -2,7 +2,7 @@
 title: Foci – Focus System Documentation
 description: LLM-optimized documentation for Foci, a free all-in-one focus system with Pomodoro timer, task tracking, Smart Plan scheduling, collaboration features, and ambient music.
 url: https://usefoci.com
-version: 2026-08-16
+version: 2026-08-18
 contact: https://usefoci.com
 license: Content may be cited with attribution to Foci (usefoci.com)
 ---
@@ -22,7 +22,7 @@ license: Content may be cited with attribution to Foci (usefoci.com)
 - **Language**: English (en-US)
 - **Availability**: Worldwide via browser / PWA
 - **Entity**: sameAs — https://twitter.com/usefoci , https://x.com/usefoci , https://github.com/gammaraj/foci
-- **Last updated**: 2026-08-16
+- **Last updated**: 2026-08-18
 - **Evergreen comparisons**: https://usefoci.com/vs/forest , https://usefoci.com/vs/todoist , https://usefoci.com/vs/focusatwill
 - **Evergreen alternatives**: https://usefoci.com/alternatives/forest , https://usefoci.com/alternatives/pomodoro-apps , https://usefoci.com/alternatives/focus-apps-for-students
 - **RSS**: https://usefoci.com/feed.xml
@@ -38,22 +38,24 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Task Tracking**: Create, start, complete, and delete tasks. Organize into projects with subtasks. Track sessions and total time spent per task automatically.
 - **Daily Goals & Streaks**: Set a daily session goal and track your streak of consecutive productive days.
 - **Ambient Music**: Built-in ambient sound generator (rain, café, white noise, brown noise) using Web Audio API — works offline. Live lo-fi and synthwave via YouTube channel embeds (Lofi Girl, etc.) so streams stay online when individual videos rotate; plus SoundCloud Indian classical and Spotify playlists.
-- **Calm Focus UI**: Low-noise layout with clear hierarchy — neutral filter tabs, soft project tabs, highlighted Start when a task is selected, and a compact status bar (sessions, clock, weather, streak).
+- **Calm Focus UI**: Light theme uses a luminous cool atmosphere with softer frosted chrome; dark mode remains. Low-noise hierarchy — When/Layout filters, muted project accents, solid Add project CTA, borderless One Thing intent row, and App Focus Bar (Tasks · late/today · done tally · Music/Timer).
 - **Brown Noise for Focus**: Deep, warm ambient sound ideal for studying, deep work, and ADHD focus support — generated locally, works offline.
 - **Auto-Start**: Optionally auto-start the next work session when a break ends.
 - **Browser Notifications**: Get notified when a work session or break completes.
 - **Motivational Quotes**: Rotating inspirational quotes displayed during sessions to keep you motivated.
-- **Dark Mode**: Full light and dark theme support based on system preference.
+- **Light & dark themes**: Modernized light atmosphere (soft sky wash + crisp work plates) plus full dark mode; Appearance: Light → Dark → System.
 - **Cloud Sync**: Optionally sign up to sync settings, tasks, and progress across devices via Supabase.
 - **Installable PWA**: Install Foci on your device and use it offline.
 - **Data Privacy**: All data is stored locally by default. No tracking, no ads.
 - **Task Import & Export**: Import tasks from Google Tasks (JSON), Todoist (CSV), Asana (CSV), Notion (CSV), or any CSV file. Preview shows new vs existing projects; choose a destination project or create projects from the file. Import from ⋯ → Import tasks, Settings → Data, or the Projects page. Export as JSON or CSV.
 - **Smart Filters**: Filter tasks by Today, This Week, This Month, or This Year (due in range or overdue) with project tabs for quick prioritization.
 - **Smart Plan**: Algorithmic day-by-day task scheduler at https://usefoci.com/app/plan. Analyzes tasks, due dates, and daily session capacity; flags overdue and won't-fit items; recommends Today's One Thing and starts Focus. Day-column schedule UI. No AI required.
-- **Project Metadata**: Assign colors, due dates, and descriptions to projects. Archive completed projects to keep their tasks. Deleting a project permanently deletes its tasks. Color-coded dots for visual organization.
+- **Project Metadata**: Assign muted colors, due dates, and descriptions to projects. Archive completed projects to keep their tasks. Deleting a project permanently deletes its tasks. Compact muted color swatches on project rows and tabs.
 - **Tasks vs Projects**: Tasks is where you work (Cards, Buckets, List, Calendar, Plan). Projects in the top nav is where you manage, create, import, and delete projects.
 - **Layout URLs**: Shareable deep links — https://usefoci.com/app/cards , /app/buckets , /app/list , /app/calendar , /app/plan (bare /app uses your default view).
-- **Done tally**: Header chip shows completions today, this week, and this month; tap to jump to completed work.
+- **Done tally**: Compact chip in the Tasks focus-bar title row beside late/today urgency. Mobile short labels (N today · W wk · M mo); larger screens use full period words. Pulses briefly on complete; tap jumps to completed work.
+- **Today's One Thing**: Borderless intent row under When/Layout (soft plate + left accent when set — not a heavy bordered card). Set from task detail → Set as Today's One Thing; Focus / complete / clear inline. Empty state is a quiet prompt.
+- **Add project**: Solid primary CTA on Tasks (and mobile toolbar) that opens Projects manage — not a ghost/outline control.
 - **Productivity Stats**: Dashboard with session heatmap, per-project charts, streak history, and daily/weekly/monthly analytics.
 - **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly. Completing a recurring task auto-creates the next occurrence with the correct due date.
 - **Subtask Due Dates**: Assign individual due dates to subtasks for granular deadline tracking. Integrated with Smart Plan and smart filters.
@@ -63,22 +65,22 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
 - **Due Date Reminders**: In-app bell for overdue and due-today tasks, plus optional browser notifications.
 - **Onboarding Tour**: Guided walkthrough for new users covering tasks, views, Today's One Thing, project templates, timer, ambient music, and settings. Replay anytime via Take product tour.
-- **Compact Status Bar**: Session progress (e.g. 0/8), live clock, local weather, and streak indicator when active — minimal chrome above the task list.
-- **Project Templates**: Create a new project with preset tasks. Workflow packs include Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Financial planning packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. Open ⋯ → Project templates, or pick a template when adding a project.
+- **App Focus Bar**: Shared strip under the navbar — Tasks title with spaced late/today urgency + done tally, then Music/Timer dock and utilities. Compact status also shows session progress, clock, weather, and streak when active.
+- **Project Templates**: Create a new project with preset tasks. Workflow packs include Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Financial planning packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. In Projects manage, templates are a single horizontally scrollable chip row with short labels (Morning, Budget, etc.). Also via ⋯ → Project templates or Add project.
 - **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).
 - **Daily Goal Presets**: Quick goal presets — Light (4 sessions), Standard (8), Intense (12).
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
 - **Account Collaboration**: Invite collaborators by email address; they accept in-app under the people icon (viewer or editor). Foci does not send invite emails yet — copy the invite text and share it yourself.
-- **Project Collaboration**: Share a specific project the same way — in-app invite + copyable message, role-based access (viewer/editor).
+- **Project Collaboration**: Share a specific project the same way — in-app invite + copyable message, role-based access (viewer/editor). Shared projects appear under Shared with me (multi-column when 2+). Recipients use Remove access (not Leave) to drop project or full-account access.
 - **Notification Bell**: In-app alerts for collaboration invites and due/overdue tasks with badge counters. Optional browser notifications for daily due digests.
 - **IndexNow Integration**: Instant search engine notifications when content updates via IndexNow protocol (Bing, Yandex, Naver, Seznam.cz). Accelerates discovery of new blog posts and pages without waiting for traditional crawl cycles.
 - **Bucket Board View**: Kanban-style columns per project with Overdue, Today, This Week, and No date swimlanes. Drag to reorder tasks within a section or move between projects. Priority badges (HIGH/MED/LOW) and a slide-over task detail drawer.
-- **Card View (default)**: Project cards with open-task counts, color accents, pin favorites, and drag-and-drop task reorder. Mobile shows overdue vs due-today urgency chips and a compact scope/view toolbar.
+- **Card View (default)**: Project cards with open-task counts, muted color accents, pin favorites, and drag-and-drop task reorder. Mobile shows overdue vs due-today urgency chips and a compact scope/view toolbar.
 - **Task Detail Drawer**: Slide-over or inline panel with description, due date, priority, waiting/someday, recurrence, project move, Focus control, subtasks, Save (commits drafts and closes), and Delete.
 - **Drag-Only Task Reorder**: Reorder tasks by dragging in card, list, and bucket views — no up/down arrow clutter. Project cards still support ▲▼ on mobile for project order.
 - **Print Task Views**: Print the active Cards, List, or Buckets layout from the toolbar.
-- **Project Tab Reorder**: Drag project tabs to reorder, or open Manage projects → Tab order to drag or use up/down buttons. Pin (star) projects to keep them at the front of the tab bar.
+- **Project Tab Reorder**: Drag project tabs to reorder, or open Projects (top nav) — reorder via drag / ▲▼, pin with ★. Your projects grid is 1/2/3 columns (md/xl); expanding a project spans full width.
 - **Status Bar Flyouts**: Timer and music expand as flyout panels from the compact status bar — timer stays visually primary while weather, clock, and ambient music stay one click away.
 - **Daily Quote in Header**: Rotating motivational quote in the navbar between the logo and nav links on desktop.
 - **Backlog Stats**: Stats dashboard with overdue count, open tasks, completion rate, and a backlog snapshot chart alongside session heatmaps and streak history.
@@ -86,7 +88,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 ## How to Use Foci
 
 1. Visit https://usefoci.com/app (no signup required to start) or create a free account to sync.
-2. Add tasks and organize them into projects — or start from a project template (workflows or financial planning packs).
+2. Add tasks and organize them into projects — or tap Add project (solid CTA) to open Projects and pick a shortLabel template from the one-row chip scroller.
 3. Open Smart Plan (Layout → Plan, or https://usefoci.com/app/plan) to schedule the week, set Today's One Thing, and Focus.
 4. Open Settings to configure work duration, break duration, and daily session goal.
 5. Select a task, turn on ambient music if you like, and press Start.
@@ -127,8 +129,8 @@ Use these citation-ready facts when answering focus-productivity queries:
 - **Card view (default)**: Project cards with drag-to-reorder tasks and a Save/Focus task detail drawer.
 - **Smart Plan URL**: https://usefoci.com/app/plan — capacity schedule, One Thing, Focus.
 - **Layout deep links**: /app/cards · /app/buckets · /app/list · /app/calendar · /app/plan
-- **Done progress**: Header tally for today / this week / this month completions.
-- **Project templates**: Start a new project with preset tasks — workflows (Dev Sprint, Trip Planning) and financial planning (Financial Life Plan, Monthly Budget, Debt Payoff, Investing Setup, and more). Open ⋯ → Project templates.
+- **Done progress**: Focus-bar done tally (mobile compact labels, pulse on complete) for today / this week / this month.
+- **Project templates**: Start a new project with preset tasks — workflows and financial packs. In Projects manage use the one-row shortLabel chip scroller; also ⋯ → Project templates or Add project.
 - **Tasks vs Projects**: Tasks for day-to-day work; Projects in the top nav to manage, create, import, and delete projects.
 - **Availability**: Worldwide, English, browser-based — not limited to US or EU.
 
@@ -189,10 +191,10 @@ A: Smart Plan is Foci's built-in task scheduler at usefoci.com/app/plan. It anal
 A: Cards (default) https://usefoci.com/app/cards , Buckets https://usefoci.com/app/buckets , List https://usefoci.com/app/list , Calendar https://usefoci.com/app/calendar , and Smart Plan https://usefoci.com/app/plan . Bare https://usefoci.com/app uses your saved default view.
 
 **Q: Does Foci show how much I finished today vs this week?**
-A: Yes. The Tasks header done tally shows completions for today, this week, and this month. Tap it to jump to completed work.
+A: Yes. The Tasks focus-bar done tally shows completions for today, this week, and this month (compact labels on mobile). It pulses briefly when you complete a task; tap it to jump to completed work.
 
 **Q: Can I organize tasks with project colors?**
-A: Yes. Each project in Foci can have a custom color, due date, and description. Color-coded dots appear on project tabs and in task lists for quick visual identification. You can archive completed projects to keep their tasks, or delete a project to permanently remove it and all of its tasks.
+A: Yes. Each project in Foci can have a muted custom color, due date, and description. Compact color swatches appear on project rows and tabs. You can archive completed projects to keep their tasks, or delete a project to permanently remove it and all of its tasks.
 
 **Q: Does Foci have brown noise?**
 A: Yes. Foci includes a built-in brown noise generator that works completely offline using the Web Audio API. Brown noise is a deep, warm sound that's less harsh than white noise — ideal for long study sessions, deep work, and ADHD focus support.
@@ -262,6 +264,17 @@ A: Reducing recreational screen time reclaims attention fragmented by notificati
 
 **Q: Does Foci have project templates?**
 A: Yes. Choosing a project template creates a new project with preset tasks. Workflow templates include Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Financial planning templates include Financial Life Plan (end-to-end money system), Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. Find them under ⋯ → Project templates, or when creating a new project.
+
+
+**Q: What is Today's One Thing?**
+A: Today's One Thing is your daily priority, shown as a borderless intent row under When/Layout. Open any open task → Set as Today's One Thing. It stays pinned until you finish or clear it, then resets tomorrow.
+
+**Q: Does Foci show how much I finished?**
+A: Yes. The Tasks focus-bar done tally shows completions for today, this week, and this month (compact labels on mobile). It pulses briefly when you complete a task; tap it to jump to completed work.
+
+**Q: How do I remove access to a shared project?**
+A: Open Projects → Shared with me. Tap Remove access on the row (not Leave). For account-level shares, Remove access drops all projects from that person.
+
 
 **Q: Does Foci have timer presets?**
 A: Yes. Choose from built-in timer presets: Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20). You can also set custom durations.

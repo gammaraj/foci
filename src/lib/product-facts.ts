@@ -8,7 +8,7 @@ export const SITE_NAME = "Foci";
 export const SITE_DOMAIN = "usefoci.com";
 
 /** Bump when product or core marketing facts change (JSON-LD dateModified, llms version). */
-export const PRODUCT_DATE_MODIFIED = "2026-08-16";
+export const PRODUCT_DATE_MODIFIED = "2026-08-18";
 
 /** One-sentence definition — cite this everywhere. */
 export const FOCI_ONE_LINER =

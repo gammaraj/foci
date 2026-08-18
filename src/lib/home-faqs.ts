@@ -56,9 +56,29 @@ export const HOME_FAQS: HomeFaq[] = [
       "Deleting a project permanently removes the project and all of its tasks. Archive a project instead if you want to hide it while keeping the tasks.",
   },
   {
+    question: "What is Today's One Thing?",
+    answer:
+      "Today's One Thing is your daily priority, shown as a borderless intent row under When/Layout. Open any open task → Set as Today's One Thing. It stays pinned until you finish or clear it, then resets tomorrow.",
+  },
+  {
+    question: "Does Foci show how much I finished?",
+    answer:
+      "Yes. The Tasks focus-bar done tally shows completions for today, this week, and this month (compact labels on mobile). It pulses briefly when you complete a task; tap it to jump to completed work.",
+  },
+  {
+    question: "How do I remove access to a shared project?",
+    answer:
+      "Open Projects → Shared with me. Tap Remove access on the row (not Leave). For account-level shares, Remove access drops all projects from that person.",
+  },
+  {
     question: "Does Foci have project templates?",
     answer:
-      "Yes. Project templates create a new project with preset tasks. Workflows include Dev Sprint, Trip Planning, and Weekly Review. Financial packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. Open ⋯ → Project templates, or pick one when creating a project.",
+      "Yes. Project templates create a new project with preset tasks. Workflows include Dev Sprint, Trip Planning, and Weekly Review. Financial packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. In Projects manage, templates are a single horizontally scrollable chip row with short labels. You can also open ⋯ → Project templates or tap Add project.",
+  },
+  {
+    question: "Does Foci support light and dark mode?",
+    answer:
+      "Yes. Foci has a modernized light atmosphere (soft sky wash and crisp work plates) plus full dark mode. Choose Appearance: Light, Dark, or System in settings or via the navbar theme toggle.",
   },
   {
     question: "Does Foci have ambient music and brown noise?",

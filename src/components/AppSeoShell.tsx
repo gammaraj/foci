@@ -26,8 +26,11 @@ const appJsonLd = {
     "Task tracking with projects, subtasks, and per-task time logging",
     "Smart Plan day-by-day scheduling with One Thing and Focus actions",
     "Shareable layout URLs: /app/cards, /app/buckets, /app/list, /app/calendar, /app/plan",
-    "Today's One Thing daily priority",
-    "Done tally for today, this week, and this month",
+    "Today's One Thing borderless intent row with Focus / complete actions",
+    "Done tally in the Tasks focus bar (mobile compact labels, pulse on complete)",
+    "Solid Add project CTA and scrollable shortLabel templates in Projects manage",
+    "Shared with me list with Remove access (not Leave)",
+    "Muted project color swatches; Projects grid 2–3 columns with full-width expand",
     "Pomodoro, Flowtime, and 52/17 timer presets",
     "Offline ambient sounds including brown noise, rain, and café",
     "Live lo-fi streams and curated Spotify playlists",
@@ -57,7 +60,7 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
           <h2>How to use Foci</h2>
           <ol>
             <li>Open {SITE_URL}/app (no signup required to start).</li>
-            <li>Add tasks and organize them into projects — or start from a project template.</li>
+            <li>Add tasks and organize them into projects — or tap Add project to open Projects and pick a shortLabel template.</li>
             <li>
               Open Smart Plan at {SITE_URL}/app/plan to schedule the week, set Today&apos;s One Thing, and start Focus.
             </li>
@@ -88,7 +91,11 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
             <li>Timer presets: Pomodoro (25/5), Deep Work (50/10), 52/17, Ultra Focus (90/20)</li>
             <li>Task tracking with automatic per-task session logging</li>
             <li>Smart Plan algorithmic day-by-day scheduling with Focus / One Thing actions</li>
-            <li>Done tally: completions today, this week, and this month</li>
+            <li>Today&apos;s One Thing borderless intent row under When/Layout</li>
+            <li>Done tally in the Tasks focus bar (mobile compact labels; pulses on complete)</li>
+            <li>Solid Add project CTA; Projects manage templates as a one-row chip scroller</li>
+            <li>Shared with me + Remove access for shared projects</li>
+            <li>Muted project color swatches; 2–3 column Projects grid</li>
             <li>Offline ambient sounds: rain, café, white noise, brown noise</li>
             <li>Card, list, bucket (kanban), calendar, and Smart Plan views</li>
             <li>Import tasks from Todoist, Notion, Asana, or Google Tasks</li>
