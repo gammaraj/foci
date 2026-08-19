@@ -34,7 +34,7 @@ export default function NotificationPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[380px] z-50 animate-in slide-in-from-bottom-4 duration-300">
-      <div className="bg-white dark:bg-[#1a2540] border border-slate-200 dark:border-[#2a3a5c] rounded-2xl shadow-2xl p-4 sm:p-5">
+      <div className="bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-2xl shadow-2xl p-4 sm:p-5">
         <div className="flex gap-3">
           <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
             <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

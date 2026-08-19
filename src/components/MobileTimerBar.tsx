@@ -33,7 +33,7 @@ export default function MobileTimerBar({
       className={`lg:hidden fixed bottom-0 inset-x-0 z-40 border-t safe-bottom ${
         isBreak
           ? "border-green-400/50 bg-green-50/95 dark:bg-[#0a1a12]/95 backdrop-blur-md"
-          : "border-slate-200 dark:border-[#243350] bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md"
+          : "border-slate-200 dark:border-[#243350] bg-white/95 dark:bg-[#131d30]/95 backdrop-blur-md"
       }`}
       role="region"
       aria-label="Timer controls"

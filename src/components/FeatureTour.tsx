@@ -72,7 +72,7 @@ export default function FeatureTour() {
 
       {targetEl && (
         <div
-          className="fixed z-[9998] rounded-xl ring-4 ring-violet-500/50 pointer-events-none"
+          className="fixed z-[9998] rounded-xl ring-4 ring-blue-500/50 pointer-events-none"
           style={{
             top: targetEl.getBoundingClientRect().top - 4,
             left: targetEl.getBoundingClientRect().left - 4,
@@ -90,7 +90,7 @@ export default function FeatureTour() {
         className="w-[calc(100%-2rem)] max-w-[300px] bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-[9999]"
       >
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">{step.title}</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{step.title}</h3>
           <span className="text-xs text-slate-400">
             {currentStep + 1}/{FEATURE_TOUR_STEPS.length}
           </span>
@@ -107,7 +107,7 @@ export default function FeatureTour() {
           <button
             type="button"
             onClick={next}
-            className="px-4 py-2 text-sm font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             {currentStep < FEATURE_TOUR_STEPS.length - 1 ? "Next" : "Done"}
           </button>

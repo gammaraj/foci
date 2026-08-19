@@ -252,8 +252,8 @@ export default function CollaborationInvitesButton() {
       </button>
 
       {showPanel && (
-        <div className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-96 w-auto bg-white dark:bg-[#1a2540] border border-slate-200 dark:border-[#2a3a5c] rounded-xl shadow-2xl overflow-hidden">
-          <div className="p-4 border-b border-slate-200 dark:border-[#2a3a5c]">
+        <div className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-96 w-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl overflow-hidden">
+          <div className="p-4 border-b border-slate-200 dark:border-[#243350]">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -284,11 +284,11 @@ export default function CollaborationInvitesButton() {
               <>
                 {/* Pending invites */}
                 {inviteCount > 0 && (
-                  <div className="border-b border-slate-200 dark:border-[#2a3a5c]">
+                  <div className="border-b border-slate-200 dark:border-[#243350]">
                     <p className="px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       Pending invites
                     </p>
-                    <ul className="divide-y divide-slate-100 dark:divide-[#2a3a5c]">
+                    <ul className="divide-y divide-slate-100 dark:divide-[#243350]">
                       {accountInvites.map((invite) => (
                         <li key={`account-${invite.id}`} className="p-4">
                           <p className="text-sm font-medium text-slate-900 dark:text-white">
@@ -301,14 +301,14 @@ export default function CollaborationInvitesButton() {
                             <button
                               onClick={() => handleAcceptAccountInvite(invite.id)}
                               disabled={processingId === invite.id}
-                              className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
+                              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
                             >
                               {processingId === invite.id ? "..." : "Accept"}
                             </button>
                             <button
                               onClick={() => handleDeclineAccountInvite(invite.id)}
                               disabled={processingId === invite.id}
-                              className="flex-1 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 rounded-lg"
+                              className="flex-1 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 rounded-lg"
                             >
                               Decline
                             </button>
@@ -328,14 +328,14 @@ export default function CollaborationInvitesButton() {
                             <button
                               onClick={() => handleAccept(invite.id)}
                               disabled={processingId === invite.id}
-                              className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
+                              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
                             >
                               {processingId === invite.id ? "..." : "Accept"}
                             </button>
                             <button
                               onClick={() => handleDecline(invite.id)}
                               disabled={processingId === invite.id}
-                              className="flex-1 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 rounded-lg"
+                              className="flex-1 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 rounded-lg"
                             >
                               Decline
                             </button>
@@ -404,11 +404,11 @@ export default function CollaborationInvitesButton() {
             )}
           </div>
 
-          <div className="border-t border-slate-200 dark:border-[#2a3a5c] p-3">
+          <div className="border-t border-slate-200 dark:border-[#243350] p-3">
             <button
               type="button"
               onClick={openShareSettings}
-              className="w-full px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#131d30] hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
+              className="w-full px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#131d30] hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
             >
               Share your projects…
             </button>

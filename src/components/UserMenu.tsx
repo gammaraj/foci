@@ -91,16 +91,16 @@ export default function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-52 sm:w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
-          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+        <div className="absolute right-0 mt-2 w-52 sm:w-60 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-lg py-1 z-50">
+          <div className="px-4 py-3 border-b border-slate-100 dark:border-[#243350]">
             <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{name}</p>
             <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">{email}</p>
           </div>
 
-          <div className="py-1 border-b border-slate-100 dark:border-slate-800">
+          <div className="py-1 border-b border-slate-100 dark:border-[#243350]">
             <button
               onClick={cycleTheme}
-              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
               title="Click to cycle: Light → Dark → System (or use the sun/moon in the nav)"
             >
               <ThemeIcon />
@@ -112,14 +112,14 @@ export default function UserMenu() {
                 setOpen(false);
                 window.dispatchEvent(new Event(WHATS_NEW_SHOW_EVENT));
               }}
-              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
             >
-              <svg className="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
               <span className="flex-1">What&apos;s new</span>
               {whatsNewUnseen && (
-                <span className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
               )}
             </button>
             <button
@@ -127,7 +127,7 @@ export default function UserMenu() {
                 setOpen(false);
                 startOnboardingTour();
               }}
-              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+              className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -138,7 +138,7 @@ export default function UserMenu() {
               <Link
                 href="/install"
                 onClick={() => setOpen(false)}
-                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
@@ -153,7 +153,7 @@ export default function UserMenu() {
               setOpen(false);
               signOut();
             }}
-            className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2.5"
+            className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

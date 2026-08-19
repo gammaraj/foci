@@ -463,7 +463,7 @@ export default function FocusDockPanel({
   return (
     <div className="pb-2">
       <div
-        className={`app-surface rounded-xl dark:bg-[#111827] dark:border-[#1e3050] overflow-hidden mt-2 ${
+        className={`app-surface rounded-xl overflow-hidden mt-2 ${
           isBreak ? "timer-break-mode" : ""
         } ${readyToFocus ? "ready-to-focus-ring" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >

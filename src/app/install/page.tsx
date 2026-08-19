@@ -275,7 +275,7 @@ export default function InstallPage() {
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 dark:border-[#243350] text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-[#111827] transition-colors"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 dark:border-[#243350] text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-[#131d30] transition-colors"
             >
               About Foci
             </Link>

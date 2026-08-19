@@ -113,7 +113,7 @@ export function ListToolbarProjectMenu({
       {open && coords && (
         <div
           ref={panelRef}
-          className="fixed z-[9998] min-w-[10.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-xl"
+          className="fixed z-[9998] min-w-[10.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-xl"
           style={{ top: coords.top, bottom: coords.bottom, left: coords.left }}
           role="menu"
         >

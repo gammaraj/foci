@@ -2506,7 +2506,7 @@ export default function TaskList({
   };
 
   return (
-    <div className="app-surface rounded-2xl dark:bg-[#111827] dark:border-[#1e3050] overflow-visible min-w-0">
+    <div className="app-surface rounded-2xl overflow-visible min-w-0">
       {(syncingFromServer || (authLoading && tasksReady)) && (
         <div
           className="no-print flex items-center gap-2 px-4 pt-3 text-xs font-medium text-slate-500 dark:text-slate-400"
@@ -3435,7 +3435,7 @@ export default function TaskList({
 
           </div>
           {/* Fade hint for scrollable overflow */}
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-[#111827] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-[#131d30] to-transparent" />
 
           {showOverflowProjectMenu && overflowProjectTabs.length > 0 && (
             <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-lg shadow-lg z-50 overflow-hidden animate-slide-up">

@@ -92,7 +92,7 @@ export default function InstallPageActions({ showQr = true }: InstallPageActions
         <button
           type="button"
           onClick={handleCopy}
-          className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-300 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-[#111827] transition-colors"
+          className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-300 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-[#131d30] transition-colors"
         >
           {copied ? "Copied" : "Copy usefoci.com/app"}
         </button>

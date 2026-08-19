@@ -50,7 +50,7 @@ export default function DayRecap({ show, summary, onDismiss }: DayRecapProps) {
             </svg>
           </span>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-slate-900 dark:text-white">Nice progress today</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Nice progress today</p>
             <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">
               {parts.join(" · ")}
             </p>

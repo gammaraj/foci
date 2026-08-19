@@ -221,7 +221,7 @@ export default function TaskCalendarView({
               onClick={() => onSelectDay(isSelected ? null : dateStr)}
               className={`min-h-[68px] rounded-lg flex flex-col p-1 text-xs transition-all w-full text-left ${
                 isSelected
-                  ? "bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#111827]"
+                  ? "bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#131d30]"
                   : isToday
                     ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
                     : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"

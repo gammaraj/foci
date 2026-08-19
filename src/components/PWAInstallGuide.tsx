@@ -99,7 +99,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         <div className="flex items-start gap-3 mb-4">
           <FociLogoMark size={40} idPrefix="pwa-guide" surface="light" className="flex-shrink-0 rounded-xl" />
           <div className="min-w-0 flex-1">
-            <h3 id="pwa-install-title" className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+            <h3 id="pwa-install-title" className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
               Add <FociWordmark className={FOCI_WORDMARK_INLINE} tone="light" /> to your Home Screen
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
@@ -174,7 +174,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         )}
 
         {showQr && (
-          <div className="rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50 dark:bg-[#0a1628] p-3 sm:p-4 mb-3">
+          <div className="rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50 dark:bg-[#0f172a] p-3 sm:p-4 mb-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
               On your phone
             </p>

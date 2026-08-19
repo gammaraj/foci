@@ -8,9 +8,9 @@ import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 
 const chipBase =
-  "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors text-left";
+  "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-1.5 text-base sm:text-sm font-medium rounded-md border transition-colors text-left";
 const chipBaseDrawer =
-  "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-lg border transition-colors text-left min-h-[2.4rem]";
+  "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-2 text-base sm:text-sm font-medium rounded-lg border transition-colors text-left min-h-[2.4rem]";
 const chipIdle =
   "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-white dark:bg-[#131d30]";
 const chipEmpty =
@@ -112,8 +112,8 @@ export function TaskDetailPanel({
   const isDrawer = variant === "drawer";
   const pad = isDrawer ? "px-4 sm:px-6" : "px-4";
   const chip = isDrawer ? chipBaseDrawer : chipBase;
-  // text-base on mobile avoids iOS Safari auto-zoom on focused <select>s.
-  const selectText = "text-base sm:text-xs";
+  // text-base on mobile matches chip buttons and avoids iOS Safari auto-zoom.
+  const selectText = "text-base sm:text-sm";
   const iconSize = "w-3.5 h-3.5";
   const saveButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -213,14 +213,12 @@ export function TaskDetailPanel({
           placeholder="Add a description..."
           maxLength={2000}
           rows={2}
-          className={`w-full px-3 py-2.5 border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y ${
-            isDrawer ? "text-base sm:text-sm" : "text-sm"
-          }`}
+          className="w-full px-3 py-2.5 min-h-[4.25rem] border border-blue-300 dark:border-blue-600 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y text-base sm:text-sm"
           autoFocus
         />
       ) : (
         <div
-          className={`w-full text-left px-3 ${isDrawer ? "py-2.5 min-h-[2.5rem]" : "py-2"} text-sm rounded-lg border transition-colors ${
+          className={`w-full text-left px-3 py-2.5 min-h-[4.25rem] text-base sm:text-sm rounded-lg border transition-colors ${
             task.description
               ? "border-slate-200 dark:border-[#243350]"
               : chipEmpty
@@ -244,7 +242,7 @@ export function TaskDetailPanel({
                     e.stopPropagation();
                     setDescExpanded((open) => !open);
                   }}
-                  className="mt-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                  className="mt-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                 >
                   {descExpanded ? "Show less" : "Show more"}
                 </button>
@@ -434,8 +432,8 @@ export function TaskDetailPanel({
         }}
         className={`${chip} ${
           isFocused
-            ? "border-blue-400/60 dark:border-blue-500/50 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/25"
-            : `${chipIdle} hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-300`
+            ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+            : "border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
         }`}
         title={
           isFocused
@@ -589,7 +587,7 @@ export function TaskDetailPanel({
             type="button"
             onClick={handleSave}
             className={`flex-1 min-w-0 px-3 ${
-              isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-xs rounded-md"
+              isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-sm rounded-md"
             } font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#131d30]`}
           >
             Save
@@ -600,7 +598,7 @@ export function TaskDetailPanel({
             type="button"
             onClick={onDeleteTask}
             className={`px-3 ${
-              isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-xs rounded-md"
+              isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-sm rounded-md"
             } font-medium text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-1.5 shrink-0`}
             aria-label="Delete task"
           >

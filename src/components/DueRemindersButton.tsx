@@ -175,7 +175,7 @@ export default function DueRemindersButton() {
             <button
               type="button"
               onClick={() => openDueView()}
-              className="shrink-0 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+              className="shrink-0 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               View Today
             </button>

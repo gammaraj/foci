@@ -64,7 +64,7 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="relative nav-icon-btn p-2 rounded-full hover:!text-violet-300"
+          className="relative nav-icon-btn p-2 rounded-full hover:!text-blue-400"
           aria-label={unseen ? "What's new — unread updates" : "What's new"}
           aria-expanded={open}
           title="What's new"
@@ -78,22 +78,22 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
             />
           </svg>
           {unseen && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-violet-500 ring-2 ring-white dark:ring-[#0b1121]" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-[#0b1121]" />
           )}
         </button>
       )}
 
       {open && (
         <div
-          className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-80 w-auto rounded-xl border border-violet-200/70 dark:border-violet-800/45 bg-white dark:bg-[#1a2540] shadow-2xl overflow-hidden"
+          className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-80 w-auto rounded-xl border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-2xl overflow-hidden"
           role="dialog"
           aria-label="What's new"
         >
-          <div className="px-3 py-2.5 border-b border-violet-100/80 dark:border-violet-900/40 bg-gradient-to-r from-violet-50/90 to-indigo-50/70 dark:from-violet-950/30 dark:to-indigo-950/20">
+          <div className="px-3 py-2.5 border-b border-slate-100 dark:border-[#243350] bg-blue-50/70 dark:bg-blue-950/20">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">What&apos;s new</p>
-                <p className="text-xs text-violet-600 dark:text-violet-300">{WHATS_NEW_VERSION}</p>
+                <p className="text-xs text-blue-600 dark:text-blue-300">{WHATS_NEW_VERSION}</p>
               </div>
               <button
                 type="button"
@@ -110,28 +110,28 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
 
           <ul className="px-3 py-2 space-y-2 max-h-[min(50vh,280px)] overflow-y-auto">
             {WHATS_NEW_FEATURES.map((feature) => (
-              <li key={feature.title} className="text-xs text-slate-600 dark:text-slate-300 leading-snug">
+              <li key={feature.title} className="text-sm text-slate-600 dark:text-slate-300 leading-snug">
                 <span className="font-medium text-slate-800 dark:text-slate-100">{feature.title}</span>
                 <span className="text-slate-500 dark:text-slate-400"> — {feature.description}</span>
               </li>
             ))}
           </ul>
 
-          <div className="flex items-center gap-2 px-3 py-2 border-t border-slate-100 dark:border-[#2a3a5c]">
+          <div className="flex items-center gap-2 px-3 py-2 border-t border-slate-100 dark:border-[#243350]">
             <button
               type="button"
               onClick={() => {
                 startFeatureTour();
                 setOpen(false);
               }}
-              className="flex-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition-colors"
+              className="flex-1 px-2.5 py-1.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               Take the tour
             </button>
             <button
               type="button"
               onClick={dismiss}
-              className="px-2.5 py-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              className="px-2.5 py-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
             >
               Got it
             </button>

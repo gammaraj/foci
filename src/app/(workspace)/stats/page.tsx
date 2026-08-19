@@ -560,7 +560,7 @@ export default function StatsPage() {
           <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-800 dark:text-white">
             Stats
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
             Focus habits, sessions, and backlog health
           </p>
         </div>
@@ -572,7 +572,7 @@ export default function StatsPage() {
               key={r}
               type="button"
               onClick={() => setRange(r)}
-              className={`px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-medium rounded-md transition-all ${
+              className={`px-2.5 sm:px-3 py-1 text-sm font-medium rounded-md transition-all ${
                 range === r
                   ? "bg-white dark:bg-[#0f1b33] text-slate-900 dark:text-white shadow-sm"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
@@ -686,7 +686,7 @@ export default function StatsPage() {
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
               Backlog Snapshot
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               {rangeSessions} focus session{rangeSessions !== 1 ? "s" : ""} in the last {range} days
             </p>
             {backlogItems.length > 0 ? (
@@ -725,7 +725,7 @@ export default function StatsPage() {
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
               Today&apos;s Activity
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               {todaySessionCount} session{todaySessionCount !== 1 ? "s" : ""} · {formatMs(todaySessionCount * workDuration)} focused
             </p>
             {todaySessionCount > 0 ? (

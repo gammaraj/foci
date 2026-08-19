@@ -180,7 +180,7 @@ function ProjectRowMenu({
       </button>
       {open && (
         <div
-          className={`absolute right-0 z-30 min-w-[9.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-lg ${
+          className={`absolute right-0 z-30 min-w-[9.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-lg ${
             openUp ? "bottom-full mb-1" : "top-full mt-1"
           }`}
           role="menu"
@@ -216,7 +216,7 @@ function ProjectRowMenu({
               setOpen(false);
               onArchive(project.id);
             }}
-            className="w-full text-left px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+            className="w-full text-left px-3 py-2.5 text-sm font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
           >
             Archive
           </button>
@@ -227,7 +227,7 @@ function ProjectRowMenu({
               setOpen(false);
               onDelete(project.id);
             }}
-            className="w-full text-left px-3 py-2 text-xs font-medium text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+            className="w-full text-left px-3 py-2.5 text-sm font-medium text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
           >
             Delete project…
           </button>

@@ -252,16 +252,16 @@ export default function AccountSharingModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 id="account-share-title" className="text-lg font-bold text-slate-900 dark:text-white">
+            <h2 id="account-share-title" className="text-lg font-semibold text-slate-900 dark:text-white">
               Share All Projects
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               Give someone access to all current and future projects
             </p>
           </div>
           <button
             onClick={onClose}
-            className="touch-target-sm p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="touch-target-sm p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             aria-label="Close"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,14 +282,14 @@ export default function AccountSharingModal({
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@example.com"
-              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={inviting}
             />
             <div className="flex gap-2">
             <select
               value={inviteRole}
               onChange={(e) => setInviteRole(e.target.value as CollaboratorRole)}
-              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0a1628] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={inviting}
             >
               <option value="editor">Can edit</option>
@@ -374,7 +374,7 @@ export default function AccountSharingModal({
                   {collaborators.map((collab) => (
                     <li
                       key={collab.userId}
-                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-[#243350] rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         {collab.avatarUrl ? (
@@ -405,7 +405,7 @@ export default function AccountSharingModal({
                         <select
                           value={collab.role}
                           onChange={(e) => handleUpdateRole(collab.userId, e.target.value as CollaboratorRole)}
-                          className="text-xs px-2 py-1 border border-slate-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200"
+                          className="text-xs px-2 py-1 border border-slate-200 dark:border-[#243350] rounded bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200"
                         >
                           <option value="editor">Can edit</option>
                           <option value="viewer">Can view</option>

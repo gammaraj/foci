@@ -37,7 +37,7 @@ export default function KeyboardShortcutsModal({ open, onClose }: KeyboardShortc
         className="w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl app-surface dark:bg-[#131d30] p-5 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="shortcuts-title" className="text-lg font-bold text-slate-900 dark:text-white mb-3">
+        <h2 id="shortcuts-title" className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
           Keyboard shortcuts
         </h2>
         <ul className="space-y-2 mb-4">

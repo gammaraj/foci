@@ -177,7 +177,7 @@ function CardTaskMoreMenu({
       </button>
       {open && (
         <div
-          className={`absolute right-0 z-40 min-w-[8.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#3a5070] bg-white dark:bg-[#131d30] shadow-lg ${
+          className={`absolute right-0 z-40 min-w-[8.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-lg ${
             openUp ? "bottom-full mb-1" : "top-full mt-1"
           }`}
           role="menu"

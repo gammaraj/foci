@@ -322,7 +322,7 @@ export default function WeatherTime({ compact = false, embedded = false, nav = f
   }
 
   return (
-    <div className="flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl app-surface dark:bg-[#111827] dark:border-[#1e3050] mb-3 sm:mb-4">
+    <div className="flex items-center justify-between px-3 sm:px-4 py-2 rounded-xl app-surface mb-3 sm:mb-4">
       <div className="min-w-0">
         <p className="text-sm font-medium text-slate-500 dark:text-slate-300 truncate">{greeting}</p>
         <p className="text-lg sm:text-xl font-semibold text-slate-800 dark:text-slate-100 tabular-nums leading-tight">

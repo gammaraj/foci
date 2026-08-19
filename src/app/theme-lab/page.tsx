@@ -42,7 +42,7 @@ const THEMES: ThemePalette[] = [
     pageLight: "#e8eef6",
     pageDark: "#0a0f1a",
     surfaceLight: "#ffffff",
-    surfaceDark: "#111827",
+    surfaceDark: "#131d30",
     borderLight: "#c8d3e0",
     borderDark: "#243350",
     logoBg: "#0b1121",

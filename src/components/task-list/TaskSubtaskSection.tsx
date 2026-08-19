@@ -99,7 +99,7 @@ export function TaskSubtaskSection({
                 ? "text-xs text-slate-500 dark:text-slate-400"
                 : spacious
                   ? "text-sm text-slate-700 dark:text-slate-200"
-                  : "text-xs text-slate-500 dark:text-slate-400"
+                  : "text-sm text-slate-600 dark:text-slate-300"
             }`}
           >
             Subtasks
@@ -111,7 +111,7 @@ export function TaskSubtaskSection({
             )}
           </p>
           {spacious && !hasSubtasks && showAddForm && (
-            <p className="hidden sm:block text-xs text-slate-400 dark:text-slate-500 shrink-0">
+            <p className="hidden sm:block text-sm text-slate-400 dark:text-slate-500 shrink-0">
               Break it into steps
             </p>
           )}
@@ -119,7 +119,7 @@ export function TaskSubtaskSection({
       )}
 
       {spacious && !hasSubtasks && showAddForm && (
-        <p className="sm:hidden text-xs text-slate-400 dark:text-slate-500 mb-2.5">
+        <p className="sm:hidden text-sm text-slate-400 dark:text-slate-500 mb-2.5">
           Break this into smaller steps
         </p>
       )}
@@ -375,7 +375,7 @@ export function TaskSubtaskSection({
             className={`font-semibold border transition-colors shrink-0 self-stretch flex items-center disabled:opacity-40 disabled:cursor-not-allowed ${
               spacious
                 ? "px-4 sm:px-5 text-sm rounded-xl border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
-                : "px-2 py-1 text-xs rounded-md border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
+                : "px-2 py-1 text-sm rounded-md border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
             }`}
           >
             Add

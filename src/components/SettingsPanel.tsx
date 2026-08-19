@@ -300,7 +300,7 @@ export default function SettingsPanel({
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                               isActive
                                 ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
-                                : "bg-white dark:bg-[#0a1628] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
+                                : "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
                             }`}
                             title={preset.description}
                           >
@@ -320,7 +320,7 @@ export default function SettingsPanel({
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label htmlFor="workDuration" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                        <label htmlFor="workDuration" className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1.5">
                           Work (min)
                         </label>
                         <input
@@ -337,7 +337,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.workMin
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -346,7 +346,7 @@ export default function SettingsPanel({
                         <FieldError message={validationErrors.workMin} />
                       </div>
                       <div>
-                        <label htmlFor="breakDuration" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                        <label htmlFor="breakDuration" className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1.5">
                           Break (min)
                         </label>
                         <input
@@ -363,7 +363,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.breakMin
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -372,7 +372,7 @@ export default function SettingsPanel({
                         <FieldError message={validationErrors.breakMin} />
                       </div>
                       <div>
-                        <label htmlFor="inactivityThreshold" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                        <label htmlFor="inactivityThreshold" className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1.5">
                           Inactivity pause (min)
                         </label>
                         <input
@@ -388,7 +388,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.inactivityMin
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -397,7 +397,7 @@ export default function SettingsPanel({
                         <FieldError message={validationErrors.inactivityMin} />
                       </div>
                       <div>
-                        <label htmlFor="dailyGoal" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                        <label htmlFor="dailyGoal" className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1.5">
                           Daily goal (sessions)
                         </label>
                         <input
@@ -414,7 +414,7 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.dailyGoal
                               ? "border-red-400"
                               : "border-slate-200 dark:border-[#243350]"
@@ -527,7 +527,7 @@ export default function SettingsPanel({
                             console.error("[Foci] Failed to save task view preference:", err);
                           }
                         }}
-                        className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#0a1628] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+                        className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
                       >
                         {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -664,7 +664,7 @@ export default function SettingsPanel({
             </div>
 
             {/* Footer — save only matters for timer/notification fields */}
-            <div className="shrink-0 border-t border-slate-200 dark:border-[#243350] px-4 sm:px-5 py-3 flex items-center justify-between gap-3 bg-slate-50/80 dark:bg-[#0a1628]/50">
+            <div className="shrink-0 border-t border-slate-200 dark:border-[#243350] px-4 sm:px-5 py-3 flex items-center justify-between gap-3 bg-slate-50/80 dark:bg-[#0f172a]/50">
               <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
                 {dirty
                   ? "You have unsaved changes"

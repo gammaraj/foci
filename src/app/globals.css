@@ -426,7 +426,7 @@ select {
   border-bottom-color: rgba(37, 99, 235, 0.08);
 }
 .dark .panel-header-calm {
-  --panel-header-bg: rgba(17, 24, 39, 0.92);
+  --panel-header-bg: rgba(19, 29, 48, 0.92);
   --seg-track-bg: #1a2d4a;
   background: var(--panel-header-bg);
   border-bottom: 1px solid #243350;
@@ -477,8 +477,8 @@ select {
   -webkit-backdrop-filter: blur(10px);
 }
 .dark .app-surface {
-  background: #111827;
-  border-color: #1e3050;
+  background: #131d30;
+  border-color: #243350;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04),
     0 8px 24px -10px rgba(0, 0, 0, 0.55);
