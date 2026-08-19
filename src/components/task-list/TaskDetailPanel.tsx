@@ -176,7 +176,9 @@ export function TaskDetailPanel({
     else if (task.kind === "question") bits.push("Question");
     if (task.blocked) bits.push("Waiting");
     if (task.someday) bits.push("Someday");
-    if (task.recurrence) bits.push(task.recurrence);
+    if (task.recurrence) {
+      bits.push(task.recurrence.charAt(0).toUpperCase() + task.recurrence.slice(1));
+    }
     return bits;
   }, [task]);
 
@@ -508,25 +510,19 @@ export function TaskDetailPanel({
     />
   ) : null;
 
-  const detailsGrid = isDrawer ? (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 min-w-0 w-full">
+  // Same field order on phone and desktop: status first, type last.
+  // Drawer: 2 cols on phone, 3 from sm up. Inline list panel stays 2 cols.
+  const detailsGrid = (
+    <div
+      className={`grid gap-2 min-w-0 w-full grid-cols-2 ${
+        isDrawer ? "sm:grid-cols-3" : ""
+      }`}
+    >
       {priorityChip}
-      {focusChip}
-      {projectChip}
-      {kindChip}
       {recurrenceChip}
       {waitingChip}
       {somedayChip}
-    </div>
-  ) : (
-    <div className="grid grid-cols-2 gap-2 min-w-0 w-full">
-      {priorityChip}
       {kindChip}
-      {waitingChip}
-      {somedayChip}
-      {recurrenceChip}
-      {projectChip}
-      {focusChip}
     </div>
   );
 
@@ -534,6 +530,12 @@ export function TaskDetailPanel({
     <div className={`${pad} ${isDrawer ? "pt-3 pb-1" : "pb-1"}`}>
       <div className="flex flex-wrap gap-2 min-w-0 w-full">
         <div className="flex-1 min-w-[9.5rem] max-w-xs">{dueDateChip}</div>
+        {projectChip ? (
+          <div className="flex-1 min-w-[9.5rem] max-w-xs">{projectChip}</div>
+        ) : null}
+        {focusChip ? (
+          <div className="flex-1 min-w-[9.5rem] max-w-xs">{focusChip}</div>
+        ) : null}
         {oneThingChip ? (
           <div className="flex-1 min-w-[9.5rem] max-w-xs">{oneThingChip}</div>
         ) : null}

@@ -17,6 +17,7 @@ import {
 import { isActionableOverdue } from "@/lib/task-status";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+import { TaskRecurrenceBadge } from "@/components/task-list/TaskRecurrenceBadge";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
@@ -458,6 +459,7 @@ function BucketTaskCard({
           {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
           {isOneThing && <OneThingBadge size="compact" />}
           {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
+          {task.recurrence && <TaskRecurrenceBadge recurrence={task.recurrence} size="compact" />}
           {isOverdue && (
             <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded urgency-chip--soft">
               Overdue

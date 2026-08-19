@@ -1360,10 +1360,9 @@ export default function TaskList({
       if (isCompleting) {
         trackTaskCompleted(changed.timeSpent || 0);
         showToast(
-          doneTodayToastMessage(
-            updated.filter((t) => isDoneToday(t)).length,
-            { recurring: !!task.recurrence },
-          ),
+          task.recurrence
+            ? `${doneTodayToastMessage(updated.filter((t) => isDoneToday(t)).length)} · next occurrence isn’t created in shared projects`
+            : doneTodayToastMessage(updated.filter((t) => isDoneToday(t)).length),
           "success",
         );
         setTallyPulse(true);
@@ -1404,6 +1403,8 @@ export default function TaskList({
           description: task.description,
           dueDate: getNextDueDate(task.dueDate, task.recurrence),
           recurrence: task.recurrence,
+          ...(task.priority != null ? { priority: task.priority } : {}),
+          ...(task.kind ? { kind: task.kind } : {}),
         };
         updated = [...updated, nextTask];
         persist(updated, changed);
@@ -1706,7 +1707,11 @@ export default function TaskList({
   };
 
   const setTaskRecurrence = (taskId: string, recurrence: RecurrenceType | undefined) => {
-    mutateActiveTask(taskId, (t) => ({ ...t, recurrence }));
+    mutateActiveTask(taskId, (t) => {
+      if (!recurrence) return { ...t, recurrence: undefined };
+      // Next occurrence is computed from due date; default to today if unset.
+      return { ...t, recurrence, dueDate: t.dueDate ?? getToday(), someday: false };
+    });
   };
 
   const setTaskPriority = (taskId: string, priority: TaskPriority | undefined) => {
@@ -1737,7 +1742,7 @@ export default function TaskList({
 
   const setTaskSomeday = (taskId: string, someday: boolean) => {
     mutateActiveTask(taskId, (t) => {
-      if (someday) return { ...t, someday: true, blocked: false, dueDate: undefined };
+      if (someday) return { ...t, someday: true, blocked: false, dueDate: undefined, recurrence: undefined };
       return { ...t, someday: false };
     });
     if (someday) {

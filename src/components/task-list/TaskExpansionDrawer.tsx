@@ -26,7 +26,7 @@ export function TaskExpansionDrawer({
   onSaveTitle?: (taskId: string) => void;
   onCancelEditTitle?: () => void;
 }) {
-  const titleInputRef = useRef<HTMLInputElement | null>(null);
+  const titleInputRef = useRef<HTMLTextAreaElement | null>(null);
   const canEditTitle = Boolean(onStartEditTitle && onEditTitleChange && onSaveTitle && onCancelEditTitle);
 
   useEffect(() => {
@@ -82,17 +82,17 @@ export function TaskExpansionDrawer({
             </p>
             {canEditTitle ? (
               <div className="group/title flex items-start gap-1.5 min-w-0">
-                <input
+                <textarea
                   ref={titleInputRef}
-                  type="text"
                   // Always bind the draft once editing starts so the first keystroke
                   // can't race with startEditing resetting to task.title.
                   value={isEditingTitle ? editTitle : task.title}
+                  rows={2}
                   onFocus={() => {
                     if (!isEditingTitle) onStartEditTitle!(task);
                   }}
                   onChange={(e) => {
-                    const next = e.target.value;
+                    const next = e.target.value.replace(/[\r\n]+/g, " ");
                     if (!isEditingTitle) {
                       // Seed edit mode with the typed value so the first keystroke isn't lost.
                       onStartEditTitle!(task, next);
@@ -106,7 +106,7 @@ export function TaskExpansionDrawer({
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      (e.target as HTMLInputElement).blur();
+                      (e.target as HTMLTextAreaElement).blur();
                     }
                     if (e.key === "Escape") {
                       e.preventDefault();
@@ -117,7 +117,7 @@ export function TaskExpansionDrawer({
                   }}
                   maxLength={MAX_TASK_TITLE}
                   aria-label="Task title"
-                  className={`flex-1 min-w-0 text-lg sm:text-xl font-semibold leading-snug outline-none transition-colors break-words [overflow-wrap:anywhere] ${
+                  className={`flex-1 min-w-0 text-lg sm:text-xl font-semibold leading-snug outline-none transition-colors break-words [overflow-wrap:anywhere] resize-none overflow-hidden ${
                     isEditingTitle
                       ? "rounded-md border border-blue-400 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white px-2 py-1 focus-visible:ring-2 focus-visible:ring-blue-400/40"
                       : "rounded-md border border-transparent bg-transparent text-slate-900 dark:text-white cursor-text px-2 py-1 -mx-2 hover:bg-slate-100/80 dark:hover:bg-white/[0.06]"
@@ -138,7 +138,7 @@ export function TaskExpansionDrawer({
                 )}
               </div>
             ) : (
-              <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">
+              <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 break-words [overflow-wrap:anywhere]">
                 {task.title}
               </h3>
             )}

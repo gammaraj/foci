@@ -23,6 +23,7 @@ import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+import { TaskRecurrenceBadge } from "@/components/task-list/TaskRecurrenceBadge";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
@@ -475,6 +476,7 @@ function CardTaskRow({
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
             {isOneThing && <OneThingBadge size="compact" />}
             {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
+            {task.recurrence && <TaskRecurrenceBadge recurrence={task.recurrence} size="compact" />}
             {task.dueDate && <CardDuePrefix task={task} />}
             <span className="min-w-0 line-clamp-2 break-words [overflow-wrap:anywhere]">{task.title}</span>
           </TaskTitleButton>
