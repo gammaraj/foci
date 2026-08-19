@@ -283,9 +283,9 @@ export default function LandingPage() {
               <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Plan your day</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                 Smart Plan schedules work from due dates and daily capacity — set One Thing and Focus from{" "}
-                <a href="/app/plan" className="underline underline-offset-2 hover:text-slate-700 dark:hover:text-slate-200">
+                <Link href="/app/plan" className="underline underline-offset-2 hover:text-slate-700 dark:hover:text-slate-200">
                   /app/plan
-                </a>
+                </Link>
                 . Use Cards, Buckets, List, or Calendar — and an optional focus timer when a session helps.
               </p>
             </div>

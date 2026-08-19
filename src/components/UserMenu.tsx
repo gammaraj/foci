@@ -30,7 +30,7 @@ export default function UserMenu() {
   const themeLabel =
     theme === "light" ? "Light" : theme === "dark" ? "Dark" : "System";
 
-  const ThemeIcon = () =>
+  const themeIcon =
     theme === "light" ? (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -103,7 +103,7 @@ export default function UserMenu() {
               className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
               title="Click to cycle: Light → Dark → System (or use the sun/moon in the nav)"
             >
-              <ThemeIcon />
+              {themeIcon}
               <span className="flex-1">Appearance</span>
               <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">{themeLabel}</span>
             </button>
