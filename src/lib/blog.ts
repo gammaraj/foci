@@ -7,11 +7,25 @@ export interface PostMeta {
   title: string;
   description: string;
   date: string;
+  /** Optional content refresh date — used for sitemap lastModified and JSON-LD dateModified. */
+  updated?: string;
   readingTime: string;
   tags: string[];
 }
 
 const postsDir = path.join(process.cwd(), "content/posts");
+
+function toPostMeta(slug: string, data: Record<string, unknown>): PostMeta {
+  return {
+    slug,
+    title: String(data.title ?? ""),
+    description: String(data.description ?? ""),
+    date: String(data.date ?? ""),
+    updated: data.updated ? String(data.updated) : undefined,
+    readingTime: String(data.readingTime ?? ""),
+    tags: (data.tags as string[] | undefined) ?? [],
+  };
+}
 
 export function getAllPosts(): PostMeta[] {
   const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".mdx"));
@@ -19,14 +33,7 @@ export function getAllPosts(): PostMeta[] {
     const slug = file.replace(/\.mdx$/, "");
     const raw = fs.readFileSync(path.join(postsDir, file), "utf-8");
     const { data } = matter(raw);
-    return {
-      slug,
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      readingTime: data.readingTime,
-      tags: data.tags ?? [],
-    } as PostMeta;
+    return toPostMeta(slug, data);
   });
   return posts.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
@@ -41,14 +48,7 @@ export function getPostBySlug(slug: string) {
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(raw);
   return {
-    meta: {
-      slug,
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      readingTime: data.readingTime,
-      tags: data.tags ?? [],
-    } as PostMeta,
+    meta: toPostMeta(slug, data),
     content,
   };
 }

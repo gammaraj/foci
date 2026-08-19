@@ -14,9 +14,9 @@ export const BLOG_POST_META_OVERRIDES: Record<
   { title?: string; description?: string }
 > = {
   "best-free-pomodoro-apps-2026": {
-    title: "Best Free Pomodoro App 2026 (7 Tested, No Signup)",
+    title: "Best Free Pomodoro Apps 2026 — Ranked, No Signup",
     description:
-      "Looking for the best free Pomodoro app? We ranked 7 timers on ads, tasks, and sounds. Foci #1 — Pomodoro + tasks + brown noise, no account needed.",
+      "7 free Pomodoro apps ranked for ads, tasks, and sounds. Foci #1: timer + tasks + brown noise in one tab — no account required.",
   },
   "best-focus-apps-for-students-2026": {
     title: "Best Focus Apps for Students 2026 (Free Ranked)",
@@ -34,14 +34,14 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "White vs brown noise for studying — which masks distraction better, ADHD tips, and free offline generators in Foci.",
   },
   "foci-vs-focusatwill": {
-    title: "Foci vs Focus@Will (2026): Free App or $10/mo Music?",
+    title: "Foci vs Focus@Will — Free App vs $10/mo Music",
     description:
-      "Foci vs Focus@Will — free Pomodoro, tasks, and lo-fi vs a $9.99/month music subscription. Feature table and who should pay.",
+      "Side-by-side: free Pomodoro, tasks, and lo-fi in Foci vs Focus@Will’s $9.99/mo music subscription. Who should pay?",
   },
   "foci-vs-todoist": {
-    title: "Foci vs Todoist (2026): Free Focus Timer + Tasks?",
+    title: "Foci vs Todoist — Focus Timer Built In (2026)",
     description:
-      "Foci vs Todoist — Pomodoro timer and task tracking in one free app vs a premium task manager. When to use each (or both).",
+      "Todoist lists tasks; Foci helps you finish them — free Pomodoro timer, Smart Plan, and sounds in one app. When to use each.",
   },
   "foci-vs-forest-app": {
     title: "Foci vs Forest App (2026): Free Alternative That Does More",
@@ -49,24 +49,24 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "Foci vs Forest — free timer, tasks, and ambient sounds vs paid gamified trees. Feature and pricing comparison for real work sessions.",
   },
   "best-music-for-studying-and-focus": {
-    title: "Best Music for Studying: What Actually Helps Focus",
+    title: "Best Study Music for Focus — Brown Noise, Lo-Fi & Classical",
     description:
-      "What music is best for studying? Brown noise, lo-fi, rain, and classical ranked by task type — plus free built-in study sounds in Foci (no signup).",
+      "What music helps you study? Brown noise, lo-fi, rain, and classical ranked by task type — free built-in study sounds in Foci.",
   },
   "52-17-rule-guide": {
-    title: "52/17 Rule Explained (2026) — Work 52, Break 17",
+    title: "52/17 Rule Explained — Work 52, Break 17 (Not Cirillo)",
     description:
       "What is the 52/17 rule? DeskTime research, vs Pomodoro, and the Francesco Cirillo myth debunked. Try the 52/17 preset free in Foci.",
   },
   "pomodoro-vs-flowtime-vs-52-17": {
-    title: "Flowtime vs Pomodoro vs 52/17: Which Is Better?",
+    title: "Pomodoro vs Flowtime vs 52/17 — Which Should You Use?",
     description:
-      "Flowtime vs Pomodoro vs the 52/17 rule — side-by-side for studying, coding, and deep work, with a clear pick for each. Free timer for all three in Foci.",
+      "Side-by-side for studying, coding, and deep work — clear pick for each method. Free timer for all three in Foci (no signup).",
   },
   "flowtime-technique-guide": {
-    title: "Flowtime Technique: How It Works (Complete Guide)",
+    title: "What Is Flowtime? Flowmodoro Technique Guide (Free Timer)",
     description:
-      "Learn the Flowtime technique (flowmodoro): work until focus fades, take proportional breaks, and when to use it instead of Pomodoro. Free Flowtime timer in Foci.",
+      "Flowtime (flowmodoro): work until focus fades, take proportional breaks, vs Pomodoro. Step-by-step setup + free Flowtime timer in Foci.",
   },
   "adhd-focus-strategies": {
     title: "ADHD Focus Strategies That Actually Work (2026)",
@@ -313,6 +313,11 @@ export const BLOG_POST_FAQS: Record<string, BlogFaq[]> = {
       question: "What is flowtime?",
       answer:
         "Flowtime (or flowmodoro) is a focus method without fixed timer intervals. You work until concentration fades, log the duration, then rest proportionally. It is designed for deep work where Pomodoro's 25-minute alarm would interrupt flow.",
+    },
+    {
+      question: "What is the flowmodoro technique?",
+      answer:
+        "Flowmodoro is another name for the Flowtime technique: work until focus fades, then take a break proportional to how long you worked. There is no fixed 25-minute Pomodoro alarm — you stop when concentration drops.",
     },
     {
       question: "Is Flowtime good?",

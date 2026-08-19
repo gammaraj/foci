@@ -79,9 +79,9 @@ export const VS_LANDINGS: CompareLanding[] = [
   {
     slug: "focusatwill",
     kind: "vs",
-    title: "Foci vs Focus@Will — Free Focus Music + Timer",
+    title: "Foci vs Focus@Will — Free App vs $10/mo Music",
     description:
-      "Foci vs Focus@Will: free Pomodoro timer, tasks, and built-in ambient sounds versus a paid focus music subscription. See which you need.",
+      "Side-by-side: free Pomodoro, tasks, and lo-fi in Foci vs Focus@Will’s $9.99/mo music subscription. Who should pay?",
     h1: "Foci vs Focus@Will",
     answer:
       "Foci is a strong free Focus@Will alternative if you want tasks, a timer, and built-in ambient/lo-fi audio in one tab. Keep Focus@Will if you primarily want their curated paid soundscapes and already manage tasks elsewhere.",
@@ -130,9 +130,9 @@ export const ALTERNATIVES_LANDINGS: CompareLanding[] = [
   {
     slug: "pomodoro-apps",
     kind: "alternatives",
-    title: "Best Free Pomodoro Apps — Ranked",
+    title: "Best Free Pomodoro Apps — Ranked, No Signup",
     description:
-      "Best free Pomodoro apps ranked: Foci for timer + tasks + sounds, Pomofocus for minimalism, and other free options. Open usefoci.com/app to start without signup.",
+      "7 free Pomodoro apps ranked for ads, tasks, and sounds. Foci #1: timer + tasks + brown noise in one tab — no account required.",
     h1: "Best free Pomodoro apps",
     answer:
       "Foci ranks best overall for a free Pomodoro app that also includes tasks, Smart Plan, ambient sounds, and streaks in one browser tab. Pick Pomofocus if you only want a minimal timer, or Forest if gamification matters more than tasks.",

@@ -12,6 +12,11 @@ export const HOME_FAQS: HomeFaq[] = [
     answer: FOCI_ONE_LINER,
   },
   {
+    question: "Is Foci a wearable, device, or cryptocurrency?",
+    answer:
+      "No. Foci (usefoci.com) is a free browser focus and task app — unrelated to wearables, hardware devices, or crypto tokens that may share the name. Open usefoci.com/app to try it.",
+  },
+  {
     question: "Is Foci free to use?",
     answer:
       "Yes. Foci is free to use with no credit card. Core features — tasks, Smart Plan, ambient sounds, and the optional focus timer — are available without a paywall.",

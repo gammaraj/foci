@@ -4,7 +4,7 @@ import { absolutePageTitle } from "@/lib/site-metadata";
 import { FOCI_APP_DESCRIPTION, APP_KEYWORDS } from "@/lib/product-facts";
 import AppPageClient from "./AppPageClient";
 
-const title = "Free Pomodoro Timer App — Tasks, Sounds & Streaks";
+const title = "Foci App — Free Pomodoro Timer, Tasks & Sounds";
 const description = FOCI_APP_DESCRIPTION;
 
 export const metadata: Metadata = {

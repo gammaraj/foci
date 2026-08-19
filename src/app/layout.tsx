@@ -21,7 +21,7 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 
 const siteUrl = SITE_URL;
-const title = "Foci – Free Task Manager & Focus App";
+const title = "Foci App — Free Task Manager & Focus Timer";
 const description = FOCI_SHORT_DESCRIPTION;
 
 export const viewport: Viewport = {

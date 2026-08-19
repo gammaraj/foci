@@ -24,7 +24,7 @@ const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Foci – Free Task Manager & Focus App",
+    absolute: "Foci App — Free Task Manager & Focus Timer",
   },
   description: FOCI_SHORT_DESCRIPTION,
   alternates: { canonical: "/" },

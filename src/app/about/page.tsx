@@ -13,9 +13,9 @@ import {
 } from "@/lib/product-facts";
 
 const siteUrl = SITE_URL;
-const title = "About Foci — Free Focus Timer & Task App";
+const title = "About Foci App — Free Focus Timer & Tasks";
 const description =
-  "Foci is a free focus system: Pomodoro timer, tasks, ambient sounds, and streaks in one calm browser window. Built for students, developers, and deep work — worldwide. No signup required to start.";
+  "Foci (usefoci.com) is a free browser focus app — Pomodoro/Flowtime timer, tasks, Smart Plan, ambient sounds, and streaks. Not a wearable or crypto. No signup required to start.";
 
 export const metadata: Metadata = {
   title: absolutePageTitle(title),

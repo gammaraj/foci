@@ -69,14 +69,18 @@ export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
   const { meta, content } = post;
+  const overrides = BLOG_POST_META_OVERRIDES[slug];
+  const pageTitle = overrides?.title ?? meta.title;
+  const pageDescription = overrides?.description ?? meta.description;
+  const dateModified = meta.updated ?? meta.date;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: meta.title,
-    description: meta.description,
+    headline: pageTitle,
+    description: pageDescription,
     datePublished: meta.date,
-    dateModified: meta.date,
+    dateModified,
     author: { "@type": "Organization", name: "Foci", url: "https://usefoci.com" },
     publisher: { 
       "@type": "Organization", 

@@ -8,17 +8,17 @@ export const SITE_NAME = "Foci";
 export const SITE_DOMAIN = "usefoci.com";
 
 /** Bump when product or core marketing facts change (JSON-LD dateModified, llms version). */
-export const PRODUCT_DATE_MODIFIED = "2026-08-18";
+export const PRODUCT_DATE_MODIFIED = "2026-08-19";
 
 /** One-sentence definition — cite this everywhere. */
 export const FOCI_ONE_LINER =
   "Foci (usefoci.com) is a free task manager and focus app: projects, Smart Plan, daily goals, streak stats, ambient music, and an optional Pomodoro-style focus timer in one calm browser window.";
 
 export const FOCI_SHORT_DESCRIPTION =
-  "Free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer. Try the app without signing in; create a free account to sync across devices.";
+  "Foci App (usefoci.com) — free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer. Not a wearable or crypto. No signup required to start.";
 
 export const FOCI_APP_DESCRIPTION =
-  "Open the free Foci focus app — tasks, Smart Plan, daily goals, brown noise, and lo-fi in one tab. No signup required to start. Optional free account syncs across devices at usefoci.com/app.";
+  "Open the Foci App — free tasks, Smart Plan, Pomodoro/Flowtime timer, brown noise, and lo-fi in one tab at usefoci.com/app. No signup required to start. Optional free account syncs across devices.";
 
 /** Account model — single source of truth. */
 export const FOCI_ACCOUNT_POLICY =
@@ -35,11 +35,15 @@ export const FOCI_SAME_AS = [
 ] as const;
 
 export const ROOT_KEYWORDS = [
+  "foci",
   "foci app",
+  "foci.com",
   "focus app",
   "free pomodoro app",
   "task manager",
   "pomodoro timer",
+  "flowtime technique",
+  "flowmodoro",
   "smart plan",
   "brown noise for studying",
   "focus timer",
@@ -52,9 +56,11 @@ export const ROOT_KEYWORDS = [
 ] as const;
 
 export const APP_KEYWORDS = [
+  "foci app",
   "free pomodoro app",
   "focus timer",
   "pomodoro timer",
+  "flowtime timer",
   "task tracker",
   "brown noise",
   "study timer",

@@ -42,7 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const posts = allPosts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: new Date(post.updated ?? post.date),
     changeFrequency: "monthly" as const,
     priority: comparisonSlugs.has(post.slug) ? 0.85 : 0.75,
     images: [`${siteUrl}/blog/${post.slug}/opengraph-image`],
