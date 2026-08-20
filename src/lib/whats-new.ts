@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-08-b";
+export const WHATS_NEW_VERSION = "2026-08-c";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -17,9 +17,14 @@ export interface FeatureTourStep {
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
+    title: "Busy the Beaver",
+    description:
+      "Meet Busy, Foci’s mascot — busy as a beaver. Busy cheers on the Done bar when you finish work, and shows up when a page goes missing.",
+  },
+  {
     title: "Done bar",
     description:
-      "A Foci mascot named Dot next to Tasks tracks today / week / month. Dot smiles when you finish something, and looks sadder after quiet days — tap to jump to Done today.",
+      "Busy next to Tasks tracks today / week / month. Busy smiles when you finish something, and looks sadder after quiet days — tap to jump to Done today.",
   },
   {
     title: "Safer project delete",
@@ -67,7 +72,7 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     target: "[data-tour='done-tally']",
     title: "Done bar",
     description:
-      "Dot cheers when you finish a task, and looks sadder after quiet days. Tap the bar to jump to today's completions.",
+      "Busy cheers when you finish a task, and looks sadder after quiet days. Tap the bar to jump to today's completions.",
     position: "bottom",
   },
   {

@@ -203,7 +203,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
 
   if (activeId === "signup") {
     return (
-      <div className="bg-blue-600 text-white text-sm">
+      <div className="bg-blue-700 text-white text-sm">
         <div className="app-container py-2 flex items-center justify-between gap-3">
           <p className="flex-1 min-w-0">
             <span className="font-medium">Nice session</span>

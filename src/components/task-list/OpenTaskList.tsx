@@ -350,7 +350,7 @@ export default function OpenTaskList({
             }}
           />
           {activeTaskId === task.id && isTimerRunning ? (
-            <span className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-600 text-white hidden sm:flex items-center gap-1">
+            <span className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-700 text-white hidden sm:flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               <span className="hidden sm:inline">Running</span>
             </span>

@@ -428,7 +428,7 @@ export default function FocusDockPanel({
             onClick={onToggleFocusMode}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               focusMode
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-700 text-white"
                 : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             }`}
             title="Zen mode — hide distractions (F)"
@@ -481,7 +481,7 @@ export default function FocusDockPanel({
             <button
               type="button"
               onClick={onToggleFocusMode}
-              className={`p-2 rounded-lg transition-colors ${focusMode ? "bg-blue-600 text-white" : "text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"}`}
+              className={`p-2 rounded-lg transition-colors ${focusMode ? "bg-blue-700 text-white" : "text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"}`}
               aria-label="Toggle Zen mode (F)"
               title="Zen mode — hide distractions (F)"
             >

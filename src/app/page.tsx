@@ -198,7 +198,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/app"
-              className="btn-chip w-full sm:w-auto px-7 py-3.5 text-base"
+              className="btn-secondary w-full sm:w-auto px-7 py-3.5 text-base"
             >
               Try without signing in
             </Link>
@@ -256,7 +256,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* Step 1 */}
             <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
-              <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
+              <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-700 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 1
               </div>
               <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-4 mt-1">
@@ -272,7 +272,7 @@ export default function LandingPage() {
 
             {/* Step 2 */}
             <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
-              <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
+              <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-700 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 2
               </div>
               <div className="w-11 h-11 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center mb-4 mt-1">
@@ -292,7 +292,7 @@ export default function LandingPage() {
 
             {/* Step 3 */}
             <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
-              <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
+              <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-700 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 3
               </div>
               <div className="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center mb-4 mt-1">
@@ -414,7 +414,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/app"
-                className="btn-chip px-6 py-3 text-sm"
+                className="btn-secondary px-6 py-3 text-sm"
               >
                 Try without signing in
               </Link>
@@ -488,7 +488,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/app"
-              className="btn-chip px-7 py-3.5 text-base"
+              className="btn-secondary px-7 py-3.5 text-base"
             >
               Try without signing in
             </Link>

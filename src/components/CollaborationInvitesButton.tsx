@@ -245,7 +245,7 @@ export default function CollaborationInvitesButton() {
         <span className="hidden sm:inline text-sm font-medium">Sharing</span>
 
         {badgeCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 sm:static sm:ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-blue-500 rounded-full px-1">
+          <span className="absolute -top-0.5 -right-0.5 sm:static sm:ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-xs app-badge text-white bg-blue-700 rounded-full px-1">
             {badgeCount > 9 ? "9+" : badgeCount}
           </span>
         )}

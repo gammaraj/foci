@@ -67,6 +67,7 @@ import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePic
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import { FociDot } from "@/components/FociDot";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
@@ -2756,7 +2757,7 @@ export default function TaskList({
           {onToggleFullscreen && (
             <button
               onClick={onToggleFullscreen}
-              className={`no-print hidden roomy:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-600 text-white dark:bg-blue-500" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+              className={`no-print hidden roomy:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-700 text-white" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
               title={isFullscreen ? "Exit expand" : "Expand tasks"}
               aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
             >
@@ -3739,7 +3740,11 @@ export default function TaskList({
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
             <div className="text-center mb-6 px-4">
-              <FociDot mood={isTimeFilter ? "meh" : "ready"} size={56} className="mx-auto mb-3" />
+              {isTimeFilter ? (
+                <FociDot mood="meh" size={56} className="mx-auto mb-3" />
+              ) : (
+                <BusyBeaver size={96} className="mx-auto mb-3" />
+              )}
               <p className="text-slate-700 dark:text-slate-200 text-lg font-semibold mb-2">
                 {isTimeFilter 
                   ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` 
@@ -3748,7 +3753,7 @@ export default function TaskList({
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto mb-4">
                 {isTimeFilter 
                   ? "Add a task above to get started" 
-                  : "Dot is ready when you add a task — or start a project from a template"}
+                  : "Busy is ready when you add a task — or start a project from a template"}
               </p>
               {!isTimeFilter && (
                 <AddProjectButton onClick={openProjectManage} />

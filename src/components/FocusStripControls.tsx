@@ -25,10 +25,10 @@ const DOCK_BTN =
 export function miniPlayButtonClass(playing: boolean, dock = false, emphasizeStart = false) {
   if (dock) {
     if (playing) {
-      return `${DOCK_BTN} bg-blue-600 text-white hover:bg-blue-700`;
+      return `${DOCK_BTN} bg-blue-700 text-white hover:bg-blue-800`;
     }
     if (emphasizeStart) {
-      return `${DOCK_BTN} bg-blue-600 text-white hover:bg-blue-700`;
+      return `${DOCK_BTN} bg-blue-700 text-white hover:bg-blue-800`;
     }
     return `${DOCK_BTN} text-blue-600 dark:text-blue-400 hover:bg-slate-100/90 dark:hover:bg-white/10`;
   }
@@ -36,10 +36,10 @@ export function miniPlayButtonClass(playing: boolean, dock = false, emphasizeSta
   const base =
     "w-9 h-9 rounded-md flex items-center justify-center touch-target-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60";
   if (playing) {
-    return `${base} bg-blue-600 text-white hover:bg-blue-700`;
+    return `${base} bg-blue-700 text-white hover:bg-blue-800`;
   }
   if (emphasizeStart) {
-    return `${base} bg-blue-600 text-white hover:bg-blue-700`;
+    return `${base} bg-blue-700 text-white hover:bg-blue-800`;
   }
   return `${base} text-blue-600 dark:text-blue-400 hover:bg-slate-100/90 dark:hover:bg-white/10`;
 }

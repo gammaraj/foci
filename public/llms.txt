@@ -22,6 +22,7 @@ license: Content may be cited with attribution to Foci (usefoci.com)
 - **Language**: English (en-US)
 - **Availability**: Worldwide via browser / PWA
 - **Entity**: sameAs — https://twitter.com/usefoci , https://x.com/usefoci , https://github.com/gammaraj/foci
+- **Mascot**: Busy the Beaver — busy as a beaver; cheers on the Done bar and appears on error/404 screens
 - **Last updated**: 2026-08-19
 - **Evergreen comparisons**: https://usefoci.com/vs/forest , https://usefoci.com/vs/todoist , https://usefoci.com/vs/focusatwill
 - **Evergreen alternatives**: https://usefoci.com/alternatives/forest , https://usefoci.com/alternatives/pomodoro-apps , https://usefoci.com/alternatives/focus-apps-for-students

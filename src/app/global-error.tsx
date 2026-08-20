@@ -2,7 +2,6 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
-import { FociDot } from "@/components/FociDot";
 
 export default function GlobalError({
   error,
@@ -36,11 +35,15 @@ export default function GlobalError({
             textAlign: "center",
           }}
         >
-          <div style={{ color: "#60a5fa", marginBottom: "1.25rem" }}>
-            <FociDot mood="worried" size={80} />
-          </div>
+          <img
+            src="/images/busy-beaver-stud.png"
+            alt="Busy the Beaver looking concerned"
+            width={140}
+            height={140}
+            style={{ display: "block", margin: "0 auto 1.25rem" }}
+          />
           <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.5rem", fontWeight: 700 }}>
-            Dot lost focus for a second
+            Busy lost focus for a second
           </h2>
           <p style={{ margin: "0 0 0.5rem", maxWidth: "28rem", color: "#94a3b8" }}>
             We&apos;ve been notified and will fix this as soon as possible. Please try

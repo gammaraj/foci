@@ -2,7 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
-import { FociDot } from "@/components/FociDot";
+import { BusyBeaver } from "@/components/BusyBeaver";
 
 export default function Error({
   error,
@@ -18,9 +18,14 @@ export default function Error({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0f1a] px-4">
       <div className="max-w-md text-center">
-        <FociDot mood="worried" size={80} className="mx-auto mb-5" />
+        <BusyBeaver
+          alt="Busy the Beaver looking concerned"
+          size={140}
+          className="mx-auto mb-5"
+          priority
+        />
         <h2 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">
-          Dot lost focus for a second
+          Busy lost focus for a second
         </h2>
         <p className="mb-6 text-slate-600 dark:text-slate-400">
           We&apos;ve been notified and will fix this as soon as possible.

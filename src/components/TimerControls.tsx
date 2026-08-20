@@ -70,7 +70,7 @@ export default function TimerControls({
               isRunning
                 ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                 : emphasizeStart
-                  ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
+                  ? "bg-blue-700 text-white shadow-sm hover:bg-blue-800"
                   : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
             }`}
             aria-label={isRunning ? "Pause timer" : "Start timer"}

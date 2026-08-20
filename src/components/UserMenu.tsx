@@ -84,7 +84,7 @@ export default function UserMenu() {
             onError={() => setAvatarError(true)}
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white text-xs font-bold">
             {initials}
           </div>
         )}

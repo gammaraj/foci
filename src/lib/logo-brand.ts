@@ -25,6 +25,9 @@ export const FOCI_LOGO_DOT = "#60a5fa"; // blue-400
 /** Wordmark on white/light pages — blue-700, strong on #fff */
 export const FOCI_WORDMARK_ON_LIGHT = "#1d4ed8";
 
+/** Solid CTA fill — same as wordmark on light surfaces */
+export const FOCI_BUTTON_BG = FOCI_WORDMARK_ON_LIGHT;
+
 /** Wordmark on dark nav — blue-300 */
 export const FOCI_WORDMARK_ON_DARK = "#93c5fd";
 

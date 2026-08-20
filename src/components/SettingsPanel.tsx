@@ -593,7 +593,7 @@ export default function SettingsPanel({
                     <button
                       type="button"
                       onClick={() => setShowAccountSharing(true)}
-                      className="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                      className="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-lg transition-colors"
                     >
                       Manage account sharing
                     </button>

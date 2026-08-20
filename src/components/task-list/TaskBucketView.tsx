@@ -291,7 +291,7 @@ function BucketTaskCard({
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
     `w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ${
       playing || filled
-        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25 hover:bg-blue-700"
+        ? "bg-blue-700 text-white shadow-sm shadow-blue-700/25 hover:bg-blue-800"
         : "text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/90 dark:hover:bg-blue-950/40"
     }`;
   const playVisible = isActive || isTimerRunning;
@@ -466,7 +466,7 @@ function BucketTaskCard({
             </span>
           )}
           {isActive && isTimerRunning && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-blue-600 text-white">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-blue-700 text-white">
               <span className="w-1 h-1 rounded-full bg-white animate-pulse" aria-hidden />
               Timing
             </span>

@@ -419,7 +419,7 @@ export function TaskDetailPanel({
 
   const focusChip = onStartTask ? (
     isInProgress ? (
-      <span className={`${chip} border-blue-500/50 bg-blue-600 text-white`} title="Timer is running on this task">
+      <span className={`${chip} border-blue-500/50 bg-blue-700 text-white`} title="Timer is running on this task">
         <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
         <span className="truncate">In progress</span>
       </span>
@@ -432,7 +432,7 @@ export function TaskDetailPanel({
         }}
         className={`${chip} ${
           isFocused
-            ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+            ? "border-blue-700 bg-blue-700 text-white hover:bg-blue-800 hover:border-blue-800"
             : "border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
         }`}
         title={
@@ -454,7 +454,7 @@ export function TaskDetailPanel({
   ) : null;
 
   const oneThingOn =
-    "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700";
+    "border-blue-700 bg-blue-700 text-white hover:bg-blue-800 hover:border-blue-800";
   const oneThingOff =
     "border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35";
 
@@ -588,7 +588,7 @@ export function TaskDetailPanel({
             onClick={handleSave}
             className={`flex-1 min-w-0 px-3 ${
               isDrawer ? "py-3 text-sm rounded-xl min-h-[2.75rem]" : "py-2 text-sm rounded-md"
-            } font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#131d30]`}
+            } font-semibold bg-blue-700 text-white hover:bg-blue-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#131d30]`}
           >
             Save
           </button>

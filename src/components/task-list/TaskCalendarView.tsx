@@ -216,7 +216,7 @@ export default function TaskCalendarView({
               onClick={() => onSelectDay(isSelected ? null : dateStr)}
               className={`min-h-[68px] rounded-lg flex flex-col p-1 text-xs transition-all w-full text-left ${
                 isSelected
-                  ? "bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#131d30]"
+                  ? "bg-blue-700 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#131d30]"
                   : isToday
                     ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
                     : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
@@ -363,7 +363,7 @@ export default function TaskCalendarView({
                         e.stopPropagation();
                         onStartTask(task.id);
                       }}
-                      className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1"
+                      className="flex-shrink-0 px-2 py-1 text-xs font-medium rounded bg-blue-700 text-white hover:bg-blue-800 transition-colors flex items-center gap-1"
                     >
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />

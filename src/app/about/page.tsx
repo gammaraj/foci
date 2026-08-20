@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AppNavbar from "@/components/AppNavbar";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { FOCI_TAGLINE_CALM } from "@/lib/logo-brand";
@@ -71,6 +72,9 @@ export default function AboutPage() {
 
       <main className="flex-1 app-container py-12 sm:py-16">
         <article className="max-w-2xl mx-auto">
+          <div className="flex justify-center mb-5">
+            <BusyBeaver alt="Busy the Beaver — Foci mascot" size={112} priority />
+          </div>
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
             About
           </p>
@@ -101,6 +105,10 @@ export default function AboutPage() {
                 {FOCI_ACCOUNT_POLICY}
               </li>
               <li>
+                <strong className="text-slate-800 dark:text-slate-200">Mascot:</strong> Busy the
+                Beaver — busy as a beaver
+              </li>
+              <li>
                 <strong className="text-slate-800 dark:text-slate-200">Audience:</strong> Students,
                 developers, writers, and knowledge workers worldwide
               </li>
@@ -118,6 +126,10 @@ export default function AboutPage() {
               between them breaks concentration. Foci puts a task list, Smart Plan scheduling,
               offline ambient sounds (including brown noise), and an optional focus timer in one
               browser tab so you can start work in seconds.
+            </p>
+            <p>
+              Our mascot is Busy the Beaver — busy as a beaver. Busy cheers when you finish a
+              task, looks a little sad after quiet days, and shows up if a page goes missing.
             </p>
             <p>
               A free account keeps tasks, settings, and streaks synced across devices — useful

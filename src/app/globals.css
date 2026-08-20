@@ -14,8 +14,8 @@
 
 /* ===== Custom Properties ===== */
 :root {
-  --primary-blue: #2563eb;
-  --primary-blue-dark: #1d4ed8;
+  --primary-blue: #1d4ed8;
+  --primary-blue-dark: #1e40af;
   --accent-indigo: #3b82f6;
   --success-green: #10b981;
   --muted-slate: #475569;
@@ -39,7 +39,7 @@
   --task-row-border: rgba(37, 99, 235, 0.08);
   --task-row-bg: #f7faff;
   --control-border: #c5d4ea;
-  --control-border-focus: #2563eb;
+  --control-border-focus: #1d4ed8;
   --radius-card: 1.25rem;
   /* Cool berry urgency — pink-leaning so it sits with brand blue (not warm fire-engine red) */
   --urgency: #b0175c;
@@ -220,9 +220,14 @@ select {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Solid CTA — one recipe for nav, homepage, Auth, Add project */
+/* Solid CTA — wordmark blue (#1d4ed8), not the brighter ring blue-600 */
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-lg bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400;
+  @apply inline-flex items-center justify-center rounded-lg bg-blue-700 font-semibold text-white transition-colors hover:bg-blue-800 active:bg-blue-900 disabled:opacity-50 dark:bg-blue-700 dark:text-white dark:hover:bg-blue-600 dark:active:bg-blue-500;
+}
+
+/* Outline CTA — same Foci wordmark blue, border only */
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-lg border border-blue-700 bg-transparent font-medium text-blue-700 transition-colors hover:bg-blue-50 dark:border-blue-400 dark:text-blue-200 dark:hover:bg-blue-900/30;
 }
 
 /* Outline chip — filters, templates, leftover pill buttons */

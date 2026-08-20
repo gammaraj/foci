@@ -7,7 +7,7 @@ function moodFromProgress(todayCount: number, idleDays: number | null): FociDotM
   return "ready";
 }
 
-/** Done-bar Dot — mood follows today's finishes vs idle days. */
+/** Done-bar Busy — mood follows today's finishes vs idle days. */
 export function FociDoneMascot({
   todayCount,
   idleDays,
