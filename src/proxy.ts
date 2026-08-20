@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https://*.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com`,
     `font-src 'self'`,
-    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://filantus.com`,
     `frame-src https://www.youtube.com https://open.spotify.com https://w.soundcloud.com`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
