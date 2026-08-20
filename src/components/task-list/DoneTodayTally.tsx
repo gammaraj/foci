@@ -38,8 +38,13 @@ export function DoneTodayTally({
     ? "border border-emerald-400/80 dark:border-emerald-500/55 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-100 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
     : "border border-emerald-500 dark:border-emerald-400/70 bg-emerald-100 dark:bg-emerald-900/55 text-emerald-950 dark:text-emerald-50 hover:bg-emerald-200/90 dark:hover:bg-emerald-800/50 shadow-sm shadow-emerald-900/10 dark:shadow-emerald-950/40";
 
-  const num = "tabular-nums font-bold text-emerald-800 dark:text-emerald-200";
-  const label = "font-medium text-emerald-700 dark:text-emerald-300";
+  const liveNum = "tabular-nums font-bold text-emerald-800 dark:text-emerald-200";
+  const zeroNum = "tabular-nums font-bold text-slate-500 dark:text-slate-400";
+  const liveLabel = "font-medium text-emerald-700 dark:text-emerald-300";
+  const zeroLabel = "font-medium text-slate-500 dark:text-slate-400";
+  const sep = "font-medium text-slate-400 dark:text-slate-500";
+  const numClass = (n: number) => (n > 0 ? liveNum : zeroNum);
+  const labelClass = (n: number) => (n > 0 ? liveLabel : zeroLabel);
 
   return (
     <button
@@ -53,7 +58,9 @@ export function DoneTodayTally({
       data-done-today-tally
     >
       <svg
-        className={`${compact ? "w-3.5 h-3.5" : "w-4 h-4"} shrink-0 text-emerald-600 dark:text-emerald-300`}
+        className={`${compact ? "w-3.5 h-3.5" : "w-4 h-4"} shrink-0 ${
+          empty ? "text-slate-400 dark:text-slate-500" : "text-emerald-600 dark:text-emerald-300"
+        }`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -66,42 +73,48 @@ export function DoneTodayTally({
         <>
           {/* Phone: short labels so the pill fits beside Tasks + late */}
           <span className="sm:hidden leading-none">
-            <span className={num}>{count}</span>
-            <span className={label}> today</span>
-            <span className={label}>
-              {" "}
-              · <span className={num}>{weekCount}</span> wk · <span className={num}>{monthCount}</span> mo
-            </span>
+            <span className={numClass(count)}>{count}</span>
+            <span className={labelClass(count)}> today</span>
+            <span className={sep}> · </span>
+            <span className={numClass(weekCount)}>{weekCount}</span>
+            <span className={labelClass(weekCount)}> wk</span>
+            <span className={sep}> · </span>
+            <span className={numClass(monthCount)}>{monthCount}</span>
+            <span className={labelClass(monthCount)}> mo</span>
           </span>
           {/* Tablet / desktop: full period words */}
           <span className="hidden sm:inline leading-none">
-            <span className={num}>{count}</span>
-            <span className={label}> today</span>
-            <span className={label}>
-              {" "}
-              · <span className={num}>{weekCount}</span> this week ·{" "}
-              <span className={num}>{monthCount}</span> this month
-            </span>
+            <span className={numClass(count)}>{count}</span>
+            <span className={labelClass(count)}> today</span>
+            <span className={sep}> · </span>
+            <span className={numClass(weekCount)}>{weekCount}</span>
+            <span className={labelClass(weekCount)}> this week</span>
+            <span className={sep}> · </span>
+            <span className={numClass(monthCount)}>{monthCount}</span>
+            <span className={labelClass(monthCount)}> this month</span>
           </span>
         </>
       ) : (
         <>
           <span className="sm:hidden leading-none">
-            <span className={num}>{count}</span>
-            <span className={label}> done</span>
-            <span className={label}>
-              {" "}
-              · <span className={num}>{weekCount}</span> wk · <span className={num}>{monthCount}</span> mo
-            </span>
+            <span className={numClass(count)}>{count}</span>
+            <span className={labelClass(count)}> done</span>
+            <span className={sep}> · </span>
+            <span className={numClass(weekCount)}>{weekCount}</span>
+            <span className={labelClass(weekCount)}> wk</span>
+            <span className={sep}> · </span>
+            <span className={numClass(monthCount)}>{monthCount}</span>
+            <span className={labelClass(monthCount)}> mo</span>
           </span>
           <span className="hidden sm:inline leading-none">
-            <span className={num}>{count}</span>
-            <span className={label}> done today</span>
-            <span className={label}>
-              {" "}
-              · <span className={num}>{weekCount}</span> this week ·{" "}
-              <span className={num}>{monthCount}</span> this month
-            </span>
+            <span className={numClass(count)}>{count}</span>
+            <span className={labelClass(count)}> done today</span>
+            <span className={sep}> · </span>
+            <span className={numClass(weekCount)}>{weekCount}</span>
+            <span className={labelClass(weekCount)}> this week</span>
+            <span className={sep}> · </span>
+            <span className={numClass(monthCount)}>{monthCount}</span>
+            <span className={labelClass(monthCount)}> this month</span>
           </span>
         </>
       )}
