@@ -41,7 +41,14 @@ async function getUpstashLimiter(): Promise<RateLimiter | null> {
 
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
+  if (!url || !token) {
+    if (process.env.VERCEL_ENV === "production") {
+      console.warn(
+        "[foci] UPSTASH_REDIS_REST_URL/TOKEN unset; rate limits are per-instance only",
+      );
+    }
+    return null;
+  }
 
   try {
     const { Ratelimit } = await import("@upstash/ratelimit");

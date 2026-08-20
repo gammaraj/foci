@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Static RLS check: verifies that every public table has RLS enabled and
- * that all known policy names exist somewhere in the migration SQL files.
+ * that policy names and security markers exist in migration SQL files.
  *
  * No live database required — runs purely against migration file contents.
  */
@@ -10,7 +10,6 @@ const path = require("path");
 
 const migrationsDir = path.join(__dirname, "../../supabase/migrations");
 
-// All 11 public tables must have ENABLE ROW LEVEL SECURITY
 const TABLES_REQUIRING_RLS = [
   "settings",
   "daily_goal_data",
@@ -25,70 +24,68 @@ const TABLES_REQUIRING_RLS = [
   "account_invites",
 ];
 
-// Every known policy name must appear in migrations
+/** Last action in chronological migrations must be CREATE. */
 const REQUIRED_POLICIES = [
-  // settings / daily_goal_data / streak_history / user_preferences
   "Users can manage their own settings",
   "Users can manage their own daily goal data",
   "Users can manage their own streak history",
   "Users can manage their own preferences",
-
-  // projects
   "Owners can manage their own projects",
   "Collaborators can view shared projects",
   "Account collaborators can view all owner projects",
-
-  // tasks
   "Owners can manage their own tasks",
   "Collaborators can view tasks in shared projects",
   "Editors can update tasks in shared projects",
   "Account collaborators can view all owner tasks",
   "Account editors can update all owner tasks",
-
-  // user_profiles
   "Users can manage own profile",
   "Users can view project collaborator profiles",
   "Users can view account collaborator profiles",
   "Collaborators can view owner profiles",
   "Invitees can view inviter profiles",
   "Fellow project collaborators can view each other's profiles",
-
-  // project_collaborators
   "Owners can manage collaborators",
   "Collaborators can view their membership",
-
-  // collaboration_invites
   "Owners can manage invites",
   "Invitees can view their invites",
-  "Invitees can update their invites",
-
-  // account_collaborators
   "Owners can manage account collaborators",
   "Collaborators can view their account access",
-
-  // account_invites
   "Owners can manage account invites",
   "Invitees can view their account invites",
+];
+
+/** Last action must be DROP — invitees accept/decline via RPCs only. */
+const DROPPED_POLICIES = [
+  "Invitees can update their invites",
   "Invitees can update their account invites",
 ];
 
-// ── Load all migration SQL ──────────────────────────────────────────────────
+const REQUIRED_MARKERS = [
+  "protect_user_profile_email",
+  "protect_non_owner_task_identity",
+  "create_collaboration_invite",
+  "create_account_invite",
+  "decline_collaboration_invite",
+  "decline_account_invite",
+  "invitee_is_caller",
+  "REVOKE EXECUTE ON FUNCTION public.resolve_invitee_id",
+  "user_profiles_email_lower_key",
+  'WITH CHECK',
+];
 
-const sql = fs
+const sqlFiles = fs
   .readdirSync(migrationsDir)
   .filter((f) => f.endsWith(".sql"))
   .sort()
-  .map((f) => fs.readFileSync(path.join(migrationsDir, f), "utf8"))
-  .join("\n");
+  .map((f) => fs.readFileSync(path.join(migrationsDir, f), "utf8"));
+
+const sql = sqlFiles.join("\n");
 
 let passed = true;
-
-// ── Check 1: RLS enabled on every table ────────────────────────────────────
 
 const missingRls = TABLES_REQUIRING_RLS.filter(
   (table) => !sql.includes(`${table} enable row level security`) &&
              !sql.includes(`${table}\nenable row level security`) &&
-             // handle both inline and multi-line ALTER TABLE forms
              !new RegExp(
                `alter\\s+table\\s+(public\\.)?${table}\\s+enable\\s+row\\s+level\\s+security`,
                "i"
@@ -103,19 +100,65 @@ if (missingRls.length > 0) {
   console.log(`✅ RLS enabled: all ${TABLES_REQUIRING_RLS.length} tables confirmed`);
 }
 
-// ── Check 2: all policy names present ──────────────────────────────────────
-
-const missingPolicies = REQUIRED_POLICIES.filter((name) => !sql.includes(`"${name}"`));
-
-if (missingPolicies.length > 0) {
-  console.error("\n❌ Missing expected RLS policy names in migrations:");
-  missingPolicies.forEach((p) => console.error(`   - "${p}"`));
-  passed = false;
-} else {
-  console.log(`✅ Policies found: all ${REQUIRED_POLICIES.length} expected policy names confirmed`);
+function lastPolicyAction(name) {
+  const re = new RegExp(
+    `drop policy if exists "${name}"|create policy "${name}"`,
+    "gi",
+  );
+  let last = null;
+  let match;
+  while ((match = re.exec(sql)) !== null) {
+    last = match[0].toLowerCase().startsWith("drop") ? "drop" : "create";
+  }
+  return last;
 }
 
-// ── Result ──────────────────────────────────────────────────────────────────
+const missingPolicies = REQUIRED_POLICIES.filter((name) => lastPolicyAction(name) !== "create");
+if (missingPolicies.length > 0) {
+  console.error("\n❌ Expected policies missing or last action is not CREATE:");
+  missingPolicies.forEach((p) => console.error(`   - "${p}" (last: ${lastPolicyAction(p) ?? "none"})`));
+  passed = false;
+} else {
+  console.log(`✅ Policies active: all ${REQUIRED_POLICIES.length} expected policy names end in CREATE`);
+}
+
+const stillPresent = DROPPED_POLICIES.filter((name) => lastPolicyAction(name) !== "drop");
+if (stillPresent.length > 0) {
+  console.error("\n❌ Invitee UPDATE policies must stay dropped (use decline RPCs):");
+  stillPresent.forEach((p) => console.error(`   - "${p}" (last: ${lastPolicyAction(p) ?? "none"})`));
+  passed = false;
+} else {
+  console.log(`✅ Invitee UPDATE policies dropped: ${DROPPED_POLICIES.length}`);
+}
+
+const missingMarkers = REQUIRED_MARKERS.filter((marker) => !sql.includes(marker));
+if (missingMarkers.length > 0) {
+  console.error("\n❌ Missing security markers in migrations:");
+  missingMarkers.forEach((m) => console.error(`   - ${m}`));
+  passed = false;
+} else {
+  console.log(`✅ Security markers found: ${REQUIRED_MARKERS.length}`);
+}
+
+function lastCreatePolicySnippet(name) {
+  const re = new RegExp(`create policy "${name}"`, "gi");
+  let lastIndex = -1;
+  let match;
+  while ((match = re.exec(sql)) !== null) {
+    lastIndex = match.index;
+  }
+  if (lastIndex < 0) return "";
+  return sql.slice(lastIndex, lastIndex + 2000);
+}
+
+const editorSnippet = lastCreatePolicySnippet("Editors can update tasks in shared projects");
+const accountEditorSnippet = lastCreatePolicySnippet("Account editors can update all owner tasks");
+if (!/with check/i.test(editorSnippet) || !/with check/i.test(accountEditorSnippet)) {
+  console.error("\n❌ Latest editor task UPDATE policies must include WITH CHECK");
+  passed = false;
+} else {
+  console.log("✅ Editor UPDATE policies include WITH CHECK");
+}
 
 if (!passed) {
   process.exit(1);

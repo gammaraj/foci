@@ -1,24 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { trustedOriginFromRequest } from "@/lib/trusted-origin";
 
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 10;
-const PRODUCTION_ORIGIN = "https://usefoci.com";
-
-function getSiteOrigin(request: Request): string {
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const host = forwardedHost ?? request.headers.get("host");
-  if (host) {
-    const proto = request.headers.get("x-forwarded-proto") ?? "https";
-    return `${proto}://${host}`;
-  }
-  try {
-    return new URL(request.url).origin;
-  } catch {
-    return PRODUCTION_ORIGIN;
-  }
-}
 
 export async function GET(request: Request) {
   const ip = getClientIp(request.headers);
@@ -26,7 +12,7 @@ export async function GET(request: Request) {
     return new NextResponse("Too many requests", { status: 429 });
   }
 
-  const origin = getSiteOrigin(request);
+  const origin = trustedOriginFromRequest(request);
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
 

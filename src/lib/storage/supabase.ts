@@ -712,32 +712,14 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async inviteCollaborator(projectId: string, email: string, role: CollaboratorRole): Promise<void> {
-    const userId = await this.getUserId();
-
-    const { data: inviteeId } = await this.supabase.rpc("resolve_invitee_id", {
-      invitee_email: email.toLowerCase(),
+    const { error } = await this.supabase.rpc("create_collaboration_invite", {
+      p_project_id: projectId,
+      p_invitee_email: email.toLowerCase(),
+      p_role: role,
     });
 
-    const { data: project } = await this.supabase
-      .from("projects")
-      .select("name")
-      .eq("id", projectId)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    const { error } = await this.supabase
-      .from("collaboration_invites")
-      .insert({
-        project_id: projectId,
-        owner_id: userId,
-        invitee_email: email.toLowerCase(),
-        invitee_id: inviteeId ?? null,
-        project_name: project?.name ?? null,
-        role,
-      });
-      
     if (error) {
-      if (error.code === "23505") { // unique violation
+      if (error.message?.includes("already pending")) {
         throw new Error("An invite is already pending for this email");
       }
       console.error("[Foci] inviteCollaborator error:", error);
@@ -969,39 +951,10 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async declineInvite(inviteId: string): Promise<void> {
-    const userId = await this.getUserId();
+    const { error } = await this.supabase.rpc("decline_collaboration_invite", {
+      invite_id: inviteId,
+    });
 
-    // Fetch the invite first so we can verify ownership in application code
-    // rather than interpolating email into a PostgREST filter string.
-    const { data: invite, error: fetchError } = await this.supabase
-      .from("collaboration_invites")
-      .select("invitee_id, invitee_email")
-      .eq("id", inviteId)
-      .maybeSingle();
-
-    if (fetchError || !invite) throw new Error("Invite not found");
-
-    const { data: { user } } = await this.supabase.auth.getUser();
-    const { data: profile } = await this.supabase
-      .from("user_profiles")
-      .select("email")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    const callerEmail = (user?.email ?? profile?.email)?.toLowerCase() ?? null;
-    const isRecipient =
-      invite.invitee_id === userId ||
-      (invite.invitee_email != null &&
-        callerEmail != null &&
-        invite.invitee_email.toLowerCase() === callerEmail);
-
-    if (!isRecipient) throw new Error("Unauthorized");
-
-    const { error } = await this.supabase
-      .from("collaboration_invites")
-      .update({ status: "declined" })
-      .eq("id", inviteId);
-      
     if (error) {
       console.error("[Foci] declineInvite error:", error);
       throw new Error(error.message);
@@ -1334,43 +1287,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async inviteAccountCollaborator(email: string, role: CollaboratorRole): Promise<void> {
-    const userId = await this.getUserId();
-    const normalizedEmail = email.toLowerCase();
-
-    const { data: inviteeId } = await this.supabase.rpc("resolve_invitee_id", {
-      invitee_email: normalizedEmail,
+    const { error } = await this.supabase.rpc("create_account_invite", {
+      p_invitee_email: email.toLowerCase(),
+      p_role: role,
     });
 
-    if (inviteeId) {
-      if (inviteeId === userId) {
-        throw new Error("You can't share your account with yourself");
-      }
-
-      const { data: existing } = await this.supabase
-        .from("account_collaborators")
-        .select("id")
-        .eq("owner_id", userId)
-        .eq("collaborator_id", inviteeId)
-        .maybeSingle();
-
-      if (existing) {
-        throw new Error("This user already has access to your account");
-      }
-    }
-
-    // Always create a pending invite so the recipient can accept (existing users
-    // included). Previously we auto-inserted collaborators for known emails.
-    const { error } = await this.supabase
-      .from("account_invites")
-      .insert({
-        owner_id: userId,
-        invitee_email: normalizedEmail,
-        invitee_id: inviteeId ?? null,
-        role,
-      });
-      
     if (error) {
-      if (error.code === "23505") {
+      if (error.message?.includes("already pending")) {
         throw new Error("An invite is already pending for this email");
       }
       console.error("[Foci] inviteAccountCollaborator error:", error);
@@ -1533,39 +1456,9 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async declineAccountInvite(inviteId: string): Promise<void> {
-    const userId = await this.getUserId();
-
-    const { data: invite, error: fetchError } = await this.supabase
-      .from("account_invites")
-      .select("invitee_id, invitee_email")
-      .eq("id", inviteId)
-      .maybeSingle();
-
-    if (fetchError || !invite) throw new Error("Invite not found");
-
-    const { data: { user } } = await this.supabase.auth.getUser();
-    const { data: profile } = await this.supabase
-      .from("user_profiles")
-      .select("email")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    const callerEmail = (user?.email ?? profile?.email)?.toLowerCase() ?? null;
-    const isRecipient =
-      invite.invitee_id === userId ||
-      (invite.invitee_email != null &&
-        callerEmail != null &&
-        invite.invitee_email.toLowerCase() === callerEmail);
-
-    if (!isRecipient) throw new Error("Unauthorized");
-
-    const { error } = await this.supabase
-      .from("account_invites")
-      .update({
-        status: "declined",
-        invitee_id: userId,
-      })
-      .eq("id", inviteId);
+    const { error } = await this.supabase.rpc("decline_account_invite", {
+      invite_id: inviteId,
+    });
 
     if (error) {
       console.error("[Foci] declineAccountInvite error:", error);

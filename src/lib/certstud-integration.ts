@@ -1,6 +1,12 @@
+import { safePartnerReturnUrl } from "@/lib/partner-return-url";
+
 export const CERTSTUD_CONTEXT_KEY = "foci_certstud_context";
 export const CERTSTUD_DISMISS_KEY = "foci_certstud_promo_dismissed";
 export const CERTSTUD_BASE_URL = "https://certstud.com";
+export const CERTSTUD_RETURN_ORIGINS = [
+  "https://certstud.com",
+  "https://www.certstud.com",
+] as const;
 export const CERTSTUD_PROJECT_PREFIX = "CertStud:";
 
 export interface CertStudDeepLinkParams {
@@ -103,7 +109,8 @@ export function loadCertStudContext(): CertStudContext | null {
 }
 
 export function certStudPracticeUrl(context: CertStudContext): string {
-  if (context.returnUrl) return context.returnUrl;
+  const allowedReturn = safePartnerReturnUrl(context.returnUrl, CERTSTUD_RETURN_ORIGINS);
+  if (allowedReturn) return allowedReturn;
 
   const ref = encodeURIComponent(context.ref ?? "foci-app");
   if (context.certId) {

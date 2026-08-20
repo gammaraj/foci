@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { isLocalHostname, isTrustedHostname, trustedRedirectHostname } from "@/lib/trusted-origin";
 
 const isDev = process.env.NODE_ENV === "development";
 
-function isLocalHost(host: string | null): boolean {
-  if (!host) return false;
-  const hostname = host.split(":")[0]?.toLowerCase();
-  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+function hostnameOf(host: string | null): string | null {
+  if (!host) return null;
+  return host.split(":")[0]?.toLowerCase() ?? null;
 }
 
 function copyCookies(from: NextResponse, to: NextResponse) {
@@ -18,10 +18,14 @@ function copyCookies(from: NextResponse, to: NextResponse) {
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host");
   const proto = request.headers.get("x-forwarded-proto");
-  if (!isDev && !isLocalHost(host) && proto === "http") {
-    const redirectHost = host ?? "usefoci.com";
+  const hostname = hostnameOf(host);
+  if (!isDev && !isLocalHostname(hostname) && proto === "http") {
+    const redirectHost = trustedRedirectHostname(host);
     const dest = `https://${redirectHost}${request.nextUrl.pathname}${request.nextUrl.search}`;
     return NextResponse.redirect(dest, 301);
+  }
+  if (!isDev && hostname && !isLocalHostname(hostname) && !isTrustedHostname(hostname)) {
+    return new NextResponse("Invalid host", { status: 400 });
   }
 
   const { response: sessionResponse, user } = await updateSession(request);
@@ -39,6 +43,10 @@ export async function proxy(request: NextRequest) {
     `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com`,
     `frame-src https://www.youtube.com https://open.spotify.com https://w.soundcloud.com`,
     `frame-ancestors 'none'`,
+    `object-src 'none'`,
+    `base-uri 'self'`,
+    `form-action 'self'`,
+    ...(isDev ? [] : [`upgrade-insecure-requests`]),
   ].join("; ");
 
   // Signed-in users skip the marketing homepage → go straight to the app

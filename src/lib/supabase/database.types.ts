@@ -405,9 +405,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      resolve_invitee_id: {
-        Args: { invitee_email: string }
-        Returns: string | null
+      create_collaboration_invite: {
+        Args: { p_project_id: string; p_invitee_email: string; p_role: string }
+        Returns: undefined
+      }
+      create_account_invite: {
+        Args: { p_invitee_email: string; p_role: string }
+        Returns: undefined
       }
       accept_collaboration_invite: {
         Args: { invite_id: string }
@@ -416,6 +420,51 @@ export type Database = {
       accept_account_invite: {
         Args: { invite_id: string }
         Returns: undefined
+      }
+      decline_collaboration_invite: {
+        Args: { invite_id: string }
+        Returns: undefined
+      }
+      decline_account_invite: {
+        Args: { invite_id: string }
+        Returns: undefined
+      }
+      list_my_project_collaborators: {
+        Args: { p_project_id: string }
+        Returns: {
+          collaborator_id: string
+          role: string
+          created_at: string
+          email: string | null
+          display_name: string | null
+          avatar_url: string | null
+        }[]
+      }
+      list_my_account_collaborators: {
+        Args: Record<string, never>
+        Returns: {
+          collaborator_id: string
+          role: string
+          created_at: string
+          email: string | null
+          display_name: string | null
+          avatar_url: string | null
+        }[]
+      }
+      list_my_received_project_invites: {
+        Args: Record<string, never>
+        Returns: {
+          id: string
+          project_id: string
+          project_name: string
+          owner_id: string
+          owner_email: string | null
+          owner_display_name: string | null
+          role: string
+          status: string
+          created_at: string
+          expires_at: string
+        }[]
       }
     }
     Enums: {

@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/nextjs";
 import {
   SENTRY_DSN,
   sentryBeforeSend,
+  sentryReplaysOnErrorSampleRate,
   sentryReplaysSessionSampleRate,
   sentrySendDefaultPii,
   sentryTracesSampleRate,
@@ -12,11 +13,16 @@ import {
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  integrations: [Sentry.replayIntegration()],
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
   tracesSampleRate: sentryTracesSampleRate,
   enableLogs: true,
   replaysSessionSampleRate: sentryReplaysSessionSampleRate,
-  replaysOnErrorSampleRate: 1.0,
+  replaysOnErrorSampleRate: sentryReplaysOnErrorSampleRate,
   sendDefaultPii: sentrySendDefaultPii,
   beforeSend: sentryBeforeSend,
 });

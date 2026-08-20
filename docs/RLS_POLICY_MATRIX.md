@@ -1,6 +1,6 @@
 # Supabase RLS Policy Matrix
 
-> Last updated: June 2026 (after `20260618000000_fix_cross_collaborator_profile_visibility.sql`)
+> Last updated: August 2026 (after `20260820000000_lock_invites_and_profile_email.sql`)
 
 This document describes the **current** Row Level Security policies across all 11 public tables. Collaboration roles are **`viewer`** and **`editor`** only (no admin role).
 
@@ -36,9 +36,11 @@ All four use a single `FOR ALL` policy: `auth.uid() = user_id`. Account collabor
 **`tasks`**
 - `"Owners can manage their own tasks"` — `FOR ALL`, `auth.uid() = user_id`
 - `"Collaborators can view tasks in shared projects"` — `FOR SELECT`, project collaborator membership
-- `"Editors can update tasks in shared projects"` — `FOR UPDATE`, `role = 'editor'` in `project_collaborators`
+- `"Editors can update tasks in shared projects"` — `FOR UPDATE` with `USING` + `WITH CHECK`, `role = 'editor'` in `project_collaborators`
 - `"Account collaborators can view all owner tasks"` — `FOR SELECT`, account collaborator membership
-- `"Account editors can update all owner tasks"` — `FOR UPDATE`, `role = 'editor'` in `account_collaborators`
+- `"Account editors can update all owner tasks"` — `FOR UPDATE` with `USING` + `WITH CHECK`, `role = 'editor'` in `account_collaborators`
+
+A `BEFORE UPDATE` trigger (`protect_non_owner_task_identity`) blocks non-owners from changing `user_id` or `project_id`.
 
 ---
 
@@ -53,7 +55,7 @@ All four use a single `FOR ALL` policy: `auth.uid() = user_id`. Account collabor
 | `"Invitees can view inviter profiles"` | SELECT | Pending project or account invite from that profile user |
 | `"Fellow project collaborators can view each other's profiles"` | SELECT | Both users are collaborators on the same project or account |
 
-> The global `"Authenticated users can view all profiles"` policy was removed in `20260517000000_security_hardening.sql`. Email lookup for invites uses the `resolve_invitee_id(email)` SECURITY DEFINER RPC.
+Email is **not** client-writable. `protect_user_profile_email` pins `user_profiles.email` to `auth.users.email`. Column grants allow UPDATE of `display_name`, `avatar_url`, and `updated_at` only. Unique index on `lower(email)`. Authorization helpers read email from `auth.users` via `current_user_email()`, not from the profile row.
 
 ---
 
@@ -61,19 +63,20 @@ All four use a single `FOR ALL` policy: `auth.uid() = user_id`. Account collabor
 
 | Table | Owner | Collaborator |
 |-------|-------|--------------|
-| `project_collaborators` | Full CRUD | SELECT own row only |
-| `collaboration_invites` | Full CRUD | SELECT + UPDATE invites addressed to them |
+| `project_collaborators` | Full CRUD | SELECT own row only (and DELETE own row to leave) |
+| `collaboration_invites` | Full CRUD | SELECT invites addressed to them |
 
 ### Active policies
 
 **`project_collaborators`**
 - `"Owners can manage collaborators"` — `FOR ALL`, `auth.uid() = owner_id`
 - `"Collaborators can view their membership"` — `FOR SELECT`, `auth.uid() = collaborator_id`
+- CHECK `owner_id <> collaborator_id`
 
 **`collaboration_invites`**
 - `"Owners can manage invites"` — `FOR ALL`, `auth.uid() = owner_id`
-- `"Invitees can view their invites"` — `FOR SELECT`, `invitee_id` or email match via `user_profiles`
-- `"Invitees can update their invites"` — `FOR UPDATE`, same match
+- `"Invitees can view their invites"` — `FOR SELECT`, `invitee_id` or email match via `current_user_email()`
+- Invitees **cannot** UPDATE or INSERT. Decline uses `decline_collaboration_invite`.
 
 ---
 
@@ -81,8 +84,8 @@ All four use a single `FOR ALL` policy: `auth.uid() = user_id`. Account collabor
 
 | Table | Owner | Account collaborator |
 |-------|-------|----------------------|
-| `account_collaborators` | Full CRUD | SELECT own row only |
-| `account_invites` | Full CRUD | SELECT + UPDATE invites addressed to them |
+| `account_collaborators` | Full CRUD | SELECT own row only (and DELETE own row to leave) |
+| `account_invites` | Full CRUD | SELECT invites addressed to them |
 
 ### Active policies
 
@@ -93,22 +96,23 @@ All four use a single `FOR ALL` policy: `auth.uid() = user_id`. Account collabor
 **`account_invites`**
 - `"Owners can manage account invites"` — `FOR ALL`, `auth.uid() = owner_id`
 - `"Invitees can view their account invites"` — `FOR SELECT`, `invitee_id` or email match
-- `"Invitees can update their account invites"` — `FOR UPDATE`, same match
+- Invitees **cannot** UPDATE. Decline uses `decline_account_invite`.
 
 ---
 
-## Invite acceptance RPCs
+## Invite RPCs
 
-Defined in `20260518000000_accept_invite_rpcs.sql`:
+Defined in `20260518000000_accept_invite_rpcs.sql` and replaced/extended in `20260820000000_lock_invites_and_profile_email.sql`:
 
-- `accept_collaboration_invite(invite_id uuid)` — validates invitee, creates `project_collaborators` row, marks invite accepted
-- `accept_account_invite(invite_id uuid)` — validates invitee, creates `account_collaborators` row, marks invite accepted
+- `create_collaboration_invite(project_id, email, role)` — owner-only; looks up invitee internally
+- `create_account_invite(email, role)` — owner-only; looks up invitee internally
+- `accept_collaboration_invite(invite_id)` — caller must match invite email from `auth.users` (and `invitee_id` when set)
+- `accept_account_invite(invite_id)` — same
+- `decline_collaboration_invite(invite_id)` / `decline_account_invite(invite_id)`
 
-Both run as `SECURITY DEFINER` with explicit auth and expiry checks. Collaborator rows cannot be inserted directly by clients due to RLS.
+`resolve_invitee_id` is revoked from `anon` / `authenticated` (no email-to-UUID oracle).
 
-### Helper RPC
-
-- `resolve_invitee_id(invitee_email text)` — returns `user_id` for an email address; used during invite creation to pre-populate `invitee_id`. Granted to `authenticated` only.
+`invitee_is_caller` requires `auth.users` email match **and** (`invitee_id` is null or equals `auth.uid()`).
 
 ---
 
@@ -124,9 +128,9 @@ Both run as `SECURITY DEFINER` with explicit auth and expiry checks. Collaborato
 | `tasks` | Yes | 5 |
 | `user_profiles` | Yes | 6 |
 | `project_collaborators` | Yes | 2 |
-| `collaboration_invites` | Yes | 3 |
+| `collaboration_invites` | Yes | 2 |
 | `account_collaborators` | Yes | 2 |
-| `account_invites` | Yes | 3 |
+| `account_invites` | Yes | 2 |
 
 ---
 
@@ -135,7 +139,9 @@ Both run as `SECURITY DEFINER` with explicit auth and expiry checks. Collaborato
 `npm run check:rls-policies` performs a static check against migration SQL files (no live DB required):
 
 - Verifies `ENABLE ROW LEVEL SECURITY` is present for all 11 tables
-- Verifies all known policy names exist in migrations
+- Verifies required policies' **last** action is `CREATE`
+- Verifies invitee UPDATE policies' last action is `DROP`
+- Verifies security markers (invite RPCs, email pin, `WITH CHECK` on editor updates)
 
 ---
 

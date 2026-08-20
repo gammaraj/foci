@@ -1,6 +1,13 @@
+import { safePartnerReturnUrl } from "@/lib/partner-return-url";
+
 export const BOOSTLOGIK_CONTEXT_KEY = "foci_boostlogik_context";
 export const BOOSTLOGIK_DISMISS_KEY = "foci_boostlogik_promo_dismissed";
+
 export const BOOSTLOGIK_BASE_URL = "https://boostlogik.com";
+export const BOOSTLOGIK_RETURN_ORIGINS = [
+  "https://boostlogik.com",
+  "https://www.boostlogik.com",
+] as const;
 export const BOOSTLOGIK_PROJECT_PREFIX = "BoostLogik:";
 
 export interface BoostLogikDeepLinkParams {
@@ -101,7 +108,8 @@ export function loadBoostLogikContext(): BoostLogikContext | null {
 }
 
 export function boostLogikReturnUrl(context: BoostLogikContext): string {
-  if (context.returnUrl) return context.returnUrl;
+  const allowedReturn = safePartnerReturnUrl(context.returnUrl, BOOSTLOGIK_RETURN_ORIGINS);
+  if (allowedReturn) return allowedReturn;
 
   const ref = encodeURIComponent(context.ref ?? "foci-app");
   if (context.projectId) {

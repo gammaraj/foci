@@ -7,7 +7,9 @@ export const SENTRY_DSN =
   process.env.NEXT_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN ?? undefined;
 
 export const sentryTracesSampleRate = isProd ? 0.1 : 1;
-export const sentryReplaysSessionSampleRate = isProd ? 0.1 : 0.1;
+/** Session replay is off in production so task titles are not recorded. */
+export const sentryReplaysSessionSampleRate = 0;
+export const sentryReplaysOnErrorSampleRate = isProd ? 0.1 : 1;
 export const sentrySendDefaultPii = !isProd;
 
 function isServiceWorkerRegistrationNoise(error: unknown): boolean {
