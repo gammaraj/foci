@@ -115,17 +115,14 @@ const VIEW_PRINT_LABELS: Record<TaskViewMode, string> = {
   plan: "Smart Plan",
 };
 
-/** Active time/view filters — solid brand blue; no shadow (track already frames the control). */
-const FILTER_TAB_ACTIVE =
-  "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-600/25 dark:bg-blue-500 dark:text-white dark:shadow-none";
+/** Selected layout segment — outline chip (`.btn-chip-active`), not a filled CTA. */
+const FILTER_TAB_ACTIVE = "btn-chip-active";
 const FILTER_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-white/[0.06]";
+  "border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-white/[0.06]";
 
-/** Soft outline for project scope (distinct from Add / Start buttons). */
-const PROJECT_TAB_ACTIVE =
-  "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-600/25 dark:bg-blue-500 dark:text-white dark:shadow-none";
-const PROJECT_TAB_INACTIVE =
-  "text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-[#131d30] hover:bg-white dark:hover:bg-[#1a2d4a] border border-blue-100/80 dark:border-transparent";
+/** Selected project scope — outline chip, same recipe as layout tabs. */
+const PROJECT_TAB_ACTIVE = "btn-chip-active";
+const PROJECT_TAB_INACTIVE = "btn-chip";
 
 /** Pill radius = track radius − padding so the active segment nests cleanly. */
 const SEG_TAB_PAD = "px-2.5 py-1 min-h-[1.75rem] rounded text-sm font-medium transition-colors";
@@ -2623,7 +2620,7 @@ export default function TaskList({
               <button
                 type="button"
                 onClick={backFromProjectsManage}
-                className="no-print inline-flex items-center gap-1.5 px-2 py-1 mb-1 text-sm font-semibold rounded-lg text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors touch-target-sm"
+                className="no-print btn-chip gap-1.5 px-2 py-1 mb-1 text-sm touch-target-sm"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -2646,7 +2643,7 @@ export default function TaskList({
                 <button
                   type="button"
                   onClick={backFromProjectList}
-                  className="no-print inline-flex items-center gap-1.5 px-2 py-1 mb-1 text-sm font-semibold rounded-lg text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                  className="no-print btn-chip gap-1.5 px-2 py-1 mb-1 text-sm"
                   title={`Return to ${drillReturnLabel} view`}
                   aria-label={`Back to ${drillReturnLabel}`}
                 >
@@ -3402,7 +3399,7 @@ export default function TaskList({
           <button
             ref={allProjectsTabRef}
             onClick={() => selectProjectScope(ALL_PROJECTS_ID)}
-            className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+            className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm ${
               isAllProjectsScopeActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
             }`}
             title={`All projects — ${allOpenCount} open, ${todayOpenCount} due today`}
@@ -3449,7 +3446,7 @@ export default function TaskList({
                 if (projectDidDragRef.current) return;
                 selectProjectScope(p.id);
               }}
-              className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-colors cursor-grab active:cursor-grabbing ${
+              className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm cursor-grab active:cursor-grabbing ${
                 tabActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
               } ${dragProjectId === p.id ? "opacity-50" : ""} ${
                 dragOverProjectId === p.id && dragProjectId !== p.id
@@ -3696,7 +3693,7 @@ export default function TaskList({
           <button
             type="submit"
             disabled={!newTaskTitle.trim()}
-            className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm touch-target-sm"
+            className="btn-primary flex-shrink-0 px-4 py-2 text-sm touch-target-sm"
           >
             Add
           </button>
@@ -3711,7 +3708,7 @@ export default function TaskList({
                 key={tpl.label}
                 type="button"
                 onClick={() => addProject(tpl)}
-                className="px-2.5 py-1.5 text-xs font-medium rounded-full border border-slate-200 dark:border-[#243350] bg-white text-slate-700 dark:bg-[#131d30] dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-800 dark:hover:text-blue-200 transition-colors touch-target-sm"
+                className="btn-chip px-2.5 py-1.5 text-xs touch-target-sm"
               >
                 {tpl.emoji} {tpl.label}
               </button>

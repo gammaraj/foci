@@ -282,14 +282,14 @@ export default function AccountSharingModal({
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@example.com"
-              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
               disabled={inviting}
             />
             <div className="flex gap-2">
             <select
               value={inviteRole}
               onChange={(e) => setInviteRole(e.target.value as CollaboratorRole)}
-              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
               disabled={inviting}
             >
               <option value="editor">Can edit</option>
@@ -298,7 +298,7 @@ export default function AccountSharingModal({
             <button
               type="submit"
               disabled={inviting || !inviteEmail.trim()}
-              className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors touch-target-sm"
+              className="btn-primary flex-1 sm:flex-none px-4 py-2.5 text-sm touch-target-sm"
             >
               {inviting ? "..." : "Invite"}
             </button>
@@ -436,7 +436,7 @@ export default function AccountSharingModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#1a2d4a] rounded-lg touch-target-sm"
+            className="btn-chip w-full py-2.5 text-sm touch-target-sm"
           >
             Done
           </button>

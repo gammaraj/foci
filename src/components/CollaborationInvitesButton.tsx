@@ -301,7 +301,7 @@ export default function CollaborationInvitesButton() {
                             <button
                               onClick={() => handleAcceptAccountInvite(invite.id)}
                               disabled={processingId === invite.id}
-                              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
+                              className="btn-primary flex-1 px-3 py-1.5 text-sm"
                             >
                               {processingId === invite.id ? "..." : "Accept"}
                             </button>
@@ -328,7 +328,7 @@ export default function CollaborationInvitesButton() {
                             <button
                               onClick={() => handleAccept(invite.id)}
                               disabled={processingId === invite.id}
-                              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
+                              className="btn-primary flex-1 px-3 py-1.5 text-sm"
                             >
                               {processingId === invite.id ? "..." : "Accept"}
                             </button>
@@ -408,7 +408,7 @@ export default function CollaborationInvitesButton() {
             <button
               type="button"
               onClick={openShareSettings}
-              className="w-full px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#131d30] hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
+              className="btn-chip w-full px-3 py-2 text-sm"
             >
               Share your projects…
             </button>

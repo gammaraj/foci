@@ -657,7 +657,7 @@ export default function ProjectManageView({
             <button
               type="submit"
               disabled={!newProjectName.trim()}
-              className="shrink-0 px-4 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="btn-primary shrink-0 px-4 py-2.5 text-sm"
             >
               Add
             </button>

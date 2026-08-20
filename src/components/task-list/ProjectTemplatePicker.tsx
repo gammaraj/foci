@@ -103,7 +103,7 @@ export function ProjectTemplatePicker({
             type="button"
             role="listitem"
             onClick={() => onSelect(tpl)}
-            className="shrink-0 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border border-slate-200/90 dark:border-[#243350] bg-white/90 text-slate-700 dark:bg-[#131d30] dark:text-slate-200 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-800 dark:hover:text-blue-200 transition-colors whitespace-nowrap"
+            className="btn-chip shrink-0 gap-1 px-2 py-1 text-xs whitespace-nowrap"
             title={`${tpl.label} — ${tpl.description} · ${tpl.tasks.length} tasks`}
             aria-label={`${tpl.label}, ${tpl.tasks.length} tasks`}
           >

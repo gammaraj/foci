@@ -78,17 +78,17 @@ export default function ConfirmModal({
           <button
             ref={cancelRef}
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="btn-ghost px-4 py-2 text-sm"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 text-sm font-medium rounded-lg text-white transition-colors ${
+            className={
               variant === "danger"
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+                ? "px-4 py-2 text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors"
+                : "btn-primary px-4 py-2 text-sm"
+            }
           >
             {confirmLabel}
           </button>

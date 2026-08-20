@@ -51,13 +51,13 @@ export default function NotificationPrompt() {
             <div className="flex items-center gap-2 mt-3">
               <button
                 onClick={handleEnable}
-                className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="btn-primary px-4 py-2 text-sm"
               >
                 Enable
               </button>
               <button
                 onClick={handleDismiss}
-                className="px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                className="btn-ghost px-4 py-2 text-sm"
               >
                 Not now
               </button>

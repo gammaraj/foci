@@ -210,15 +210,15 @@ export default function AboutPage() {
           <div className="mt-12 flex flex-col sm:flex-row gap-3">
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm transition-colors"
+              className="btn-primary px-6 py-3 text-sm"
             >
               Try Foci — free
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
+              className="btn-chip px-6 py-3 text-sm"
             >
-              Create free account to sync
+              Create free account
             </Link>
           </div>
         </article>

@@ -168,14 +168,14 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
               <button
                 type="button"
                 onClick={() => setConfirmClearSamples(true)}
-                className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 touch-target-sm"
+                className="btn-primary px-3 py-1.5 text-sm touch-target-sm"
               >
                 Start fresh
               </button>
               <button
                 type="button"
                 onClick={() => dismiss("sample-workspace")}
-                className="px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:underline touch-target-sm"
+                className="btn-ghost px-3 py-1.5 text-sm touch-target-sm"
               >
                 Keep exploring
               </button>
@@ -247,7 +247,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
           <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
             <button
               type="button"
-              className="px-3 py-1.5 text-sm font-medium rounded-lg bg-blue-600 text-white touch-target-sm"
+              className="btn-primary px-3 py-1.5 text-sm touch-target-sm"
               onClick={async () => {
                 await Notification.requestPermission();
                 dismiss("notification");
@@ -255,7 +255,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
             >
               Enable
             </button>
-            <button type="button" onClick={() => dismiss("notification")} className="px-3 py-1.5 text-sm text-slate-500 touch-target-sm">
+            <button type="button" onClick={() => dismiss("notification")} className="btn-ghost px-3 py-1.5 text-sm touch-target-sm">
               Later
             </button>
           </div>
@@ -278,7 +278,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
           <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
             <button
               type="button"
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 touch-target-sm"
+              className="btn-primary px-3 py-1.5 text-xs touch-target-sm"
               onClick={async () => {
                 if (canPrompt && deferredPrompt) {
                   await deferredPrompt.prompt();
@@ -294,7 +294,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
             >
               {ios ? "How to add" : canPrompt ? "Install" : "Add to Home Screen"}
             </button>
-            <button type="button" onClick={() => dismiss("pwa")} className="px-3 py-1.5 text-sm text-slate-500 touch-target-sm">
+            <button type="button" onClick={() => dismiss("pwa")} className="btn-ghost px-3 py-1.5 text-sm touch-target-sm">
               Not now
             </button>
           </div>

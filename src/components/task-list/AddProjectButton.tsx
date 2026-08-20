@@ -22,7 +22,7 @@ export function AddProjectButton({
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 inline-flex items-center justify-center ${pad} font-semibold rounded-full bg-blue-600 text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 hover:shadow-md hover:shadow-blue-600/25 active:bg-blue-800 transition-[color,background-color,box-shadow] dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-white dark:shadow-blue-900/40 ${className}`}
+      className={`btn-primary shrink-0 ${pad} ${className}`}
       title="Add a new project"
       aria-label="Add project"
       data-tour="add-project"

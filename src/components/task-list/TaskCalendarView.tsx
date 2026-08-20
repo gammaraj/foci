@@ -134,10 +134,8 @@ export default function TaskCalendarView({
         <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
           <button
             onClick={() => setProjectFilter(ALL_PROJECTS_ID)}
-            className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-full border transition-colors ${
-              projectFilter === ALL_PROJECTS_ID
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+            className={`flex-shrink-0 text-xs px-2.5 py-1 transition-colors ${
+              projectFilter === ALL_PROJECTS_ID ? "btn-chip-active" : "btn-chip"
             }`}
           >
             All
@@ -146,16 +144,13 @@ export default function TaskCalendarView({
             <button
               key={p.id}
               onClick={() => setProjectFilter(p.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                projectFilter === p.id
-                  ? "border-transparent text-white"
-                  : "border-slate-200 dark:border-[#1e3050] text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+              className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1 transition-colors ${
+                projectFilter === p.id ? "btn-chip-active" : "btn-chip"
               }`}
-              style={projectFilter === p.id && p.color ? { backgroundColor: p.color, borderColor: p.color } : {}}
             >
               {p.color && (
                 <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${projectFilter === p.id ? "hidden" : ""}`}
+                  className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: p.color }}
                 />
               )}
@@ -295,7 +290,7 @@ export default function TaskCalendarView({
                   />
                   <button
                     type="submit"
-                    className="px-3 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                    className="btn-primary px-3 py-2 text-sm"
                   >
                     Add
                   </button>

@@ -192,15 +192,15 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-base transition-colors shadow-lg shadow-blue-700/25 dark:shadow-blue-600/20"
+              className="btn-primary w-full sm:w-auto px-8 py-3.5 text-base"
             >
               Create free account
             </Link>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              className="btn-chip w-full sm:w-auto px-7 py-3.5 text-base"
             >
-              Try without signing in →
+              Try without signing in
             </Link>
           </div>
         </section>
@@ -408,15 +408,15 @@ export default function LandingPage() {
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-sm transition-colors"
+                className="btn-primary px-6 py-3 text-sm"
               >
                 Create free account
               </Link>
               <Link
                 href="/app"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-sm hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                className="btn-chip px-6 py-3 text-sm"
               >
-                Try without signing in →
+                Try without signing in
               </Link>
             </div>
           </div>
@@ -482,15 +482,15 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold text-base transition-colors shadow-lg shadow-blue-700/25 dark:shadow-blue-600/20"
+              className="btn-primary px-8 py-3.5 text-base"
             >
               Create free account
             </Link>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium text-base hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              className="btn-chip px-7 py-3.5 text-base"
             >
-              Try without signing in →
+              Try without signing in
             </Link>
           </div>
         </section>

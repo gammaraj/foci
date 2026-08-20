@@ -223,15 +223,15 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <Link
                   href="/app"
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-sm hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
+                  className="btn-primary px-5 py-2.5 text-sm"
                 >
-                  Try Foci free
+                  Try Foci — free
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium text-blue-700 dark:text-blue-400 hover:underline"
+                  className="btn-chip px-5 py-2.5 text-sm"
                 >
-                  Create free account to sync →
+                  Create free account
                 </Link>
               </div>
             </div>

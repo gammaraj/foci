@@ -724,7 +724,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               <button
                 type="button"
                 onClick={() => setCollapsed(true)}
-                className="w-full text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white py-1"
+                className="btn-ghost w-full py-1 text-xs"
               >
                 Close
               </button>

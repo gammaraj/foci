@@ -219,7 +219,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             ) : (
               <Link
                 href="/login"
-                className="nav-chrome-login ml-2 text-sm px-4 py-2 rounded-xl transition-colors"
+                className="btn-primary ml-2 text-sm px-4 py-2"
               >
                 Log in
               </Link>
@@ -288,7 +288,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="nav-chrome-login mx-3 mt-2 text-sm font-semibold text-center px-4 py-2.5 rounded-xl transition-colors"
+                  className="btn-primary mx-3 mt-2 text-sm text-center px-4 py-2.5"
                 >
                   Log in
                 </Link>

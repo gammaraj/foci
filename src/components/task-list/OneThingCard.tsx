@@ -132,7 +132,7 @@ export function OneThingCard({
             onClick={() => setDetailsOpen((v) => !v)}
             aria-expanded={detailsOpen}
             aria-controls={detailsId}
-            className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 max-w-full min-w-0 rounded-full px-3 py-1.5 text-left outline-none transition-colors hover:bg-blue-500/[0.08] dark:hover:bg-blue-400/10 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
+            className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 max-w-full min-w-0 rounded-lg px-3 py-1.5 text-left outline-none transition-colors hover:bg-blue-500/[0.08] dark:hover:bg-blue-400/10 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
               onDismissEmpty ? "pr-8" : ""
             }`}
             title="How to set Today’s One Thing"
@@ -231,11 +231,11 @@ export function OneThingCard({
           <button
             type="button"
             onClick={onFocus}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full transition-colors ${
+            className={
               isFocused
-                ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30"
-                : "text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15"
-            }`}
+                ? "btn-primary gap-1 px-2.5 py-1 text-xs"
+                : "inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
+            }
             title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
           >
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -246,7 +246,7 @@ export function OneThingCard({
           <button
             type="button"
             onClick={onComplete}
-            className="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-600 text-white shadow-sm shadow-emerald-600/25 hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
           >
             Done
           </button>

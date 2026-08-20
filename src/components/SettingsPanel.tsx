@@ -571,7 +571,7 @@ export default function SettingsPanel({
                       <Link
                         href="/install"
                         onClick={onClose}
-                        className="shrink-0 px-3 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors text-center"
+                        className="btn-primary shrink-0 px-3 py-2 text-sm text-center"
                       >
                         Show how
                       </Link>
@@ -676,13 +676,13 @@ export default function SettingsPanel({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
+                  className="btn-ghost px-4 py-2 text-sm"
                 >
                   {dirty ? "Cancel" : "Close"}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                  className="btn-primary px-4 py-2 text-sm"
                 >
                   {saved ? "Saved" : "Save"}
                 </button>

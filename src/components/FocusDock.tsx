@@ -438,7 +438,7 @@ export default function FocusDockPanel({
           <button
             type="button"
             onClick={onShowShortcuts}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="btn-ghost px-2.5 py-1.5 text-xs"
             title="Shortcuts (?)"
           >
             Shortcuts
@@ -446,7 +446,7 @@ export default function FocusDockPanel({
           <button
             type="button"
             onClick={onToggleExpanded}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="btn-ghost px-2.5 py-1.5 text-xs"
           >
             Close
           </button>

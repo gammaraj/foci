@@ -124,14 +124,14 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
                 startFeatureTour();
                 setOpen(false);
               }}
-              className="flex-1 px-2.5 py-1.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className="btn-primary flex-1 px-2.5 py-1.5 text-sm"
             >
               Take the tour
             </button>
             <button
               type="button"
               onClick={dismiss}
-              className="px-2.5 py-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              className="btn-ghost px-2.5 py-1.5 text-sm"
             >
               Got it
             </button>

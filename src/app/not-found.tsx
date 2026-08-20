@@ -21,19 +21,19 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/app"
-          className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors"
+          className="btn-primary px-5 py-2.5 text-sm"
         >
           Try Foci — free
         </Link>
         <Link
           href="/blog"
-          className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="btn-chip px-5 py-2.5 text-sm"
         >
           Read the Blog
         </Link>
         <Link
           href="/"
-          className="px-5 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 font-medium text-sm hover:text-slate-900 dark:hover:text-white transition-colors"
+          className="btn-ghost px-5 py-2.5 text-sm"
         >
           Back to Home
         </Link>

@@ -220,24 +220,22 @@ select {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-.nav-chrome-login {
-  background: #1d4ed8;
-  color: #fff;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  box-shadow: 0 1px 2px rgba(29, 78, 216, 0.25);
+/* Solid CTA — one recipe for nav, homepage, Auth, Add project */
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-lg bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400;
 }
-.nav-chrome-login:hover {
-  background: #1e40af;
+
+/* Outline chip — filters, templates, leftover pill buttons */
+.btn-chip {
+  @apply inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white font-medium text-slate-700 transition-colors hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 dark:border-[#243350] dark:bg-[#131d30] dark:text-slate-200 dark:hover:border-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-200;
 }
-.dark .nav-chrome-login {
-  background: #3b82f6;
-  color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+.btn-chip-active {
+  @apply rounded-lg border border-blue-500 bg-white font-semibold text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100;
 }
-.dark .nav-chrome-login:hover {
-  background: #60a5fa;
-  color: #070b16;
+
+/* Quiet dismiss — Cancel, Close, Skip, Later */
+.btn-ghost {
+  @apply inline-flex items-center justify-center rounded-lg font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-[#1a2d4a] dark:hover:text-white;
 }
 
 /* Quiet meta cluster (clock / weather) in nav center */
@@ -432,7 +430,7 @@ select {
   border-bottom: 1px solid #243350;
 }
 
-/* Inset segmented controls — quiet track, one loud selected pill (no competing blue ring) */
+/* Inset segmented controls — quiet track; selected segment is a raised chip, not brand fill */
 .app-seg-track {
   background: var(--seg-track-bg, #e8eef6);
   border-radius: 0.75rem;

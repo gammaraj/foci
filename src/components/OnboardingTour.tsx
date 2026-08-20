@@ -244,13 +244,13 @@ export default function OnboardingTour() {
         <div className="flex items-center justify-between mt-3">
           <button
             onClick={skip}
-            className="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors py-1"
+            className="btn-ghost px-2 py-1 text-sm"
           >
             Skip tour
           </button>
           <button
             onClick={next}
-            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="btn-primary px-4 py-2 text-sm"
           >
             {currentStep < STEPS.length - 1 ? "Next" : "Done"}
           </button>

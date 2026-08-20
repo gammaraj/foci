@@ -730,14 +730,14 @@ export default function TaskImportExport({
                 type="button"
                 onClick={handleImport}
                 disabled={filteredCount === 0}
-                className="flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
+                className="btn-primary flex-1 px-3 py-2 text-sm"
               >
                 Import {filteredCount} task{filteredCount !== 1 ? "s" : ""}
               </button>
               <button
                 type="button"
                 onClick={() => setImportState({ step: "idle" })}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition"
+                className="btn-ghost px-3 py-2 text-sm"
               >
                 Cancel
               </button>

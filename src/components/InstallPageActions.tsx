@@ -75,7 +75,7 @@ export default function InstallPageActions({ showQr = true }: InstallPageActions
           type="button"
           onClick={handleNativeInstall}
           disabled={installing}
-          className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 disabled:opacity-60 transition-colors"
+          className="btn-primary w-full sm:w-auto px-5 py-2.5 text-sm"
         >
           {installing ? "Opening…" : "Install with one tap (Android / Chrome)"}
         </button>
@@ -92,7 +92,7 @@ export default function InstallPageActions({ showQr = true }: InstallPageActions
         <button
           type="button"
           onClick={handleCopy}
-          className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-300 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-[#131d30] transition-colors"
+          className="btn-chip px-3 py-1.5 text-sm"
         >
           {copied ? "Copied" : "Copy usefoci.com/app"}
         </button>

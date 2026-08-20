@@ -269,13 +269,13 @@ export default function InstallPage() {
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
               href="/app"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+              className="btn-primary px-5 py-2.5 text-sm"
             >
               Open Foci
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 dark:border-[#243350] text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-[#131d30] transition-colors"
+              className="btn-chip px-5 py-2.5 text-sm"
             >
               About Foci
             </Link>

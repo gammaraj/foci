@@ -124,7 +124,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
             type="button"
             onClick={handleNativeInstall}
             disabled={installing}
-            className="w-full mb-4 px-4 py-2.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
+            className="btn-primary w-full mb-4 px-4 py-2.5 text-sm"
           >
             {installing ? "Opening…" : "Install app"}
           </button>
@@ -201,7 +201,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
           <button
             type="button"
             onClick={handleCopy}
-            className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="btn-chip px-3 py-1.5 text-sm"
           >
             {copied ? "Copied" : "Copy link"}
           </button>
