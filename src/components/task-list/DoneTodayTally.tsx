@@ -2,10 +2,14 @@
 
 import React from "react";
 
+import { doneMascotCaption } from "@/lib/done-today";
+import { FociDoneMascot } from "@/components/task-list/FociDoneMascot";
+
 interface DoneTodayTallyProps {
   count: number;
   weekCount?: number;
   monthCount?: number;
+  idleDays?: number | null;
   pulse?: boolean;
   onClick?: () => void;
   className?: string;
@@ -18,6 +22,7 @@ export function DoneTodayTally({
   count,
   weekCount = 0,
   monthCount = 0,
+  idleDays = null,
   pulse = false,
   onClick,
   className = "",
@@ -25,9 +30,8 @@ export function DoneTodayTally({
 }: DoneTodayTallyProps) {
   const todayLabel = count === 1 ? "1 done today" : `${count} done today`;
   const fullLabel = `${todayLabel} · ${weekCount} this week · ${monthCount} this month`;
+  const mascotCaption = doneMascotCaption(count, idleDays);
   const empty = count <= 0 && weekCount <= 0 && monthCount <= 0;
-
-  if (compact && empty && !pulse) return null;
 
   /* text-xs (12px) minimum — readable on phones; slightly larger from sm up */
   const shell = compact
@@ -53,21 +57,16 @@ export function DoneTodayTally({
       className={`${shell} ${tone} transition-[transform,box-shadow,background-color,border-color] duration-200 ${
         pulse ? "done-tally-pulse" : ""
       } ${className}`}
-      title={`${fullLabel} — tap to show completed`}
-      aria-label={fullLabel}
+      title={`${fullLabel} — ${mascotCaption}. Tap to show completed`}
+      aria-label={`${fullLabel}. ${mascotCaption}`}
       data-done-today-tally
+      data-tour="done-tally"
     >
-      <svg
-        className={`${compact ? "w-3.5 h-3.5" : "w-4 h-4"} shrink-0 ${
-          empty ? "text-slate-400 dark:text-slate-500" : "text-emerald-600 dark:text-emerald-300"
-        }`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-      </svg>
+      <FociDoneMascot
+        todayCount={count}
+        idleDays={idleDays}
+        size={compact ? 16 : 18}
+      />
 
       {compact ? (
         <>

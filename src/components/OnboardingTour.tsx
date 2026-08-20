@@ -47,10 +47,17 @@ const STEPS: Step[] = [
     position: "bottom",
   },
   {
-    target: "[data-tour='time-filters']",
-    title: "Filters & progress",
+    target: "[data-tour='done-tally']",
+    title: "Done bar",
     description:
-      "Filter by All, Today, Week, Month, or Year. The tally nearby shows how much you've completed.",
+      "The Foci face cheers when you finish a task, and looks sadder after quiet days. Tap it to jump to today's completions.",
+    position: "bottom",
+  },
+  {
+    target: "[data-tour='time-filters']",
+    title: "When",
+    description:
+      "Filter by All times, Today, Week, Month, or Year to see what's due.",
     position: "bottom",
   },
   {

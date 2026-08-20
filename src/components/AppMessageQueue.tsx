@@ -2,7 +2,17 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { loadTasks } from "@/lib/storage";
+import { usePathname } from "next/navigation";
+import ConfirmModal from "@/components/ConfirmModal";
+import { loadProjects, loadTasks } from "@/lib/storage";
+import { isTasksAppPath } from "@/lib/task-view-url";
+import {
+  CLEAR_GUEST_DEMO_EVENT,
+  hasClearedGuestDemo,
+  hasDismissedGuestSampleBanner,
+  isGuestSampleWorkspace,
+  markGuestSampleBannerDismissed,
+} from "@/lib/guest-demo";
 import {
   consumeDeferredInstallPrompt,
   ensureInstallPromptCapture,
@@ -15,10 +25,10 @@ import {
   type BeforeInstallPromptEvent,
 } from "@/lib/pwa-install";
 
-type MessageId = "signup" | "first-session" | "notification" | "pwa";
+type MessageId = "sample-workspace" | "signup" | "first-session" | "notification" | "pwa";
 
 // Soft conversion: get them into a session first, then ask to sync / install.
-const PRIORITY: MessageId[] = ["first-session", "signup", "pwa"];
+const PRIORITY: MessageId[] = ["sample-workspace", "first-session", "signup", "pwa"];
 
 interface AppMessageQueueProps {
   user: { id: string } | null;
@@ -33,10 +43,12 @@ function hasCompletedSession(): boolean {
 }
 
 export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProps) {
+  const pathname = usePathname();
   const [activeId, setActiveId] = useState<MessageId | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState<Set<MessageId>>(() => new Set());
   const [sessionTick, setSessionTick] = useState(0);
+  const [confirmClearSamples, setConfirmClearSamples] = useState(false);
 
   const dismiss = useCallback((id: MessageId) => {
     setDismissed((prev) => new Set(prev).add(id));
@@ -44,6 +56,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     if (id === "first-session") {
       localStorage.setItem("foci_first_session_nudge_dismissed", "1");
     }
+    if (id === "sample-workspace") markGuestSampleBannerDismissed();
     if (id === "notification") sessionStorage.setItem("foci_notif_dismissed", "1");
     if (id === "pwa") snoozePwaInstall();
   }, []);
@@ -71,6 +84,21 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     const evaluate = async () => {
       for (const id of PRIORITY) {
         if (dismissed.has(id)) continue;
+
+        if (id === "sample-workspace") {
+          if (user) continue;
+          if (!isTasksAppPath(pathname)) continue;
+          if (hasClearedGuestDemo() || hasDismissedGuestSampleBanner()) continue;
+          try {
+            const [tasks, projects] = await Promise.all([loadTasks(), loadProjects()]);
+            if (isGuestSampleWorkspace(tasks, projects)) {
+              setActiveId("sample-workspace");
+              return;
+            }
+          } catch {
+            continue;
+          }
+        }
 
         if (id === "first-session") {
           const dismissedLocal =
@@ -121,9 +149,57 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     };
 
     evaluate();
-  }, [user, dismissed, deferredPrompt, focusMode, sessionTick]);
+  }, [user, dismissed, deferredPrompt, focusMode, sessionTick, pathname]);
 
   if (!activeId) return null;
+
+  if (activeId === "sample-workspace") {
+    return (
+      <>
+        <div className="app-container py-2">
+          <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-800 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">These are sample projects</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">
+                Try the cards, then clear them and add your own — nothing here is saved to an account yet.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setConfirmClearSamples(true)}
+                className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 touch-target-sm"
+              >
+                Start fresh
+              </button>
+              <button
+                type="button"
+                onClick={() => dismiss("sample-workspace")}
+                className="px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:underline touch-target-sm"
+              >
+                Keep exploring
+              </button>
+            </div>
+          </div>
+        </div>
+        {confirmClearSamples && (
+          <ConfirmModal
+            title="Clear sample projects?"
+            message="This removes the sample projects and tasks so you can add your own. It only affects this browser — you can still sign up later to sync."
+            confirmLabel="Clear samples"
+            cancelLabel="Cancel"
+            variant="danger"
+            onConfirm={() => {
+              setConfirmClearSamples(false);
+              setDismissed((prev) => new Set(prev).add("sample-workspace"));
+              window.dispatchEvent(new Event(CLEAR_GUEST_DEMO_EVENT));
+            }}
+            onCancel={() => setConfirmClearSamples(false)}
+          />
+        )}
+      </>
+    );
+  }
 
   if (activeId === "signup") {
     return (

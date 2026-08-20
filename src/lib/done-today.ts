@@ -50,6 +50,8 @@ export interface DoneProgressSummary {
   today: number;
   week: number;
   month: number;
+  /** Whole days since the last completion, or null if none yet. */
+  idleDays: number | null;
 }
 
 /**
@@ -67,14 +69,45 @@ export function summarizeDoneProgress(
   let todayCount = 0;
   let weekCount = 0;
   let monthCount = 0;
+  let latestDay: string | null = null;
   for (const task of tasks) {
     if (!task.completed || task.archivedAt || task.completedAt == null) continue;
     const day = timestampToLocalDate(task.completedAt);
     if (day === today) todayCount += 1;
     if (day >= weekStart) weekCount += 1;
     if (day >= monthStart) monthCount += 1;
+    if (!latestDay || day > latestDay) latestDay = day;
   }
-  return { today: todayCount, week: weekCount, month: monthCount };
+  let idleDays: number | null = null;
+  if (latestDay) {
+    const t0 = new Date(`${today}T12:00:00`).getTime();
+    const t1 = new Date(`${latestDay}T12:00:00`).getTime();
+    idleDays = Math.max(0, Math.round((t0 - t1) / 86_400_000));
+  }
+  return { today: todayCount, week: weekCount, month: monthCount, idleDays };
+}
+
+/**
+ * Mouth curve for the done-bar mascot: positive = smile, negative = frown.
+ * Happier with more finishes today; sadder for each idle day.
+ */
+export function doneMascotSmile(todayCount: number, idleDays: number | null): number {
+  if (todayCount > 0) return Math.min(2.6, 1.6 + Math.min(todayCount, 4) * 0.25);
+  if (idleDays == null) return 0.5;
+  if (idleDays <= 0) return 1.4;
+  return Math.max(-2.5, 0.9 - idleDays * 0.7);
+}
+
+export function doneMascotCaption(todayCount: number, idleDays: number | null): string {
+  if (todayCount > 0) {
+    return todayCount === 1
+      ? "Foci is happy — 1 task done today"
+      : `Foci is happy — ${todayCount} tasks done today`;
+  }
+  if (idleDays == null) return "Foci is ready when you finish a task";
+  if (idleDays <= 1) return "Foci is waiting for today’s first finish";
+  if (idleDays === 2) return "Foci misses a checkmark — 2 days quiet";
+  return `Foci is a bit sad — ${idleDays} days without a finish`;
 }
 
 /** Per-task focus meta for Done rows, e.g. "25m · 1 session". */

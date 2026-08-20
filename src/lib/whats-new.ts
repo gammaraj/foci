@@ -1,5 +1,5 @@
 /** Bump when shipping user-visible /app changes — shows banner until dismissed. */
-export const WHATS_NEW_VERSION = "2026-08-a";
+export const WHATS_NEW_VERSION = "2026-08-b";
 
 export const WHATS_NEW_STORAGE_KEY = "foci_whats_new_seen";
 
@@ -16,6 +16,11 @@ export interface FeatureTourStep {
 }
 
 export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
+  {
+    title: "Done bar",
+    description:
+      "A Foci face next to Tasks tracks today / week / month. It smiles when you finish something, and looks sadder after quiet days — tap it to jump to Done today.",
+  },
   {
     title: "Safer project delete",
     description:
@@ -59,10 +64,17 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     position: "bottom",
   },
   {
-    target: "[data-tour='time-filters']",
-    title: "Filters & progress",
+    target: "[data-tour='done-tally']",
+    title: "Done bar",
     description:
-      "All / Today / Week / Month / Year filter by due date. The tally shows completions for today, this week, and this month.",
+      "The Foci face cheers when you finish a task, and looks sadder after quiet days. Tap it to jump to today's completions.",
+    position: "bottom",
+  },
+  {
+    target: "[data-tour='time-filters']",
+    title: "When",
+    description:
+      "All times / Today / Week / Month / Year filter by due date.",
     position: "bottom",
   },
   {

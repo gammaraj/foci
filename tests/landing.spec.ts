@@ -32,7 +32,8 @@ test.describe("Landing Page", () => {
   });
 
   test("logged-out nav is trimmed to essentials", async ({ page }) => {
-    await expect(page.getByRole("link", { name: "Features" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Features" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Install" })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Blog" })).toBeVisible();
     await expect(page.getByRole("link", { name: "About" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();

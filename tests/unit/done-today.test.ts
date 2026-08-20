@@ -9,6 +9,8 @@ import {
   isDoneToday,
   markDayRecapSeen,
   shouldShowDayRecap,
+  doneMascotCaption,
+  doneMascotSmile,
   summarizeDoneProgress,
   summarizeDoneToday,
 } from "@/lib/done-today";
@@ -100,6 +102,7 @@ describe("done-today", () => {
 
     const progress = summarizeDoneProgress(tasks, today);
     expect(progress.today).toBe(1);
+    expect(progress.idleDays).toBe(0);
     expect(progress.week).toBeGreaterThanOrEqual(1);
     expect(progress.month).toBeGreaterThanOrEqual(progress.week);
     expect(progress.month).toBe(
@@ -129,7 +132,34 @@ describe("done-today", () => {
     const progress = summarizeDoneProgress(tasks, today);
     expect(progress.week).toBe(1);
     expect(progress.month).toBe(1);
+    expect(progress.idleDays).toBe(2);
     expect(progress.week).toBeLessThanOrEqual(progress.month);
+  });
+
+  it("summarizeDoneProgress tracks idle days since the last finish", () => {
+    expect(summarizeDoneProgress([], "2026-04-10").idleDays).toBeNull();
+    const yesterday = makeTask({
+      id: "y",
+      completed: true,
+      completedAt: new Date("2026-04-09T12:00:00").getTime(),
+    });
+    expect(summarizeDoneProgress([yesterday], "2026-04-10").idleDays).toBe(1);
+    const stale = makeTask({
+      id: "s",
+      completed: true,
+      completedAt: new Date("2026-04-03T12:00:00").getTime(),
+    });
+    expect(summarizeDoneProgress([stale], "2026-04-10").idleDays).toBe(7);
+  });
+
+  it("done mascot smiles after a finish and droops over idle days", () => {
+    expect(doneMascotSmile(3, 0)).toBeGreaterThan(doneMascotSmile(1, 0));
+    expect(doneMascotSmile(1, 0)).toBeGreaterThan(doneMascotSmile(0, 1));
+    expect(doneMascotSmile(0, 1)).toBeGreaterThan(doneMascotSmile(0, 2));
+    expect(doneMascotSmile(0, 2)).toBeGreaterThan(doneMascotSmile(0, 5));
+    expect(doneMascotSmile(0, 5)).toBeLessThan(0);
+    expect(doneMascotCaption(2, 0)).toMatch(/happy/);
+    expect(doneMascotCaption(0, 4)).toMatch(/4 days/);
   });
 
   it("formatDoneTaskMeta joins time and sessions", () => {

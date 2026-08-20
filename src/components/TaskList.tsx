@@ -14,6 +14,20 @@ import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getToday, formatDateLocal } from "@/lib/dates";
 import {
+  CLEAR_GUEST_DEMO_EVENT,
+  createGuestDemoWorkspace,
+  emptyGuestWorkspace,
+  extraGuestDemoTasks,
+  guestDemoMissingExtraProjects,
+  guestHasCustomProjects,
+  hasClearedGuestDemo,
+  isGuestGeneralDemo,
+  isSparseGuestDemo,
+  markGuestDemoCleared,
+  mergeGuestDemoProjects,
+  upgradePlacesToBucketList,
+} from "@/lib/guest-demo";
+import {
   doneTodayToastMessage,
   getDoneTodayTasks,
   getEarlierCompletedTasks,
@@ -617,29 +631,73 @@ export default function TaskList({
         }
         setOneThingPref(oneThing);
 
-        // Seed sample tasks only for logged-out users with no tasks and no prior snapshot
-        if (existing.length === 0 && !user && !bootSnapshot) {
-          const samples: Task[] = [
-            { id: crypto.randomUUID(), title: "Review project requirements", completed: false, sessions: 0, timeSpent: 0, createdAt: Date.now(), projectId: DEFAULT_PROJECT_ID, subtasks: [] },
-            { id: crypto.randomUUID(), title: "Draft design mockups", completed: false, sessions: 0, timeSpent: 0, createdAt: Date.now(), projectId: DEFAULT_PROJECT_ID, subtasks: [] },
-            { id: crypto.randomUUID(), title: "Write unit tests", completed: false, sessions: 0, timeSpent: 0, createdAt: Date.now(), projectId: DEFAULT_PROJECT_ID, subtasks: [] },
-          ];
-          saveTasks(samples).catch((err) => {
+        // Seed a feature-complete demo for logged-out visitors (and upgrade older sample seeds).
+        const demoCleared = hasClearedGuestDemo();
+        const snapshotIsSparse = bootSnapshot != null && isSparseGuestDemo(bootSnapshot.tasks);
+        const emptyGuest = existing.length === 0 && (!bootSnapshot || snapshotIsSparse);
+        const shouldReplaceGuestDemo =
+          !demoCleared && !user && (isSparseGuestDemo(existing) || emptyGuest);
+        const baseTasks = existing.length > 0 ? existing : (bootSnapshot?.tasks ?? []);
+        const shouldAddDemoProjects =
+          !demoCleared &&
+          !user &&
+          !shouldReplaceGuestDemo &&
+          !guestHasCustomProjects(existingProjects) &&
+          guestDemoMissingExtraProjects(existingProjects) &&
+          isGuestGeneralDemo(baseTasks);
+
+        if (shouldReplaceGuestDemo) {
+          const demo = createGuestDemoWorkspace();
+          saveTasks(demo.tasks).catch((err) => {
             console.error("[Foci] Failed to save sample tasks:", err);
           });
-          setTasks(samples);
-        } else {
-          // Migrate tasks missing projectId
-          const migrated = existing.map((t) => ({
-            ...t,
-            projectId: t.projectId || DEFAULT_PROJECT_ID,
-          }));
-          if (migrated.some((t, i) => t.projectId !== existing[i]?.projectId)) {
-            saveTasks(migrated).catch((err) => {
-              console.error("[Foci] Failed to save migrated tasks:", err);
-            });
+          saveProjects(demo.projects).catch((err) => {
+            console.error("[Foci] Failed to save sample projects:", err);
+          });
+          if (!oneThing) {
+            persistOneThing(demo.oneThing);
           }
-          setTasks(migrated);
+          setProjects(demo.projects);
+          setTasks(demo.tasks);
+        } else if (shouldAddDemoProjects) {
+          const demo = createGuestDemoWorkspace();
+          const nextProjects = mergeGuestDemoProjects(existingProjects, demo.projects);
+          const nextTasks = [...baseTasks, ...extraGuestDemoTasks(demo)];
+          saveTasks(nextTasks).catch((err) => {
+            console.error("[Foci] Failed to save sample tasks:", err);
+          });
+          saveProjects(nextProjects).catch((err) => {
+            console.error("[Foci] Failed to save sample projects:", err);
+          });
+          setProjects(nextProjects);
+          setTasks(nextTasks);
+        } else {
+          const bucketUpgrade =
+            !demoCleared && !user
+              ? upgradePlacesToBucketList(existing, existingProjects)
+              : null;
+          if (bucketUpgrade) {
+            saveTasks(bucketUpgrade.tasks).catch((err) => {
+              console.error("[Foci] Failed to save sample tasks:", err);
+            });
+            saveProjects(bucketUpgrade.projects).catch((err) => {
+              console.error("[Foci] Failed to save sample projects:", err);
+            });
+            setProjects(bucketUpgrade.projects);
+            setTasks(bucketUpgrade.tasks);
+          } else {
+            // Migrate tasks missing projectId
+            const migrated = existing.map((t) => ({
+              ...t,
+              projectId: t.projectId || DEFAULT_PROJECT_ID,
+            }));
+            if (migrated.some((t, i) => t.projectId !== existing[i]?.projectId)) {
+              saveTasks(migrated).catch((err) => {
+                console.error("[Foci] Failed to save migrated tasks:", err);
+              });
+            }
+            setTasks(migrated);
+          }
         }
 
         // Paint cards immediately — shared projects are not needed for own data.
@@ -929,6 +987,28 @@ export default function TaskList({
     window.addEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
     return () => window.removeEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
   }, []);
+
+  useEffect(() => {
+    const clearDemo = () => {
+      if (user) return;
+      markGuestDemoCleared();
+      const empty = emptyGuestWorkspace();
+      persistOneThing(null);
+      setProjects(empty.projects);
+      setTasks(empty.tasks);
+      setSelectedSharedProject(null);
+      setSelectedProjectId(ALL_PROJECTS_ID);
+      saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+      setListReturnView(null);
+      void Promise.all([saveProjects(empty.projects), saveTasks(empty.tasks)]).catch((err) => {
+        console.error("[Foci] Failed to clear sample workspace:", err);
+      });
+      showToast("Samples cleared — add your own project", "success");
+      openProjectManage();
+    };
+    window.addEventListener(CLEAR_GUEST_DEMO_EVENT, clearDemo);
+    return () => window.removeEventListener(CLEAR_GUEST_DEMO_EVENT, clearDemo);
+  }, [user, persistOneThing, openProjectManage, showToast]);
 
   // Due/overdue tray → Today filter (and optional task detail)
   useEffect(() => {
@@ -2632,6 +2712,7 @@ export default function TaskList({
                         count={doneProgress.today}
                         weekCount={doneProgress.week}
                         monthCount={doneProgress.month}
+                        idleDays={doneProgress.idleDays}
                         pulse={tallyPulse}
                         onClick={scrollToDoneToday}
                         className="shrink-0"

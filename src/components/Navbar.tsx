@@ -110,12 +110,12 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           onClick: openProjects,
         },
       ]
-    : [
-        { key: "features", href: "/#features", label: "Features", active: false },
-        { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
-        { key: "install", href: "/install", label: "Install", active: pathname === "/install" },
-        { key: "about", href: "/about", label: "About", active: pathname === "/about" },
-      ];
+    : onTasksApp || pathname === "/stats"
+      ? []
+      : [
+          { key: "blog", href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
+          { key: "about", href: "/about", label: "About", active: pathname === "/about" },
+        ];
 
   const logoHref = user ? "/app" : "/";
 
@@ -188,10 +188,14 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           )}
 
           <div className="hidden roomy:flex items-center gap-1 flex-shrink-0 ml-auto">
-            <div className="flex items-center gap-0.5">
-              {navLinks.map((link) => renderNavLink(link))}
-            </div>
-            <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
+            {navLinks.length > 0 ? (
+              <>
+                <div className="flex items-center gap-0.5">
+                  {navLinks.map((link) => renderNavLink(link))}
+                </div>
+                <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
+              </>
+            ) : null}
             <div className="flex items-center gap-0.5">
               {toolbarSlot}
               <ThemeToggle className={chromeBtnPad} />
