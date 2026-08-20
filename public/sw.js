@@ -1,4 +1,4 @@
-const CACHE_VERSION = "8";
+const CACHE_VERSION = "9";
 const CACHE_NAME = `foci-v${CACHE_VERSION}`;
 const APP_SHELL = "/app";
 const STATIC_ASSETS = ["/", APP_SHELL, "/manifest.json", "/stats"];
@@ -7,6 +7,16 @@ const MATCH_OPTS = { ignoreSearch: true, ignoreVary: true };
 
 self.addEventListener("install", (event) => {
   event.waitUntil(cacheShellAndAssets().then(() => self.skipWaiting()));
+});
+
+self.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "CACHE_URLS" || !Array.isArray(data.urls)) return;
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(data.urls.map((url) => cacheUrl(cache, url)))
+    )
+  );
 });
 
 self.addEventListener("activate", (event) => {
@@ -44,7 +54,9 @@ function isDevHost(hostname) {
 
 function shouldBypassCache(url) {
   const path = url.pathname;
-  if (path.includes("turbopack") || path.includes("hmr-client")) return true;
+  // Dev HMR only. Production Next/Turbopack names a hashed chunk turbopack-*.js
+  // under /_next/static/ — that file must be cached or the iPhone PWA cannot boot.
+  if (path.includes("hmr-client") || path.includes("webpack-hmr")) return true;
   if (path.startsWith("/_next/") && !path.startsWith("/_next/static/")) return true;
   return false;
 }
@@ -78,16 +90,20 @@ function fetchWithTimeout(request, ms) {
 
 function assetUrlsFromHtml(html, base) {
   const urls = new Set();
-  const re = /(?:src|href)=["']([^"']*\/_next\/static\/[^"']+)["']/g;
+  const re = /\/_next\/static\/[a-zA-Z0-9._\-\/]+/g;
   let match;
   while ((match = re.exec(html))) {
     try {
-      urls.add(new URL(match[1], base).href);
+      urls.add(new URL(match[0], base).href);
     } catch {
       /* ignore malformed */
     }
   }
   return [...urls];
+}
+
+function isRequiredBootAsset(href) {
+  return /\.(js|css)(\?|$)/i.test(href);
 }
 
 async function cacheUrl(cache, url) {
@@ -146,7 +162,7 @@ async function matchFromCaches(request) {
 
 async function htmlAssetsAreCached(htmlResponse) {
   const html = await htmlResponse.clone().text();
-  const urls = assetUrlsFromHtml(html, self.location.origin);
+  const urls = assetUrlsFromHtml(html, self.location.origin).filter(isRequiredBootAsset);
   if (urls.length === 0) return false;
   for (const href of urls) {
     const hit = await caches.match(href, MATCH_OPTS);
