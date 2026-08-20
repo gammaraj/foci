@@ -19,7 +19,7 @@ export const WHATS_NEW_FEATURES: WhatsNewFeature[] = [
   {
     title: "Done bar",
     description:
-      "A Foci face next to Tasks tracks today / week / month. It smiles when you finish something, and looks sadder after quiet days — tap it to jump to Done today.",
+      "A Foci mascot named Dot next to Tasks tracks today / week / month. Dot smiles when you finish something, and looks sadder after quiet days — tap to jump to Done today.",
   },
   {
     title: "Safer project delete",
@@ -67,7 +67,7 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     target: "[data-tour='done-tally']",
     title: "Done bar",
     description:
-      "The Foci face cheers when you finish a task, and looks sadder after quiet days. Tap it to jump to today's completions.",
+      "Dot cheers when you finish a task, and looks sadder after quiet days. Tap the bar to jump to today's completions.",
     position: "bottom",
   },
   {

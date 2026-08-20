@@ -101,13 +101,13 @@ export function doneMascotSmile(todayCount: number, idleDays: number | null): nu
 export function doneMascotCaption(todayCount: number, idleDays: number | null): string {
   if (todayCount > 0) {
     return todayCount === 1
-      ? "Foci is happy — 1 task done today"
-      : `Foci is happy — ${todayCount} tasks done today`;
+      ? "Dot is happy — 1 task done today"
+      : `Dot is happy — ${todayCount} tasks done today`;
   }
-  if (idleDays == null) return "Foci is ready when you finish a task";
-  if (idleDays <= 1) return "Foci is waiting for today’s first finish";
-  if (idleDays === 2) return "Foci misses a checkmark — 2 days quiet";
-  return `Foci is a bit sad — ${idleDays} days without a finish`;
+  if (idleDays == null) return "Dot is ready when you finish a task";
+  if (idleDays <= 1) return "Dot is waiting for today’s first finish";
+  if (idleDays === 2) return "Dot misses a checkmark — 2 days quiet";
+  return `Dot is a bit sad — ${idleDays} days without a finish`;
 }
 
 /** Per-task focus meta for Done rows, e.g. "25m · 1 session". */

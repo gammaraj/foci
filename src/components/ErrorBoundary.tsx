@@ -2,6 +2,7 @@
 
 import React from "react";
 import * as Sentry from "@sentry/nextjs";
+import { FociDot } from "@/components/FociDot";
 
 interface Props {
   children: React.ReactNode;
@@ -33,8 +34,9 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       return (
         <div className="flex items-center justify-center min-h-[60vh] px-4">
           <div className="text-center max-w-md">
+            <FociDot mood="worried" size={64} className="mx-auto mb-4" />
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-              Something went wrong
+              Dot lost focus for a second
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               An unexpected error occurred. Try refreshing the page.

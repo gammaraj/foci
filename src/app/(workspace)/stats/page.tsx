@@ -18,6 +18,7 @@ import type {
 import { PROJECT_COLORS } from "@/lib/types";
 import { formatDateLocal } from "@/lib/dates";
 import { isActionableOverdue } from "@/lib/task-status";
+import { FociDot } from "@/components/FociDot";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -692,7 +693,10 @@ export default function StatsPage() {
             {backlogItems.length > 0 ? (
               <CountBar items={backlogItems} />
             ) : (
-              <p className="text-sm text-slate-400 dark:text-slate-500 py-6 text-center">No tasks yet</p>
+              <div className="flex flex-col items-center justify-center py-6 text-slate-400 dark:text-slate-500">
+                <FociDot mood="ready" size={40} className="mb-2" />
+                <p className="text-sm">No tasks yet</p>
+              </div>
             )}
           </div>
         </div>
@@ -711,10 +715,7 @@ export default function StatsPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-slate-500">
-                <svg className="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-                </svg>
+                <FociDot mood="meh" size={48} className="mb-3" />
                 <p className="text-sm">No focus time recorded yet</p>
               </div>
             )}
@@ -751,9 +752,7 @@ export default function StatsPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-slate-400 dark:text-slate-500">
-                <svg className="w-10 h-10 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+                <FociDot mood="ready" size={40} className="mb-2" />
                 <p className="text-sm">No sessions yet today</p>
               </div>
             )}

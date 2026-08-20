@@ -67,6 +67,7 @@ import { ProjectTemplatePicker } from "@/components/task-list/ProjectTemplatePic
 import OpenTaskList from "@/components/task-list/OpenTaskList";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { DoneTodayTally } from "@/components/task-list/DoneTodayTally";
+import { FociDot } from "@/components/FociDot";
 import { TimeFilterBanner } from "@/components/task-list/TimeFilterBanner";
 import { TaskUrgencySummary } from "@/components/task-list/TaskUrgencySummary";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
@@ -3741,7 +3742,7 @@ export default function TaskList({
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
             <div className="text-center mb-6 px-4">
-              <div className="text-5xl mb-3">📝</div>
+              <FociDot mood={isTimeFilter ? "meh" : "ready"} size={56} className="mx-auto mb-3" />
               <p className="text-slate-700 dark:text-slate-200 text-lg font-semibold mb-2">
                 {isTimeFilter 
                   ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` 
@@ -3750,7 +3751,7 @@ export default function TaskList({
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto mb-4">
                 {isTimeFilter 
                   ? "Add a task above to get started" 
-                  : "Add your first task above, or start a project from a template"}
+                  : "Dot is ready when you add a task — or start a project from a template"}
               </p>
               {!isTimeFilter && (
                 <AddProjectButton onClick={openProjectManage} />
