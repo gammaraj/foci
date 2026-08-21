@@ -121,6 +121,13 @@ test.describe("SEO & Meta", () => {
     expect(response?.status()).toBe(200);
   });
 
+  test("ads.txt is accessible for AdSense verification", async ({ page }) => {
+    const response = await page.goto("/ads.txt");
+    expect(response?.status()).toBe(200);
+    const body = await response?.text();
+    expect(body).toContain("pub-9368411015963509");
+  });
+
   test("sitemap.xml is accessible", async ({ page }) => {
     const response = await page.goto("/sitemap.xml");
     expect(response?.status()).toBe(200);
