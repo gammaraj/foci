@@ -7,8 +7,14 @@ export const SITE_URL = "https://usefoci.com";
 export const SITE_NAME = "Foci";
 export const SITE_DOMAIN = "usefoci.com";
 
+/** Public contact for privacy / AdSense / support (forward to operator inbox). */
+export const CONTACT_EMAIL = "hello@usefoci.com";
+
+/** Google AdSense publisher id (ca-pub-…). Used for site meta; ads not placed in /app. */
+export const ADSENSE_CLIENT_ID = "ca-pub-9368411015963509";
+
 /** Bump when product or core marketing facts change (JSON-LD dateModified, llms version). */
-export const PRODUCT_DATE_MODIFIED = "2026-08-19";
+export const PRODUCT_DATE_MODIFIED = "2026-08-21";
 
 /** One-sentence definition — cite this everywhere. */
 export const FOCI_ONE_LINER =

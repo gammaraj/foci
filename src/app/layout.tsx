@@ -14,6 +14,7 @@ import {
   SITE_URL,
   FOCI_SHORT_DESCRIPTION,
   ROOT_KEYWORDS,
+  ADSENSE_CLIENT_ID,
 } from "@/lib/product-facts";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -151,6 +152,7 @@ export default async function RootLayout({
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: offlineFallbackScript }} suppressHydrationWarning />
         <link rel="help" href="/llms.txt" type="text/plain" />
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
       </head>
       <body className={`${fontSans.className} min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16] antialiased`}>
         {/* SSR + client-dismissed splash — do not remove via DOM APIs (breaks soft nav). */}

@@ -152,14 +152,19 @@ export default function AboutPage() {
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Privacy by default</h2>
             <p>
-              Your account data syncs via Supabase. No ads. No selling personal focus data.
-              Read the{" "}
+              Your account data syncs via Supabase. We do not sell personal focus data. Display ads,
+              if shown, appear on public marketing and blog pages — not inside the focus workspace. Read
+              the{" "}
               <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
                 Privacy Policy
-              </Link>{" "}
-              and{" "}
+              </Link>
+              ,{" "}
               <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
                 Terms of Use
+              </Link>
+              , or{" "}
+              <Link href="/contact" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Contact
               </Link>
               . Foci is available worldwide in English at{" "}
               <a href={siteUrl} className="text-blue-600 dark:text-blue-400 hover:underline">
@@ -168,7 +173,6 @@ export default function AboutPage() {
               .
             </p>
           </section>
-
           <section className="mt-10 space-y-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Learn more</h2>
             <ul className="space-y-2">
@@ -254,6 +258,10 @@ export default function AboutPage() {
           {" · "}
           <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">
             Privacy
+          </Link>
+          {" · "}
+          <Link href="/contact" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Contact
           </Link>
           {" · "}
           <Link href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400">

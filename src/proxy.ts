@@ -35,13 +35,13 @@ export async function proxy(request: NextRequest) {
 
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com`,
+    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.googleadservices.com https://www.google.com`,
     `worker-src 'self' blob:`,
     `style-src 'self' 'unsafe-inline'`,
-    `img-src 'self' data: blob: https://*.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com`,
+    `img-src 'self' data: blob: https://*.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.google.com https://*.gstatic.com`,
     `font-src 'self'`,
-    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://filantus.com`,
-    `frame-src https://www.youtube.com https://open.spotify.com https://w.soundcloud.com`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://filantus.com https://pagead2.googlesyndication.com https://*.google.com https://googleads.g.doubleclick.net`,
+    `frame-src https://www.youtube.com https://open.spotify.com https://w.soundcloud.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
     `base-uri 'self'`,

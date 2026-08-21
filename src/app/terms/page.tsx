@@ -115,7 +115,11 @@ export default function TermsPage() {
               <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
                 Privacy Policy
               </Link>{" "}
-              for how data is handled.
+              for how data is handled. Questions:{" "}
+              <Link href="/contact" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Contact
+              </Link>
+              .
             </p>
           </section>
         </article>
@@ -125,6 +129,10 @@ export default function TermsPage() {
         <p className="text-sm text-slate-500 dark:text-slate-400">
           <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400">
             Home
+          </Link>
+          {" · "}
+          <Link href="/contact" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Contact
           </Link>
           {" · "}
           <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">
