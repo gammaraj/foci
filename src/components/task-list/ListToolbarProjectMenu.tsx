@@ -16,8 +16,8 @@ interface ListToolbarProjectMenuProps {
 }
 
 /**
- * ⋮ control for the list project toolbar. Renders a fixed-position menu so it
- * isn’t clipped by nearby scroll containers.
+ * Labeled “Manage” / “Projects” control for the list project toolbar.
+ * Renders a fixed-position menu so it isn’t clipped by nearby scroll containers.
  */
 export function ListToolbarProjectMenu({
   project,
@@ -85,6 +85,8 @@ export function ListToolbarProjectMenu({
   }, [open]);
 
   const hasProjectActions = !!project && (!!onStartRename || !!onShare || !!onArchive || !!onDelete);
+  const label = project ? "Manage" : "Projects";
+  const title = project ? `Manage ${project.name}` : "Manage projects";
 
   return (
     <div className={`relative shrink-0 ${className}`.trim()} ref={rootRef}>
@@ -96,19 +98,23 @@ export function ListToolbarProjectMenu({
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className={`flex-shrink-0 touch-target-sm p-2 sm:p-1.5 rounded-lg transition-colors ${
+        className={`inline-flex items-center gap-1 touch-target-sm px-2.5 py-1.5 min-h-[2rem] text-xs font-semibold rounded-lg border transition-colors ${
           open
-            ? "bg-slate-200 dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200"
-            : "text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#131d30] hover:text-slate-600 dark:hover:text-slate-300"
+            ? "border-slate-300 dark:border-[#3a4f6e] bg-slate-200 dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100"
+            : "border-slate-200 dark:border-[#243350] bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a4f6e] hover:bg-slate-200 dark:hover:bg-[#1a2d4a] hover:text-slate-800 dark:hover:text-slate-100"
         }`}
-        title={project ? `Manage ${project.name}` : "Manage projects"}
-        aria-label={project ? `Manage ${project.name}` : "Manage projects"}
+        title={title}
+        aria-label={title}
         aria-expanded={open}
         aria-haspopup="menu"
+        data-tour="list-project-menu"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
+        <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <circle cx="12" cy="5" r="1.75" />
+          <circle cx="12" cy="12" r="1.75" />
+          <circle cx="12" cy="19" r="1.75" />
         </svg>
+        <span>{label}</span>
       </button>
       {open && coords && (
         <div

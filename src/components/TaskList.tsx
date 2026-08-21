@@ -2640,20 +2640,6 @@ export default function TaskList({
             </>
           ) : (
             <>
-              {isListDrillIn && (
-                <button
-                  type="button"
-                  onClick={backFromProjectList}
-                  className="no-print btn-chip gap-1.5 px-2 py-1 mb-1 text-sm"
-                  title={`Return to ${drillReturnLabel} view`}
-                  aria-label={`Back to ${drillReturnLabel}`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back to {drillReturnLabel}
-                </button>
-              )}
               <h2 className="text-sm sm:text-base font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
                 {drillInProject ? (
                   <>
@@ -2685,9 +2671,6 @@ export default function TaskList({
                       Tasks
                       {viewMode === "plan" && (
                         <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal"> · Smart Plan</span>
-                      )}
-                      {isListDrillIn && isAllProjects && (
-                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal"> · All projects</span>
                       )}
                     </span>
                   </>
@@ -2775,8 +2758,8 @@ export default function TaskList({
         </div>
       </FocusBarActions>
 
-      {/* Card toolbar — When / Layout (title is in App Focus Bar) */}
-      {!focusMode && !projectManageOpen && (
+      {/* Card toolbar — When / Layout (hidden on project drill-in) */}
+      {!focusMode && !projectManageOpen && !isListDrillIn && (
       <div className="no-print panel-pad-x py-1.5 roomy:py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-[color:var(--surface-border)] dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
           <div className="no-print hidden roomy:flex items-center gap-3 min-w-0">
@@ -2947,7 +2930,7 @@ export default function TaskList({
       )}
 
       {/* Time scope + One Thing — shared strip under When/Layout on every layout */}
-      {!projectManageOpen && isTimeFilter && timeScopeDescription && (
+      {!projectManageOpen && !isListDrillIn && isTimeFilter && timeScopeDescription && (
         <div className="no-print">
         <TimeFilterBanner
           description={timeScopeDescription}
@@ -2964,7 +2947,7 @@ export default function TaskList({
         </div>
       )}
 
-      {!projectManageOpen && viewMode !== "plan" && tasksReady && (
+      {!projectManageOpen && !isListDrillIn && viewMode !== "plan" && tasksReady && (
         (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
           <OneThingCard
             status={oneThingResolved.status}
@@ -3262,10 +3245,16 @@ export default function TaskList({
             </div>
             <button
               type="button"
-              onClick={() => selectProject(TODAY_FILTER_ID)}
+              onClick={() => {
+                if (isListDrillIn) {
+                  backFromProjectList();
+                  return;
+                }
+                selectProject(TODAY_FILTER_ID);
+              }}
               className="shrink-0 text-xs font-medium text-slate-600 dark:text-slate-300 hover:underline"
             >
-              Back
+              {isListDrillIn ? `Back to ${drillReturnLabel}` : "Back"}
             </button>
             <button
               type="button"
@@ -3279,9 +3268,46 @@ export default function TaskList({
         </div>
       )}
 
-      {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
+      {/* Slim drill-in chrome: Back + Manage (replaces When/Layout + project tabs) */}
+      {!projectManageOpen && viewMode === "list" && !isViewingSharedProject && isListDrillIn && (
+        <div
+          className="panel-pad-x pt-1.5 pb-1.5 relative border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 no-print"
+          ref={projectMenuRef}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              type="button"
+              onClick={backFromProjectList}
+              className="btn-chip gap-1.5 px-2.5 py-1.5 min-h-[2rem] text-xs font-semibold shrink-0 touch-target-sm"
+              title={`Return to ${drillReturnLabel} view`}
+              aria-label={`Back to ${drillReturnLabel}`}
+              data-tour="back-from-project-list"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to {drillReturnLabel}
+            </button>
+            <div className="min-w-0 flex-1" />
+            <ListToolbarProjectMenu
+              project={listToolbarMenuProject}
+              user={user}
+              onManageProjects={openProjectManage}
+              onStartRename={(p) => {
+                startEditingProject(p);
+                openProjectManage();
+              }}
+              onShare={setShareModalProject}
+              onArchive={toggleProjectArchived}
+              onDelete={deleteProject}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Full project tabs — list view when not drilled in from Cards/Buckets */}
       {!projectManageOpen && viewMode === "list" && (<>
-      {!isViewingSharedProject && (
+      {!isViewingSharedProject && !isListDrillIn && (
       <div className="panel-pad-x pt-1 pb-1.5 relative border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 no-print" ref={projectMenuRef}>
         {/* Mobile: project dropdown (time scope is in the Tasks header) */}
         <div className="flex roomy:hidden items-center gap-1.5">
@@ -3643,6 +3669,8 @@ export default function TaskList({
             className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
           <div className="flex gap-2 min-w-0 w-full sm:w-auto">
+          {!isListDrillIn && (
+          <>
           <label htmlFor="new-task-project" className="sr-only">
             Project
           </label>
@@ -3664,6 +3692,8 @@ export default function TaskList({
               </option>
             ))}
           </select>
+          </>
+          )}
           <DueDateField
             value={newTaskDueDate || undefined}
             onChange={(date) => setNewTaskDueDate(date ?? "")}
@@ -3701,7 +3731,7 @@ export default function TaskList({
           </div>
         </form>
 
-        {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && (
+        {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && !isListDrillIn && (
           <div className="flex flex-wrap gap-1.5">
             <span className="text-xs text-slate-500 dark:text-slate-400 w-full">Quick start a project:</span>
             {PROJECT_TEMPLATES.slice(0, 4).map((tpl) => (
@@ -3753,13 +3783,15 @@ export default function TaskList({
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto mb-4">
                 {isTimeFilter 
                   ? "Add a task above to get started" 
-                  : "Busy is ready when you add a task — or start a project from a template"}
+                  : isListDrillIn
+                    ? "Add a task above to get started"
+                    : "Busy is ready when you add a task — or start a project from a template"}
               </p>
-              {!isTimeFilter && (
+              {!isTimeFilter && !isListDrillIn && (
                 <AddProjectButton onClick={openProjectManage} />
               )}
             </div>
-            {!isTimeFilter && (
+            {!isTimeFilter && !isListDrillIn && (
               <ProjectTemplatePicker variant="cards" onSelect={addProject} />
             )}
           </div>
