@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ConfirmModal from "@/components/ConfirmModal";
+import { BusyBeaver } from "@/components/BusyBeaver";
+import { FociDot } from "@/components/FociDot";
 import { loadProjects, loadTasks } from "@/lib/storage";
 import { isTasksAppPath } from "@/lib/task-view-url";
 import {
@@ -158,8 +160,9 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
       <>
         <div className="app-container py-2">
           <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-800 flex flex-col sm:flex-row sm:items-center gap-3">
+            <BusyBeaver alt="" size={40} className="flex-shrink-0 self-start sm:self-center" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">These are sample projects</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">Beavy left you some sample sticks</p>
               <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">
                 Try the cards, then clear them and add your own — nothing here is saved to an account yet.
               </p>
@@ -227,9 +230,10 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     return (
       <div className="app-container py-2">
         <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/25 border border-blue-200 dark:border-blue-800 flex items-start gap-3">
+          <FociDot mood="ready" size={36} className="flex-shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Ready to start focusing?</p>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">Add a task, tap Play, and run your first Pomodoro session.</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">Add a task, tap Play, and run your first Pomodoro — Beavy’s ready when you are.</p>
           </div>
           <button type="button" onClick={() => dismiss("first-session")} className="text-sm text-blue-600 dark:text-blue-400 font-medium touch-target-sm px-2" aria-label="Dismiss">
             Got it

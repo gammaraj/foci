@@ -4,6 +4,7 @@ import Link from "next/link";
 import AppNavbar from "@/components/AppNavbar";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import InstallPageActions from "@/components/InstallPageActions";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { SITE_URL, PRODUCT_DATE_MODIFIED } from "@/lib/product-facts";
 import { FOCI_APP_INSTALL_URL } from "@/lib/pwa-install";
@@ -113,15 +114,18 @@ export default function InstallPage() {
           {/* Hero: copy + actions | desktop QR rail */}
           <div className="lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,0.85fr)] lg:gap-12 lg:items-start">
             <div id="open">
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
-                Install
-              </p>
+              <div className="flex items-center gap-3 mb-3">
+                <BusyBeaver alt="" size={48} />
+                <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  Install
+                </p>
+              </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                 Add Foci to your Home Screen
               </h1>
               <p className="mt-4 text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl">
-                Install Foci like an app. After that, one tap from your home screen — full screen,
-                faster open, and offline tasks when you need them.
+                Install Foci like an app. After that, one tap from your home screen — Beavy tags
+                along offline for tasks and sounds.
               </p>
               <InstallPageActions showQr />
             </div>

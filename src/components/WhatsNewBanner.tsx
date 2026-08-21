@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import {
   WHATS_NEW_FEATURES,
   WHATS_NEW_VERSION,
@@ -91,9 +92,12 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
         >
           <div className="px-3 py-2.5 border-b border-slate-100 dark:border-[#243350] bg-blue-50/70 dark:bg-blue-950/20">
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">What&apos;s new</p>
-                <p className="text-xs text-blue-600 dark:text-blue-300">{WHATS_NEW_VERSION}</p>
+              <div className="flex items-start gap-2.5 min-w-0">
+                <BusyBeaver alt="" size={36} className="flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">What&apos;s new</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-300">{WHATS_NEW_VERSION}</p>
+                </div>
               </div>
               <button
                 type="button"

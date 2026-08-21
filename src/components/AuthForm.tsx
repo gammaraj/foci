@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { trackSignUp, trackLogin } from "@/lib/analytics";
+import { BusyBeaver } from "@/components/BusyBeaver";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -57,13 +58,16 @@ export default function AuthForm() {
   return (
     <div className="w-full">
       <div className="bg-white dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] p-6">
+        <div className="flex justify-center mb-3">
+          <BusyBeaver alt="" size={56} />
+        </div>
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-0.5 text-center">
           {mode === "sign-in" ? "Welcome back" : "Create account"}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-5 text-center">
           {mode === "sign-in"
-            ? "Sign in to sync your data"
-            : "Sign up to save your progress"}
+            ? "Sign in to sync your data — Beavy keeps the dam across devices"
+            : "Sign up to save your progress — Beavy’s ready when you are"}
         </p>
 
         {/* Google OAuth */}

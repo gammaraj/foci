@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Task, Project, Settings } from "@/lib/types";
 import { generateSmartPlan, type ScoredTask, type DayPlan } from "@/lib/smartplan";
+import { BusyBeaver } from "@/components/BusyBeaver";
 
 function formatDuration(ms: number): string {
   const totalMin = Math.floor(ms / 60000);
@@ -304,9 +305,10 @@ export default function SmartPlan({
         </div>
       ) : (
         <div className="py-10 text-center">
+          <BusyBeaver alt="" size={72} className="mx-auto mb-3" />
           <p className="text-sm font-medium text-slate-600 dark:text-slate-200">All clear</p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            No open tasks to schedule. Add work from Cards or List.
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+            No open tasks to schedule — Beavy’s dam is empty. Add work from Cards or List.
           </p>
         </div>
       )}

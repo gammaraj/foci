@@ -9,6 +9,7 @@ import {
   ONBOARDING_STORAGE_KEY,
 } from "@/lib/onboarding";
 import { positionTourTooltip } from "@/lib/tour-tooltip";
+import { FociDot } from "@/components/FociDot";
 
 interface Step {
   target: string; // CSS selector
@@ -230,11 +231,16 @@ export default function OnboardingTour() {
         aria-label={step.title}
         className="w-[calc(100%-2rem)] max-w-[300px] bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-[9999]"
       >
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-            {step.title}
-          </h3>
-          <span className="text-xs text-slate-400 dark:text-slate-400">
+        <div className="flex items-center justify-between mb-1 gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            {step.title === "Done bar" && (
+              <FociDot mood="happy" size={20} className="flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
+            )}
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+              {step.title}
+            </h3>
+          </div>
+          <span className="text-xs text-slate-400 dark:text-slate-400 shrink-0">
             {currentStep + 1}/{STEPS.length}
           </span>
         </div>

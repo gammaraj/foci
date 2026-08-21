@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { FociLogoMark, FociWordmark } from "@/components/FociLogoMark";
+import { FociWordmark } from "@/components/FociLogoMark";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import { FOCI_WORDMARK_INLINE } from "@/lib/logo-brand";
 import {
   FOCI_APP_INSTALL_URL,
@@ -97,13 +98,13 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
       >
         <div className="flex items-start gap-3 mb-4">
-          <FociLogoMark size={40} idPrefix="pwa-guide" surface="light" className="flex-shrink-0 rounded-xl" />
+          <BusyBeaver alt="" size={44} className="flex-shrink-0" />
           <div className="min-w-0 flex-1">
             <h3 id="pwa-install-title" className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
               Add <FociWordmark className={FOCI_WORDMARK_INLINE} tone="light" /> to your Home Screen
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-              One tap from your home screen — works offline for tasks and sounds.
+              One tap from your home screen — Beavy works offline for tasks and sounds.
             </p>
           </div>
           <button

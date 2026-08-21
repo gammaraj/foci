@@ -10,6 +10,7 @@ import BoostLogikInboundRedirect from "@/components/BoostLogikInboundRedirect";
 import WanderingHermitInboundRedirect from "@/components/WanderingHermitInboundRedirect";
 import HomeAppMockup from "@/components/HomeAppMockup";
 import HomeFaq from "@/components/HomeFaq";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import { FOCI_HERO_HEADLINE } from "@/lib/logo-brand";
 import { homeFaqsToJsonLd } from "@/lib/home-faqs";
 import {
@@ -175,6 +176,9 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center app-container">
         <section className="text-center pt-10 sm:pt-16 pb-10 sm:pb-14 max-w-3xl mx-auto w-full">
+          <div className="flex justify-center mb-4">
+            <BusyBeaver alt="Beavy the Beaver — Foci mascot" size={88} priority />
+          </div>
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200/70 dark:border-blue-700/40 text-xs font-semibold text-blue-700 dark:text-blue-300 tracking-wide uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden />
@@ -186,7 +190,8 @@ export default function LandingPage() {
             {FOCI_HERO_HEADLINE}
           </h1>
           <p className="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Organize projects, plan the day, and finish what matters — in one calm window. Try free in the browser, or create an account to sync across devices.
+            Organize projects, plan the day, and finish what matters — with Beavy cheering you on
+            in one calm window. Try free in the browser, or create an account to sync across devices.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">

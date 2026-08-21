@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { loadTasks } from "@/lib/storage";
+import { FociDot } from "@/components/FociDot";
 
 export default function FirstSessionNudge() {
   const [show, setShow] = useState(false);
@@ -55,12 +56,13 @@ export default function FirstSessionNudge() {
   return (
     <div className="mb-3 p-2.5 sm:p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
       <div className="flex items-start gap-3">
+        <FociDot mood="ready" size={32} className="flex-shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-0.5">
             Ready to start focusing?
           </h3>
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Pick a task and press <strong>Start</strong> to begin your first focus session.
+            Pick a task and press <strong>Start</strong> — Beavy’s waiting for your first session.
           </p>
         </div>
         <button

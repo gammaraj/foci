@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { BusyBeaver } from "@/components/BusyBeaver";
 import { formatDuration } from "@/components/task-list/utils";
 import type { DoneTodaySummary } from "@/lib/done-today";
 
@@ -27,9 +28,7 @@ export default function DayRecap({ show, summary, onDismiss }: DayRecapProps) {
 
   if (!visible || summary.count === 0) return null;
 
-  const parts: string[] = [
-    `${summary.count} task${summary.count === 1 ? "" : "s"}`,
-  ];
+  const parts: string[] = [`${summary.count} task${summary.count === 1 ? "" : "s"}`];
   if (summary.sessions > 0) {
     parts.push(`${summary.sessions} session${summary.sessions === 1 ? "" : "s"}`);
   }
@@ -41,19 +40,12 @@ export default function DayRecap({ show, summary, onDismiss }: DayRecapProps) {
     <div className="fixed bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
       <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-emerald-300 dark:border-emerald-700 p-4 shadow-2xl">
         <div className="flex items-start gap-3">
-          <span
-            className="flex-shrink-0 w-9 h-9 rounded-full bg-emerald-500 text-white flex items-center justify-center"
-            aria-hidden
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-            </svg>
-          </span>
+          <BusyBeaver alt="" size={44} className="flex-shrink-0 -mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-900 dark:text-white">Nice progress today</p>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">
-              {parts.join(" · ")}
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">
+              Beavy’s proud of today’s dam
             </p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">{parts.join(" · ")}</p>
           </div>
           <button
             type="button"
