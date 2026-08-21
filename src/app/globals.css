@@ -21,23 +21,25 @@
   --muted-slate: #475569;
   --primary-color: var(--primary-blue);
   --secondary-color: var(--success-green);
-  /* Light mode — luminous cool focus window (atmosphere + crisp plates) */
+  /* Light mode — luminous cool focus window (atmosphere + soft plates) */
   --page-bg: #e3ebf7;
   --page-glow: #b8d0f5;
   --page-glow-soft: #d4e4fb;
   --surface-border: rgba(37, 99, 235, 0.1);
-  --surface-bg: #ffffff;
-  --panel-header-bg: #f8fafc; /* light tokens override via .panel-header-calm */
+  /* Cool tint (navbar family) — not pure white, still reads as a raised plate */
+  --surface-bg: #f5f8fd;
+  --panel-header-bg: #eef3fb;
   --seg-track-bg: #dde7f6;
-  --surface-muted: #eef3fb;
-  --project-surface-bg: #ffffff;
-  --project-surface-border: rgba(37, 99, 235, 0.09);
+  --surface-muted: #e8eef8;
+  --project-surface-bg: #f1f6fc;
+  --project-surface-border: rgba(37, 99, 235, 0.1);
   --project-surface-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
     0 1px 2px rgba(30, 64, 175, 0.04),
     0 8px 20px -6px rgba(37, 99, 235, 0.08),
     0 22px 44px -16px rgba(15, 23, 42, 0.1);
   --task-row-border: rgba(37, 99, 235, 0.08);
-  --task-row-bg: #f7faff;
+  --task-row-bg: #e9f0fa;
   --control-border: #c5d4ea;
   --control-border-focus: #1d4ed8;
   --radius-card: 1.25rem;
@@ -423,7 +425,7 @@ select {
   border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 75%, transparent);
 }
 :root:not(.dark) .panel-header-calm {
-  background: rgba(255, 255, 255, 0.7);
+  background: color-mix(in srgb, #ffffff 62%, #e8f0fc);
   backdrop-filter: blur(12px) saturate(1.1);
   -webkit-backdrop-filter: blur(12px) saturate(1.1);
   border-bottom-color: rgba(37, 99, 235, 0.08);
@@ -470,12 +472,12 @@ select {
     0 10px 28px -12px rgba(15, 23, 42, 0.1);
 }
 :root:not(.dark) .app-surface {
-  background: rgba(255, 255, 255, 0.72);
+  background: color-mix(in srgb, #ffffff 58%, #e8f0fc);
   border-color: rgba(37, 99, 235, 0.1);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
     0 1px 2px rgba(30, 64, 175, 0.04),
-    0 16px 40px -18px rgba(37, 99, 235, 0.22);
+    0 16px 40px -18px rgba(37, 99, 235, 0.2);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -487,7 +489,7 @@ select {
     0 8px 24px -10px rgba(0, 0, 0, 0.55);
 }
 
-/* Project cards/columns — solid white plates on the muted shell */
+/* Project cards/columns — soft cool plates (navbar family), not stark white */
 .project-surface {
   background: var(--project-surface-bg);
   border: 1px solid var(--project-surface-border);
@@ -495,6 +497,11 @@ select {
   box-shadow: var(--project-surface-shadow);
 }
 :root:not(.dark) .project-surface {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #ffffff 55%, #e8f0fc) 0%,
+    color-mix(in srgb, #e8f0fc 48%, #ffffff) 100%
+  );
   border-color: rgba(37, 99, 235, 0.1);
   box-shadow: var(--project-surface-shadow);
   transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
@@ -503,6 +510,7 @@ select {
   border-color: rgba(37, 99, 235, 0.2);
   transform: translateY(-1px);
   box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
     0 2px 4px rgba(30, 64, 175, 0.05),
     0 12px 28px -8px rgba(37, 99, 235, 0.14),
     0 28px 52px -20px rgba(15, 23, 42, 0.12);
