@@ -55,6 +55,47 @@ export function trackLogin(method: "email" | "google") {
   track("login", { method });
 }
 
+// ── Sharing / collaboration (monetization signals) ───────────────────────────
+
+export function trackShareModalOpened(scope: "project" | "account") {
+  track("share_modal_opened", { scope });
+}
+
+export function trackInviteSent(params: {
+  scope: "project" | "account";
+  role: string;
+}) {
+  track("invite_sent", { scope: params.scope, role: params.role });
+}
+
+export function trackCollaboratorAdded(params: {
+  scope: "project" | "account";
+}) {
+  track("collaborator_added", { scope: params.scope });
+}
+
+export function trackSharedProjectOpened(params?: { source?: string }) {
+  track("shared_project_opened", { source: params?.source ?? "app" });
+}
+
+// ── Stats / Pro interest ─────────────────────────────────────────────────────
+
+export function trackStatsViewed(params?: { range_days?: number }) {
+  track("stats_viewed", {
+    range_days: params?.range_days ?? 7,
+  });
+}
+
+/** Soft Pro interest — call when /pricing (or equivalent) mounts. */
+export function trackPricingViewed() {
+  track("pricing_viewed");
+}
+
+/** Soft Pro interest — call from upgrade CTAs once they exist. */
+export function trackUpgradeClicked(params?: { source?: string }) {
+  track("upgrade_clicked", { source: params?.source ?? "unknown" });
+}
+
 // ── Ambient sounds ───────────────────────────────────────────────────────────
 
 export function trackSoundPlayed(sound: string) {

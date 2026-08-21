@@ -8,6 +8,7 @@ import {
   buildAccountInviteMessage,
   copyText,
 } from "@/lib/collaboration-invite";
+import { trackInviteSent, trackShareModalOpened } from "@/lib/analytics";
 
 interface AccountSharingModalProps {
   isOpen: boolean;
@@ -21,6 +22,10 @@ export default function AccountSharingModal({
   const { showToast } = useToast();
   const modalRef = useRef<HTMLDivElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) trackShareModalOpened("account");
+  }, [isOpen]);
 
   const [collaborators, setCollaborators] = useState<AccountCollaboratorInfo[]>([]);
   const [pendingInvites, setPendingInvites] = useState<AccountInvite[]>([]);
@@ -155,6 +160,7 @@ export default function AccountSharingModal({
     try {
       const storage = getStorage();
       await storage.inviteAccountCollaborator(email, inviteRole);
+      trackInviteSent({ scope: "account", role: inviteRole });
       const message = buildAccountInviteMessage({
         inviteeEmail: email,
         role: inviteRole,

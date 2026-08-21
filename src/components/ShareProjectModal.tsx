@@ -18,6 +18,7 @@ import {
   buildProjectInviteMessage,
   copyText,
 } from "@/lib/collaboration-invite";
+import { trackInviteSent, trackShareModalOpened } from "@/lib/analytics";
 
 interface ShareProjectModalProps {
   project: Project;
@@ -40,6 +41,10 @@ export default function ShareProjectModal({
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<CollaboratorRole>("editor");
   const [inviting, setInviting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) trackShareModalOpened("project");
+  }, [isOpen, project.id]);
 
   // Load collaborators and pending invites
   useEffect(() => {
@@ -150,6 +155,7 @@ export default function ShareProjectModal({
     setInviting(true);
     try {
       await inviteCollaborator(project.id, email, inviteRole);
+      trackInviteSent({ scope: "project", role: inviteRole });
       const message = buildProjectInviteMessage({
         projectName: project.name,
         inviteeEmail: email,

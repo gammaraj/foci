@@ -6,7 +6,7 @@ import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PRO
 import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
-import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted } from "@/lib/analytics";
+import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted, trackSharedProjectOpened } from "@/lib/analytics";
 import ConfirmModal from "@/components/ConfirmModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { PROJECT_TEMPLATES, templateToTasks, type ProjectTemplate } from "@/lib/templates";
@@ -931,6 +931,7 @@ export default function TaskList({
 
   // Select a shared project and load its tasks
   const selectSharedProject = async (shared: SharedProject) => {
+    trackSharedProjectOpened({ source: "app" });
     setSelectedSharedProject(shared);
     setSelectedProjectId(`shared:${shared._ownerId}:${shared.id}`);
     closeProjectManage();

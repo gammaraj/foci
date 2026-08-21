@@ -17,6 +17,7 @@ import {
   SharedProject,
 } from "@/lib/storage";
 import { isExactTasksAppPath } from "@/lib/task-view-url";
+import { trackCollaboratorAdded } from "@/lib/analytics";
 
 const OPEN_SHARED_PROJECT_EVENT = "foci-open-shared-project";
 const SHARED_UPDATED_EVENT = "foci-shared-updated";
@@ -103,6 +104,7 @@ export default function CollaborationInvitesButton() {
     setProcessingId(inviteId);
     try {
       await acceptInvite(inviteId);
+      trackCollaboratorAdded({ scope: "project" });
       setProjectInvites((prev) => prev.filter((i) => i.id !== inviteId));
       showToast("Invite accepted — open it below under Shared with you", "success");
       refreshAfterAccept();
@@ -131,6 +133,7 @@ export default function CollaborationInvitesButton() {
     setProcessingId(inviteId);
     try {
       await acceptAccountInvite(inviteId);
+      trackCollaboratorAdded({ scope: "account" });
       setAccountInvites((prev) => prev.filter((i) => i.id !== inviteId));
       showToast("Access granted — their projects are listed below", "success");
       refreshAfterAccept();

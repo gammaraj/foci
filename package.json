@@ -13,6 +13,7 @@
     "check:content-integrity": "node scripts/ci/check-content-integrity.cjs",
     "check:ci": "npm run lint && npm run test:unit && npm run check:rls-policies && npm run build && npm run check:content-integrity",
     "notify:indexnow": "node scripts/notify-indexnow.mjs",
+    "report:ga": "node --env-file=.env.local scripts/ga-report.mjs",
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui"
   },

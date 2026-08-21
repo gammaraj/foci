@@ -41,9 +41,12 @@ See [`.env.local.example`](.env.local.example):
 | `INDEXNOW_API_SECRET` | Prod | Protects `/api/indexnow` |
 | `UPSTASH_REDIS_REST_URL` | Recommended | Distributed rate limiting across Vercel instances |
 | `UPSTASH_REDIS_REST_TOKEN` | Recommended | Upstash token |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics browser tag (`G-…`) |
+| `GA4_PROPERTY_ID` | Local only | Numeric GA4 property for `npm run report:ga` |
+| `GA_CLIENT_EMAIL` / `GA_PRIVATE_KEY` | Local only | Service account with Viewer on the Foci property |
 
 Without Upstash, rate limiting falls back to in-memory (per serverless instance).
+Portfolio traffic: see `docs/GA4-SETUP.md` and `npm run report:ga`.
 
 ## Database migrations
 

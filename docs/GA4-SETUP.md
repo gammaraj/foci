@@ -1,6 +1,25 @@
 # Google Analytics 4 — Foci
 
-Use this checklist when GA4 reports look wrong (referral inflation, duplicate page titles, preview noise).
+Use this checklist when GA4 reports look wrong (referral inflation, duplicate page titles, preview noise), and for **portfolio traffic pulls** via the Data API.
+
+## Measurement vs property ID
+
+| Kind | Example | Where |
+|------|---------|--------|
+| Measurement ID (browser tag) | `G-726NCC1ECK` | `NEXT_PUBLIC_GA_MEASUREMENT_ID` on Vercel |
+| Property ID (Data API) | `528505183` | `GA4_PROPERTY_ID` on Vercel Production + local `.env.local` |
+
+Pull report creds: `vercel env pull .env.local --environment=production` (includes shared Filantus GA service account + property id). Then `npm run report:ga`.
+
+## Portfolio / 30-day report (Data API)
+
+```bash
+# .env.local needs GA4_PROPERTY_ID + GA_CLIENT_EMAIL + GA_PRIVATE_KEY
+# (or GOOGLE_APPLICATION_CREDENTIALS_JSON). Grant the service account Viewer on the Foci property.
+npm run report:ga
+```
+
+Script: `scripts/ga-report.mjs`. Paste active-user counts into `docs/PORTFOLIO.md` (and the canonical [filantus PORTFOLIO](https://github.com/gammaraj/filantus)).
 
 ## Referral traffic looks too high
 
@@ -35,11 +54,28 @@ The site skips GA on `localhost` and `*.vercel.app` in the client bootstrap scri
 
 ## Key events
 
-Mark these as key events in GA4 if you want funnels:
+Mark these as key events in GA4 (**Admin → Events → mark as key event**):
 
 - `session_complete`
 - `timer_start`
 - `sign_up`
+- `login`
+- `invite_sent`
+- `collaborator_added`
+- `shared_project_opened`
+- `stats_viewed`
+
+## Monetization-signal events (shipped)
+
+| Event | When |
+|-------|------|
+| `share_modal_opened` | Project or account share modal opens (`scope`) |
+| `invite_sent` | Invite saved (`scope`, `role`) |
+| `collaborator_added` | Invite accepted (`scope`) |
+| `shared_project_opened` | User opens a shared project |
+| `stats_viewed` | `/stats` loaded / range toggled (`range_days`) |
+| `pricing_viewed` | Ready for `/pricing` (call when page exists) |
+| `upgrade_clicked` | Ready for upgrade CTAs (`source`) |
 
 ## Reports snapshot (May 7 – Jun 3, 2026)
 

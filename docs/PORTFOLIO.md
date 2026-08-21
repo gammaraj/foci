@@ -14,7 +14,7 @@ Canonical copy lives in [gammaraj/filantus](https://github.com/gammaraj/filantus
 | **Brakto** | Live `acct_…49hr5` | 0 | $0 (one-time model) | **$973** PI succeeded ($933 charges) | **5,527** | 1,559 |
 | **CertStud** | Live `acct_…Qn385` | **58** | **~$806** | **$1,194** paid invoices | **6,849** | 2,549 |
 | **CollegeDecider** | Live `acct_…IOFK1` | **2** (+2 trialing) | **~$8** | $0 (90d: $147) | **1,111** | 248 |
-| **Foci** | — | — | — | — | Measurement ID only | — |
+| **Foci** | — | — | — | — | **563** (as of 2026-08-21) | **156** |
 | **BoostLogik** | — | — | — | — | Measurement ID only | — |
 
 ### Stripe balances (available / pending USD)
@@ -32,7 +32,7 @@ Canonical copy lives in [gammaraj/filantus](https://github.com/gammaraj/filantus
 | Brakto | `484284426` / `G-ZJ9DR72461` | 9,359 | 66,257 | 421s | 29.8% | 6,569 |
 | CertStud | `490132129` | 10,291 | 49,096 | 602s | 20.4% | 8,193 |
 | CollegeDecider | `491223614` / `G-6Q1P5MPZXY` | 2,379 | 4,738 | 109s | 28.4% | 1,703 |
-| Foci | — / `G-726NCC1ECK` | API creds not in env | | | | |
+| Foci | `528505183` / `G-726NCC1ECK` | 947 | 3,258 | 356s | 53.7% | 438 |
 | BoostLogik | — / `G-V7N2WFJVLY` | API creds not in env | | | | |
 
 ### CertStud active subscription mix (live)
@@ -114,7 +114,7 @@ Shared pattern: Next.js on one Vercel team, Supabase Postgres everywhere, AWS SE
 | **Projection** | SEO + habit retention; cross-promo CertStud/BoostLogik. Optional Pro later (not in code). |
 | **Database** | Supabase Postgres + Auth + RLS (`zpknihgvpkvhfbnxbewr.supabase.co`). |
 | **Email** | Supabase Auth only — no product mailer. |
-| **Hosting** | Vercel + Sentry; optional Upstash; IndexNow. |
+| **Hosting** | Vercel + Sentry; optional Upstash; IndexNow; GA4 tag + local Data API report (`npm run report:ga`). |
 | **Stripe** | None. |
 | **Business plan** | Free consumer tool / portfolio acquisition. |
 
@@ -136,10 +136,9 @@ Shared pattern: Next.js on one Vercel team, Supabase Postgres everywhere, AWS SE
 ## Open gaps
 
 1. **CollegeDecider** — Reconcile Premium price IDs across Stripe live, Vercel env, and `lib/subscription-plans.ts`.  
-2. **BoostLogik** — Wire Stripe when Pro/Agency leave waitlist.  
-3. **Foci** — No billing; add GA4 property API creds if you want portfolio traffic reporting.  
-4. **CertStud** — Continue pay-ready content; consider consolidating legacy Stripe prices.  
-5. **Foci / BoostLogik** — Add `GA_PROPERTY_ID` + service account to env for automated 30d reports.
+2. **BoostLogik** — Wire Stripe when Pro/Agency leave waitlist; add `GA4_PROPERTY_ID` + service account for portfolio reports.  
+3. **Foci** — No billing yet (optional Pro later). GA4 Data API wired (`528505183`); refresh with `npm run report:ga`.  
+4. **CertStud** — Continue pay-ready content; consider consolidating legacy Stripe prices.
 
 ---
 
@@ -149,7 +148,8 @@ Shared pattern: Next.js on one Vercel team, Supabase Postgres everywhere, AWS SE
 # Stripe (from any machine with project env files)
 # Use each project's STRIPE_SECRET_KEY against /subscriptions, /invoices, /payment_intents
 
-# GA4 (requires GA_CLIENT_EMAIL + GA_PRIVATE_KEY or GOOGLE_APPLICATION_CREDENTIALS_JSON)
+# GA4 Data API
+cd ~/Projects/foci && npm run report:ga          # needs GA4_PROPERTY_ID + GA_CLIENT_EMAIL + GA_PRIVATE_KEY in .env.local
 cd ~/Projects/brakto && node scripts/ga-report.mjs
 # CollegeDecider: node ga-detailed-30day.js (expects .env.production.check)
 ```

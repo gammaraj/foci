@@ -19,6 +19,7 @@ import { PROJECT_COLORS } from "@/lib/types";
 import { formatDateLocal } from "@/lib/dates";
 import { isActionableOverdue } from "@/lib/task-status";
 import { FociDot } from "@/components/FociDot";
+import { trackStatsViewed } from "@/lib/analytics";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -387,6 +388,12 @@ export default function StatsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [range, setRange] = useState<7 | 30>(7);
   const [loaded, setLoaded] = useState(false);
+
+  // Monetization signal: stats depth interest
+  useEffect(() => {
+    if (!loaded) return;
+    trackStatsViewed({ range_days: range });
+  }, [loaded, range]);
 
   // Load data
   useEffect(() => {
