@@ -2,7 +2,7 @@
 
 import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -15,7 +15,7 @@ import {
   FOCI_TAGLINE_ON_LIGHT,
   FOCI_WORDMARK_NAV,
 } from "@/lib/logo-brand";
-import { isTasksAppPath } from "@/lib/task-view-url";
+import { appViewPath, isExactTasksAppPath, isTasksAppPath } from "@/lib/task-view-url";
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
   onOpenSettings?: () => void;
@@ -69,23 +69,28 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const isLight = resolvedTheme === "light";
   const logoSurface = isLight ? "light" : "dark";
   const wordmarkTone = isLight ? "light" : "dark";
   const taglineClass = isLight ? FOCI_TAGLINE_ON_LIGHT : FOCI_TAGLINE_ON_DARK;
 
   const onTasksApp = isTasksAppPath(pathname);
-  const projectsOpen = onTasksApp && searchParams.get("projects") === "1";
+  /** TaskList is mounted only for exact `/app` / `/app/{view}` — not workspace 404 URLs. */
+  const onExactTasksApp = isExactTasksAppPath(pathname);
+  const projectsOpen = onExactTasksApp && searchParams.get("projects") === "1";
+  const cardsHomeHref = appViewPath("card");
 
   const openProjects = (e: React.MouseEvent) => {
-    if (onTasksApp) {
+    if (onExactTasksApp) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("foci-open-project-menu"));
     }
+    // else: let the Link navigate (e.g. recovering from `/app/cards/1` 404)
   };
 
   const closeProjectsIfOpen = (e: React.MouseEvent) => {
-    if (onTasksApp && projectsOpen) {
+    if (onExactTasksApp && projectsOpen) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("foci-close-project-menu"));
     }
@@ -95,15 +100,25 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
     ? [
         {
           key: "tasks",
-          href: "/app",
+          href: cardsHomeHref,
           label: "Tasks",
           active: onTasksApp && !projectsOpen,
-          onClick: closeProjectsIfOpen,
+          onClick: (e) => {
+            closeProjectsIfOpen(e);
+            // Soft-reset when already in the app shell; otherwise Link navigates.
+            if (onExactTasksApp && !projectsOpen) {
+              e.preventDefault();
+              window.dispatchEvent(new CustomEvent("foci-go-home-cards"));
+              if (pathname !== cardsHomeHref || searchParams.toString()) {
+                router.push(cardsHomeHref);
+              }
+            }
+          },
         },
-        { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" },
+        { key: "stats", href: "/stats", label: "Stats", active: pathname === "/stats" || pathname.startsWith("/stats/") },
         {
           key: "projects",
-          href: "/app?projects=1",
+          href: `${cardsHomeHref}?projects=1`,
           label: "Projects",
           title: "Manage projects — pin, rename, share, import",
           active: projectsOpen,
@@ -117,21 +132,22 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           { key: "about", href: "/about", label: "About", active: pathname === "/about" },
         ];
 
-  const logoHref = user ? "/app" : "/";
+  const logoHref = user ? cardsHomeHref : "/";
 
   const goHomeCards = (e: React.MouseEvent) => {
     if (!user) return;
-    if (onTasksApp) {
-      e.preventDefault();
-      window.dispatchEvent(new CustomEvent("foci-go-home-cards"));
-      setMenuOpen(false);
-      return;
-    }
-    // Navigating to /app from another page — ask TaskList to land on cards.
+    e.preventDefault();
+    setMenuOpen(false);
+    // Reset TaskList when mounted (no-op on 404 where layout skipped the app shell).
+    window.dispatchEvent(new CustomEvent("foci-go-home-cards"));
     try {
       sessionStorage.setItem("foci-go-home-cards", "1");
     } catch {
       /* ignore */
+    }
+    // Always navigate — recovers from invalid URLs like /app/cards/1 (workspace 404).
+    if (pathname !== cardsHomeHref || searchParams.toString()) {
+      router.push(cardsHomeHref);
     }
   };
 

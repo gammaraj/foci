@@ -16,7 +16,7 @@ import {
   AccountInvite,
   SharedProject,
 } from "@/lib/storage";
-import { isTasksAppPath } from "@/lib/task-view-url";
+import { isExactTasksAppPath } from "@/lib/task-view-url";
 
 const OPEN_SHARED_PROJECT_EVENT = "foci-open-shared-project";
 const SHARED_UPDATED_EVENT = "foci-shared-updated";
@@ -157,12 +157,12 @@ export default function CollaborationInvitesButton() {
 
   const openSharedProject = (sp: SharedProject) => {
     setShowPanel(false);
-    if (!isTasksAppPath(pathname)) {
+    if (!isExactTasksAppPath(pathname)) {
       sessionStorage.setItem(
         "foci-pending-shared-project",
         JSON.stringify({ ownerId: sp._ownerId, projectId: sp.id }),
       );
-      router.push("/app");
+      router.push("/app/cards");
       return;
     }
     window.dispatchEvent(

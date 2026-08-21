@@ -6,7 +6,7 @@ import { loadTasks, loadProjects } from "@/lib/storage";
 import type { Task } from "@/lib/types";
 import { isActionableOverdue } from "@/lib/task-status";
 import { formatOverdueChip, getDaysOverdue } from "@/components/task-list/utils";
-import { isTasksAppPath } from "@/lib/task-view-url";
+import { isExactTasksAppPath } from "@/lib/task-view-url";
 
 /** Ask TaskList on /app to show the Today/overdue filter (and optionally a task). */
 export const VIEW_DUE_TASKS_EVENT = "foci-view-due-tasks";
@@ -111,13 +111,13 @@ export default function DueRemindersButton() {
   const openDueView = (taskId?: string) => {
     setShowPanel(false);
     const detail = { taskId };
-    if (!isTasksAppPath(pathname)) {
+    if (!isExactTasksAppPath(pathname)) {
       try {
         sessionStorage.setItem("foci-pending-due-view", JSON.stringify(detail));
       } catch {
         /* ignore */
       }
-      router.push("/app");
+      router.push("/app/cards");
       return;
     }
     window.dispatchEvent(new CustomEvent(VIEW_DUE_TASKS_EVENT, { detail }));

@@ -23,7 +23,7 @@ export function NotFoundView({ embedded = false }: { embedded?: boolean }) {
         Beavy chewed through every link. Still no page — just woodchips.
       </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Link href="/app" className="btn-primary px-5 py-2.5 text-sm">
+        <Link href="/app/cards" className="btn-primary px-5 py-2.5 text-sm">
           {embedded ? "Back to Tasks" : "Try Foci — free"}
         </Link>
         <Link href="/" className="btn-ghost px-5 py-2.5 text-sm">

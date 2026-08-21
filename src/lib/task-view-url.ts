@@ -50,6 +50,19 @@ export function isTasksAppPath(pathname: string | null | undefined): boolean {
   return !!pathname && (pathname === "/app" || pathname.startsWith("/app/"));
 }
 
+/**
+ * True only for `/app` or `/app/{cards|buckets|list|calendar|plan}` with no junk
+ * trailing segments. Used so nav can soft-open overlays when TaskList is mounted,
+ * and fall back to full navigation on workspace 404 URLs like `/app/cards/1`.
+ */
+export function isExactTasksAppPath(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  if (pathname === "/app") return true;
+  if (!pathname.startsWith("/app/")) return false;
+  const parts = pathname.slice("/app/".length).split("/").filter(Boolean);
+  return parts.length === 1 && isTaskViewSegment(parts[0]);
+}
+
 /** Build `/app/cards?…` (or bare `/app` when mode is omitted). */
 export function buildAppHref(
   mode: TaskViewMode | null,

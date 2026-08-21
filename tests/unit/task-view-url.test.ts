@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   buildAppHref,
+  isExactTasksAppPath,
   isTasksAppPath,
   parseTaskViewFromPath,
   taskViewFromSegment,
@@ -43,6 +44,16 @@ describe("task-view-url", () => {
   it("detects tasks app paths", () => {
     expect(isTasksAppPath("/app")).toBe(true);
     expect(isTasksAppPath("/app/cards")).toBe(true);
+    expect(isTasksAppPath("/app/cards/1")).toBe(true);
     expect(isTasksAppPath("/stats")).toBe(false);
+  });
+
+  it("detects exact tasks app paths (no junk segments)", () => {
+    expect(isExactTasksAppPath("/app")).toBe(true);
+    expect(isExactTasksAppPath("/app/cards")).toBe(true);
+    expect(isExactTasksAppPath("/app/plan")).toBe(true);
+    expect(isExactTasksAppPath("/app/cards/1")).toBe(false);
+    expect(isExactTasksAppPath("/app/nope")).toBe(false);
+    expect(isExactTasksAppPath("/stats")).toBe(false);
   });
 });
