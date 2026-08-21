@@ -27,7 +27,7 @@ const MOOD_CLASS: Record<FociDotMood, string> = {
   worried: "text-amber-500 dark:text-amber-300",
 };
 
-/** Busy the Beaver — small mood face for the Done bar and empty states. Uses currentColor. */
+/** Beavy the Beaver — small mood face for the Done bar and empty states. Uses currentColor. */
 export function FociDot({
   mood = "ready",
   size = 48,

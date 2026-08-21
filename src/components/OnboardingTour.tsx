@@ -50,7 +50,7 @@ const STEPS: Step[] = [
     target: "[data-tour='done-tally']",
     title: "Done bar",
     description:
-      "Busy cheers when you finish a task, and looks sadder after quiet days. Tap the bar to jump to today's completions.",
+      "Beavy cheers when you finish a task, and looks wilted after quiet days. Tap the bar to jump to today's completions.",
     position: "bottom",
   },
   {

@@ -3785,7 +3785,7 @@ export default function TaskList({
                   ? "Add a task above to get started" 
                   : isListDrillIn
                     ? "Add a task above to get started"
-                    : "Busy is ready when you add a task — or start a project from a template"}
+                    : "Beavy’s dam is empty — add a task above, or start from a template"}
               </p>
               {!isTimeFilter && !isListDrillIn && (
                 <AddProjectButton onClick={openProjectManage} />

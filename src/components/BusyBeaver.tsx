@@ -1,5 +1,8 @@
 export const FOCI_BEAVER_SRC = "/images/busy-beaver-stud.png";
-export const BUSY_BEAVER_NAME = "Busy";
+/** Display name — paddle-tail beaver (tiny arms are a red herring). */
+export const BEAVY_NAME = "Beavy";
+/** @deprecated Use BEAVY_NAME */
+export const BUSY_BEAVER_NAME = BEAVY_NAME;
 
 interface BusyBeaverProps {
   alt?: string;
@@ -8,9 +11,9 @@ interface BusyBeaverProps {
   priority?: boolean;
 }
 
-/** Busy the Beaver — Foci mascot. Use on error, 404, about, and empty states. */
+/** Beavy the Beaver — Foci mascot. Use on error, 404, about, and empty states. */
 export function BusyBeaver({
-  alt = "Busy the Beaver",
+  alt = "Beavy the Beaver",
   size = 128,
   className = "",
   priority = false,

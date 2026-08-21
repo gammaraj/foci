@@ -73,7 +73,7 @@ export default function AboutPage() {
       <main className="flex-1 app-container py-12 sm:py-16">
         <article className="max-w-2xl mx-auto">
           <div className="flex justify-center mb-5">
-            <BusyBeaver alt="Busy the Beaver — Foci mascot" size={112} priority />
+            <BusyBeaver alt="Beavy the Beaver — Foci mascot" size={112} priority />
           </div>
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
             About
@@ -105,8 +105,8 @@ export default function AboutPage() {
                 {FOCI_ACCOUNT_POLICY}
               </li>
               <li>
-                <strong className="text-slate-800 dark:text-slate-200">Mascot:</strong> Busy the
-                Beaver — busy as a beaver
+                <strong className="text-slate-800 dark:text-slate-200">Mascot:</strong> Beavy the
+                Beaver — dam proud of finished tasks
               </li>
               <li>
                 <strong className="text-slate-800 dark:text-slate-200">Audience:</strong> Students,
@@ -128,8 +128,9 @@ export default function AboutPage() {
               browser tab so you can start work in seconds.
             </p>
             <p>
-              Our mascot is Busy the Beaver — busy as a beaver. Busy cheers when you finish a
-              task, looks a little sad after quiet days, and shows up if a page goes missing.
+              Our mascot is Beavy the Beaver — paddle tail, tiny arms, big energy. Beavy
+              cheers when you finish a task, looks a little wilted after quiet days, and shows
+              up if a page goes missing (usually with woodchips).
             </p>
             <p>
               A free account keeps tasks, settings, and streaks synced across devices — useful

@@ -158,7 +158,7 @@ describe("done-today", () => {
     expect(doneMascotSmile(0, 1)).toBeGreaterThan(doneMascotSmile(0, 2));
     expect(doneMascotSmile(0, 2)).toBeGreaterThan(doneMascotSmile(0, 5));
     expect(doneMascotSmile(0, 5)).toBeLessThan(0);
-    expect(doneMascotCaption(2, 0)).toMatch(/happy/);
+    expect(doneMascotCaption(2, 0)).toMatch(/buzzing/);
     expect(doneMascotCaption(0, 4)).toMatch(/4 days/);
   });
 
