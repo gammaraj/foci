@@ -2758,8 +2758,8 @@ export default function TaskList({
         </div>
       </FocusBarActions>
 
-      {/* Card toolbar — When / Layout (hidden on project drill-in) */}
-      {!focusMode && !projectManageOpen && !isListDrillIn && (
+      {/* Card toolbar — When / Layout (title is in App Focus Bar) */}
+      {!focusMode && !projectManageOpen && (
       <div className="no-print panel-pad-x py-1.5 roomy:py-2 text-slate-700 dark:text-white rounded-t-2xl border-b border-[color:var(--surface-border)] dark:border-[#243350]/80">
         {!focusMode && !projectManageOpen && (
           <div className="no-print hidden roomy:flex items-center gap-3 min-w-0">
@@ -2930,7 +2930,7 @@ export default function TaskList({
       )}
 
       {/* Time scope + One Thing — shared strip under When/Layout on every layout */}
-      {!projectManageOpen && !isListDrillIn && isTimeFilter && timeScopeDescription && (
+      {!projectManageOpen && isTimeFilter && timeScopeDescription && (
         <div className="no-print">
         <TimeFilterBanner
           description={timeScopeDescription}
@@ -2947,7 +2947,7 @@ export default function TaskList({
         </div>
       )}
 
-      {!projectManageOpen && !isListDrillIn && viewMode !== "plan" && tasksReady && (
+      {!projectManageOpen && viewMode !== "plan" && tasksReady && (
         (oneThingResolved.status !== "unset" || !oneThingPromptDismissed) && (
           <OneThingCard
             status={oneThingResolved.status}
