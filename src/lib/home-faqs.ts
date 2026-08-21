@@ -105,6 +105,16 @@ export const HOME_FAQS: HomeFaq[] = [
     answer:
       "Foci is a free web app available worldwide in English. Open usefoci.com in Chrome, Firefox, Safari, or Edge on desktop or mobile — no geographic restrictions. Install as a PWA for offline tasks and ambient sounds.",
   },
+  {
+    question: "Does Foci show ads?",
+    answer:
+      "The focus workspace at usefoci.com/app stays free of display ads so sessions stay calm. Public marketing and blog pages may show Google ads. Foci does not sell your task or focus content. Details: usefoci.com/privacy.",
+  },
+  {
+    question: "How do I contact Foci?",
+    answer:
+      "Email hello@usefoci.com or use usefoci.com/contact. For privacy questions see usefoci.com/privacy. Social: @usefoci on X/Twitter and github.com/gammaraj/foci.",
+  },
 ];
 
 export function homeFaqsToJsonLd(siteUrl: string) {

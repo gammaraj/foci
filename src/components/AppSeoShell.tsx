@@ -113,9 +113,17 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
             <strong>Where is Foci available?</strong> Worldwide in English at {SITE_URL}/app.
           </p>
           <p>
+            <strong>Does Foci show ads?</strong> No display ads in the /app workspace. Marketing and
+            blog pages may show Google ads. See {SITE_URL}/privacy.
+          </p>
+          <p>
             <a href={SITE_URL}>Home</a>
             {" · "}
             <a href={`${SITE_URL}/about`}>About Foci</a>
+            {" · "}
+            <a href={`${SITE_URL}/contact`}>Contact</a>
+            {" · "}
+            <a href={`${SITE_URL}/privacy`}>Privacy</a>
             {" · "}
             <a href={`${SITE_URL}/install`}>Add to Home Screen</a>
             {" · "}

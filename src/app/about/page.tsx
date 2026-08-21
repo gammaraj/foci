@@ -11,6 +11,7 @@ import {
   FOCI_ACCOUNT_POLICY,
   FOCI_SAME_AS,
   PRODUCT_DATE_MODIFIED,
+  CONTACT_EMAIL,
 } from "@/lib/product-facts";
 
 const siteUrl = SITE_URL;
@@ -55,6 +56,14 @@ const aboutJsonLd = {
     url: siteUrl,
     logo: `${siteUrl}/logo.svg`,
     sameAs: [...FOCI_SAME_AS],
+    email: CONTACT_EMAIL,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: CONTACT_EMAIL,
+      url: `${siteUrl}/contact`,
+      availableLanguage: "English",
+    },
     description: FOCI_ONE_LINER,
     areaServed: { "@type": "Place", name: "Worldwide" },
     knowsLanguage: "en",

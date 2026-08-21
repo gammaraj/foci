@@ -13,6 +13,16 @@ export const CONTACT_EMAIL = "hello@usefoci.com";
 /** Google AdSense publisher id (ca-pub-…). Used for site meta; ads not placed in /app. */
 export const ADSENSE_CLIENT_ID = "ca-pub-9368411015963509";
 
+/**
+ * Ads / privacy positioning for SEO, GEO, AEO, and llms.txt.
+ * Marketing/blog pages may show Google ads; the focus workspace stays ad-free.
+ */
+export const FOCI_ADS_POLICY =
+  "Foci keeps the focus workspace (usefoci.com/app) free of display ads. Public marketing and blog pages may show Google ads. We do not sell personal task or focus content. Privacy: usefoci.com/privacy · Contact: hello@usefoci.com.";
+
+export const FOCI_ADS_POLICY_SHORT =
+  "No display ads in /app. Marketing/blog pages may show Google ads. Contact hello@usefoci.com.";
+
 /** Bump when product or core marketing facts change (JSON-LD dateModified, llms version). */
 export const PRODUCT_DATE_MODIFIED = "2026-08-21";
 

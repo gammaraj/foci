@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AppNavbar from "@/components/AppNavbar";
 import { absolutePageTitle } from "@/lib/site-metadata";
-import { CONTACT_EMAIL, SITE_URL, FOCI_SAME_AS } from "@/lib/product-facts";
+import { CONTACT_EMAIL, SITE_URL, FOCI_SAME_AS, PRODUCT_DATE_MODIFIED } from "@/lib/product-facts";
 
 const title = "Contact Foci";
 const description =
-  "Contact the Foci team at usefoci.com — privacy questions, product feedback, and partnership inquiries.";
+  "Contact the Foci team at usefoci.com — privacy questions, product feedback, and partnership inquiries. Email hello@usefoci.com.";
 
 export const metadata: Metadata = {
   title: absolutePageTitle(title),
@@ -28,9 +28,40 @@ export const metadata: Metadata = {
   },
 };
 
+function safeJsonLd(obj: unknown): string {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
+const contactJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: title,
+  url: `${SITE_URL}/contact`,
+  description,
+  dateModified: PRODUCT_DATE_MODIFIED,
+  mainEntity: {
+    "@type": "Organization",
+    name: "Foci",
+    url: SITE_URL,
+    email: CONTACT_EMAIL,
+    sameAs: [...FOCI_SAME_AS],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: CONTACT_EMAIL,
+      url: `${SITE_URL}/contact`,
+      availableLanguage: "English",
+    },
+  },
+};
+
 export default function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(contactJsonLd) }}
+      />
       <AppNavbar />
 
       <main className="flex-1 app-container py-12 sm:py-16">

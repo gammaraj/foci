@@ -302,6 +302,10 @@ export default function InstallPage() {
             About
           </Link>
           {" · "}
+          <Link href="/contact" className="hover:text-blue-600 dark:hover:text-blue-400">
+            Contact
+          </Link>
+          {" · "}
           <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">
             Privacy
           </Link>
