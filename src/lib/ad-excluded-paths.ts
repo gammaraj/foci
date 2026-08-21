@@ -6,6 +6,7 @@ export const CROSS_PROMO_EXCLUDED_PATH_PATTERNS: RegExp[] = [
   /^\/pricing(\/|$)/,
   /^\/checkout(\/|$)/,
   /^\/login(\/|$)/,
+  /^\/admin(\/|$)/,
 ];
 
 export function isCrossPromoExcludedPath(pathname: string): boolean {

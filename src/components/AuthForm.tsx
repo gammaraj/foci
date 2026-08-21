@@ -7,7 +7,7 @@ import { BusyBeaver } from "@/components/BusyBeaver";
 
 type AuthMode = "sign-in" | "sign-up";
 
-export default function AuthForm() {
+export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +40,8 @@ export default function AuthForm() {
         setError(error.message);
       } else {
         trackLogin("email");
+        window.location.assign(nextPath);
+        return;
       }
     }
     setLoading(false);
@@ -47,10 +49,14 @@ export default function AuthForm() {
 
   const handleGoogleSignIn = async () => {
     trackLogin("google");
+    const callback = new URL("/auth/callback", window.location.origin);
+    if (nextPath && nextPath !== "/app") {
+      callback.searchParams.set("next", nextPath);
+    }
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callback.toString(),
       },
     });
   };

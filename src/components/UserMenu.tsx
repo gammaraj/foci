@@ -7,6 +7,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { startOnboardingTour } from "@/lib/onboarding";
 import { WHATS_NEW_SHOW_EVENT, hasSeenWhatsNew } from "@/lib/whats-new";
 import { isStandaloneDisplay } from "@/lib/pwa-install";
+import { isAdminEmail } from "@/lib/admin";
 
 export default function UserMenu() {
   const { user, signOut } = useAuth();
@@ -98,6 +99,18 @@ export default function UserMenu() {
           </div>
 
           <div className="py-1 border-b border-slate-100 dark:border-[#243350]">
+            {isAdminEmail(email) && (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 0h6m-7 4h8a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="flex-1">Admin</span>
+              </Link>
+            )}
             <button
               onClick={cycleTheme}
               className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors flex items-center gap-2.5"

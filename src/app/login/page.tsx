@@ -1,21 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthForm from "@/components/AuthForm";
 import AppNavbar from "@/components/AppNavbar";
+import { safeNextPath } from "@/lib/safe-next-path";
 
-export default function LoginPage() {
+function LoginBody() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = safeNextPath(searchParams.get("next"));
 
-  // If already logged in, redirect to the app
   React.useEffect(() => {
     if (!loading && user) {
-      router.replace("/app");
+      router.replace(nextPath);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, nextPath]);
 
   if (loading || user) {
     return (
@@ -31,11 +33,27 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-[360px]">
           <div className="text-center mb-8">
-            <p className="text-sm text-slate-500 dark:text-slate-400">Sign in to sync your tasks and streaks across devices</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Sign in to sync your tasks and streaks across devices
+            </p>
           </div>
-          <AuthForm />
+          <AuthForm nextPath={nextPath} />
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <LoginBody />
+    </Suspense>
   );
 }

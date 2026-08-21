@@ -3,6 +3,7 @@ Allow: /
 Disallow: /auth/
 Disallow: /api/
 Disallow: /login
+Disallow: /admin
 Disallow: /stats
 Disallow: /theme-lab
 Disallow: /sentry-example-page
