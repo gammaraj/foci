@@ -117,6 +117,13 @@ export type GaContentSegment = {
   views: number;
 };
 
+export type GaReferralRow = {
+  source: string;
+  medium: string;
+  sessions: number;
+  users: number;
+};
+
 export type AdminGaSummary = {
   propertyId: string;
   measurementId: string;
@@ -142,6 +149,7 @@ export type AdminGaSummary = {
   devices: GaChannelRow[];
   dailyUsers: GaDailyRow[];
   contentSegments: GaContentSegment[];
+  referralSources: GaReferralRow[];
 };
 
 export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
@@ -178,6 +186,7 @@ export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
     statsSeg,
     homeSeg,
     seoSeg,
+    referrals,
   ] = await Promise.all([
     runReport(token, propertyId, {
       dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
@@ -309,6 +318,13 @@ export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
         },
       },
     }),
+    runReport(token, propertyId, {
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dimensions: [{ name: "sessionSource" }, { name: "sessionMedium" }],
+      metrics: [{ name: "sessions" }, { name: "activeUsers" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 12,
+    }),
   ]);
 
   const m30 = overview30.rows?.[0];
@@ -404,5 +420,11 @@ export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
         views: metric(seoSeg.rows?.[0], 1),
       },
     ],
+    referralSources: (referrals.rows || []).map((r) => ({
+      source: r.dimensionValues?.[0]?.value ?? "(unknown)",
+      medium: r.dimensionValues?.[1]?.value ?? "(unknown)",
+      sessions: metric(r, 0),
+      users: metric(r, 1),
+    })),
   };
 }

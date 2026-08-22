@@ -38,30 +38,82 @@ function StatCard({ label, value, hint }: { label: string; value: string; hint?:
   );
 }
 
+const DAILY_CHART_BAR_MAX_PX = 72;
+
 function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/60 p-3">
+        <p className="text-sm text-slate-400">No daily data yet.</p>
+      </div>
+    );
+  }
+
   const max = Math.max(...rows.map((r) => r.users), 1);
+
   return (
     <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/60 p-3">
-      <div className="flex items-end gap-1 h-24">
+      <div className="flex items-end gap-0.5 sm:gap-1" style={{ minHeight: DAILY_CHART_BAR_MAX_PX + 18 }}>
         {rows.map((row) => {
-          const h = Math.max(4, Math.round((row.users / max) * 100));
-          const label = row.date.length === 8
-            ? `${row.date.slice(4, 6)}/${row.date.slice(6, 8)}`
-            : row.date;
+          const barPx =
+            row.users === 0 ? 0 : Math.max(3, Math.round((row.users / max) * DAILY_CHART_BAR_MAX_PX));
+          const label =
+            row.date.length === 8
+              ? `${row.date.slice(4, 6)}/${row.date.slice(6, 8)}`
+              : row.date;
           return (
-            <div key={row.date} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+            <div
+              key={row.date}
+              className="flex-1 flex flex-col items-center justify-end min-w-0"
+              style={{ height: DAILY_CHART_BAR_MAX_PX + 18 }}
+            >
               <div
                 className="w-full rounded-t bg-blue-500/80 dark:bg-blue-400/70"
-                style={{ height: `${h}%` }}
-                title={`${label}: ${row.users} users`}
+                style={{ height: barPx }}
+                title={`${label}: ${row.users} users, ${row.sessions} sessions`}
               />
-              <span className="text-[9px] text-slate-400 tabular-nums truncate w-full text-center">
+              <span className="mt-1 text-[9px] text-slate-400 tabular-nums truncate w-full text-center">
                 {label}
               </span>
             </div>
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function ReferralList({ rows }: { rows: AdminGaSummary["referralSources"] }) {
+  const total = rows.reduce((s, r) => s + r.sessions, 0) || 1;
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+        Referral sources (30d)
+      </h3>
+      <ul className="text-sm space-y-2 border border-slate-200/90 dark:border-[#243350] rounded-xl bg-white/60 dark:bg-[#131d30]/60 p-3">
+        {rows.map((r) => {
+          const label = `${r.source} / ${r.medium}`;
+          return (
+            <li key={label}>
+              <div className="flex justify-between gap-3 tabular-nums mb-1">
+                <span className="truncate font-mono text-xs text-slate-600 dark:text-slate-300">
+                  {label}
+                </span>
+                <span className="shrink-0 text-slate-500">
+                  {fmt(r.sessions)} sess · {fmt(r.users)}u
+                </span>
+              </div>
+              <div className="h-1.5 rounded-full bg-slate-100 dark:bg-[#1a2740] overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-emerald-500/70"
+                  style={{ width: `${(r.sessions / total) * 100}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
+        {rows.length === 0 && <li className="text-slate-400">No data</li>}
+      </ul>
     </div>
   );
 }
@@ -243,8 +295,9 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <BreakdownList title="Channels (30d)" rows={ga.channels} />
+            <ReferralList rows={ga.referralSources} />
             <BreakdownList title="Devices (30d)" rows={ga.devices} />
           </div>
 
