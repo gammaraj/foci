@@ -106,6 +106,11 @@ export const HOME_FAQS: HomeFaq[] = [
       "Foci is a free web app available worldwide in English. Open usefoci.com in Chrome, Firefox, Safari, or Edge on desktop or mobile — no geographic restrictions. Install as a PWA for offline tasks and ambient sounds.",
   },
   {
+    question: "Does Foci support recurring tasks?",
+    answer:
+      "Yes. Set daily, weekly, monthly, or yearly recurrence in the task detail drawer. When you complete a recurring task, Foci creates the next open occurrence with an advanced due date and reset subtasks. In shared projects you can complete recurring tasks, but the next occurrence is not auto-created.",
+  },
+  {
     question: "Does Foci show ads?",
     answer:
       "The focus workspace at usefoci.com/app stays free of display ads so sessions stay calm. Public marketing and blog pages may show Google ads. Foci does not sell your task or focus content. Details: usefoci.com/privacy.",

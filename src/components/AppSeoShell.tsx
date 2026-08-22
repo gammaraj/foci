@@ -37,6 +37,7 @@ const appJsonLd = {
     "Daily goals and streak tracking",
     "Card, list, bucket (kanban), calendar, and Smart Plan views",
     "Import from Todoist, Notion, Asana, Google Tasks",
+    "Recurring tasks (daily, weekly, monthly, yearly) with next occurrence on complete",
     "Installable PWA with offline support",
     "Optional free account for cross-device sync",
   ],

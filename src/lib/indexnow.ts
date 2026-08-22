@@ -152,6 +152,9 @@ export async function notifyCorePages(): Promise<{
     `${SITE_URL}/alternatives/forest`,
     `${SITE_URL}/alternatives/pomodoro-apps`,
     `${SITE_URL}/alternatives/focus-apps-for-students`,
+    `${SITE_URL}/contact`,
+    `${SITE_URL}/install`,
+    `${SITE_URL}/privacy`,
     `${SITE_URL}/llms.txt`,
     `${SITE_URL}/llms-full.txt`,
   ];
