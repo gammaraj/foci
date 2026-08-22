@@ -38,7 +38,7 @@ function StatCard({ label, value, hint }: { label: string; value: string; hint?:
   );
 }
 
-const DAILY_CHART_BAR_MAX_PX = 72;
+const DAILY_CHART_BAR_MAX_PX = 96;
 
 function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
   if (rows.length === 0) {
@@ -241,7 +241,7 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
 
       {ga && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3">
             <StatCard
               label="Users 30d"
               value={fmt(ga.users30d)}
@@ -264,44 +264,45 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
             <StatCard label="Engagement" value={pct(ga.engagementRate30d)} hint={`Bounce ${pct(ga.bounceRate30d)}`} />
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
-              Daily users (14d)
-            </h3>
-            <DailyTrend rows={ga.dailyUsers} />
+          <div className="grid xl:grid-cols-12 gap-6 items-start">
+            <div className="xl:col-span-8">
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                Daily users (14d)
+              </h3>
+              <DailyTrend rows={ga.dailyUsers} />
+            </div>
+            <div className="xl:col-span-4 mt-6 xl:mt-0">
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                Content segments (30d)
+              </h3>
+              <div className="grid sm:grid-cols-2 xl:grid-cols-1 gap-2">
+                {ga.contentSegments.map((seg) => (
+                  <div
+                    key={seg.segment}
+                    className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/70 dark:bg-[#131d30]/70 px-3 py-2 text-sm"
+                  >
+                    <p className="font-medium text-slate-800 dark:text-slate-200">{seg.segment}</p>
+                    <p className="tabular-nums text-slate-500 mt-0.5">
+                      {fmt(seg.users)} users · {fmt(seg.views)} views
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-6">
             <SignalTable title="Monetization signals" events={MONETIZATION_GA_EVENTS} counts={ga.signalCounts} />
             <SignalTable title="Product health" events={PRODUCT_HEALTH_GA_EVENTS} counts={ga.signalCounts} />
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
-              Content segments (30d)
-            </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {ga.contentSegments.map((seg) => (
-                <div
-                  key={seg.segment}
-                  className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/70 dark:bg-[#131d30]/70 px-3 py-2 text-sm"
-                >
-                  <p className="font-medium text-slate-800 dark:text-slate-200">{seg.segment}</p>
-                  <p className="tabular-nums text-slate-500 mt-0.5">
-                    {fmt(seg.users)} users · {fmt(seg.views)} views
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             <BreakdownList title="Channels (30d)" rows={ga.channels} />
             <ReferralList rows={ga.referralSources} />
             <BreakdownList title="Devices (30d)" rows={ga.devices} />
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 2xl:grid-cols-3 gap-6">
             <div>
               <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                 Top events (30d)
@@ -317,7 +318,7 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
                 ))}
               </ul>
             </div>
-            <div>
+            <div className="2xl:col-span-2">
               <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                 Top pages (30d)
               </h3>

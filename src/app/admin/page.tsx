@@ -20,6 +20,8 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const ADMIN_SHELL = "w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12";
+
 async function loadGa(): Promise<{ data: AdminGaSummary | null; error: string | null }> {
   try {
     const data = await fetchAdminGaSummary();
@@ -47,7 +49,7 @@ export default async function AdminPage() {
   return (
     <>
       <div className="border-b border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-[#0c1220]/50">
-        <div className="mx-auto max-w-5xl px-4 py-5 flex flex-wrap items-end justify-between gap-3">
+        <div className={`${ADMIN_SHELL} py-5 flex flex-wrap items-end justify-between gap-3`}>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Operator dashboard
@@ -58,14 +60,15 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      <main className="mx-auto max-w-5xl px-4 py-8 space-y-10">
+      <main className={`${ADMIN_SHELL} py-8 space-y-10`}>
         <AdminGaPanel ga={ga} error={gaError} />
 
-        <section aria-labelledby="ops-heading" className="space-y-3">
+        <div className="grid xl:grid-cols-5 gap-8">
+          <section aria-labelledby="ops-heading" className="space-y-3 xl:col-span-2">
           <h2 id="ops-heading" className="text-lg font-semibold text-slate-900 dark:text-white">
             Ops checklist
           </h2>
-          <ul className="grid sm:grid-cols-2 gap-2 text-sm">
+          <ul className="grid sm:grid-cols-2 xl:grid-cols-1 gap-2 text-sm">
             {[
               {
                 label: "AdSense",
@@ -95,7 +98,7 @@ export default async function AdminPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="plans-heading" className="space-y-4">
+        <section aria-labelledby="plans-heading" className="space-y-4 xl:col-span-3">
           <div>
             <h2 id="plans-heading" className="text-lg font-semibold text-slate-900 dark:text-white">
               Free / Pro (draft)
@@ -149,7 +152,9 @@ export default async function AdminPage() {
             {PRO_PRICE_DRAFT.monthly} · {PRO_PRICE_DRAFT.yearly}. {PRO_PRICE_DRAFT.note}
           </p>
         </section>
+        </div>
 
+        <div className="grid xl:grid-cols-2 gap-8">
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Realistic targets</h2>
           <ul className="grid sm:grid-cols-3 gap-2 text-sm">
@@ -167,7 +172,7 @@ export default async function AdminPage() {
           </ul>
         </section>
 
-        <section className="space-y-3 pb-8">
+        <section className="space-y-3 pb-8 xl:pb-0">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Quick links</h2>
           <ul className="flex flex-wrap gap-2 text-sm">
             {[
@@ -194,6 +199,7 @@ export default async function AdminPage() {
             CLI refresh: <code className="font-mono">npm run report:ga</code>
           </p>
         </section>
+        </div>
       </main>
     </>
   );
