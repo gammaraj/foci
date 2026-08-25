@@ -59,15 +59,18 @@ test.describe("App Page (unauthenticated)", () => {
     await expect(page.getByLabel(/Play ambient sound|Open player|Play /i).first()).toBeVisible();
   });
 
-  test("Spotify play opens the music player", async ({ page }) => {
+  test("Spotify play starts the selected playlist without opening the picker", async ({ page }) => {
     await page.getByLabel(/Music source:/i).first().click();
     await page.getByRole("option", { name: "Spotify" }).click();
 
     await page.getByLabel(/Play Peaceful Meditation/i).click();
-    const player = page.getByRole("dialog", { name: "Music player" });
-    await expect(player).toBeVisible();
-    await expect(player.getByText("Peaceful Meditation")).toBeVisible();
-    await expect(player.locator("iframe[title='Peaceful Meditation']")).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Music player" })).toHaveCount(0);
+
+    await page.getByLabel(/Show Peaceful Meditation options/i).click();
+    const picker = page.getByRole("dialog", { name: "Music player" });
+    await expect(picker).toBeVisible();
+    await expect(picker.getByText("Peaceful Meditation")).toBeVisible();
+    await expect(picker.locator("iframe")).toHaveCount(0);
   });
 
   test("can open settings panel", async ({ page }) => {
