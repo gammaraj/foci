@@ -141,7 +141,7 @@ export default function AppFocusBar() {
           <div id={TITLE_HOST_ID} className="min-w-0 shrink overflow-x-auto scrollbar-hide" />
 
           {/* Enough width to share the title row (any orientation) */}
-          <div className="no-print hidden min-[480px]:flex flex-1 min-w-0 justify-center overflow-hidden px-0.5">
+          <div className="no-print hidden min-[480px]:flex flex-1 min-w-0 justify-center overflow-x-auto overflow-y-visible px-0.5">
             {focusStrip}
           </div>
 

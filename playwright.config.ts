@@ -12,8 +12,8 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://127.0.0.1:3000',
-    trace: 'on-first-retry',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000",
+    trace: "on-first-retry",
   },
 
   projects: process.env.CI
@@ -38,12 +38,14 @@ export default defineConfig({
         },
       ],
 
-  webServer: {
-    command: process.env.CI
-      ? 'npm run start -- -H 127.0.0.1 -p 3000'
-      : 'npm run build && npm run start -- -H 127.0.0.1 -p 3000',
-    url: 'http://127.0.0.1:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
-  },
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : {
+        command: process.env.CI
+          ? "npm run start -- -H 127.0.0.1 -p 3000"
+          : "npm run build && npm run start -- -H 127.0.0.1 -p 3000",
+        url: "http://127.0.0.1:3000",
+        reuseExistingServer: !process.env.CI,
+        timeout: 180_000,
+      },
 });

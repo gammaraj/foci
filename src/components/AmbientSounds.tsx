@@ -1,6 +1,16 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, type MouseEvent } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  type MouseEvent,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import { createPortal } from "react-dom";
 import { MiniPlayPauseIcon, miniPlayButtonClass } from "@/components/FocusStripControls";
 import {
   getAmbientMode,
@@ -254,6 +264,111 @@ interface AmbientSoundsProps {
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
 
+type SpotifyEmbedController = {
+  togglePlay: () => void;
+  loadUri: (uri: string) => void;
+  addListener: (event: "playback_update", cb: (e: { data: { isPaused: boolean } }) => void) => void;
+};
+
+type SpotifyIFrameAPI = {
+  createController: (
+    el: HTMLElement,
+    opts: { uri?: string; width?: number | string; height?: number | string },
+    cb: (controller: SpotifyEmbedController) => void,
+  ) => void;
+};
+
+let spotifyIframeApi: SpotifyIFrameAPI | null = null;
+let spotifyIframeApiPromise: Promise<SpotifyIFrameAPI> | null = null;
+
+function loadSpotifyIframeApi(): Promise<SpotifyIFrameAPI> {
+  if (spotifyIframeApi) return Promise.resolve(spotifyIframeApi);
+  if (spotifyIframeApiPromise) return spotifyIframeApiPromise;
+  spotifyIframeApiPromise = new Promise((resolve, reject) => {
+    const win = window as Window & { onSpotifyIframeApiReady?: (api: SpotifyIFrameAPI) => void };
+    const prev = win.onSpotifyIframeApiReady;
+    win.onSpotifyIframeApiReady = (api) => {
+      prev?.(api);
+      spotifyIframeApi = api;
+      resolve(api);
+    };
+    if (document.querySelector('script[src="https://open.spotify.com/embed/iframe-api/v1"]')) return;
+    const script = document.createElement("script");
+    script.src = "https://open.spotify.com/embed/iframe-api/v1";
+    script.async = true;
+    script.onerror = () => {
+      spotifyIframeApiPromise = null;
+      reject(new Error("Spotify embed API failed to load"));
+    };
+    document.head.appendChild(script);
+  });
+  return spotifyIframeApiPromise;
+}
+
+function StripMusicPopover({
+  anchorRef,
+  onClose,
+  children,
+}: {
+  anchorRef: RefObject<HTMLElement | null>;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 8 });
+
+  const updatePos = useCallback(() => {
+    const anchor = anchorRef.current;
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const width = Math.min(320, window.innerWidth - 16);
+    let left = rect.left;
+    if (left + width > window.innerWidth - 8) left = window.innerWidth - width - 8;
+    if (left < 8) left = 8;
+    setPos({ top: rect.bottom + 4, left });
+  }, [anchorRef]);
+
+  useLayoutEffect(() => {
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [updatePos]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    const onDown = (e: globalThis.MouseEvent) => {
+      const target = e.target as Node;
+      if (panelRef.current?.contains(target) || anchorRef.current?.contains(target)) return;
+      onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [anchorRef, onClose]);
+
+  return createPortal(
+    <div
+      ref={panelRef}
+      role="dialog"
+      aria-label="Music player"
+      style={{ top: pos.top, left: pos.left, width: "min(20rem, calc(100vw - 1.5rem))" }}
+      className="fixed z-[80] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2 shadow-lg shadow-slate-900/10 space-y-2"
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
+
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const stripEmbedded = inline && embedded;
   const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
@@ -268,7 +383,12 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const [collapsed, setCollapsed] = useState(true);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
+  const [spotifyPlaying, setSpotifyPlaying] = useState(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
+  const stripAnchorRef = useRef<HTMLDivElement>(null);
+  const spotifyIframeRef = useRef<HTMLIFrameElement>(null);
+  const spotifyControllerRef = useRef<SpotifyEmbedController | null>(null);
+  const pendingSpotifyPlayRef = useRef(false);
 
   useEffect(() => {
     setMode(getAmbientMode());
@@ -313,6 +433,43 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const gainRef = useRef<GainNode | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
   const scIframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  useEffect(() => {
+    if (mode !== "spotify") {
+      spotifyControllerRef.current = null;
+      setSpotifyPlaying(false);
+      return;
+    }
+    const iframe = spotifyIframeRef.current;
+    if (!iframe) return;
+    let cancelled = false;
+    loadSpotifyIframeApi()
+      .then((api) => {
+        if (cancelled || !spotifyIframeRef.current) return;
+        api.createController(
+          spotifyIframeRef.current,
+          { uri: `spotify:playlist:${SPOTIFY_PLAYLISTS[spotifyIdx]?.uri}` },
+          (controller) => {
+            if (cancelled) return;
+            spotifyControllerRef.current = controller;
+            controller.addListener("playback_update", (e) => {
+              setSpotifyPlaying(!e.data.isPaused);
+            });
+            if (pendingSpotifyPlayRef.current) {
+              pendingSpotifyPlayRef.current = false;
+              controller.togglePlay();
+            }
+          },
+        );
+      })
+      .catch(() => {
+        /* Embed iframe still works without the controller API. */
+      });
+    return () => {
+      cancelled = true;
+      spotifyControllerRef.current = null;
+    };
+  }, [mode, collapsed, spotifyIdx]);
 
   useEffect(() => {
     if (!modeMenuOpen) return;
@@ -438,6 +595,15 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     }
     if (mode === "soundcloud") {
       scCommand("toggle");
+      return;
+    }
+    if (mode === "spotify") {
+      setCollapsed(false);
+      if (spotifyControllerRef.current) {
+        spotifyControllerRef.current.togglePlay();
+      } else {
+        pendingSpotifyPlayRef.current = true;
+      }
       return;
     }
     setCollapsed(false);
@@ -577,7 +743,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
-        <div className="relative flex items-center gap-1 min-w-0 w-full sm:w-auto max-w-full">
+        <div className="relative flex items-center gap-1 min-w-0 w-full sm:w-auto max-w-full" ref={stripAnchorRef}>
           {modePicker}
           <button
             type="button"
@@ -594,7 +760,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             type="button"
             onClick={handleMiniPlayPause}
             className={`flex-shrink-0 ${miniPlayButtonClass(
-              !!(mode === "sounds" && activeSound) || (mode === "soundcloud" && !collapsed) || showYt,
+              !!(mode === "sounds" && activeSound) ||
+                (mode === "soundcloud" && !collapsed) ||
+                (mode === "spotify" && spotifyPlaying) ||
+                showYt,
               true
             )}`}
             aria-label={
@@ -604,20 +773,37 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                   : "Play ambient sound"
                 : mode === "soundcloud"
                   ? "Play or pause SoundCloud"
-                  : "Open player"
+                  : mode === "spotify"
+                    ? spotifyPlaying
+                      ? `Pause ${spotifyPlaylist.label}`
+                      : `Play ${spotifyPlaylist.label}`
+                    : "Open player"
             }
-            title={mode === "sounds" ? (activeSound ? "Pause" : "Play") : mode === "soundcloud" ? "Play / Pause" : "Expand to play"}
+            title={
+              mode === "sounds"
+                ? activeSound
+                  ? "Pause"
+                  : "Play"
+                : mode === "soundcloud"
+                  ? "Play / Pause"
+                  : mode === "spotify"
+                    ? spotifyPlaying
+                      ? "Pause"
+                      : "Play"
+                    : "Expand to play"
+            }
           >
-            <MiniPlayPauseIcon playing={mode === "sounds" && !!activeSound} size="md" />
+            <MiniPlayPauseIcon
+              playing={
+                (mode === "sounds" && !!activeSound) || (mode === "spotify" && spotifyPlaying)
+              }
+              size="md"
+            />
           </button>
 
           {/* Expanded music — popover so the Tasks header stays one row */}
           {!collapsed && (
-            <div
-              className="absolute left-0 sm:left-0 top-full mt-1 z-50 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2 shadow-lg shadow-slate-900/10 space-y-2"
-              role="dialog"
-              aria-label="Music player"
-            >
+            <StripMusicPopover anchorRef={stripAnchorRef} onClose={() => setCollapsed(true)}>
               {mode === "sounds" && (
                 <div className="grid grid-cols-4 gap-1.5">
                   {SOUNDS.map((s) => (
@@ -658,11 +844,12 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               {mode === "spotify" && (
                 <>
                   <iframe
+                    ref={spotifyIframeRef}
+                    key={spotifyPlaylist.uri}
                     src={`https://open.spotify.com/embed/playlist/${spotifyPlaylist.uri}?utm_source=generator&theme=0`}
                     width="100%"
                     height={80}
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
                     className="border-0 rounded-lg"
                     title={spotifyPlaylist.label}
                   />
@@ -728,7 +915,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               >
                 Close
               </button>
-            </div>
+            </StripMusicPopover>
           )}
         </div>
       ) : (
@@ -1010,6 +1197,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {mode === "spotify" && (
         <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
           <iframe
+            ref={!stripEmbedded ? spotifyIframeRef : undefined}
             src={`https://open.spotify.com/embed/playlist/${spotifyPlaylist.uri}?utm_source=generator&theme=0`}
             width="100%"
             height={stripEmbedded ? 80 : 120}

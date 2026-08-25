@@ -1,110 +1,95 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function dismissChrome(page: Page) {
+  await page.getByRole("button", { name: "Skip tour" }).click({ timeout: 5000 }).catch(() => {});
+  await page.getByRole("button", { name: "Got it" }).click({ timeout: 2000 }).catch(() => {});
+}
+
+async function quickAddTask(page: Page, title: string) {
+  await page.getByLabel("Quick Add").first().click();
+  const input = page.getByPlaceholder("Quick add a task…");
+  await input.fill(title);
+  await input.press("Enter");
+  await expect(page.getByText(title).first()).toBeVisible();
+}
 
 test.describe("App Page (unauthenticated)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/app");
+    await dismissChrome(page);
   });
 
   test("renders the timer display", async ({ page }) => {
-    await expect(page.locator("text=/\\d{2}:\\d{2}/").first()).toBeVisible();
+    const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
+    await expect(dock).toBeVisible();
+    await expect(dock.getByText(/\d{2}:\d{2}/)).toBeVisible();
   });
 
-  test("renders daily progress section", async ({ page }) => {
-    await expect(page.getByText("Today's Sessions", { exact: false })).toBeVisible();
+  test("renders the tasks panel", async ({ page }) => {
+    await expect(page.getByText("Tasks", { exact: true }).first()).toBeVisible();
   });
 
-  test("renders task list with input", async ({ page }) => {
-    const taskInput = page.locator('input[type="text"]').first();
-    await expect(taskInput).toBeVisible();
+  test("renders task list with Quick Add", async ({ page }) => {
+    await expect(page.getByLabel("Quick Add").first()).toBeVisible();
   });
 
   test("can add a new task", async ({ page }) => {
-    const taskInput = page.locator('input[type="text"]').first();
-    await taskInput.fill("Test task from Playwright");
-    await taskInput.press("Enter");
-
-    await expect(page.getByText("Test task from Playwright")).toBeVisible();
+    await quickAddTask(page, "Test task from Playwright");
   });
 
   test("can complete a task via checkbox button", async ({ page }) => {
-    const taskInput = page.locator('input[type="text"]').first();
-    await taskInput.fill("Task to complete");
-    await taskInput.press("Enter");
-    await expect(page.getByText("Task to complete")).toBeVisible();
-
-    // The checkbox is a button with aria-label: Mark "Task to complete" complete
-    const checkbox = page.getByLabel('Mark "Task to complete" complete');
-    await checkbox.click();
-
-    // After completion, the task text should have line-through styling
-    await expect(page.locator('[class*="line-through"]').filter({ hasText: "Task to complete" })).toBeVisible();
+    await quickAddTask(page, "Task to complete");
+    await page.getByLabel('Mark "Task to complete" complete').click();
+    await expect(page.getByLabel('Mark "Task to complete" complete')).toHaveCount(0);
+    await expect(page.getByText(/Done today/).first()).toBeVisible();
   });
 
   test("can delete a task", async ({ page }) => {
-    const taskInput = page.locator('input[type="text"]').first();
-    await taskInput.fill("Task to delete");
-    await taskInput.press("Enter");
-    await expect(page.getByText("Task to delete")).toBeVisible();
-
-    // Hover on the task row to reveal action buttons
-    await page.getByText("Task to delete").hover();
-
-    // Click the delete button (aria-label contains "Delete")
-    const deleteBtn = page.getByLabel(/delete.*task to delete/i);
-    if ((await deleteBtn.count()) > 0) {
-      await deleteBtn.click();
-    } else {
-      // Fallback: find delete button near the task text
-      const taskContainer = page.getByText("Task to delete").locator("..").locator("..");
-      await taskContainer.getByRole("button").last().click();
-    }
-
-    await expect(page.getByText("Task to delete")).not.toBeVisible();
+    await quickAddTask(page, "Task to delete");
+    const row = page.getByLabel('Open "Task to delete". Double-click to rename.');
+    await row.hover();
+    await page.getByLabel('More actions for "Task to delete"').click();
+    await page.getByRole("menuitem", { name: "Delete" }).click();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(page.getByText("Task to delete")).toHaveCount(0);
   });
 
-  test("renders ambient sounds section", async ({ page }) => {
-    await expect(page.getByText("Music & Sounds")).toBeVisible();
+  test("renders music source control", async ({ page }) => {
+    await expect(page.getByLabel(/Music source:/i).first()).toBeVisible();
+    await expect(page.getByLabel(/Play ambient sound|Open player|Play /i).first()).toBeVisible();
   });
 
-  test("can expand ambient sounds panel", async ({ page }) => {
-    // Click the collapse toggle button
-    await page.getByText("Music & Sounds").click();
+  test("Spotify play opens the music player", async ({ page }) => {
+    await page.getByLabel(/Music source:/i).first().click();
+    await page.getByRole("option", { name: "Spotify" }).click();
 
-    // After expanding, the Sounds tab should be visible
-    await expect(page.getByText("Sounds", { exact: false }).first()).toBeVisible();
-  });
-
-  test("renders settings button", async ({ page }) => {
-    const settingsBtn = page.getByLabel("Open settings");
-    await expect(settingsBtn).toBeVisible();
+    await page.getByLabel(/Play Peaceful Meditation/i).click();
+    const player = page.getByRole("dialog", { name: "Music player" });
+    await expect(player).toBeVisible();
+    await expect(player.getByText("Peaceful Meditation")).toBeVisible();
+    await expect(player.locator("iframe[title='Peaceful Meditation']")).toBeVisible();
   });
 
   test("can open settings panel", async ({ page }) => {
-    await page.getByLabel("Open settings").click();
-    // Settings panel should appear with duration options
-    await expect(page.getByText("Work Duration", { exact: false })).toBeVisible();
+    await page.getByLabel("Task panel menu").click();
+    await page.getByRole("button", { name: "Settings" }).click();
+    await expect(page.getByText("Work (min)", { exact: false })).toBeVisible();
   });
 
   test("layout is responsive - mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/app");
-
-    // Timer and tasks should both be visible (stacked)
-    await expect(page.locator("text=/\\d{2}:\\d{2}/").first()).toBeVisible();
+    await dismissChrome(page);
+    const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
+    await expect(dock).toBeVisible();
+    await expect(page.getByLabel("Quick Add").first()).toBeVisible();
   });
 
   test("mobile: saving preselected today on an undated task persists", async ({ page }, testInfo) => {
     test.skip(!testInfo.project.use?.isMobile, "custom date sheet is for touch/iOS");
 
-    await page.getByRole("button", { name: "Skip tour" }).click({ timeout: 5000 }).catch(() => {});
-    await page.getByRole("button", { name: "Got it" }).click({ timeout: 2000 }).catch(() => {});
-
     const title = `Undated due ${Date.now()}`;
-    await page.getByLabel("Quick Add").first().click();
-    const quickAdd = page.getByPlaceholder("Quick add a task…");
-    await quickAdd.fill(title);
-    await quickAdd.press("Enter");
-    await expect(page.getByText(title)).toBeVisible();
+    await quickAddTask(page, title);
 
     await page.getByLabel(`Open "${title}". Double-click to rename.`).click();
     const details = page.getByRole("dialog", { name: `Task details: ${title}` });

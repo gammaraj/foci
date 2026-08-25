@@ -44,7 +44,7 @@ export default function DailyQuoteBanner({
         aria-label="Focus timer and music"
       >
         {hasMusic && (
-          <div className="min-w-0 shrink flex items-center gap-1 overflow-hidden">
+          <div className="min-w-0 shrink flex items-center gap-1 overflow-visible">
             {musicToolbar}
           </div>
         )}
