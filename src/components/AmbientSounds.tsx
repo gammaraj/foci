@@ -265,9 +265,12 @@ const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
 
 type SpotifyEmbedController = {
+  play?: () => void;
+  pause?: () => void;
   togglePlay: () => void;
   loadUri: (uri: string) => void;
-  addListener: (event: "playback_update", cb: (e: { data: { isPaused: boolean } }) => void) => void;
+  destroy?: () => void;
+  addListener: (event: "playback_update" | "ready", cb: (e: { data: { isPaused: boolean } }) => void) => void;
 };
 
 type SpotifyIFrameAPI = {
@@ -278,23 +281,42 @@ type SpotifyIFrameAPI = {
   ) => void;
 };
 
+type SpotifyApiWindow = Window & {
+  onSpotifyIframeApiReady?: (api: SpotifyIFrameAPI) => void;
+  __fociSpotifyIframeApi?: SpotifyIFrameAPI;
+};
+
+const SPOTIFY_IFRAME_API_SRC = "https://open.spotify.com/embed/iframe-api/v1";
+
 let spotifyIframeApi: SpotifyIFrameAPI | null = null;
 let spotifyIframeApiPromise: Promise<SpotifyIFrameAPI> | null = null;
 
 function loadSpotifyIframeApi(): Promise<SpotifyIFrameAPI> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Spotify embed API is browser-only"));
+  }
+  const win = window as SpotifyApiWindow;
+  if (win.__fociSpotifyIframeApi) return Promise.resolve(win.__fociSpotifyIframeApi);
   if (spotifyIframeApi) return Promise.resolve(spotifyIframeApi);
   if (spotifyIframeApiPromise) return spotifyIframeApiPromise;
   spotifyIframeApiPromise = new Promise((resolve, reject) => {
-    const win = window as Window & { onSpotifyIframeApiReady?: (api: SpotifyIFrameAPI) => void };
+    const settle = (api: SpotifyIFrameAPI) => {
+      spotifyIframeApi = api;
+      win.__fociSpotifyIframeApi = api;
+      resolve(api);
+    };
     const prev = win.onSpotifyIframeApiReady;
     win.onSpotifyIframeApiReady = (api) => {
       prev?.(api);
-      spotifyIframeApi = api;
-      resolve(api);
+      settle(api);
     };
-    if (document.querySelector('script[src="https://open.spotify.com/embed/iframe-api/v1"]')) return;
+    if (win.__fociSpotifyIframeApi) {
+      settle(win.__fociSpotifyIframeApi);
+      return;
+    }
+    if (document.querySelector(`script[src^="${SPOTIFY_IFRAME_API_SRC}"]`)) return;
     const script = document.createElement("script");
-    script.src = "https://open.spotify.com/embed/iframe-api/v1";
+    script.src = SPOTIFY_IFRAME_API_SRC;
     script.async = true;
     script.onerror = () => {
       spotifyIframeApiPromise = null;
@@ -303,6 +325,32 @@ function loadSpotifyIframeApi(): Promise<SpotifyIFrameAPI> {
     document.head.appendChild(script);
   });
   return spotifyIframeApiPromise;
+}
+
+if (typeof window !== "undefined") {
+  const win = window as SpotifyApiWindow;
+  const prev = win.onSpotifyIframeApiReady;
+  win.onSpotifyIframeApiReady = (api) => {
+    prev?.(api);
+    win.__fociSpotifyIframeApi = api;
+    spotifyIframeApi = api;
+  };
+  if (!document.querySelector(`script[src^="${SPOTIFY_IFRAME_API_SRC}"]`)) {
+    const script = document.createElement("script");
+    script.src = SPOTIFY_IFRAME_API_SRC;
+    script.async = true;
+    document.head.appendChild(script);
+  }
+}
+
+function spotifyStart(controller: SpotifyEmbedController) {
+  if (typeof controller.play === "function") controller.play();
+  else controller.togglePlay();
+}
+
+function spotifyStop(controller: SpotifyEmbedController) {
+  if (typeof controller.pause === "function") controller.pause();
+  else controller.togglePlay();
 }
 
 function StripMusicPopover({
@@ -386,7 +434,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const [spotifyPlaying, setSpotifyPlaying] = useState(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const stripAnchorRef = useRef<HTMLDivElement>(null);
-  const spotifyIframeRef = useRef<HTMLIFrameElement>(null);
   const spotifyControllerRef = useRef<SpotifyEmbedController | null>(null);
   const pendingSpotifyPlayRef = useRef(false);
   const spotifyIdxRef = useRef(0);
@@ -446,18 +493,43 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       setSpotifyPlaying(false);
       return;
     }
-    const iframe = spotifyIframeRef.current;
-    if (!iframe) return;
     let cancelled = false;
+    // Spotify will not start playback in an off-screen iframe. Keep a real
+    // in-viewport host (visually hidden) so header play can use the IFrame API.
+    const root = document.createElement("div");
+    root.setAttribute("data-foci-spotify-embed", "");
+    root.setAttribute("aria-hidden", "true");
+    Object.assign(root.style, {
+      position: "fixed",
+      left: "0px",
+      bottom: "0px",
+      width: "352px",
+      height: "80px",
+      opacity: "0.01",
+      pointerEvents: "none",
+      zIndex: "0",
+      overflow: "hidden",
+    });
+    const mount = document.createElement("div");
+    root.appendChild(mount);
+    document.body.appendChild(root);
+
     loadSpotifyIframeApi()
       .then((api) => {
-        if (cancelled || !spotifyIframeRef.current) return;
+        if (cancelled) return;
         const uri = `spotify:playlist:${SPOTIFY_PLAYLISTS[spotifyIdxRef.current]?.uri}`;
         api.createController(
-          spotifyIframeRef.current,
-          { uri },
+          mount,
+          { uri, width: 352, height: 80 },
           (controller) => {
-            if (cancelled) return;
+            if (cancelled) {
+              controller.destroy?.();
+              return;
+            }
+            root.querySelector("iframe")?.setAttribute(
+              "allow",
+              "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
+            );
             spotifyControllerRef.current = controller;
             spotifyLoadedUriRef.current = uri;
             controller.addListener("playback_update", (e) => {
@@ -470,17 +542,23 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             }
             if (pendingSpotifyPlayRef.current) {
               pendingSpotifyPlayRef.current = false;
-              controller.togglePlay();
+              spotifyStart(controller);
             }
           },
         );
       })
       .catch(() => {
-        /* Embed iframe still works without the controller API. */
+        /* Header play needs the IFrame API; the playlist picker still works. */
       });
     return () => {
       cancelled = true;
+      try {
+        spotifyControllerRef.current?.destroy?.();
+      } catch {
+        /* ignore */
+      }
       spotifyControllerRef.current = null;
+      root.remove();
     };
   }, [mode]);
 
@@ -620,8 +698,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       return;
     }
     if (mode === "spotify") {
-      if (spotifyControllerRef.current) {
-        spotifyControllerRef.current.togglePlay();
+      const controller = spotifyControllerRef.current;
+      if (controller) {
+        if (spotifyPlaying) spotifyStop(controller);
+        else spotifyStart(controller);
       } else {
         pendingSpotifyPlayRef.current = true;
       }
@@ -1063,29 +1143,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         </button>
         </div>
       </div>
-      )}
-
-      {/* Spotify embed stays mounted when collapsed so header play/pause works */}
-      {mode === "spotify" && (
-        <div
-          className={
-            stripEmbedded || collapsed
-              ? "fixed left-[-200vw] top-0 w-[352px] h-[80px] overflow-hidden opacity-0 pointer-events-none"
-              : ""
-          }
-          aria-hidden={stripEmbedded || collapsed}
-        >
-          <iframe
-            ref={spotifyIframeRef}
-            src={`https://open.spotify.com/embed/playlist/${SPOTIFY_PLAYLISTS[0].uri}?utm_source=generator&theme=0`}
-            width="100%"
-            height={stripEmbedded ? 80 : 120}
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            className="border-0"
-            title={spotifyPlaylist.label}
-            tabIndex={stripEmbedded || collapsed ? -1 : 0}
-          />
-        </div>
       )}
 
       {/* SoundCloud embed stays mounted when collapsed so mini player controls work */}

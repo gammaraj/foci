@@ -62,9 +62,11 @@ test.describe("App Page (unauthenticated)", () => {
   test("Spotify play starts the selected playlist without opening the picker", async ({ page }) => {
     await page.getByLabel(/Music source:/i).first().click();
     await page.getByRole("option", { name: "Spotify" }).click();
+    await expect(page.locator("[data-foci-spotify-embed] iframe")).toBeAttached({ timeout: 15_000 });
 
     await page.getByLabel(/Play Peaceful Meditation/i).click();
     await expect(page.getByRole("dialog", { name: "Music player" })).toHaveCount(0);
+    await expect(page.getByLabel(/Pause Peaceful Meditation/i).first()).toBeVisible({ timeout: 10_000 });
 
     await page.getByLabel(/Show Peaceful Meditation options/i).click();
     const picker = page.getByRole("dialog", { name: "Music player" });
