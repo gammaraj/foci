@@ -32,10 +32,19 @@ export async function proxy(request: NextRequest) {
 
   // Generate a per-request nonce for CSP
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const path = request.nextUrl.pathname;
+  // Spotify's embed iframe API evals a string. Limit that exception to the
+  // workspace (where the player runs), not the public marketing pages.
+  const allowUnsafeEval =
+    isDev ||
+    path === "/app" ||
+    path.startsWith("/app/") ||
+    path === "/stats" ||
+    path.startsWith("/stats/");
 
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.googleadservices.com https://www.google.com https://open.spotify.com https://embed-cdn.spotifycdn.com https://*.spotifycdn.com`,
+    `script-src 'self' 'nonce-${nonce}'${allowUnsafeEval ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.googleadservices.com https://www.google.com https://open.spotify.com https://embed-cdn.spotifycdn.com https://*.spotifycdn.com`,
     `worker-src 'self' blob:`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https://*.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com https://*.googlesyndication.com https://*.google.com https://*.gstatic.com`,
