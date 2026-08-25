@@ -2,6 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { analyticsPagePath } from "@/lib/ga-attribution";
 
 function shouldTrackPageView(): boolean {
   if (typeof window === "undefined") return false;
@@ -20,8 +21,8 @@ export default function PageViewAnalytics() {
   useEffect(() => {
     if (!shouldTrackPageView()) return;
 
-    const query = searchParams?.toString();
-    const pagePath = query ? `${pathname}?${query}` : pathname;
+    const query = searchParams?.toString() ?? "";
+    const pagePath = analyticsPagePath(pathname, query);
 
     // Initial load is sent by gtag config; avoid duplicate on first mount.
     if (isFirst.current) {

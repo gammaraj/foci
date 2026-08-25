@@ -114,8 +114,8 @@ export const GSC_RELATED_LINKS: Record<string, readonly string[]> = {
   ],
   "flowtime-technique-guide": [
     "pomodoro-vs-flowtime-vs-52-17",
-    "52-17-rule-guide",
     "best-free-pomodoro-apps-2026",
+    "best-focus-apps-for-students-2026",
   ],
   "best-free-pomodoro-apps-2026": [
     "pomodoro-vs-flowtime-vs-52-17",
@@ -124,8 +124,8 @@ export const GSC_RELATED_LINKS: Record<string, readonly string[]> = {
   ],
   "best-music-for-studying-and-focus": [
     "brown-noise-for-studying-and-focus",
+    "foci-vs-focusatwill",
     "best-free-pomodoro-apps-2026",
-    "how-to-stay-focused-while-studying",
   ],
   "52-17-rule-guide": [
     "pomodoro-vs-flowtime-vs-52-17",
@@ -172,10 +172,25 @@ export const GSC_RELATED_LINKS: Record<string, readonly string[]> = {
     "best-music-for-studying-and-focus",
     "pomodoro-technique-guide",
   ],
+  "pomodoro-technique-guide": [
+    "best-free-pomodoro-apps-2026",
+    "pomodoro-vs-flowtime-vs-52-17",
+    "foci-vs-forest-app",
+  ],
+  "how-to-stop-procrastinating": [
+    "two-minute-rule-productivity",
+    "best-free-pomodoro-apps-2026",
+    "pomodoro-technique-guide",
+  ],
   "forest-app-alternatives": [
     "foci-vs-forest-app",
     "best-free-pomodoro-apps-2026",
     "best-focus-apps-for-students-2026",
+  ],
+  "two-minute-rule-productivity": [
+    "how-to-stop-procrastinating",
+    "best-free-pomodoro-apps-2026",
+    "pomodoro-technique-guide",
   ],
 };
 

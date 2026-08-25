@@ -4,6 +4,7 @@ import AppNavbar from "@/components/AppNavbar";
 import { getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
 import GuideLinkHub from "@/components/GuideLinkHub";
+import CompareHubLinks from "@/components/CompareHubLinks";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import CertStudInboundRedirect from "@/components/CertStudInboundRedirect";
 import BoostLogikInboundRedirect from "@/components/BoostLogikInboundRedirect";
@@ -207,16 +208,16 @@ export default function LandingPage() {
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
-              href="/login"
+              href="/app"
               className="btn-primary w-full sm:w-auto px-8 py-3.5 text-base"
             >
-              Create free account
+              Try without signing in
             </Link>
             <Link
-              href="/app"
+              href="/login"
               className="btn-secondary w-full sm:w-auto px-7 py-3.5 text-base"
             >
-              Try without signing in
+              Create free account
             </Link>
           </div>
         </section>
@@ -410,6 +411,7 @@ export default function LandingPage() {
         {/* Focus guides hub — internal links for SEO */}
         <section className="w-full max-w-6xl mx-auto pb-12 sm:pb-16 px-0">
           <GuideLinkHub />
+          <CompareHubLinks className="mt-10 max-w-2xl mx-auto text-center" />
         </section>
 
         {/* Account CTA */}
@@ -497,16 +499,16 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link
-              href="/login"
+              href="/app"
               className="btn-primary px-8 py-3.5 text-base"
             >
-              Create free account
+              Try without signing in
             </Link>
             <Link
-              href="/app"
+              href="/login"
               className="btn-secondary px-7 py-3.5 text-base"
             >
-              Try without signing in
+              Create free account
             </Link>
           </div>
         </section>

@@ -7,6 +7,8 @@ import { BLOG_POST_FAQS, BLOG_POST_META_OVERRIDES, GSC_RELATED_LINKS } from "@/l
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { SAT_TUTORING_BLOG_SLUGS } from "@/lib/partner-promos";
 import GuideLinkHub from "@/components/GuideLinkHub";
+import CompareHubLinks from "@/components/CompareHubLinks";
+import BlogTryFociBar from "@/components/BlogTryFociBar";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import AppNavbar from "@/components/AppNavbar";
 
@@ -150,7 +152,7 @@ export default async function BlogPostPage({ params }: Props) {
       )}
       <AppNavbar />
 
-      <main className="app-container py-8 flex-1">
+      <main className="app-container py-8 pb-24 flex-1">
         <div className="max-w-3xl mx-auto">
         <Link
           href="/blog"
@@ -186,6 +188,15 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </header>
 
+          <div className="mb-8 p-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 flex flex-col sm:flex-row sm:items-center gap-3">
+            <p className="flex-1 text-sm text-slate-700 dark:text-slate-200">
+              Put this into practice in one tab — timer, tasks, and sounds. No account needed.
+            </p>
+            <Link href="/app" className="btn-primary px-4 py-2 text-sm shrink-0 text-center">
+              Try Foci — free
+            </Link>
+          </div>
+
           <div className="prose prose-neutral dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline max-w-none">
             <MDXRemote source={content} />
           </div>
@@ -211,6 +222,7 @@ export default async function BlogPostPage({ params }: Props) {
           )}
 
           <GuideLinkHub excludeSlug={slug} variant="compact" className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800" />
+          <CompareHubLinks className="mt-8" />
 
           <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 text-center">
@@ -218,7 +230,7 @@ export default async function BlogPostPage({ params }: Props) {
                 Put these ideas into practice
               </h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Free Pomodoro timer + tasks in one tab. Optional account syncs streaks across devices.
+                Open the app in this browser — no signup. Optional account syncs streaks later.
               </p>
               <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <Link
@@ -276,6 +288,8 @@ export default async function BlogPostPage({ params }: Props) {
         </article>
         </div>
       </main>
+
+      <BlogTryFociBar />
 
       <footer className="mt-auto py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
         <GuideLinkHub variant="footer" className="mb-4" />

@@ -24,7 +24,7 @@ export const FOCI_ADS_POLICY_SHORT =
   "No display ads in /app. Marketing/blog pages may show Google ads. Contact hello@usefoci.com.";
 
 /** Bump when product or core marketing facts change (JSON-LD dateModified, llms version). */
-export const PRODUCT_DATE_MODIFIED = "2026-08-22";
+export const PRODUCT_DATE_MODIFIED = "2026-08-25";
 
 /** One-sentence definition — cite this everywhere. */
 export const FOCI_ONE_LINER =

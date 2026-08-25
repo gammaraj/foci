@@ -14,11 +14,11 @@ test.describe("Landing Page", () => {
   });
 
   test("renders primary and secondary CTA buttons", async ({ page }) => {
-    const primaryCTA = page.getByRole("link", { name: "Create free account" }).first();
+    const primaryCTA = page.getByRole("link", { name: "Try without signing in" }).first();
     await expect(primaryCTA).toBeVisible();
-    await expect(primaryCTA).toHaveAttribute("href", "/login");
+    await expect(primaryCTA).toHaveAttribute("href", "/app");
 
-    const secondaryCTA = page.getByRole("link", { name: "Sign in →" }).first();
+    const secondaryCTA = page.getByRole("link", { name: "Create free account" }).first();
     await expect(secondaryCTA).toBeVisible();
     await expect(secondaryCTA).toHaveAttribute("href", "/login");
   });
@@ -34,8 +34,8 @@ test.describe("Landing Page", () => {
   test("logged-out nav is trimmed to essentials", async ({ page }) => {
     await expect(page.getByRole("link", { name: "Features" })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Install" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Blog" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "About" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Blog" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "About" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Try Foci" })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Stats" })).toHaveCount(0);
@@ -54,7 +54,7 @@ test.describe("Landing Page", () => {
   test("renders How Foci works section with 3 steps", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "How Foci works" })).toBeVisible();
     await expect(page.getByText("Add your tasks")).toBeVisible();
-    await expect(page.getByText("Plan your day")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Plan your day", exact: true })).toBeVisible();
     await expect(page.getByText("Build your streak")).toBeVisible();
   });
 
@@ -70,9 +70,17 @@ test.describe("Landing Page", () => {
 
   test("renders final CTA section", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Ready to focus?" })).toBeVisible();
-    const finalCTA = page.getByRole("link", { name: "Create free account" }).last();
+    const finalCTA = page.getByRole("link", { name: "Try without signing in" }).last();
     await expect(finalCTA).toBeVisible();
-    await expect(finalCTA).toHaveAttribute("href", "/login");
+    await expect(finalCTA).toHaveAttribute("href", "/app");
+  });
+
+  test("links evergreen comparison hubs", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Compare Foci" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Foci vs Forest" }).first()).toHaveAttribute(
+      "href",
+      "/vs/forest",
+    );
   });
 
   test("renders footer with legal links", async ({ page }) => {
@@ -81,9 +89,9 @@ test.describe("Landing Page", () => {
     await expect(page.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms");
   });
 
-  test("primary CTA navigates to login", async ({ page }) => {
-    await page.getByRole("link", { name: "Create free account" }).first().click();
-    await expect(page).toHaveURL(/\/login/);
+  test("primary CTA navigates to the guest app", async ({ page }) => {
+    await page.getByRole("link", { name: "Try without signing in" }).first().click();
+    await expect(page).toHaveURL(/\/app/);
   });
 
   test("has structured data scripts", async ({ page }) => {

@@ -475,8 +475,12 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
   }, [clearTimer, remainingTime, saveTimerState]);
 
   const reset = useCallback(() => {
+    const wasActive =
+      statusRef.current === "running" ||
+      statusRef.current === "paused" ||
+      statusRef.current === "break";
     clearTimer();
-    trackTimerReset();
+    if (wasActive) trackTimerReset();
     resetToIdle();
     startTimeRef.current = null;
   }, [clearTimer, resetToIdle]);

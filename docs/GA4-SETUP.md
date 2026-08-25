@@ -34,6 +34,15 @@ In GA4: **Admin → Data collection → Data streams → [Foci web] → Configur
 
 Save, then re-run reports after 24–48h.
 
+The site also ignores these **in the browser** so they never become the first-touch source:
+
+- OAuth/backend referrers: `accounts.google.com`, `supabase.co` (`ignore_referrer` on the GA config)
+- Self campaign tokens: `utm_source` / `ref` of `foci`, `foci-header`, `foci-footer`, `foci-app` — stripped from the URL before the first `gtag('config')` page_view
+
+Admin unwanted-referrals is still recommended as a belt-and-suspenders filter for older hits.
+
+See `src/lib/ga-attribution.ts` and the bootstrap script in `src/app/layout.tsx`.
+
 ## Unassigned channel
 
 Usually `(not set)` attribution from:

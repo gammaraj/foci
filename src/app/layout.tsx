@@ -174,7 +174,17 @@ export default async function RootLayout({
                   function gtag(){dataLayer.push(arguments);}
                   window.gtag=gtag;
                   gtag('js',new Date());
-                  gtag('config','${SAFE_GA_ID}',{send_page_view:true,anonymize_ip:true});
+                  var q=new URLSearchParams(location.search);
+                  var src=(q.get("utm_source")||q.get("ref")||"").toLowerCase();
+                  var self={"foci":1,"foci-header":1,"foci-footer":1,"foci-app":1};
+                  var ignoreRef=/accounts\\.google\\.com|supabase\\.co/.test(document.referrer||"");
+                  if(self[src]){
+                    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(function(k){q.delete(k)});
+                    if(self[(q.get("ref")||"").toLowerCase()]) q.delete("ref");
+                    history.replaceState({},"",location.pathname+(q.toString()?"?"+q.toString():"")+location.hash);
+                    ignoreRef=true;
+                  }
+                  gtag('config','${SAFE_GA_ID}',{send_page_view:true,anonymize_ip:true,ignore_referrer:ignoreRef});
                 })();
               `}
             </Script>

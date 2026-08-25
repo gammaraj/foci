@@ -7,6 +7,7 @@ import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjec
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted, trackSharedProjectOpened } from "@/lib/analytics";
+import { markFirstTaskCompleted } from "@/lib/first-win";
 import ConfirmModal from "@/components/ConfirmModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { PROJECT_TEMPLATES, templateToTasks, type ProjectTemplate } from "@/lib/templates";
@@ -1439,6 +1440,7 @@ export default function TaskList({
       void updateTaskInSharedProject(changed, selectedSharedProject._ownerId);
       if (isCompleting) {
         trackTaskCompleted(changed.timeSpent || 0);
+        markFirstTaskCompleted();
         showToast(
           task.recurrence
             ? `${doneTodayToastMessage(updated.filter((t) => isDoneToday(t)).length)} · next occurrence isn’t created in shared projects`
@@ -1454,6 +1456,7 @@ export default function TaskList({
 
     if (isCompleting) {
       trackTaskCompleted((changed.timeSpent || 0));
+      markFirstTaskCompleted();
       const snapshot = tasks;
       const doneTodayCount = updated.filter((t) => isDoneToday(t)).length;
       showToast(

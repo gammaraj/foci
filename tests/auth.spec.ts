@@ -13,14 +13,21 @@ test.describe("Auth & collaboration (guest)", () => {
     await expect(page.getByLabel(/collaboration invites/i)).toHaveCount(0);
   });
 
-  test("guest user sees sign-up banner", async ({ page }) => {
+  test("guest can use the app without a login wall", async ({ page }) => {
     await page.goto("/app");
-    await expect(page.getByText("Sign up free")).toBeVisible();
+    await page.getByRole("button", { name: "Skip tour" }).click({ timeout: 5000 }).catch(() => {});
+    await expect(page.getByText("Keep this win")).toHaveCount(0);
+    await expect(
+      page.getByText(/sample sticks|Ready to start focusing/i).first(),
+    ).toBeVisible();
   });
 
-  test("login link from banner navigates to /login", async ({ page }) => {
+  test("after first completed task, guest is prompted to save", async ({ page }) => {
     await page.goto("/app");
-    await page.getByRole("link", { name: "Sign up" }).click();
+    await page.getByRole("button", { name: "Skip tour" }).click({ timeout: 5000 }).catch(() => {});
+    await page.getByLabel(/^Mark ".+" complete$/).first().click();
+    await expect(page.getByText("Keep this win")).toBeVisible();
+    await page.getByRole("link", { name: "Save free" }).click();
     await expect(page).toHaveURL(/\/login/);
   });
 });

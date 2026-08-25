@@ -52,6 +52,7 @@ export function FocusDockToolbar({
   onShowShortcuts,
   remainingTime,
   workDurationMs,
+  showReset = true,
 }: Pick<
   FocusDockProps,
   | "expanded"
@@ -69,6 +70,7 @@ export function FocusDockToolbar({
   onShowShortcuts?: () => void;
   remainingTime?: number;
   workDurationMs?: number;
+  showReset?: boolean;
 }) {
   const [showShortcutHint, setShowShortcutHint] = useState(false);
 
@@ -251,6 +253,7 @@ export function FocusDockToolbar({
       compact
       dock={embedded}
       emphasizeStart={emphasizeStart}
+      showReset={showReset}
     />
   );
 
@@ -400,6 +403,7 @@ export default function FocusDockPanel({
             compact
             dock
             emphasizeStart={emphasizeStart}
+            showReset={timerStatus !== "idle"}
           />
         </div>
         <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">

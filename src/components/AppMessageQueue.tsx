@@ -16,6 +16,12 @@ import {
   markGuestSampleBannerDismissed,
 } from "@/lib/guest-demo";
 import {
+  dismissFirstWin,
+  FIRST_WIN_EVENT,
+  hasDismissedFirstWin,
+  hasFirstWin,
+} from "@/lib/first-win";
+import {
   consumeDeferredInstallPrompt,
   ensureInstallPromptCapture,
   getDeferredInstallPrompt,
@@ -29,7 +35,7 @@ import {
 
 type MessageId = "sample-workspace" | "signup" | "first-session" | "notification" | "pwa";
 
-// Soft conversion: get them into a session first, then ask to sync / install.
+// Soft conversion: get them into a session or task first, then ask to save.
 const PRIORITY: MessageId[] = ["sample-workspace", "first-session", "signup", "pwa"];
 
 interface AppMessageQueueProps {
@@ -38,10 +44,7 @@ interface AppMessageQueueProps {
 }
 
 function hasCompletedSession(): boolean {
-  return Boolean(
-    localStorage.getItem("foci_sessions_completed") ||
-      localStorage.getItem("tempo_sessions_completed"),
-  );
+  return hasFirstWin();
 }
 
 export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProps) {
@@ -54,7 +57,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
 
   const dismiss = useCallback((id: MessageId) => {
     setDismissed((prev) => new Set(prev).add(id));
-    if (id === "signup") sessionStorage.setItem("foci_signup_dismissed", "1");
+    if (id === "signup") dismissFirstWin();
     if (id === "first-session") {
       localStorage.setItem("foci_first_session_nudge_dismissed", "1");
     }
@@ -66,7 +69,11 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
   useEffect(() => {
     const onSessionComplete = () => setSessionTick((n) => n + 1);
     window.addEventListener("tempo-session-complete", onSessionComplete);
-    return () => window.removeEventListener("tempo-session-complete", onSessionComplete);
+    window.addEventListener(FIRST_WIN_EVENT, onSessionComplete);
+    return () => {
+      window.removeEventListener("tempo-session-complete", onSessionComplete);
+      window.removeEventListener(FIRST_WIN_EVENT, onSessionComplete);
+    };
   }, []);
 
   useEffect(() => {
@@ -89,6 +96,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
 
         if (id === "sample-workspace") {
           if (user) continue;
+          if (hasFirstWin()) continue;
           if (!isTasksAppPath(pathname)) continue;
           if (hasClearedGuestDemo() || hasDismissedGuestSampleBanner()) continue;
           try {
@@ -122,12 +130,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         }
 
         if (id === "signup") {
-          // Soft prompt: only after the guest has completed a real focus session.
-          if (
-            !user &&
-            hasCompletedSession() &&
-            !sessionStorage.getItem("foci_signup_dismissed")
-          ) {
+          if (!user && hasFirstWin() && !hasDismissedFirstWin()) {
             setActiveId("signup");
             return;
           }
@@ -209,13 +212,13 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
       <div className="bg-blue-700 text-white text-sm">
         <div className="app-container py-2 flex items-center justify-between gap-3">
           <p className="flex-1 min-w-0">
-            <span className="font-medium">Nice session</span>
-            <span className="hidden sm:inline"> — create a free account to keep your streak across devices</span>
-            <span className="sm:hidden"> — sync your streak free</span>
+            <span className="font-medium">Keep this win</span>
+            <span className="hidden sm:inline"> — it’s on this device. A free account syncs tasks and streaks everywhere.</span>
+            <span className="sm:hidden"> — save it with a free account</span>
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <Link href="/login" className="px-3 py-1.5 bg-white text-blue-700 font-semibold rounded-lg text-sm hover:bg-blue-50">
-              Sign up
+              Save free
             </Link>
             <button type="button" onClick={() => dismiss("signup")} className="p-1.5 text-white/70 hover:text-white touch-target-sm" aria-label="Dismiss">
               ×

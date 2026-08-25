@@ -36,6 +36,11 @@ export const HOME_FAQS: HomeFaq[] = [
       "Yes if you want tasks and ambient sounds instead of tree gamification. Foci is free in the browser with Smart Plan and streak goals. See usefoci.com/vs/forest and usefoci.com/alternatives/forest.",
   },
   {
+    question: "Where can I compare Foci to other apps?",
+    answer:
+      "Start at usefoci.com/app with no signup. Side-by-side pages: usefoci.com/vs/forest, usefoci.com/vs/todoist, usefoci.com/vs/focusatwill. Alternative roundups: usefoci.com/alternatives/forest, usefoci.com/alternatives/pomodoro-apps, usefoci.com/alternatives/focus-apps-for-students.",
+  },
+  {
     question: "What focus app is best for students?",
     answer:
       "Students who need a timer, task list, and study sounds together should try Foci. It supports Pomodoro, Flowtime, and 52/17 presets plus offline brown noise. Guide: usefoci.com/alternatives/focus-apps-for-students.",

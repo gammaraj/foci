@@ -15,6 +15,7 @@ import { useTimer, type TimerState } from "@/hooks/useTimer";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
+import ConfirmModal from "@/components/ConfirmModal";
 
 function formatTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -79,6 +80,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
   const [timerAnnouncement, setTimerAnnouncement] = useState("");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   const [activeTaskTitle, setActiveTaskTitle] = useState("");
   const prevTimerStatusRef = useRef(timer.status);
 
@@ -172,6 +174,15 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
     announceTimer("Focus session reset");
   }, [timer, announceTimer]);
 
+  const requestReset = useCallback(() => {
+    if (timer.status === "idle") return;
+    if (timer.status === "running" || timer.status === "paused") {
+      setConfirmReset(true);
+      return;
+    }
+    handleReset();
+  }, [timer.status, handleReset]);
+
   const handleStartTask = useCallback(
     (taskId: string) => {
       setActiveTaskId(taskId);
@@ -217,7 +228,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
         e.preventDefault();
         handleStartPause();
       } else if (e.key === "r" || e.key === "R") {
-        handleReset();
+        requestReset();
       } else if (e.key === "n" || e.key === "N") {
         document.getElementById("new-task-input")?.focus();
       } else if (e.key === "f" || e.key === "F") {
@@ -229,7 +240,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [handleStartPause, handleReset]);
+  }, [handleStartPause, requestReset]);
 
   const goalMet = timer.dailyGoalData.sessionCount >= timer.settings.dailyGoal;
   const readyToFocus = !!activeTaskId && timer.status === "idle";
@@ -250,7 +261,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
       readyToFocus,
       goalMet,
       handleStartPause,
-      handleReset,
+      handleReset: requestReset,
       handleStartTask,
       handleCompleteTask,
       handleSelectWorkPreset,
@@ -272,7 +283,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
       readyToFocus,
       goalMet,
       handleStartPause,
-      handleReset,
+      requestReset,
       handleStartTask,
       handleCompleteTask,
       handleSelectWorkPreset,
@@ -282,5 +293,23 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
     ],
   );
 
-  return <FocusSessionContext.Provider value={value}>{children}</FocusSessionContext.Provider>;
+  return (
+    <FocusSessionContext.Provider value={value}>
+      {children}
+      {confirmReset && (
+        <ConfirmModal
+          title="Reset this session?"
+          message="The current countdown will be lost. This can’t be undone."
+          confirmLabel="Reset"
+          cancelLabel="Keep going"
+          variant="danger"
+          onConfirm={() => {
+            setConfirmReset(false);
+            handleReset();
+          }}
+          onCancel={() => setConfirmReset(false)}
+        />
+      )}
+    </FocusSessionContext.Provider>
+  );
 }

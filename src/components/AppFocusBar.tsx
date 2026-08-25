@@ -93,6 +93,7 @@ export default function AppFocusBar() {
           emphasizeStart={readyToFocus}
           remainingTime={timer.remainingTime}
           workDurationMs={timer.settings.workDuration}
+          showReset={timer.status !== "idle"}
           sessions={{
             count: timer.dailyGoalData.sessionCount,
             goal: timer.settings.dailyGoal,

@@ -7,7 +7,7 @@ test.describe("Blog Listing Page", () => {
 
   test("renders blog heading and subtitle", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Blog", level: 1 })).toBeVisible();
-    await expect(page.getByText("Tips on focus, productivity")).toBeVisible();
+    await expect(page.getByText(/Flowtime, Pomodoro/i).first()).toBeVisible();
   });
 
   test("renders blog posts as links", async ({ page }) => {
@@ -20,7 +20,7 @@ test.describe("Blog Listing Page", () => {
   test("each post shows title, description, and metadata", async ({ page }) => {
     // First article should have a heading
     const firstArticle = page.locator("a[href^='/blog/']").first();
-    await expect(firstArticle.locator("h2")).toBeVisible();
+    await expect(firstArticle.locator("h2, h3")).toBeVisible();
   });
 
   test("clicking a post navigates to the blog post page", async ({ page }) => {
@@ -60,7 +60,7 @@ test.describe("Blog Post Page", () => {
 
   test("renders post metadata (date and reading time)", async ({ page }) => {
     // Should show reading time
-    await expect(page.getByText(/min read/i)).toBeVisible();
+    await expect(page.getByText(/min read/i).first()).toBeVisible();
   });
 
   test("renders MDX content", async ({ page }) => {
@@ -75,7 +75,9 @@ test.describe("Blog Post Page", () => {
   });
 
   test("renders CTA section at bottom", async ({ page }) => {
-    await expect(page.getByRole("link", { name: /try foci free/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /try foci/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open the app" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Comparisons and alternatives" })).toBeVisible();
   });
 
   test("back link navigates to blog listing", async ({ page }) => {
