@@ -92,4 +92,31 @@ test.describe("App Page (unauthenticated)", () => {
     // Timer and tasks should both be visible (stacked)
     await expect(page.locator("text=/\\d{2}:\\d{2}/").first()).toBeVisible();
   });
+
+  test("mobile: saving preselected today on an undated task persists", async ({ page }, testInfo) => {
+    test.skip(!testInfo.project.use?.isMobile, "custom date sheet is for touch/iOS");
+
+    await page.getByRole("button", { name: "Skip tour" }).click({ timeout: 5000 }).catch(() => {});
+    await page.getByRole("button", { name: "Got it" }).click({ timeout: 2000 }).catch(() => {});
+
+    const title = `Undated due ${Date.now()}`;
+    await page.getByLabel("Quick Add").first().click();
+    const quickAdd = page.getByPlaceholder("Quick add a task…");
+    await quickAdd.fill(title);
+    await quickAdd.press("Enter");
+    await expect(page.getByText(title)).toBeVisible();
+
+    await page.getByLabel(`Open "${title}". Double-click to rename.`).click();
+    const details = page.getByRole("dialog", { name: `Task details: ${title}` });
+    await expect(details).toBeVisible();
+
+    await details.getByLabel("Set due date").click();
+    const picker = page.getByRole("dialog", { name: "Set due date" });
+    await expect(picker).toBeVisible();
+    await picker.getByRole("button", { name: "Save" }).click();
+
+    await expect(details.getByText("Today", { exact: true })).toBeVisible();
+    await expect(details.getByText("Set due date")).toHaveCount(0);
+    await expect(page.getByRole("dialog", { name: "Set due date" })).toHaveCount(0);
+  });
 });
