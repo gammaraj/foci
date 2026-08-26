@@ -1,4 +1,4 @@
-import { MAX_PROJECT_NAME, MAX_TASK_TITLE } from "@/components/task-list/utils";
+import { MAX_PROJECT_NAME, MAX_TASK_TITLE, pickProjectColor } from "@/components/task-list/utils";
 import {
   buildBoostLogikProjectName,
   buildBoostLogikTaskTitle,
@@ -14,7 +14,7 @@ import {
   saveSelectedProjectId,
   saveTasks,
 } from "@/lib/storage";
-import { PROJECT_COLORS, type Project, type Task } from "@/lib/types";
+import type { Project, Task } from "@/lib/types";
 
 export interface BoostLogikBootstrapResult {
   taskId: string | null;
@@ -35,10 +35,7 @@ export async function bootstrapBoostLogikSession(
     let project = projects.find((p) => p.name === projectName);
 
     if (!project) {
-      const usedColors = projects.map((p) => p.color).filter(Boolean);
-      const nextColor =
-        PROJECT_COLORS.find((c) => !usedColors.includes(c)) ??
-        PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
+      const nextColor = pickProjectColor(projects);
       const maxOrder = Math.max(0, ...projects.map((p) => p.order ?? 0));
 
       project = {

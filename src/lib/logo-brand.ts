@@ -9,9 +9,6 @@ export const FOCI_LOGO_BG_LIGHT = "#eff6ff";
 /** Primary brand color — blue-600 */
 export const FOCI_BRAND_CYAN = "#2563eb";
 
-/** @deprecated renamed to FOCI_BRAND_CYAN (legacy name; value is electric blue) */
-export const FOCI_BRAND_ORANGE = FOCI_BRAND_CYAN;
-
 export const FOCI_RING_COLORS = {
   dim: "#2563eb",    // blue-600 — dim arc segment
   mid: "#3b82f6",    // blue-500 — main arc
@@ -38,9 +35,6 @@ export const FOCI_WORDMARK_GRADIENT_DARK_BG_CSS =
 /** @deprecated Use FOCI_WORDMARK_GRADIENT_DARK_BG_CSS — kept for OG exports */
 export const FOCI_WORDMARK_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
 
-/** @deprecated Use FOCI_WORDMARK_GRADIENT_DARK_BG_CSS — kept for OG exports */
-export const FOCI_LOGO_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
-
 export const FOCI_LOGO_SVG_STOPS = FOCI_RING_COLORS;
 
 /** Blue glow — dark chrome, hero on navy, OG tiles */
@@ -50,8 +44,6 @@ export const FOCI_LOGO_SHADOW_DARK =
 /** Flat frame — light pages, app store, PWA prompt (no muddy glow) */
 export const FOCI_LOGO_SHADOW_LIGHT =
   "shadow-md shadow-slate-900/10 ring-1 ring-blue-600/30";
-/** @deprecated Prefer getFociLogoShadow(surface) */
-export const FOCI_LOGO_SHADOW = FOCI_LOGO_SHADOW_DARK;
 
 export function getFociLogoShadow(surface: "dark" | "light"): string {
   return surface === "light" ? FOCI_LOGO_SHADOW_LIGHT : FOCI_LOGO_SHADOW_DARK;
@@ -66,8 +58,6 @@ export const FOCI_HERO_HEADLINE = "Plan your day. Finish your tasks.";
 /** Wordmark typography — Plus Jakarta Sans; bold not extrabold (less early-2010s chunk). */
 export const FOCI_WORDMARK_NAV =
   "font-wordmark text-[1.625rem] sm:text-[1.8125rem] font-bold leading-none tracking-[-0.04em]";
-export const FOCI_WORDMARK_LOCKUP =
-  "font-wordmark text-[1.75rem] sm:text-[2.125rem] font-bold leading-none tracking-[-0.04em]";
 export const FOCI_WORDMARK_MOCKUP =
   "font-wordmark text-[1.375rem] sm:text-[1.5rem] font-bold leading-none tracking-[-0.04em]";
 export const FOCI_WORDMARK_INLINE = "font-wordmark text-[1rem] font-semibold tracking-[-0.02em]";
@@ -76,8 +66,6 @@ export const FOCI_WORDMARK_OG_PX = 86;
 /** Tagline typography — subordinate to the wordmark, still ≥10px. */
 export const FOCI_TAGLINE_NAV =
   "text-[0.625rem] sm:text-[0.6875rem] font-medium tracking-[0.12em] sm:tracking-[0.14em] uppercase leading-none";
-export const FOCI_TAGLINE_LOCKUP =
-  "text-[10px] sm:text-[11px] font-medium tracking-[0.1em] sm:tracking-[0.12em] uppercase leading-none";
 export const FOCI_TAGLINE_MOCKUP =
   "text-[0.625rem] sm:text-[0.6875rem] font-medium tracking-[0.12em] uppercase leading-none";
 export const FOCI_TAGLINE_OG_PX = 12;

@@ -1,8 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { waitForBoot } from "./wait-for-boot";
 
 test.describe("Blog Listing Page", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/blog");
+    await waitForBoot(page);
   });
 
   test("renders blog heading and subtitle", async ({ page }) => {
@@ -43,6 +45,7 @@ test.describe("Blog Post Page", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to a specific known blog post
     await page.goto("/blog/pomodoro-technique-guide");
+    await waitForBoot(page);
   });
 
   test("renders post title as h1", async ({ page }) => {

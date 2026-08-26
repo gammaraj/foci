@@ -82,19 +82,3 @@ export const quotes: string[] = [
 export function getRandomQuote(): string {
   return quotes[Math.floor(Math.random() * quotes.length)];
 }
-
-/** Same quote for everyone on a given local calendar day. */
-export function getDailyQuote(date: Date = new Date()): string {
-  const seed =
-    date.getFullYear() * 372 + date.getMonth() * 31 + date.getDate();
-  return quotes[seed % quotes.length];
-}
-
-export function parseQuote(quote: string): { text: string; author?: string } {
-  const dash = quote.lastIndexOf(" - ");
-  if (dash === -1) return { text: quote };
-  return {
-    text: quote.slice(0, dash).trim(),
-    author: quote.slice(dash + 3).trim(),
-  };
-}

@@ -20,15 +20,7 @@ import {
   type TaskViewPreferences,
 } from "../task-view-preference";
 import type { OneThingPreference } from "../one-thing";
-import { getToday, getYesterday, formatDateLocal } from "../dates";
-
-/** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
-function migrateDate(dateStr: string): string {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  const parsed = new Date(dateStr);
-  if (!isNaN(parsed.getTime())) return formatDateLocal(parsed);
-  return getToday();
-}
+import { getToday, getYesterday, formatDateLocal, migrateDate } from "../dates";
 
 type TaskRow = {
   id: string;

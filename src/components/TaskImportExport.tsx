@@ -6,10 +6,9 @@ import {
   Project,
   DEFAULT_PROJECT_ID,
   DEFAULT_PROJECT,
-  PROJECT_COLORS,
 } from "@/lib/types";
 import { loadTasks, saveTasks, loadProjects, saveProjects } from "@/lib/storage";
-import { MAX_PROJECT_NAME } from "@/components/task-list/utils";
+import { MAX_PROJECT_NAME, pickProjectColor } from "@/components/task-list/utils";
 import {
   detectAndParse,
   FORMAT_LABELS,
@@ -99,10 +98,7 @@ function resolveProjectIds(
     const existingId = nameToId.get(key);
     if (existingId) return existingId;
 
-    const usedColors = projects.map((p) => p.color).filter(Boolean) as string[];
-    const nextColor =
-      PROJECT_COLORS.find((c) => !usedColors.includes(c)) ??
-      PROJECT_COLORS[projects.length % PROJECT_COLORS.length];
+    const nextColor = pickProjectColor(projects);
     const project: Project = {
       id: uuid(),
       name,

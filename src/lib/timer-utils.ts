@@ -103,3 +103,11 @@ const TIMER_TAB_TITLE_RE = /^\d{1,3}:\d{2} · (Focus|Paused|Break)$/;
 export function isTimerTabTitle(title: string): boolean {
   return TIMER_TAB_TITLE_RE.test(title);
 }
+
+/** Parse a query-string duration in minutes (partner deep links). */
+export function parseQueryDurationMinutes(duration?: string | null): number | null {
+  if (!duration) return null;
+  const minutes = parseInt(duration, 10);
+  if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) return null;
+  return minutes;
+}

@@ -1,8 +1,17 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+import { waitForBoot } from "./wait-for-boot";
+
+async function expandNavIfCollapsed(page: Page) {
+  const toggle = page.getByRole("banner").getByRole("button", { name: "Toggle menu" });
+  if (await toggle.isVisible()) {
+    await toggle.click();
+  }
+}
 
 test.describe("Landing Page", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
+    await waitForBoot(page);
   });
 
   test("renders hero headline and subtitle", async ({ page }) => {
@@ -32,14 +41,16 @@ test.describe("Landing Page", () => {
   });
 
   test("logged-out nav is trimmed to essentials", async ({ page }) => {
-    await expect(page.getByRole("link", { name: "Features" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Install" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Blog" }).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: "About" }).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Try Foci" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Stats" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /settings/i })).toHaveCount(0);
+    await expandNavIfCollapsed(page);
+    const nav = page.getByRole("banner");
+    await expect(nav.getByRole("link", { name: "Features" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Install" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Blog" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "About" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Log in" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Try Foci" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Stats" })).toHaveCount(0);
+    await expect(nav.getByRole("button", { name: /settings/i })).toHaveCount(0);
     await expect(page.getByText(/Partly cloudy|Clear sky|Baltimore|Austin/i)).toHaveCount(0);
     await expect(page.getByText("FOCUS · FLOW · FINISH")).toHaveCount(0);
   });

@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { waitForBoot, expectVisibleCountdown } from "./wait-for-boot";
 
 test.describe("Accessibility", () => {
   test("homepage has no serious axe violations", async ({ page }) => {
     await page.goto("/");
+    await waitForBoot(page);
     const results = await new AxeBuilder({ page })
       .disableRules(["color-contrast"])
       .analyze();
@@ -13,7 +15,8 @@ test.describe("Accessibility", () => {
 
   test("app page has no serious axe violations", async ({ page }) => {
     await page.goto("/app");
-    await expect(page.locator("text=/\\d{2}:\\d{2}/").first()).toBeVisible();
+    await waitForBoot(page);
+    await expectVisibleCountdown(page);
     const results = await new AxeBuilder({ page })
       .disableRules(["color-contrast"])
       .analyze();
@@ -23,7 +26,7 @@ test.describe("Accessibility", () => {
 
   test("timer has aria-live region for announcements", async ({ page }) => {
     await page.goto("/app");
-    const liveRegion = page.locator('[aria-live="polite"]');
-    await expect(liveRegion).toBeAttached();
+    await waitForBoot(page);
+    await expect(page.locator(".sr-only[aria-live='polite'][aria-atomic='true']")).toBeAttached();
   });
 });

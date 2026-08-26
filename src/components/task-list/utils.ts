@@ -1,6 +1,6 @@
 import type { Project, RecurrenceType, Subtask } from "@/lib/types";
 import { LEGACY_PROJECT_COLOR_MAP, PROJECT_COLORS } from "@/lib/types";
-import { getToday, getTomorrow, formatDateLocal } from "@/lib/dates";
+import { diffCalendarDays, formatDateLocal, getToday, getTomorrow, parseLocalDate } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
 export const MAX_PROJECT_NAME = 100;
@@ -175,7 +175,7 @@ export function formatDueDate(iso: string): string {
   const today = getToday();
   if (iso === today) return "Today";
   if (iso === getTomorrow()) return "Tomorrow";
-  const d = new Date(iso + "T00:00:00");
+  const d = parseLocalDate(iso);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
@@ -192,9 +192,7 @@ export function isDueDateOverdue(iso: string): boolean {
 export function getDaysOverdue(iso: string): number {
   const today = getToday();
   if (iso >= today) return 0;
-  const due = new Date(iso + "T00:00:00");
-  const now = new Date(today + "T00:00:00");
-  return Math.round((now.getTime() - due.getTime()) / 86_400_000);
+  return diffCalendarDays(today, iso);
 }
 
 /** Compact overdue chip — minus sign means past due (e.g. "−7d"). */
@@ -270,7 +268,7 @@ export function openDatePicker(input: HTMLInputElement | null) {
 }
 
 export function getNextDueDate(currentDue: string | undefined, recurrence: RecurrenceType): string {
-  const base = currentDue ? new Date(currentDue + "T00:00:00") : new Date();
+  const base = currentDue ? parseLocalDate(currentDue) : new Date();
   switch (recurrence) {
     case "daily":
       base.setDate(base.getDate() + 1);

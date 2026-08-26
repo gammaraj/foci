@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { clampWorkMinutes, clampWorkSeconds, formatTimerDisplay, formatTimerTabTitle, getTimerStatusAnnouncement, getTimerTabLabel, isTimerTabTitle, nudgeWorkSeconds, parseDurationInput } from "@/lib/timer-utils";
+import { clampWorkMinutes, clampWorkSeconds, formatTimerDisplay, formatTimerTabTitle, getTimerStatusAnnouncement, getTimerTabLabel, isTimerTabTitle, nudgeWorkSeconds, parseDurationInput, parseQueryDurationMinutes } from "@/lib/timer-utils";
 
 describe("timer-utils", () => {
   it("formatTimerDisplay formats mm:ss", () => {
@@ -51,5 +51,14 @@ describe("timer-utils", () => {
     expect(formatTimerTabTitle("29:58", "Focus")).toBe("29:58 · Focus");
     expect(isTimerTabTitle("29:58 · Focus")).toBe(true);
     expect(isTimerTabTitle("Foci App — Free Pomodoro Timer, Tasks & Sounds")).toBe(false);
+  });
+
+  it("parseQueryDurationMinutes accepts 1–180 minute deep-link values", () => {
+    expect(parseQueryDurationMinutes("25")).toBe(25);
+    expect(parseQueryDurationMinutes("180")).toBe(180);
+    expect(parseQueryDurationMinutes("0")).toBeNull();
+    expect(parseQueryDurationMinutes("181")).toBeNull();
+    expect(parseQueryDurationMinutes("")).toBeNull();
+    expect(parseQueryDurationMinutes(undefined)).toBeNull();
   });
 });

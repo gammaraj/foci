@@ -10,7 +10,7 @@ export default function HomeFaq() {
       <p className="text-center text-base text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto">
         Straight answers about Foci — free to use, available worldwide.
       </p>
-      <dl className="space-y-3">
+      <div className="space-y-3">
         {HOME_FAQS.map((faq) => (
           <details
             key={faq.question}
@@ -25,10 +25,10 @@ export default function HomeFaq() {
                 +
               </span>
             </summary>
-            <dd className="mt-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{faq.answer}</dd>
+            <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{faq.answer}</p>
           </details>
         ))}
-      </dl>
+      </div>
     </section>
   );
 }

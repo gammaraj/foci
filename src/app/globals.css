@@ -117,8 +117,7 @@ select {
 }
 
 /* ===== Safe Area Helpers ===== */
-@supports (padding-top: env(safe-area-inset-top)) {
-  .safe-top { padding-top: env(safe-area-inset-top); }
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
@@ -341,91 +340,6 @@ select {
   }
 }
 
-/* ===== Section Header — flat (no gradient) ===== */
-.section-header-gradient {
-  background: #e4ebff;
-  border-bottom: 1px solid var(--surface-border);
-}
-.dark .section-header-gradient {
-  background: #0f1b33;
-  border-bottom: 1px solid #243350;
-}
-
-/* Status strip below navbar — flat page surface (no gradient wash) */
-.status-strip {
-  border-bottom: 1px solid var(--surface-border);
-  box-shadow: 0 8px 20px -16px rgba(15, 23, 42, 0.18);
-  background: transparent;
-}
-:root:not(.dark) .status-strip {
-  background: transparent;
-  border-bottom-color: rgba(37, 99, 235, 0.08);
-}
-.dark .status-strip {
-  background: #0f172a;
-  border-bottom-color: #243350;
-  box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.45);
-}
-
-/* Focus strip card — weather | timer | music with clear zones */
-.status-strip-card {
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius-card);
-  background: #ffffff;
-  box-shadow: var(--project-surface-shadow);
-}
-:root:not(.dark) .status-strip-card {
-  border-color: rgba(30, 64, 175, 0.16);
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    var(--project-surface-shadow);
-}
-.dark .status-strip-card {
-  border-color: #243350;
-  background: rgba(19, 29, 48, 0.92);
-  box-shadow: none;
-}
-.status-strip-zone {
-  background: transparent;
-}
-.status-strip-zone--side {
-  background: color-mix(in srgb, #bfdbfe 28%, #ffffff);
-}
-.dark .status-strip-zone--side {
-  background: rgba(15, 23, 42, 0.35);
-}
-.status-strip-zone--focus {
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
-}
-.dark .status-strip-zone--focus {
-  background: rgba(26, 45, 74, 0.55);
-  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.16);
-}
-.status-strip-divider {
-  border-color: rgba(37, 99, 235, 0.16);
-}
-.dark .status-strip-divider {
-  border-color: rgba(58, 80, 112, 0.9);
-}
-
-/* Embedded focus bar inside Tasks card — quieter zones so it reads as one panel */
-.status-strip-zone--embedded-side {
-  background: transparent;
-}
-.dark .status-strip-zone--embedded-side {
-  background: transparent;
-}
-.status-strip-zone--embedded-focus {
-  background: transparent;
-  box-shadow: none;
-}
-.dark .status-strip-zone--embedded-focus {
-  background: transparent;
-  box-shadow: none;
-}
-
 /* Toolbar strip — translucent plate over the atmosphere */
 .panel-header-calm {
   background: var(--panel-header-bg);
@@ -465,11 +379,6 @@ select {
   --seg-track-bg: #131d30;
   background: #131d30;
   box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.16);
-}
-
-/* View switcher — same track as time filters (kept for any leftover class refs) */
-.app-view-track {
-  /* intentionally empty — matches .app-seg-track */
 }
 
 /* ===== App card elevation (light mode) ===== */
@@ -547,17 +456,6 @@ select {
 .dark .project-accent-swatch {
   --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
-}
-
-.project-accent-wash {
-  --project-accent-display: var(--project-accent);
-  background: color-mix(in oklab, var(--project-accent-display) 10%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--project-surface-border) 80%, transparent);
-}
-.dark .project-accent-wash {
-  --project-accent-display: color-mix(in oklab, var(--project-accent) 68%, white);
-  background: color-mix(in oklab, var(--project-accent-display) 12%, transparent);
-  border-bottom-color: #334863;
 }
 
 /*
@@ -649,25 +547,21 @@ select {
 }
 
 /* Status strip + cards: same readable scale as app-shell */
-.status-strip .text-xs,
 .app-surface .text-xs {
   font-size: 0.8125rem;
   line-height: 1.125rem;
 }
 @media (min-width: 640px) {
-  .status-strip .text-xs,
   .app-surface .text-xs {
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
 }
-.status-strip .text-sm,
 .app-surface .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
 @media (min-width: 640px) {
-  .status-strip .text-sm,
   .app-surface .text-sm {
     font-size: 0.9375rem;
     line-height: 1.375rem;
@@ -862,54 +756,6 @@ select {
   border-left-color: #f472b6;
 }
 
-/* Legacy urgency rows — same Cards treatment (left rail only) */
-.urgency-row--mild,
-.urgency-row--medium,
-.urgency-row--severe {
-  border-left-width: 3px;
-  border-left-style: solid;
-  background: transparent;
-}
-.urgency-row--mild {
-  border-left-color: #f472b6;
-}
-.urgency-row--mild:hover {
-  background: color-mix(in srgb, var(--urgency) 5%, transparent);
-}
-.urgency-row--medium {
-  border-left-color: var(--urgency-chip);
-}
-.urgency-row--medium:hover {
-  background: color-mix(in srgb, var(--urgency) 5%, transparent);
-}
-.urgency-row--severe {
-  border-left-color: var(--urgency-strong);
-}
-.urgency-row--severe:hover {
-  background: color-mix(in srgb, var(--urgency-strong) 6%, transparent);
-}
-.dark .urgency-row--mild {
-  background: transparent;
-  border-left-color: #fb7185;
-}
-.dark .urgency-row--mild:hover {
-  background: rgba(244, 63, 94, 0.12);
-}
-.dark .urgency-row--medium {
-  background: transparent;
-  border-left-color: #fb7185;
-}
-.dark .urgency-row--medium:hover {
-  background: rgba(244, 63, 94, 0.12);
-}
-.dark .urgency-row--severe {
-  background: transparent;
-  border-left-color: #fb7185;
-}
-.dark .urgency-row--severe:hover {
-  background: rgba(244, 63, 94, 0.12);
-}
-
 /* Cards view — accent bar + chip only (no full wash, no red titles) */
 .card-row--overdue {
   border-left: 3px solid var(--urgency-chip);
@@ -942,11 +788,7 @@ select {
 }
 
 .urgency-text--mild { color: var(--urgency); }
-.urgency-text--medium { color: var(--urgency-strong); }
-.urgency-text--severe { color: #7a113f; }
-.dark .urgency-text--mild,
-.dark .urgency-text--medium { color: #f9a8d4; }
-.dark .urgency-text--severe { color: #fbcfe8; }
+.dark .urgency-text--mild { color: #f9a8d4; }
 
 .urgency-chip--soft {
   background: color-mix(in srgb, var(--urgency) 8%, white);
@@ -1002,10 +844,6 @@ select {
   border-color: transparent;
   background: color-mix(in srgb, var(--urgency) 5%, transparent);
 }
-.urgency-surface--overdue {
-  border-left-width: 3px;
-  border-left-color: var(--urgency-chip);
-}
 .dark .urgency-surface {
   border-color: transparent;
   background: transparent;
@@ -1013,9 +851,6 @@ select {
 .dark .urgency-surface:hover {
   border-color: transparent;
   background: rgba(244, 63, 94, 0.12);
-}
-.dark .urgency-surface--overdue {
-  border-left-color: #fb7185;
 }
 
 .task-list-section-header--blocked {
@@ -1169,12 +1004,6 @@ select {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== Daily Progress ===== */
-#dailyGoalProgress {
-  position: relative;
-  transition: box-shadow 0.2s ease;
-}
-
 /* ===== Settings Panel ===== */
 .settings-overlay {
   position: fixed;
@@ -1248,10 +1077,6 @@ select {
 }
 
 /* ===== Animations ===== */
-@keyframes celebrationPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
 
 /* Done tally: brief celebration when a task is completed */
 @keyframes doneTallyPulse {
@@ -1310,10 +1135,6 @@ select {
 
 .animate-check-bounce {
   animation: checkBounce 0.3s ease-out;
-}
-
-.goal-completed {
-  animation: celebrationPulse 0.6s ease-in-out;
 }
 
 /* ===== Accessibility ===== */
@@ -1382,10 +1203,6 @@ input:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.touch-target-tab {
-  min-height: 2.75rem;
 }
 
 /* Reserve layout space; fade in on hover so titles don't reflow. */
@@ -1629,8 +1446,6 @@ input:focus-visible {
   }
 
   #tasks-section .urgency-text--mild,
-  #tasks-section .urgency-text--medium,
-  #tasks-section .urgency-text--severe,
   #tasks-section .dark\:text-red-300,
   #tasks-section .text-red-600 {
     color: #9f1239 !important;

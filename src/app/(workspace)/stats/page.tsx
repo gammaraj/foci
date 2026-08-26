@@ -16,7 +16,7 @@ import type {
   Settings,
 } from "@/lib/types";
 import { PROJECT_COLORS } from "@/lib/types";
-import { formatDateLocal } from "@/lib/dates";
+import { formatDateLocal, parseLocalDate, weekdayShort, diffCalendarDays } from "@/lib/dates";
 import { isActionableOverdue } from "@/lib/task-status";
 import { FociDot } from "@/components/FociDot";
 import { trackStatsViewed } from "@/lib/analytics";
@@ -41,11 +41,6 @@ function getDaysArray(count: number): string[] {
     days.push(dateKey(d));
   }
   return days;
-}
-
-function dayLabel(key: string): string {
-  const d = new Date(key + "T00:00:00");
-  return d.toLocaleDateString("en-US", { weekday: "short" });
 }
 
 function CountBar({
@@ -464,9 +459,7 @@ export default function StatsPage() {
         continue;
       }
       if (run > 0) {
-        const prev = new Date(sorted[i - 1] + "T00:00:00");
-        const curr = new Date(sorted[i] + "T00:00:00");
-        const diffDays = (curr.getTime() - prev.getTime()) / 86_400_000;
+        const diffDays = diffCalendarDays(sorted[i], sorted[i - 1]);
         if (diffDays !== 1) {
           run = 1;
         } else {
@@ -523,7 +516,7 @@ export default function StatsPage() {
   const dayOfWeekSessions = useMemo(() => {
     const counts = [0, 0, 0, 0, 0, 0, 0]; // Sun–Sat
     for (const k of allDayKeys) {
-      const d = new Date(k + "T00:00:00");
+      const d = parseLocalDate(k);
       counts[d.getDay()] += streakHistory.days[k]?.sessionCount ?? 0;
     }
     return counts;
@@ -876,7 +869,7 @@ export default function StatsPage() {
             </h2>
             <BarChart
               data={sessionsData}
-              labelFn={range === 7 ? dayLabel : (k) => k.slice(8)}
+              labelFn={range === 7 ? weekdayShort : (k) => k.slice(8)}
               color="#3b82f6"
             />
           </div>
@@ -887,7 +880,7 @@ export default function StatsPage() {
             </h2>
             <BarChart
               data={focusData}
-              labelFn={range === 7 ? dayLabel : (k) => k.slice(8)}
+              labelFn={range === 7 ? weekdayShort : (k) => k.slice(8)}
               valueSuffix="m"
               color="#10b981"
             />

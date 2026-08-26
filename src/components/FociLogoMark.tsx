@@ -4,11 +4,6 @@ import {
   FOCI_LOGO_DOT,
   FOCI_RING,
   FOCI_RING_COLORS,
-  FOCI_TAGLINE_FOCUS,
-  FOCI_TAGLINE_LOCKUP,
-  FOCI_TAGLINE_ON_DARK,
-  FOCI_TAGLINE_ON_LIGHT,
-  FOCI_WORDMARK_LOCKUP,
   FOCI_WORDMARK_ON_DARK,
   FOCI_WORDMARK_ON_LIGHT,
   getFociLogoShadow,
@@ -83,6 +78,7 @@ export function FociWordmark({
   return (
     <span
       className={`font-wordmark tracking-tight lowercase inline-flex items-baseline ${className}`}
+      role="img"
       aria-label="foci"
     >
       <span style={{ color }}>foc</span>
@@ -102,43 +98,3 @@ export function FociWordmark({
     </span>
   );
 }
-
-/** Mark + wordmark + optional focus tagline (landing, marketing) */
-export function FociBrandLockup({
-  markSize = 48,
-  showTagline = false,
-  idPrefix = "lockup",
-  className = "",
-  tone = "light",
-}: {
-  markSize?: number;
-  showTagline?: boolean;
-  idPrefix?: string;
-  className?: string;
-  tone?: "dark" | "light";
-}) {
-  return (
-    <div className={`flex items-center gap-3 sm:gap-3.5 ${className}`}>
-      <FociLogoMark
-        size={markSize}
-        idPrefix={idPrefix}
-        surface={tone}
-        className="flex-shrink-0 rounded-xl sm:rounded-2xl"
-      />
-      <div className="flex flex-col items-start gap-0.5 min-w-0">
-        <FociWordmark className={FOCI_WORDMARK_LOCKUP} tone={tone} />
-        {showTagline && (
-          <p
-            className={`${FOCI_TAGLINE_LOCKUP} ${
-              tone === "light" ? FOCI_TAGLINE_ON_LIGHT : FOCI_TAGLINE_ON_DARK
-            }`}
-          >
-            {FOCI_TAGLINE_FOCUS}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export { getFociLogoShadow } from "@/lib/logo-brand";

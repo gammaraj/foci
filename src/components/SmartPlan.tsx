@@ -9,57 +9,19 @@ import {
   type DayPlan,
   type ProjectLoad,
 } from "@/lib/smartplan";
-import { formatDateLocal, getStartOfWeek, getToday } from "@/lib/dates";
-import { resolveProjectColor } from "@/components/task-list/utils";
+import {
+  addDaysISO,
+  enumerateDates,
+  getStartOfWeek,
+  getToday,
+  isWeekend,
+  monthDay,
+  parseLocalDate,
+  relativeDayLabel,
+  weekdayShort,
+} from "@/lib/dates";
+import { formatDuration, resolveProjectColor } from "@/components/task-list/utils";
 import { BusyBeaver } from "@/components/BusyBeaver";
-
-function formatDuration(ms: number): string {
-  const totalMin = Math.floor(ms / 60000);
-  if (totalMin < 60) return `${totalMin}m`;
-  const h = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
-}
-
-function addDaysStr(dateStr: string, n: number): string {
-  const d = new Date(dateStr + "T00:00:00");
-  d.setDate(d.getDate() + n);
-  return formatDateLocal(d);
-}
-
-function enumerateDates(from: string, to: string): string[] {
-  if (from > to) return [];
-  const out: string[] = [];
-  let cur = from;
-  while (cur <= to) {
-    out.push(cur);
-    cur = addDaysStr(cur, 1);
-  }
-  return out;
-}
-
-function planDayLabel(dateStr: string, today: string): string {
-  if (dateStr === today) return "Today";
-  if (dateStr === addDaysStr(today, 1)) return "Tomorrow";
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function weekdayShort(dateStr: string): string {
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short" });
-}
-
-function monthDay(dateStr: string): number {
-  return new Date(dateStr + "T00:00:00").getDate();
-}
-
-function isWeekend(dateStr: string): boolean {
-  const day = new Date(dateStr + "T00:00:00").getDay();
-  return day === 0 || day === 6;
-}
 
 function accentOf(st: Pick<ScoredTask, "task" | "projectColor">): string {
   return resolveProjectColor({ id: st.task.projectId, color: st.projectColor });
@@ -79,7 +41,7 @@ function dayOrEmpty(date: string, today: string, map: Map<string, DayPlan>): Day
   return (
     map.get(date) ?? {
       date,
-      label: planDayLabel(date, today),
+      label: relativeDayLabel(date, today),
       tasks: [],
       sessionSlots: 0,
     }
@@ -488,11 +450,11 @@ export default function SmartPlan({
   const today = getToday();
   const dayMap = useMemo(() => new Map(plan.days.map((d) => [d.date, d])), [plan.days]);
 
-  const weekStart = getStartOfWeek(new Date(today + "T00:00:00"));
-  const weekEnd = addDaysStr(weekStart, 6);
-  const nextWeekStart = addDaysStr(weekStart, 7);
-  const nextWeekEnd = addDaysStr(weekStart, 13);
-  const tomorrow = addDaysStr(today, 1);
+  const weekStart = getStartOfWeek(parseLocalDate(today));
+  const weekEnd = addDaysISO(weekStart, 6);
+  const nextWeekStart = addDaysISO(weekStart, 7);
+  const nextWeekEnd = addDaysISO(weekStart, 13);
+  const tomorrow = addDaysISO(today, 1);
 
   const todayDay = filterDay(dayOrEmpty(today, today, dayMap), projectFilter);
   const restOfWeek = enumerateDates(tomorrow, weekEnd).map((date) =>

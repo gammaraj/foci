@@ -28,11 +28,3 @@ export function getTaskListSectionOrder(section: TaskListSection): number {
 export function isActionableOverdue(task: Task): boolean {
   return getTaskListSection(task) === "overdue";
 }
-
-export function isBlockedTask(task: Task): boolean {
-  return !!task.blocked;
-}
-
-export function isSomedayTask(task: Task): boolean {
-  return !!task.someday;
-}

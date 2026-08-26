@@ -78,9 +78,6 @@ export default function AppFocusBar() {
 
   const focusStrip = (
     <DailyQuoteBanner
-      variant="embedded"
-      timerPanelExpanded={!timerCollapsed}
-      onCollapseAll={() => setTimerCollapsed(true)}
       timerToolbar={
         <FocusDockToolbar
           embedded

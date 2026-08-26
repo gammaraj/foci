@@ -1,8 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { waitForBoot } from "./wait-for-boot";
 
 test.describe("Stats Page", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/stats");
+    await waitForBoot(page);
   });
 
   test("renders page heading and subtitle", async ({ page }) => {

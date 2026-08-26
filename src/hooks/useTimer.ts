@@ -557,8 +557,8 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     };
   }, [authLoading, user?.id]);
 
-  // Notification permission is now requested via NotificationPrompt / SettingsPanel
-  // instead of automatically on mount (which browsers may block).
+  // Notification permission is requested from Settings, not automatically on mount
+  // (browsers may block auto-prompts).
 
   const setOnSessionCompleteCallback = useCallback(
     (cb: (() => void) | null) => {

@@ -414,7 +414,7 @@ export default function OpenTaskList({
           </svg>
         )}
         <span className={`bucket-lane-label ${meta.labelClass}`}>{meta.label}</span>
-        <span className="task-list-section-count" aria-label={`${count} tasks`}>
+        <span className="task-list-section-count" role="status" aria-label={`${count} tasks`}>
           {count}
         </span>
       </>

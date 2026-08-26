@@ -443,7 +443,7 @@ function CardTaskRow({
               </span>
             )}
             {isOneThing ? (
-              <OneThingBadge size="compact" />
+              <OneThingBadge />
             ) : (
               task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />
             )}
@@ -731,6 +731,8 @@ function ProjectCard({
               className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100 hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
+              role="button"
+              tabIndex={0}
             >
               <GripIcon />
             </span>
@@ -799,6 +801,7 @@ function ProjectCard({
           <span
             className="project-accent-swatch w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
             title={`${project.name} color — change in Projects`}
+            role="img"
             aria-label={`${project.name} color`}
           />
           <button

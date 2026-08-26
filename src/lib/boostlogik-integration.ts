@@ -1,5 +1,7 @@
 import { safePartnerReturnUrl } from "@/lib/partner-return-url";
 
+export { parseQueryDurationMinutes as parseDurationMinutes } from "@/lib/timer-utils";
+
 export const BOOSTLOGIK_CONTEXT_KEY = "foci_boostlogik_context";
 export const BOOSTLOGIK_DISMISS_KEY = "foci_boostlogik_promo_dismissed";
 
@@ -54,13 +56,6 @@ export function parseBoostLogikParams(
     ...params,
     isBoostLogikDeepLink: isBoostLogikInboundLink(searchParams),
   };
-}
-
-export function parseDurationMinutes(duration?: string): number | null {
-  if (!duration) return null;
-  const minutes = parseInt(duration, 10);
-  if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) return null;
-  return minutes;
 }
 
 export function buildBoostLogikProjectName(

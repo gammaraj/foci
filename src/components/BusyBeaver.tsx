@@ -1,8 +1,6 @@
 export const FOCI_BEAVER_SRC = "/images/busy-beaver-stud.png";
 /** Display name — paddle-tail beaver (tiny arms are a red herring). */
 export const BEAVY_NAME = "Beavy";
-/** @deprecated Use BEAVY_NAME */
-export const BUSY_BEAVER_NAME = BEAVY_NAME;
 
 interface BusyBeaverProps {
   alt?: string;

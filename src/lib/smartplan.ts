@@ -1,5 +1,5 @@
 import type { Task, Project, Settings } from "./types";
-import { formatDateLocal, getToday } from "./dates";
+import { addDaysISO, diffCalendarDays, getToday, relativeDayLabel } from "./dates";
 
 // ── Types ────────────────────────────────────────────────
 
@@ -73,28 +73,6 @@ export function projectLoadFromPlan(plan: SmartPlanResult): ProjectLoad[] {
   });
 }
 
-// ── Helpers ──────────────────────────────────────────────
-
-function addDays(date: Date, n: number): Date {
-  const d = new Date(date);
-  d.setDate(d.getDate() + n);
-  return d;
-}
-
-function diffDays(a: string, b: string): number {
-  const msA = new Date(a + "T00:00:00").getTime();
-  const msB = new Date(b + "T00:00:00").getTime();
-  return Math.round((msA - msB) / 86_400_000);
-}
-
-function dayLabel(dateStr: string, today: string): string {
-  if (dateStr === today) return "Today";
-  const diff = diffDays(dateStr, today);
-  if (diff === 1) return "Tomorrow";
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-}
-
 // ── Scoring ──────────────────────────────────────────────
 
 function scoreTask(
@@ -106,7 +84,7 @@ function scoreTask(
   const projectColor = project?.color;
 
   const effectiveDue = task.dueDate ?? project?.dueDate;
-  const daysUntilDue = effectiveDue ? diffDays(effectiveDue, today) : null;
+  const daysUntilDue = effectiveDue ? diffCalendarDays(effectiveDue, today) : null;
   const overdue = daysUntilDue !== null && daysUntilDue < 0;
 
   let score = 0;
@@ -171,11 +149,10 @@ export function generateSmartPlan(
 
   const dayMap = new Map<string, DayPlan>();
   for (let i = 0; i < planDays; i++) {
-    const d = addDays(new Date(), i);
-    const dateStr = formatDateLocal(d);
+    const dateStr = addDaysISO(today, i);
     dayMap.set(dateStr, {
       date: dateStr,
-      label: dayLabel(dateStr, today),
+      label: relativeDayLabel(dateStr, today),
       tasks: [],
       sessionSlots: 0,
     });
@@ -195,7 +172,7 @@ export function generateSmartPlan(
     if (!effectiveDue) continue;
 
     let placed = false;
-    const dueDiff = diffDays(effectiveDue, today);
+    const dueDiff = diffCalendarDays(effectiveDue, today);
 
     if (dueDiff < 0) {
       const todayPlan = dayMap.get(today);
@@ -207,7 +184,7 @@ export function generateSmartPlan(
       }
     } else {
       for (let d = Math.min(dueDiff, planDays - 1); d >= 0; d--) {
-        const dateStr = formatDateLocal(addDays(new Date(), d));
+        const dateStr = addDaysISO(today, d);
         const day = dayMap.get(dateStr);
         if (day && day.sessionSlots < dailyGoal) {
           day.tasks.push(st);

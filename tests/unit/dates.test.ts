@@ -6,6 +6,14 @@ import {
   getStartOfWeek,
   getStartOfMonth,
   timestampToLocalDate,
+  addDaysISO,
+  enumerateDates,
+  diffCalendarDays,
+  relativeDayLabel,
+  weekdayShort,
+  monthDay,
+  isWeekend,
+  migrateDate,
 } from "@/lib/dates";
 
 describe("dates", () => {
@@ -41,5 +49,43 @@ describe("dates", () => {
   it("getStartOfMonth returns the first of the month", () => {
     expect(getStartOfMonth(new Date(2026, 6, 14))).toBe("2026-07-01");
     expect(getStartOfMonth(new Date(2026, 0, 1))).toBe("2026-01-01");
+  });
+
+  it("addDaysISO steps calendar days", () => {
+    expect(addDaysISO("2026-03-12", 1)).toBe("2026-03-13");
+    expect(addDaysISO("2026-03-31", 1)).toBe("2026-04-01");
+    expect(addDaysISO("2026-03-12", -1)).toBe("2026-03-11");
+  });
+
+  it("enumerateDates returns an inclusive range", () => {
+    expect(enumerateDates("2026-03-12", "2026-03-14")).toEqual([
+      "2026-03-12",
+      "2026-03-13",
+      "2026-03-14",
+    ]);
+    expect(enumerateDates("2026-03-14", "2026-03-12")).toEqual([]);
+  });
+
+  it("diffCalendarDays counts signed calendar days", () => {
+    expect(diffCalendarDays("2026-03-14", "2026-03-12")).toBe(2);
+    expect(diffCalendarDays("2026-03-10", "2026-03-12")).toBe(-2);
+  });
+
+  it("relativeDayLabel names today, tomorrow, and other days", () => {
+    expect(relativeDayLabel("2026-03-12", "2026-03-12")).toBe("Today");
+    expect(relativeDayLabel("2026-03-13", "2026-03-12")).toBe("Tomorrow");
+    expect(relativeDayLabel("2026-03-18", "2026-03-12")).toMatch(/Wed,? Mar 18/);
+  });
+
+  it("weekdayShort, monthDay, and isWeekend read local calendar fields", () => {
+    expect(weekdayShort("2026-03-14")).toBe("Sat");
+    expect(monthDay("2026-03-14")).toBe(14);
+    expect(isWeekend("2026-03-14")).toBe(true);
+    expect(isWeekend("2026-03-16")).toBe(false);
+  });
+
+  it("migrateDate converts toDateString leftovers to ISO", () => {
+    expect(migrateDate("2026-03-12")).toBe("2026-03-12");
+    expect(migrateDate("Wed Mar 12 2026")).toBe("2026-03-12");
   });
 });

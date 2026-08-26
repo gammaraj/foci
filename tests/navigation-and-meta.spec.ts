@@ -1,8 +1,22 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+import { waitForBoot } from "./wait-for-boot";
+
+function banner(page: Page) {
+  return page.getByRole("banner");
+}
+
+/** Compact viewports hide Blog/About behind the hamburger. */
+async function expandNavIfCollapsed(page: Page) {
+  const toggle = banner(page).getByRole("button", { name: "Toggle menu" });
+  if (await toggle.isVisible()) {
+    await toggle.click();
+  }
+}
 
 test.describe("Login Page", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/login");
+    await waitForBoot(page);
   });
 
   test("renders login page with sign-in text", async ({ page }) => {
@@ -22,48 +36,55 @@ test.describe("Login Page", () => {
 test.describe("Navigation", () => {
   test("navbar logo links to home", async ({ page }) => {
     await page.goto("/blog");
+    await waitForBoot(page);
     const logoLink = page.locator("a").filter({ hasText: "Foci" }).first();
     await expect(logoLink).toHaveAttribute("href", "/");
   });
 
   test("navbar shows Blog and About for logged-out visitors", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: "Features" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Install" })).toHaveCount(0);
-    const blogLink = page.getByRole("link", { name: "Blog" });
+    await waitForBoot(page);
+    await expandNavIfCollapsed(page);
+    const nav = banner(page);
+    await expect(nav.getByRole("link", { name: "Features" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Install" })).toHaveCount(0);
+    const blogLink = nav.getByRole("link", { name: "Blog" });
     await expect(blogLink).toBeVisible();
     await expect(blogLink).toHaveAttribute("href", "/blog");
-    const aboutLink = page.getByRole("link", { name: "About" });
+    const aboutLink = nav.getByRole("link", { name: "About" });
     await expect(aboutLink).toBeVisible();
     await expect(aboutLink).toHaveAttribute("href", "/about");
-    await expect(page.getByRole("link", { name: "Stats" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Stats" })).toHaveCount(0);
   });
 
   test("Blog link in navbar navigates to blog page", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Blog" }).click();
+    await waitForBoot(page);
+    await expandNavIfCollapsed(page);
+    await banner(page).getByRole("link", { name: "Blog" }).click();
     await expect(page).toHaveURL(/\/blog/);
   });
 
   test("theme toggle button is accessible", async ({ page }) => {
     await page.goto("/");
-    const themeBtn = page.getByLabel(/theme/i).first();
+    await waitForBoot(page);
+    const themeBtn = banner(page)
+      .getByRole("button", { name: /switch to (light|dark) mode/i })
+      .filter({ visible: true });
     await expect(themeBtn).toBeVisible();
+    const before = await themeBtn.getAttribute("aria-label");
     await themeBtn.click();
-    // Should not crash - theme changes
     await expect(themeBtn).toBeVisible();
+    await expect(themeBtn).not.toHaveAttribute("aria-label", before ?? "");
   });
 
   test("mobile menu toggle works", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
+    await waitForBoot(page);
 
-    // On mobile, the main nav links should be hidden initially
-    // and there should be a hamburger/menu toggle button
-    const navLinks = page.getByRole("link", { name: "Blog" });
-    // In mobile, nav links are either hidden or in a menu
-    // Just verify the page loads at mobile viewport without errors
     await expect(page.getByText("Foci").first()).toBeVisible();
+    await expect(banner(page).getByRole("button", { name: "Toggle menu" })).toBeVisible();
   });
 });
 

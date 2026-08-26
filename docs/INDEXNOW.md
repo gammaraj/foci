@@ -10,23 +10,14 @@ IndexNow is configured to instantly notify search engines (Bing, Yandex, Naver, 
 
 ## Usage
 
-### Programmatic Submission
+### After deploy (recommended)
 
-```typescript
-import { notifyBlogPost, notifyBlogPosts, notifyCorePages, submitUrlToIndexNow } from "@/lib/indexnow";
-
-// Notify about a single blog post
-await notifyBlogPost("pomodoro-technique-guide");
-
-// Notify about multiple blog posts
-await notifyBlogPosts(["pomodoro-technique-guide", "flowtime-technique-guide"]);
-
-// Notify about core pages
-await notifyCorePages();
-
-// Submit any URL
-await submitUrlToIndexNow("https://usefoci.com/app");
+```bash
+# Direct IndexNow API (uses public key file) — or set INDEXNOW_API_SECRET to hit /api/indexnow
+npm run notify:indexnow
 ```
+
+This submits homepage, `/app`, `/blog`, `/about`, `/feed.xml`, evergreen `/vs/*` + `/alternatives/*`, `llms*.txt`, and every blog post URL.
 
 ### Manual Submission via API
 
@@ -54,27 +45,6 @@ Trigger IndexNow submissions when:
 - ✅ Adding new pages
 - ✅ Updating core pages (homepage, app page)
 - ✅ After deployment of significant changes
-
-### After deploy (recommended)
-
-```bash
-# Direct IndexNow API (uses public key file) — or set INDEXNOW_API_SECRET to hit /api/indexnow
-npm run notify:indexnow
-```
-
-This submits homepage, `/app`, `/blog`, `/about`, `/feed.xml`, evergreen `/vs/*` + `/alternatives/*`, `llms*.txt`, and every blog post URL.
-
-### In a Content Management System
-
-```typescript
-// When publishing a new post
-async function publishPost(slug: string) {
-  // ... save post logic ...
-  
-  // Notify search engines
-  await notifyBlogPost(slug);
-}
-```
 
 ## Verification
 

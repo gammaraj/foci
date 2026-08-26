@@ -16,7 +16,7 @@ import {
   type TaskViewPreferences,
 } from "../task-view-preference";
 import { parseOneThingPreference, type OneThingPreference } from "../one-thing";
-import { getToday, getYesterday, formatDateLocal } from "../dates";
+import { getToday, getYesterday, formatDateLocal, migrateDate } from "../dates";
 import {
   getTimerAlarmEnabled,
   getTimerAlarmSound,
@@ -59,14 +59,6 @@ function migrateOldKeys(): void {
 
 // Run migration eagerly on module load
 migrateOldKeys();
-
-/** Migrate old toDateString() format ("Wed Mar 12 2026") to ISO ("2026-03-12"). */
-function migrateDate(dateStr: string): string {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  const parsed = new Date(dateStr);
-  if (!isNaN(parsed.getTime())) return formatDateLocal(parsed);
-  return getToday();
-}
 
 /**
  * localStorage-backed implementation of StorageAdapter.

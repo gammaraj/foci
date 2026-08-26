@@ -108,7 +108,7 @@ export default function AppNavbar({
             >
               {user ? (
                 <div className="min-w-0 shrink">
-                  <WeatherTime nav />
+                  <WeatherTime />
                 </div>
               ) : null}
               <FilantusCrossPromoBanner />

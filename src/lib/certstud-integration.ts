@@ -1,5 +1,7 @@
 import { safePartnerReturnUrl } from "@/lib/partner-return-url";
 
+export { parseQueryDurationMinutes as parseDurationMinutes } from "@/lib/timer-utils";
+
 export const CERTSTUD_CONTEXT_KEY = "foci_certstud_context";
 export const CERTSTUD_DISMISS_KEY = "foci_certstud_promo_dismissed";
 export const CERTSTUD_BASE_URL = "https://certstud.com";
@@ -55,13 +57,6 @@ export function parseCertStudParams(
     ...params,
     isCertStudDeepLink: isCertStudInboundLink(searchParams),
   };
-}
-
-export function parseDurationMinutes(duration?: string): number | null {
-  if (!duration) return null;
-  const minutes = parseInt(duration, 10);
-  if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) return null;
-  return minutes;
 }
 
 export function buildCertStudProjectName(
