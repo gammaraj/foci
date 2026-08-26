@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateSmartPlan } from "@/lib/smartplan";
+import { generateSmartPlan, projectLoadFromPlan } from "@/lib/smartplan";
 import type { Task, Project, Settings } from "@/lib/types";
 import { DEFAULT_SETTINGS, DEFAULT_PROJECT_ID } from "@/lib/types";
 import { getToday } from "@/lib/dates";
@@ -80,5 +80,23 @@ describe("generateSmartPlan", () => {
     const plan = generateSmartPlan(tasks, projects, settings, 7);
     expect(plan.summary.atRiskCount).toBe(1);
     expect(plan.unscheduled.some((s) => s.atRisk)).toBe(true);
+  });
+
+  it("summarizes scheduled load per project", () => {
+    const today = getToday();
+    const multi: Project[] = [
+      { id: "alpha", name: "Alpha", color: "#6b8cce", createdAt: 1 },
+      { id: "beta", name: "Beta", color: "#5f9a86", createdAt: 1 },
+    ];
+    const tasks = [
+      task({ id: "a1", title: "A1", projectId: "alpha", dueDate: today }),
+      task({ id: "a2", title: "A2", projectId: "alpha", dueDate: today }),
+      task({ id: "b1", title: "B1", projectId: "beta" }),
+    ];
+    const plan = generateSmartPlan(tasks, multi, settings, 7);
+    const load = projectLoadFromPlan(plan);
+    expect(load.map((p) => p.projectId).sort()).toEqual(["alpha", "beta"]);
+    expect(load.find((p) => p.projectId === "alpha")?.scheduled).toBeGreaterThan(0);
+    expect(load.reduce((n, p) => n + p.scheduled + p.unscheduled, 0)).toBe(3);
   });
 });

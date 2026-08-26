@@ -34,6 +34,45 @@ export interface SmartPlanResult {
   };
 }
 
+export interface ProjectLoad {
+  projectId: string;
+  name: string;
+  color?: string;
+  scheduled: number;
+  unscheduled: number;
+  overdue: number;
+}
+
+/** How the plan distributes sessions across projects (plus work that did not fit). */
+export function projectLoadFromPlan(plan: SmartPlanResult): ProjectLoad[] {
+  const map = new Map<string, ProjectLoad>();
+  const bump = (st: ScoredTask, field: "scheduled" | "unscheduled") => {
+    const id = st.task.projectId;
+    const cur = map.get(id) ?? {
+      projectId: id,
+      name: st.projectName,
+      color: st.projectColor,
+      scheduled: 0,
+      unscheduled: 0,
+      overdue: 0,
+    };
+    cur[field] += 1;
+    if (st.overdue) cur.overdue += 1;
+    map.set(id, cur);
+  };
+  for (const day of plan.days) {
+    for (const st of day.tasks) bump(st, "scheduled");
+  }
+  for (const st of plan.unscheduled) bump(st, "unscheduled");
+  return [...map.values()].sort((a, b) => {
+    const aTotal = a.scheduled + a.unscheduled;
+    const bTotal = b.scheduled + b.unscheduled;
+    if (aTotal !== bTotal) return bTotal - aTotal;
+    if (a.scheduled !== b.scheduled) return b.scheduled - a.scheduled;
+    return a.name.localeCompare(b.name);
+  });
+}
+
 // ── Helpers ──────────────────────────────────────────────
 
 function addDays(date: Date, n: number): Date {

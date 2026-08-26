@@ -2934,7 +2934,7 @@ export default function TaskList({
                 <button
                   onClick={() => selectViewMode("plan")}
                   className={`${SEG_TAB_ICON_PAD} ${viewMode === "plan" ? FILTER_TAB_ACTIVE : FILTER_TAB_INACTIVE}`}
-                  title="Smart Plan — schedule your day"
+                  title="Smart Plan — schedule tasks across projects"
                   aria-label="Smart Plan"
                 >
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
