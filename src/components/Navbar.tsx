@@ -51,7 +51,7 @@ type NavLink = {
 function navLinkClass(active: boolean, mobile = false) {
   if (mobile) {
     return active
-      ? "nav-chrome-link-active px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full"
+      ? "nav-chrome-link-active px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full bg-blue-500/10 dark:bg-blue-400/10"
       : "nav-chrome-link px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full";
   }
   return active
