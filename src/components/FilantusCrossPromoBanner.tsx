@@ -388,7 +388,7 @@ export function FilantusCrossPromoBanner({
   return (
     <div
       id="filantus-banner"
-      className={`hidden lg:block shrink-0 ${showNext ? 'w-[224px]' : 'w-[208px]'} ${className}`.trim()}
+      className={`hidden lg:block shrink-0 w-[224px] ${className}`.trim()}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       role="complementary"
@@ -410,40 +410,57 @@ export function FilantusCrossPromoBanner({
               })
             }
           }}
-          className="group flex flex-1 min-w-0 items-center gap-1.5 h-full pl-2 pr-1.5"
+          className="group flex flex-1 min-w-0 items-center gap-1 h-full pl-2 pr-1"
           style={{ textDecoration: 'none' }}
           title={`${ad.headline} — ${ad.sub}`}
         >
-          <span className="flex-1 min-w-0">
-            <span className="block text-[12px] font-semibold tracking-tight truncate leading-tight text-slate-700 dark:text-slate-200">
-              {ad.name}
-            </span>
-            <span className="block text-[10px] font-medium truncate leading-tight text-slate-500 dark:text-slate-400">
-              {ad.headline}
-            </span>
+          <span className="shrink-0 text-[12px] font-semibold tracking-tight leading-none text-slate-700 dark:text-slate-200">
+            {ad.name}
           </span>
-          <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap text-slate-600 dark:text-slate-300 border border-slate-300/80 dark:border-slate-600/70 group-hover:border-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
-            Try
+          <span className="min-w-0 text-[10px] font-medium truncate leading-none text-slate-500 dark:text-slate-400">
+            {ad.headline}
           </span>
         </a>
-        {showNext ? (
-          <button
-            type="button"
-            aria-label="Next promo"
-            className="shrink-0 w-7 flex items-center justify-center border-l border-dashed border-slate-300/90 dark:border-slate-600/70 text-slate-400 hover:text-slate-700 hover:bg-slate-100/80 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition-colors"
-            onClick={() => setIndex((i) => (i + 1) % ads.length)}
+        <span className="shrink-0 self-center mr-1 inline-flex items-stretch h-[22px] rounded-md border border-slate-300/80 dark:border-slate-600/70 overflow-hidden">
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                const gtag = (window as { gtag?: (...args: unknown[]) => void }).gtag
+                gtag?.('event', 'filantus_product_click', {
+                  event_category: 'cross_promotion',
+                  event_label: `${ad.id}_${REF}`,
+                  product: ad.id,
+                  source: REF,
+                })
+              }
+            }}
+            className="inline-flex items-center px-1.5 text-[10px] font-semibold whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 hover:text-blue-700 dark:hover:text-blue-300 dark:hover:bg-slate-800/60 transition-colors"
+            style={{ textDecoration: 'none' }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                stroke="currentColor"
-                strokeWidth="2.25"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        ) : null}
+            Try
+          </a>
+          {showNext ? (
+            <button
+              type="button"
+              aria-label="Next promo"
+              className="inline-flex items-center justify-center w-5 border-l border-slate-300/80 dark:border-slate-600/70 text-slate-400 hover:text-slate-700 hover:bg-slate-100/80 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition-colors"
+              onClick={() => setIndex((i) => (i + 1) % ads.length)}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M9 5l7 7-7 7"
+                  stroke="currentColor"
+                  strokeWidth="2.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          ) : null}
+        </span>
       </div>
     </div>
   )
