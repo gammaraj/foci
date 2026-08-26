@@ -41,36 +41,6 @@ const SOUNDS: SoundOption[] = [
   { id: "brownnoise", label: "Brown Noise", emoji: "🟤" },
 ];
 
-// Lofi Girl rotates live broadcasts (new video IDs each season). Channel embeds
-// always resolve to the current live stream — static IDs like jfKfPfyJRdk break.
-const LOFI_GIRL_CHANNEL_ID = "UCSJ4gkVC6NrvII8umztf0Ow";
-const LOFI_SYNTHWAVE_CHANNEL_ID = "UCc5afI6TobiZjRke2sYBDPA";
-
-const YOUTUBE_STREAMS = [
-  {
-    channelId: LOFI_GIRL_CHANNEL_ID,
-    label: "Lofi Girl live",
-    channel: "Lofi Girl",
-    watchUrl: "https://www.youtube.com/@LofiGirl/live",
-  },
-  {
-    channelId: LOFI_SYNTHWAVE_CHANNEL_ID,
-    label: "Synthwave radio",
-    channel: "Lofi Girl Synthwave",
-    watchUrl: "https://www.youtube.com/channel/UCc5afI6TobiZjRke2sYBDPA/live",
-  },
-] as const;
-
-function youtubeLiveEmbedSrc(channelId: string): string {
-  const params = new URLSearchParams({
-    autoplay: "1",
-    mute: "0",
-    rel: "0",
-    modestbranding: "1",
-  });
-  return `https://www.youtube.com/embed/live_stream?channel=${channelId}&${params}`;
-}
-
 // Spotify editorial playlists (embed URLs verified May 2026)
 const SPOTIFY_PLAYLISTS = [
   // Meditation playlists (default)
@@ -264,6 +234,26 @@ interface AmbientSoundsProps {
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
 
+const MUSIC_CHIP =
+  "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
+
+const MUSIC_CHIP_OPEN =
+  "border-blue-300 dark:border-blue-600 bg-blue-50/80 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200";
+
+function MusicChipChevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      className={`w-3 h-3 shrink-0 text-slate-400 dark:text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
 type SpotifyEmbedController = {
   play?: () => void;
   pause?: () => void;
@@ -417,13 +407,82 @@ function StripMusicPopover({
   );
 }
 
+/** Source picker menu — portaled so the header's overflow-x-auto cannot clip it. */
+function StripSourceMenu({
+  open,
+  anchorRef,
+  onClose,
+  children,
+}: {
+  open: boolean;
+  anchorRef: RefObject<HTMLElement | null>;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 8 });
+
+  const updatePos = useCallback(() => {
+    const anchor = anchorRef.current;
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const width = Math.min(168, window.innerWidth - 16);
+    let left = rect.left;
+    if (left + width > window.innerWidth - 8) left = window.innerWidth - width - 8;
+    if (left < 8) left = 8;
+    setPos({ top: rect.bottom + 4, left });
+  }, [anchorRef]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [open, updatePos]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    const onDown = (e: globalThis.MouseEvent) => {
+      const target = e.target as Node;
+      if (panelRef.current?.contains(target) || anchorRef.current?.contains(target)) return;
+      onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [open, anchorRef, onClose]);
+
+  if (!open) return null;
+
+  return createPortal(
+    <div
+      ref={panelRef}
+      role="listbox"
+      aria-label="Music sources"
+      style={{ top: pos.top, left: pos.left }}
+      className="fixed z-[90] min-w-[10.5rem] py-1 rounded-lg bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] shadow-xl"
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
+
 export default function AmbientSounds({ inline = false, embedded = false }: AmbientSoundsProps) {
   const stripEmbedded = inline && embedded;
-  const [mode, setMode] = useState<"sounds" | "spotify" | "soundcloud" | "lofi">("sounds");
+  const [mode, setMode] = useState<AmbientMode>("sounds");
   const [activeSound, setActiveSound] = useState<SoundType | null>(null);
   const [volume, setVolume] = useState(0.5);
-  const [ytStreamIdx, setYtStreamIdx] = useState(0);
-  const [showYt, setShowYt] = useState(false);
   const [spotifyIdx, setSpotifyIdx] = useState(0);
   const [scIdx, setScIdx] = useState(0);
   const [scShuffle, setScShuffle] = useState(false);
@@ -448,7 +507,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
 
   useEffect(() => {
     if (!prefsLoaded) return;
-    setAmbientMode(mode as AmbientMode);
+    setAmbientMode(mode);
   }, [mode, prefsLoaded]);
 
   useEffect(() => {
@@ -571,23 +630,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     spotifyLoadedUriRef.current = uri;
   }, [mode, spotifyIdx]);
 
-  useEffect(() => {
-    if (!modeMenuOpen) return;
-    const onClick = (e: globalThis.MouseEvent) => {
-      if (modeMenuRef.current && !modeMenuRef.current.contains(e.target as Node)) {
-        setModeMenuOpen(false);
-      }
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setModeMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [modeMenuOpen]);
 
   // Send a command to the SoundCloud Widget via postMessage
   const scCommand = useCallback((method: string, value?: unknown) => {
@@ -659,7 +701,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     };
   }, []);
 
-  const ytStream = YOUTUBE_STREAMS[ytStreamIdx];
   const spotifyPlaylist = SPOTIFY_PLAYLISTS[spotifyIdx];
   const scPlaylist = SOUNDCLOUD_PLAYLISTS[scIdx];
   const activeSoundMeta = SOUNDS.find((s) => s.id === activeSound);
@@ -678,7 +719,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         ? scPlaylist.label
         : mode === "spotify"
           ? spotifyPlaylist.label
-          : ytStream.label;
+          : scPlaylist.label;
 
   const handleMiniPlayPause = (e: MouseEvent) => {
     e.stopPropagation();
@@ -707,16 +748,11 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       }
       return;
     }
-    setCollapsed(false);
-    if (mode === "lofi" && !showYt) setShowYt(true);
   };
 
-  const selectMode = (id: "sounds" | "spotify" | "soundcloud" | "lofi") => {
+  const selectMode = (id: AmbientMode) => {
     setMode(id);
     setModeMenuOpen(false);
-    if (id === "sounds") {
-      setShowYt(false);
-    }
     // Keep header compact — open the music popover only when the user asks
     if (stripEmbedded) {
       setCollapsed(true);
@@ -751,12 +787,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       labelWide: "SoundCloud",
       icon: <span className="text-sm leading-none shrink-0" aria-hidden>☁️</span>,
     },
-    {
-      id: "lofi" as const,
-      onClick: () => selectMode("lofi"),
-      label: "Lo-fi",
-      icon: <span className="text-sm leading-none shrink-0" aria-hidden>📺</span>,
-    },
   ] as const;
 
   const activeModeTab = modeTabs.find((t) => t.id === mode) ?? modeTabs[0];
@@ -765,58 +795,52 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       ? activeModeTab.labelWide
       : activeModeTab.label;
 
+  const closeModeMenu = useCallback(() => setModeMenuOpen(false), []);
+
   const modePicker = (
     <div className="relative shrink-0" ref={modeMenuRef}>
       <button
         type="button"
         onClick={() => setModeMenuOpen((o) => !o)}
-        className="inline-flex items-center gap-1 px-1 py-0.5 text-xs font-medium rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/10 transition-colors whitespace-nowrap leading-none"
+        className={`inline-flex items-center justify-center ${
+          stripEmbedded
+            ? `${MUSIC_CHIP} gap-0.5 px-1.5 ${modeMenuOpen ? MUSIC_CHIP_OPEN : ""}`
+            : "gap-1 px-1 py-0.5 rounded-md hover:bg-slate-100/90 dark:hover:bg-white/10"
+        } text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors whitespace-nowrap leading-none`}
         aria-haspopup="listbox"
         aria-expanded={modeMenuOpen}
         aria-label={`Music source: ${activeModeLabel}. Change source`}
-        title="Change music source"
+        title="Change source — Sounds, Spotify, or SoundCloud"
       >
         {activeModeTab.icon}
-        <span className="hidden sm:inline truncate max-w-[4.5rem] land-compact:max-w-[5.5rem] lg:max-w-[6.5rem]">{activeModeTab.label}</span>
-        <svg
-          className={`w-3 h-3 shrink-0 text-slate-400 transition-transform ${modeMenuOpen ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        {!stripEmbedded && (
+          <span className="truncate max-w-[4.5rem]">{activeModeTab.label}</span>
+        )}
+        <MusicChipChevron open={modeMenuOpen} />
       </button>
-      {modeMenuOpen && (
-        <div
-          role="listbox"
-          aria-label="Music sources"
-          className="absolute left-0 top-full mt-1 z-50 min-w-[10.5rem] py-1 rounded-lg bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] shadow-xl"
-        >
-          {modeTabs.map((tab) => {
-            const active = mode === tab.id;
-            const label = "labelWide" in tab && tab.labelWide ? tab.labelWide : tab.label;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                role="option"
-                aria-selected={active}
-                onClick={tab.onClick}
-                className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-left transition-colors ${
-                  active
-                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
-                }`}
-              >
-                {tab.icon}
-                <span className="truncate">{label}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <StripSourceMenu open={modeMenuOpen} anchorRef={modeMenuRef} onClose={closeModeMenu}>
+        {modeTabs.map((tab) => {
+          const active = mode === tab.id;
+          const label = "labelWide" in tab && tab.labelWide ? tab.labelWide : tab.label;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="option"
+              aria-selected={active}
+              onClick={tab.onClick}
+              className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-left transition-colors ${
+                active
+                  ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                  : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              }`}
+            >
+              {tab.icon}
+              <span className="truncate">{label}</span>
+            </button>
+          );
+        })}
+      </StripSourceMenu>
     </div>
   );
 
@@ -825,9 +849,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       setSpotifyIdx((i) => (i + dir + SPOTIFY_PLAYLISTS.length) % SPOTIFY_PLAYLISTS.length);
     } else if (mode === "soundcloud") {
       setScIdx((i) => (i + dir + SOUNDCLOUD_PLAYLISTS.length) % SOUNDCLOUD_PLAYLISTS.length);
-    } else if (mode === "lofi") {
-      setYtStreamIdx((i) => (i + dir + YOUTUBE_STREAMS.length) % YOUTUBE_STREAMS.length);
-      setShowYt(false);
     }
   };
 
@@ -836,7 +857,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         stripEmbedded
-          ? "min-w-0 w-full sm:w-auto flex flex-col scroll-mt-24 relative"
+          ? "flex w-fit flex-col items-start scroll-mt-24 relative"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -844,18 +865,24 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     >
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
-        <div className="relative flex items-center gap-1 min-w-0 w-full sm:w-auto max-w-full" ref={stripAnchorRef}>
+        <div
+          className="relative flex items-center gap-2 w-[23rem] shrink-0"
+          ref={stripAnchorRef}
+          data-foci-music-strip
+        >
+          <span className="app-section-label shrink-0 text-slate-500 dark:text-slate-400">Music</span>
           {modePicker}
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className="min-w-0 flex-1 sm:flex-initial sm:max-w-[6.5rem] land-compact:flex-1 land-compact:max-w-[11rem] lg:max-w-[9rem] text-left truncate text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors leading-none py-0"
-            title={nowPlayingLabel}
+            className={`${MUSIC_CHIP} w-[13.75rem] shrink-0 gap-1 px-1.5 ${!collapsed ? MUSIC_CHIP_OPEN : ""}`}
+            title={`${nowPlayingLabel} — click to choose a ${mode === "sounds" ? "sound" : "playlist"}`}
             aria-expanded={!collapsed}
+            aria-haspopup="dialog"
             aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}
           >
-            <span className="sm:hidden">{activeModeTab.label}</span>
-            <span className="hidden sm:inline">{nowPlayingLabel}</span>
+            <span className="min-w-0 flex-1 truncate text-left">{nowPlayingLabel}</span>
+            <MusicChipChevron open={!collapsed} />
           </button>
           <button
             type="button"
@@ -863,8 +890,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             className={`flex-shrink-0 ${miniPlayButtonClass(
               !!(mode === "sounds" && activeSound) ||
                 (mode === "soundcloud" && !collapsed) ||
-                (mode === "spotify" && spotifyPlaying) ||
-                showYt,
+                (mode === "spotify" && spotifyPlaying),
               true
             )}`}
             aria-label={
@@ -874,11 +900,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                   : "Play ambient sound"
                 : mode === "soundcloud"
                   ? "Play or pause SoundCloud"
-                  : mode === "spotify"
-                    ? spotifyPlaying
-                      ? `Pause ${spotifyPlaylist.label}`
-                      : `Play ${spotifyPlaylist.label}`
-                    : "Open player"
+                  : spotifyPlaying
+                    ? `Pause ${spotifyPlaylist.label}`
+                    : `Play ${spotifyPlaylist.label}`
             }
             title={
               mode === "sounds"
@@ -887,11 +911,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                   : "Play"
                 : mode === "soundcloud"
                   ? "Play / Pause"
-                  : mode === "spotify"
-                    ? spotifyPlaying
-                      ? "Pause"
-                      : "Play"
-                    : "Expand to play"
+                  : spotifyPlaying
+                    ? "Pause"
+                    : "Play"
             }
           >
             <MiniPlayPauseIcon
@@ -906,7 +928,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           {!collapsed && (
             <StripMusicPopover anchorRef={stripAnchorRef} onClose={() => setCollapsed(true)}>
               {mode === "sounds" && (
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-2 gap-1.5">
                   {SOUNDS.map((s) => (
                     <button
                       key={s.id}
@@ -961,39 +983,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                   </p>
                 </>
               )}
-              {mode === "lofi" && (
-                <>
-                  {showYt ? (
-                    <div className="h-24 rounded-lg overflow-hidden">
-                      <iframe
-                        key={ytStream.channelId}
-                        src={youtubeLiveEmbedSrc(ytStream.channelId)}
-                        title={ytStream.label}
-                        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                        allowFullScreen
-                        className="w-full h-full"
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setShowYt(true)}
-                      className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
-                    >
-                      Play {ytStream.label}
-                    </button>
-                  )}
-                  <div className="flex items-center justify-between gap-1">
-                    <button type="button" onClick={() => cyclePlaylist(-1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Previous stream">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" /></svg>
-                    </button>
-                    <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate">{ytStream.label}</span>
-                    <button type="button" onClick={() => cyclePlaylist(1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Next stream">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" /></svg>
-                    </button>
-                  </div>
-                </>
-              )}
               {mode === "soundcloud" && (
                 <div className="flex items-center justify-between gap-1">
                   <button type="button" onClick={() => cyclePlaylist(-1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Previous playlist">
@@ -1022,7 +1011,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             ? "w-fit max-w-full px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
             : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
         } ${
-          activeSound || (mode === "soundcloud") || showYt
+          activeSound || mode === "soundcloud"
             ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
             : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
         }`}
@@ -1033,8 +1022,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           className={`flex-shrink-0 ${miniPlayButtonClass(
             !!(mode === "sounds" && activeSound) ||
               (mode === "soundcloud" && !collapsed) ||
-              (mode === "spotify" && spotifyPlaying) ||
-              showYt
+              (mode === "spotify" && spotifyPlaying)
           )}`}
           aria-label={
             mode === "sounds"
@@ -1150,7 +1138,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <div
           className={
             stripEmbedded || collapsed
-              ? "h-0 overflow-hidden opacity-0 pointer-events-none"
+              ? "absolute w-px h-px overflow-hidden opacity-0 pointer-events-none"
               : ""
           }
           aria-hidden={stripEmbedded || collapsed}
@@ -1158,8 +1146,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           <iframe
             key={scIdx}
             ref={scIframeRef}
-            width="100%"
-            height={stripEmbedded ? 80 : 120}
+            width={stripEmbedded || collapsed ? 1 : "100%"}
+            height={stripEmbedded || collapsed ? 1 : 120}
             scrolling="no"
             frameBorder="no"
             allow="autoplay"
@@ -1238,78 +1226,6 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               </span>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Lo-fi Radio mode (YouTube embed) */}
-      {mode === "lofi" && (
-        <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
-          {showYt ? (
-            <div className={stripEmbedded ? "h-24" : "aspect-video"}>
-              <iframe
-                key={ytStream.channelId}
-                src={youtubeLiveEmbedSrc(ytStream.channelId)}
-                title={ytStream.label}
-                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
-          ) : (
-            <div className={`text-center ${stripEmbedded ? "p-2" : "p-4"}`}>
-              <p className={`text-slate-600 dark:text-slate-300 mb-2 ${stripEmbedded ? "text-xs mb-1.5" : "text-sm mb-3"}`}>
-                Stream lo-fi music from YouTube
-              </p>
-              <button
-                onClick={() => setShowYt(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z" />
-                </svg>
-                Play {ytStream.label}
-              </button>
-            </div>
-          )}
-          {/* Stream selector */}
-          <div className="flex items-center justify-between px-3 py-2 border-t border-slate-200 dark:border-[#243350] gap-2">
-            <button
-              onClick={() => {
-                setYtStreamIdx((i) => (i - 1 + YOUTUBE_STREAMS.length) % YOUTUBE_STREAMS.length);
-                setShowYt(false);
-              }}
-              className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors p-1"
-              aria-label="Previous stream"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-            <div className="text-center min-w-0">
-              <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate block">
-                {ytStream.label}
-              </span>
-              <span className="text-xs sm:text-sm text-slate-400 dark:text-slate-300">
-                {ytStream.channel}
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                setYtStreamIdx((i) => (i + 1) % YOUTUBE_STREAMS.length);
-                setShowYt(false);
-              }}
-              className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors p-1"
-              aria-label="Next stream"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
-            </button>
-          </div>
-          <a
-            href={ytStream.watchUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block px-3 pb-2 text-xs text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            Open on YouTube if the player shows an error
-          </a>
         </div>
       )}
 

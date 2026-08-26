@@ -2,15 +2,16 @@ const MODE_KEY = "foci_ambient_mode";
 const SOUND_KEY = "foci_ambient_sound";
 const VOLUME_KEY = "foci_ambient_volume";
 
-export type AmbientMode = "sounds" | "spotify" | "soundcloud" | "lofi";
+export type AmbientMode = "sounds" | "spotify" | "soundcloud";
 export type AmbientSound = "rain" | "whitenoise" | "brownnoise" | "cafe" | "lofi";
 
-const VALID_MODES: AmbientMode[] = ["sounds", "spotify", "soundcloud", "lofi"];
+const VALID_MODES: AmbientMode[] = ["sounds", "spotify", "soundcloud"];
 const VALID_SOUNDS: AmbientSound[] = ["rain", "whitenoise", "brownnoise", "cafe", "lofi"];
 
 export function getAmbientMode(): AmbientMode {
   if (typeof window === "undefined") return "sounds";
   const raw = localStorage.getItem(MODE_KEY);
+  if (raw === "lofi") return "soundcloud";
   return VALID_MODES.includes(raw as AmbientMode) ? (raw as AmbientMode) : "sounds";
 }
 

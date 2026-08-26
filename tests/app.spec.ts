@@ -1,5 +1,30 @@
 import { test, expect, type Page } from "@playwright/test";
 
+async function expectUnclipped(locator: import("@playwright/test").Locator) {
+  await expect(locator).toBeVisible();
+  const clippedBy = await locator.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.height < 8 || rect.width < 8) return "empty-box";
+    let parent = el.parentElement;
+    while (parent && parent !== document.documentElement) {
+      const style = getComputedStyle(parent);
+      const clips = (value: string) =>
+        value === "hidden" || value === "auto" || value === "scroll" || value === "clip";
+      if (clips(style.overflowX) || clips(style.overflowY)) {
+        const prect = parent.getBoundingClientRect();
+        const visibleH = Math.min(rect.bottom, prect.bottom) - Math.max(rect.top, prect.top);
+        const visibleW = Math.min(rect.right, prect.right) - Math.max(rect.left, prect.left);
+        if (visibleH < rect.height * 0.85 || visibleW < rect.width * 0.85) {
+          return `${parent.tagName}.${parent.className}`.trim();
+        }
+      }
+      parent = parent.parentElement;
+    }
+    return "";
+  });
+  expect(clippedBy).toBe("");
+}
+
 async function dismissChrome(page: Page) {
   await page.getByRole("button", { name: "Skip tour" }).click({ timeout: 5000 }).catch(() => {});
   await page.getByRole("button", { name: "Got it" }).click({ timeout: 2000 }).catch(() => {});
@@ -22,7 +47,14 @@ test.describe("App Page (unauthenticated)", () => {
   test("renders the timer display with a Timer label and settings", async ({ page }) => {
     const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
     await expect(dock).toBeVisible();
+    await expect(dock.getByText("Music", { exact: true })).toBeVisible();
     await expect(dock.getByText("Timer", { exact: true })).toBeVisible();
+    const music = page.locator("[data-foci-music-strip]").filter({ visible: true });
+    const timer = page.locator("[data-foci-timer-strip]").filter({ visible: true });
+    const musicBox = await music.boundingBox();
+    const timerBox = await timer.boundingBox();
+    expect(musicBox && timerBox).toBeTruthy();
+    expect((timerBox?.x ?? 0) - ((musicBox?.x ?? 0) + (musicBox?.width ?? 0))).toBeGreaterThan(20);
     await expect(dock.getByText(/\d{2}:\d{2}/)).toBeVisible();
     await expect(dock.getByLabel("Timer settings")).toBeVisible();
     await expect(dock.getByLabel("Decrease duration by 5 minutes")).toBeVisible();
@@ -79,12 +111,60 @@ test.describe("App Page (unauthenticated)", () => {
   });
 
   test("renders music source control", async ({ page }) => {
-    await expect(page.getByLabel(/Music source:/i).first()).toBeVisible();
+    const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
+    await expect(dock.getByText("Music", { exact: true })).toBeVisible();
+    await expect(page.getByLabel(/Music source:/i).filter({ visible: true })).toBeVisible();
+    await expect(page.getByLabel(/Show .* options/i).filter({ visible: true })).toBeVisible();
     await expect(page.getByLabel(/Play ambient sound|Open player|Play /i).first()).toBeVisible();
   });
 
+  test("track name opens the in-source picker", async ({ page }) => {
+    const title = page.getByLabel(/Show Ambient sounds options/i).filter({ visible: true });
+    await expect(title).toContainText("Ambient sounds");
+    expect(
+      await title.evaluate((el) => {
+        const span = el.querySelector("span");
+        return span ? span.scrollWidth > span.clientWidth + 1 : true;
+      }),
+    ).toBe(false);
+    await title.click();
+    const picker = page.getByRole("dialog", { name: "Music player" });
+    await expect(picker).toBeVisible();
+    await expectUnclipped(picker);
+    await expect(picker.getByLabel("Play Rain")).toBeVisible();
+    await expect(picker.getByLabel("Play Café")).toBeVisible();
+  });
+
+  test("switching music source keeps the strip width", async ({ page }) => {
+    const strip = page.locator("[data-foci-music-strip]").filter({ visible: true });
+    const before = await strip.boundingBox();
+    expect(before).toBeTruthy();
+    for (const source of ["Spotify", "SoundCloud", "Sounds"] as const) {
+      await page.getByLabel(/Music source:/i).filter({ visible: true }).click();
+      await page.getByRole("option", { name: source }).click();
+      const after = await strip.boundingBox();
+      expect(after).toBeTruthy();
+      expect(Math.abs((after?.width ?? 0) - (before?.width ?? 0))).toBeLessThan(2);
+    }
+  });
+
+  test("music source menu lists Sounds, Spotify, and SoundCloud", async ({ page }) => {
+    await page.getByLabel(/Music source:/i).filter({ visible: true }).click();
+    const menu = page.getByRole("listbox", { name: "Music sources" });
+    await expect(menu).toBeVisible();
+    await expect(menu).toHaveCSS("position", "fixed");
+    const box = await menu.boundingBox();
+    expect(box).toBeTruthy();
+    expect(box!.height).toBeGreaterThan(80);
+    await expect(menu.getByRole("option", { name: "Sounds" })).toBeVisible();
+    await expect(menu.getByRole("option", { name: "Spotify" })).toBeVisible();
+    await expect(menu.getByRole("option", { name: "SoundCloud" })).toBeVisible();
+    await expect(menu.getByRole("option", { name: "Lo-fi" })).toHaveCount(0);
+    await expectUnclipped(menu);
+  });
+
   test("Spotify play starts the selected playlist without opening the picker", async ({ page }) => {
-    await page.getByLabel(/Music source:/i).first().click();
+    await page.getByLabel(/Music source:/i).filter({ visible: true }).click();
     await page.getByRole("option", { name: "Spotify" }).click();
     await expect(page.locator("[data-foci-spotify-embed] iframe")).toBeAttached({ timeout: 15_000 });
 
@@ -97,6 +177,15 @@ test.describe("App Page (unauthenticated)", () => {
     await expect(picker).toBeVisible();
     await expect(picker.getByText("Peaceful Meditation")).toBeVisible();
     await expect(picker.locator("iframe")).toHaveCount(0);
+  });
+
+  test("timer expand panel is not clipped by the header", async ({ page }) => {
+    await page.getByLabel("Expand focus timer").filter({ visible: true }).click();
+    const panel = page.getByRole("dialog", { name: "Focus timer" });
+    await expect(panel).toBeVisible();
+    await expect(panel).toHaveCSS("position", "fixed");
+    await expectUnclipped(panel);
+    await expect(panel.getByLabel("Timer alarm sound")).toBeVisible();
   });
 
   test("can open settings panel", async ({ page }) => {

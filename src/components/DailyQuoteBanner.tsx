@@ -39,18 +39,18 @@ export default function DailyQuoteBanner({
     return (
       <div
         id="focus-dock"
-        className="no-print flex items-center justify-center gap-1.5 min-w-0 w-full max-w-full relative"
+        className="no-print flex items-center justify-center gap-5 min-w-0 w-full max-w-full relative"
         role="status"
         aria-label="Focus timer and music"
       >
         {hasMusic && (
-          <div className="min-w-0 shrink flex items-center gap-1 overflow-visible">
+          <div className="shrink-0 flex items-center gap-1 overflow-visible">
             {musicToolbar}
           </div>
         )}
         {hasMusic && (
           <div
-            className="w-px h-4 bg-slate-200 dark:bg-[#2a3f5f] shrink-0"
+            className="w-px h-4 bg-slate-200 dark:bg-[#2a3f5f] shrink-0 mx-1"
             aria-hidden
           />
         )}

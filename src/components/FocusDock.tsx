@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
@@ -20,6 +21,74 @@ const WORK_DURATION_PRESETS = [15, 25, 30, 45] as const;
 
 function openTimerSettings() {
   window.dispatchEvent(new CustomEvent("foci-open-settings", { detail: { tab: "timer" } }));
+}
+
+function visibleAnchor(selector: string): HTMLElement | null {
+  const nodes = document.querySelectorAll<HTMLElement>(selector);
+  for (const el of nodes) {
+    const style = getComputedStyle(el);
+    if (style.display === "none" || style.visibility === "hidden") continue;
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) return el;
+  }
+  return nodes[0] ?? null;
+}
+
+/** Portaled so the header's overflow-x-auto cannot clip the expanded timer. */
+function CompactTimerPopover({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  const hostRef = React.useRef<HTMLSpanElement>(null);
+  const [active, setActive] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 8, width: 320 });
+
+  const updatePos = useCallback(() => {
+    const host = hostRef.current;
+    const fromVisibleCopy = !!host && host.getClientRects().length > 0;
+    setActive(fromVisibleCopy);
+    if (!fromVisibleCopy) return;
+    const anchor = visibleAnchor("[data-foci-timer-strip]");
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const width = Math.min(320, window.innerWidth - 24);
+    let left = rect.left + rect.width / 2 - width / 2;
+    if (left + width > window.innerWidth - 8) left = window.innerWidth - width - 8;
+    if (left < 8) left = 8;
+    setPos({ top: rect.bottom + 4, left, width });
+  }, []);
+
+  useLayoutEffect(() => {
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [updatePos]);
+
+  return (
+    <>
+      <span ref={hostRef} aria-hidden className="pointer-events-none absolute w-0 h-0" />
+      {active
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-label="Focus timer"
+              style={{ top: pos.top, left: pos.left, width: pos.width }}
+              className={`fixed z-[80] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${className}`}
+            >
+              {children}
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
+  );
 }
 
 function WorkDurationControl({
@@ -534,6 +603,7 @@ export function FocusDockToolbar({
     return (
       <div
         className={`group flex items-center gap-1 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
+        data-foci-timer-strip
       >
         {timerLabelCluster}
         <div className="flex items-center gap-0 shrink-0">
@@ -602,10 +672,8 @@ export default function FocusDockPanel({
 
   if (compactStrip) {
     return (
-      <div
-        className={`absolute left-1/2 top-[calc(100%+0.25rem)] z-50 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] -translate-x-1/2 rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${
-          isBreak ? "timer-break-mode" : ""
-        } ${activeTaskId ? "timer-linked-from-task" : ""}`}
+      <CompactTimerPopover
+        className={`${isBreak ? "timer-break-mode" : ""} ${activeTaskId ? "timer-linked-from-task" : ""}`}
       >
         {activeTaskId && activeTaskTitle ? (
           <p className="text-xs font-medium text-blue-600 dark:text-blue-400 truncate mb-2">{activeTaskTitle}</p>
@@ -687,7 +755,7 @@ export default function FocusDockPanel({
             &ldquo;{lastQuote}&rdquo;
           </p>
         )}
-      </div>
+      </CompactTimerPopover>
     );
   }
 
