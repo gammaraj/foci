@@ -4,6 +4,7 @@ import Link from "next/link";
 import AppNavbar from "@/components/AppNavbar";
 import CompareLandingView from "@/components/CompareLandingView";
 import GuideLinkHub from "@/components/GuideLinkHub";
+import { FilantusInContentPromo } from "@/components/FilantusCrossPromoBanner";
 import { absolutePageTitle } from "@/lib/site-metadata";
 import { ALTERNATIVES_LANDINGS, getAlternativesLanding } from "@/lib/compare-landings";
 import { SITE_URL } from "@/lib/product-facts";
@@ -56,6 +57,7 @@ export default async function AlternativesPage({
       <AppNavbar />
       <main className="flex-1 app-container py-12 sm:py-16">
         <CompareLandingView page={page} />
+        <FilantusInContentPromo />
         <div className="max-w-6xl mx-auto mt-16">
           <GuideLinkHub />
         </div>

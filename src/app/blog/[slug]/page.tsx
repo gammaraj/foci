@@ -11,6 +11,7 @@ import CompareHubLinks from "@/components/CompareHubLinks";
 import BlogTryFociBar from "@/components/BlogTryFociBar";
 import SatTutoringPromo from "@/components/SatTutoringPromo";
 import AppNavbar from "@/components/AppNavbar";
+import { FilantusInContentPromo } from "@/components/FilantusCrossPromoBanner";
 
 /** Safely serialize JSON-LD: escapes </ to prevent </script> injection. */
 function safeJsonLd(obj: unknown): string {
@@ -187,6 +188,8 @@ export default async function BlogPostPage({ params }: Props) {
               <span>{meta.readingTime}</span>
             </div>
           </header>
+
+          <FilantusInContentPromo className="my-6" />
 
           <div className="mb-8 p-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 flex flex-col sm:flex-row sm:items-center gap-3">
             <p className="flex-1 text-sm text-slate-700 dark:text-slate-200">

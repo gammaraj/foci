@@ -327,10 +327,13 @@ function bannerHref(adId: string, fallbackUrl: string): string {
 export function FilantusCrossPromoBanner({
   className = '',
   hidden = false,
+  variant = 'nav',
 }: {
   className?: string
   /** Force-hide from a parent when path helper is not enough */
   hidden?: boolean
+  /** `inline` is full-width in article bodies; `nav` stays compact in the header. */
+  variant?: 'nav' | 'inline'
 }) {
   const pathname = usePathname() || ''
   const [ads, setAds] = useState<FilantusAd[]>(FALLBACK_ADS)
@@ -387,8 +390,8 @@ export function FilantusCrossPromoBanner({
 
   return (
     <div
-      id="filantus-banner"
-      className={`hidden lg:block shrink-0 w-[224px] ${className}`.trim()}
+      id={variant === 'inline' ? 'filantus-banner-inline' : 'filantus-banner'}
+      className={`${variant === 'inline' ? 'block w-full max-w-xl' : 'hidden lg:block shrink-0 w-[224px]'} ${className}`.trim()}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       role="complementary"
@@ -462,6 +465,14 @@ export function FilantusCrossPromoBanner({
           ) : null}
         </span>
       </div>
+    </div>
+  )
+}
+
+export function FilantusInContentPromo({ className = '' }: { className?: string }) {
+  return (
+    <div className={`my-8 flex justify-center ${className}`.trim()}>
+      <FilantusCrossPromoBanner variant="inline" />
     </div>
   )
 }

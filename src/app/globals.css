@@ -740,11 +740,13 @@ select {
   }
 }
 /* Partner ad rotator keeps its designed micro type */
-#filantus-banner [class*="text-[10px]"] {
+#filantus-banner [class*="text-[10px]"],
+#filantus-banner-inline [class*="text-[10px]"] {
   font-size: 10px;
   line-height: 1.15;
 }
-#filantus-banner [class*="text-[12px]"] {
+#filantus-banner [class*="text-[12px]"],
+#filantus-banner-inline [class*="text-[12px]"] {
   font-size: 12px;
   line-height: 1.15;
 }
