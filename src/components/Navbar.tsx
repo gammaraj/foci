@@ -19,9 +19,9 @@ import { appViewPath, isExactTasksAppPath, isTasksAppPath } from "@/lib/task-vie
 interface NavbarProps {
   /** When set (e.g. on /app), shows a settings button in the nav bar. */
   onOpenSettings?: () => void;
-  /** Extra actions shown before theme toggle (e.g. collaboration invites on /app). */
+  /** App tools (due bell, sharing) — sits with Settings, before theme + avatar. */
   toolbarSlot?: ReactNode;
-  /** Optional center content between logo and nav links (kept empty by default — promo belongs outside the task workspace). */
+  /** Optional center content between logo and nav links (clock, weather, partner promo). */
   centerSlot?: ReactNode;
 }
 
@@ -59,9 +59,8 @@ function navLinkClass(active: boolean, mobile = false) {
     : "nav-chrome-link text-[0.9375rem] transition-colors";
 }
 
-const chromeBtn = "nav-chrome-btn rounded-lg";
-const chromeBtnPad = `${chromeBtn} p-2`;
-const chromeBtnSettings = `${chromeBtn} flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[0.9375rem]`;
+const chromeIconBtn = "nav-chrome-icon-btn";
+const chromeLabelBtn = "nav-chrome-label-btn";
 
 function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps) {
   const { user } = useAuth();
@@ -214,12 +213,11 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             ) : null}
             <div className="flex items-center gap-0.5">
               {toolbarSlot}
-              <ThemeToggle className={chromeBtnPad} />
               {onOpenSettings && (
                 <button
                   type="button"
                   onClick={onOpenSettings}
-                  className={chromeBtnSettings}
+                  className={chromeLabelBtn}
                   aria-label="Open settings"
                   title="Timer and app settings"
                 >
@@ -228,6 +226,10 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                 </button>
               )}
             </div>
+            {toolbarSlot || onOpenSettings ? (
+              <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
+            ) : null}
+            <ThemeToggle className={chromeIconBtn} />
             {user ? (
               <div className="ml-1.5">
                 <UserMenu />
@@ -243,30 +245,31 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           </div>
 
           <div className="flex roomy:hidden items-center gap-0.5 ml-auto">
-            <ThemeToggle className={`${chromeBtnPad} touch-target-sm`} />
+            <ThemeToggle className={`${chromeIconBtn} touch-target-sm`} />
             {onOpenSettings && (
               <button
                 type="button"
                 onClick={onOpenSettings}
-                className={`${chromeBtnPad} touch-target-sm`}
+                className={`${chromeIconBtn} touch-target-sm`}
                 aria-label="Open settings"
                 title="Settings"
               >
-                <SettingsIcon className="w-5 h-5" />
+                <SettingsIcon className="w-4 h-4" />
               </button>
             )}
             <button
+              type="button"
               onClick={() => setMenuOpen(!menuOpen)}
-              className={`${chromeBtnPad} touch-target-sm`}
+              className={`${chromeIconBtn} touch-target-sm`}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
             >
               {menuOpen ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}

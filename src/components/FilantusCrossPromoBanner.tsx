@@ -394,7 +394,7 @@ export function FilantusCrossPromoBanner({
       role="complementary"
       aria-label="Partner promo"
     >
-      <div className="flex items-stretch h-10 box-border rounded-lg border border-dashed border-slate-300/90 dark:border-slate-600/70 bg-slate-50/90 dark:bg-slate-900/60 overflow-hidden">
+      <div className="nav-chrome-promo flex items-stretch h-10 box-border rounded-lg overflow-hidden">
         <a
           href={href}
           target="_blank"
@@ -426,7 +426,7 @@ export function FilantusCrossPromoBanner({
             </span>
           </span>
           <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap text-slate-600 dark:text-slate-300 border border-slate-300/80 dark:border-slate-600/70 group-hover:border-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
-            Try →
+            Try
           </span>
         </a>
         {showNext ? (
@@ -438,7 +438,7 @@ export function FilantusCrossPromoBanner({
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
-                d="M9 5l7 7-7 7"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 stroke="currentColor"
                 strokeWidth="2.25"
                 strokeLinecap="round"

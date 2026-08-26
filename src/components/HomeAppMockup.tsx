@@ -21,7 +21,7 @@ export default function HomeAppMockup() {
           src="/home-app-preview.webp"
           alt="Foci task board with projects organized as cards"
           width={1536}
-          height={508}
+          height={556}
           className="w-full h-auto block"
           decoding="async"
           fetchPriority="high"

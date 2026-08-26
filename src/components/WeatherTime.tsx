@@ -159,7 +159,7 @@ export default function WeatherTime({ compact = false, embedded = false, nav = f
         </span>
         {weather && (
           <>
-            <span className="h-3.5 w-px bg-slate-200/90 dark:bg-white/10 shrink-0 mx-1.5 sm:mx-2" aria-hidden />
+            <span className="nav-chrome-divider w-px h-3.5 shrink-0 mx-1.5 sm:mx-2 rounded-full" aria-hidden />
             <span className="text-[0.875rem] leading-none shrink-0" aria-hidden>
               {weather.icon}
             </span>

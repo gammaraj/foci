@@ -65,12 +65,12 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="relative nav-icon-btn p-2 rounded-full hover:!text-blue-400"
+          className="relative nav-chrome-icon-btn hover:!text-blue-400"
           aria-label={unseen ? "What's new — unread updates" : "What's new"}
           aria-expanded={open}
           title="What's new"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
