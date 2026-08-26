@@ -38,23 +38,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "F",
     "taglines": {
       "certstud": {
-        "headline": "Studying for your cert? Stay focused with Foci",
+        "headline": "Focus while you study",
         "sub": "Block distractions while you prep — free to start"
       },
       "collegedecider": {
-        "headline": "Deep research sessions need deep focus",
+        "headline": "Deep focus for research",
         "sub": "Foci keeps you in the zone while you compare schools"
       },
       "wanderinghermit": {
-        "headline": "Planning a big trip? Focus helps",
+        "headline": "Focus while you plan",
         "sub": "Use Foci to power through your research sessions"
       },
       "brakto": {
-        "headline": "Running a tournament? Stay on top of it",
+        "headline": "Stay on top of tasks",
         "sub": "Foci helps organizers manage tasks without the chaos"
       },
       "boostlogik": {
-        "headline": "Audit faster with fewer distractions",
+        "headline": "Fewer distractions",
         "sub": "Pair BoostLogik insights with Foci focus sessions"
       }
     }
@@ -68,23 +68,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "B",
     "taglines": {
       "foci": {
-        "headline": "Run study group tournaments?",
+        "headline": "Study group brackets",
         "sub": "Bracket any competition — free to start"
       },
       "certstud": {
-        "headline": "Study groups & competitions?",
+        "headline": "Study group brackets",
         "sub": "Organize cert study brackets with your team"
       },
       "collegedecider": {
-        "headline": "College esports programs? Track them in Brakto",
+        "headline": "College esports brackets",
         "sub": "Manage student tournaments effortlessly"
       },
       "wanderinghermit": {
-        "headline": "Travel quiz nights? Bracket them with Brakto",
+        "headline": "Bracket quiz nights",
         "sub": "The easiest way to run any competition"
       },
       "boostlogik": {
-        "headline": "Gaming clients? Help them with Brakto",
+        "headline": "Tournament brackets",
         "sub": "Tournament management, zero setup headaches"
       }
     }
@@ -98,23 +98,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "C",
     "taglines": {
       "foci": {
-        "headline": "Level up your skills while staying focused",
+        "headline": "Prep 100+ certs",
         "sub": "Prep for 100+ certifications on CertStud"
       },
       "brakto": {
-        "headline": "Esports pros need certs too",
+        "headline": "IT & business certs",
         "sub": "95% pass rate on 100+ IT & business certs"
       },
       "collegedecider": {
-        "headline": "Boost your college app with certifications",
+        "headline": "Certs for college apps",
         "sub": "CertStud helps students stand out — free access"
       },
       "wanderinghermit": {
-        "headline": "Travel downtime? Study for your next cert",
+        "headline": "Study on the go",
         "sub": "100+ certifications, adaptive learning, 95% pass rate"
       },
       "boostlogik": {
-        "headline": "Add a marketing cert to your SEO skills",
+        "headline": "Add a marketing cert",
         "sub": "CertStud — adaptive prep for 100+ certifications"
       }
     }
@@ -128,23 +128,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "CD",
     "taglines": {
       "foci": {
-        "headline": "Helping a student with college apps?",
+        "headline": "AI college matching",
         "sub": "CollegeDecider — AI-matched to 5,000+ schools, free"
       },
       "brakto": {
-        "headline": "Student athletes need the right college",
+        "headline": "Find the right college",
         "sub": "CollegeDecider finds your best match — free to use"
       },
       "certstud": {
-        "headline": "Choosing between college and certs?",
+        "headline": "College vs certs ROI",
         "sub": "Compare ROI with CollegeDecider's free calculator"
       },
       "wanderinghermit": {
-        "headline": "Studying abroad? Start with CollegeDecider",
+        "headline": "Study abroad matching",
         "sub": "AI-matched to 5,000+ programs worldwide"
       },
       "boostlogik": {
-        "headline": "Education clients? Send them to CollegeDecider",
+        "headline": "AI college matching",
         "sub": "Free AI college matching for 5,000+ schools"
       }
     }
@@ -158,23 +158,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "BL",
     "taglines": {
       "foci": {
-        "headline": "Is your app visible to AI search?",
+        "headline": "AI search visibility",
         "sub": "BoostLogik audits 50+ SEO factors in 30 seconds"
       },
       "brakto": {
-        "headline": "Get your tournament found on Google & AI",
+        "headline": "Get found on Google",
         "sub": "BoostLogik — full SEO audit in 30 seconds, free"
       },
       "certstud": {
-        "headline": "Rank higher in AI-powered search results",
+        "headline": "Rank in AI search",
         "sub": "BoostLogik audits for ChatGPT & Claude visibility"
       },
       "collegedecider": {
-        "headline": "Help schools find you — optimize with BoostLogik",
+        "headline": "Get found by schools",
         "sub": "50+ SEO checks, AI visibility, 30-second audit"
       },
       "wanderinghermit": {
-        "headline": "Make your travel content AI-discoverable",
+        "headline": "AI-discoverable content",
         "sub": "BoostLogik — SEO + AI visibility audit, free to start"
       }
     }
@@ -188,23 +188,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "F",
     "taglines": {
       "certstud": {
-        "headline": "Best free Pomodoro apps ranked (2026)",
+        "headline": "Free Pomodoro timer",
         "sub": "Timer + tasks + brown noise — free to start"
       },
       "collegedecider": {
-        "headline": "Best free Pomodoro apps for deep research",
+        "headline": "Pomodoro for research",
         "sub": "Stay on task while comparing schools"
       },
       "wanderinghermit": {
-        "headline": "Best free Pomodoro apps for trip planning",
+        "headline": "Pomodoro for trips",
         "sub": "Focused sessions while you research destinations"
       },
       "brakto": {
-        "headline": "Best free Pomodoro apps for organizers",
+        "headline": "Pomodoro for organizers",
         "sub": "Knock out tournament tasks in timed sprints"
       },
       "boostlogik": {
-        "headline": "Best free Pomodoro apps for SEO work",
+        "headline": "Pomodoro for SEO",
         "sub": "Protect deep work while you audit sites"
       }
     }
@@ -218,23 +218,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "F",
     "taglines": {
       "certstud": {
-        "headline": "Best focus apps for students (2026)",
+        "headline": "Focus apps for students",
         "sub": "Free timers ranked for cert prep & exams"
       },
       "collegedecider": {
-        "headline": "Best focus apps for students (2026)",
+        "headline": "Focus apps for students",
         "sub": "Timer + tasks for application season"
       },
       "wanderinghermit": {
-        "headline": "Best focus apps for students (2026)",
+        "headline": "Focus apps for students",
         "sub": "Study sprints while you plan campus visits"
       },
       "brakto": {
-        "headline": "Best focus apps for students (2026)",
+        "headline": "Focus apps for students",
         "sub": "Free study timers ranked for organizers"
       },
       "boostlogik": {
-        "headline": "Best focus apps for students (2026)",
+        "headline": "Focus apps for students",
         "sub": "Free deep-work tools ranked for learners"
       }
     }
@@ -248,23 +248,23 @@ const FALLBACK_CATALOG: FilantusAdRaw[] = [
     "iconText": "F",
     "taglines": {
       "certstud": {
-        "headline": "ADHD focus strategies that actually work",
+        "headline": "ADHD focus strategies",
         "sub": "Timers, brown noise, and task chunking"
       },
       "collegedecider": {
-        "headline": "ADHD focus strategies for college apps",
+        "headline": "ADHD focus for apps",
         "sub": "Systems that work with your brain"
       },
       "wanderinghermit": {
-        "headline": "ADHD focus strategies that actually work",
+        "headline": "ADHD focus strategies",
         "sub": "External structure for planning and deep work"
       },
       "brakto": {
-        "headline": "ADHD focus strategies that actually work",
+        "headline": "ADHD focus strategies",
         "sub": "External timers and task systems for organizers"
       },
       "boostlogik": {
-        "headline": "ADHD focus strategies that actually work",
+        "headline": "ADHD focus strategies",
         "sub": "Build momentum on complex SEO tasks"
       }
     }
@@ -388,7 +388,7 @@ export function FilantusCrossPromoBanner({
   return (
     <div
       id="filantus-banner"
-      className={`hidden lg:block shrink-0 ${showNext ? 'w-[320px]' : 'w-[296px]'} ${className}`.trim()}
+      className={`hidden lg:block shrink-0 ${showNext ? 'w-[224px]' : 'w-[208px]'} ${className}`.trim()}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       role="complementary"
@@ -410,14 +410,11 @@ export function FilantusCrossPromoBanner({
               })
             }
           }}
-          className="group flex flex-1 min-w-0 items-center gap-2 h-full pl-2.5 pr-1.5"
+          className="group flex flex-1 min-w-0 items-center gap-1.5 h-full pl-2 pr-1.5"
           style={{ textDecoration: 'none' }}
           title={`${ad.headline} — ${ad.sub}`}
         >
-          <span className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
-            Also
-          </span>
-          <span className="flex-1 min-w-0 border-l border-slate-200/90 dark:border-slate-700/80 pl-2">
+          <span className="flex-1 min-w-0">
             <span className="block text-[12px] font-semibold tracking-tight truncate leading-tight text-slate-700 dark:text-slate-200">
               {ad.name}
             </span>
