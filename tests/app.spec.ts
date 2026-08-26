@@ -56,7 +56,7 @@ test.describe("App Page (unauthenticated)", () => {
     expect(musicBox && timerBox).toBeTruthy();
     expect((timerBox?.x ?? 0) - ((musicBox?.x ?? 0) + (musicBox?.width ?? 0))).toBeGreaterThan(20);
     await expect(dock.getByText(/\d{2}:\d{2}/)).toBeVisible();
-    await expect(dock.getByLabel("Timer settings")).toBeVisible();
+    await expect(dock.getByLabel("Expand focus timer")).toBeVisible();
     await expect(dock.getByLabel("Decrease duration by 5 minutes")).toBeVisible();
     await dock.getByLabel("Increase duration by 5 minutes").click();
     await expect(dock.getByLabel(/Work duration 35 minutes/)).toBeVisible();
@@ -64,7 +64,10 @@ test.describe("App Page (unauthenticated)", () => {
     await dock.getByLabel(/Work duration. Type minutes/).fill("0:30");
     await dock.getByLabel(/Work duration. Type minutes/).press("Enter");
     await expect(dock.getByLabel(/Work duration 30 seconds/)).toBeVisible();
-    await dock.getByLabel("Timer settings").click();
+    await dock.getByLabel("Expand focus timer").click();
+    const timerPanel = page.getByRole("dialog", { name: "Focus timer" });
+    await expect(timerPanel).toBeVisible();
+    await timerPanel.getByRole("button", { name: "Timer settings" }).click();
     await expect(page.getByRole("dialog", { name: "Settings" })).toBeVisible();
     await expect(page.getByText("Session alarm")).toBeVisible();
   });

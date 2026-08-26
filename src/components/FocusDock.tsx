@@ -6,7 +6,13 @@ import Link from "next/link";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
 import TimerAlarmPicker from "@/components/TimerAlarmPicker";
-import { miniDockGhostButtonClass, MiniSettingsIcon } from "@/components/FocusStripControls";
+import {
+  FOCUS_STRIP_CHIP_FRAME,
+  FOCUS_STRIP_LABEL,
+  FocusStripChipChevron,
+  miniDockGhostButtonClass,
+  MiniSettingsIcon,
+} from "@/components/FocusStripControls";
 import {
   formatTimerDisplay,
   formatWorkDurationAria,
@@ -98,6 +104,7 @@ function WorkDurationControl({
   onNudge,
   onSetSeconds,
   timeClassName,
+  trailing,
 }: {
   totalSeconds: number;
   displayTime: string;
@@ -105,6 +112,7 @@ function WorkDurationControl({
   onNudge: (delta: number) => void;
   onSetSeconds: (seconds: number) => void;
   timeClassName: string;
+  trailing?: React.ReactNode;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(displayTime);
@@ -129,8 +137,11 @@ function WorkDurationControl({
     setEditing(false);
   };
 
+  const nudgeBtn =
+    "w-6 h-6 rounded flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200 transition-colors disabled:opacity-40";
+
   return (
-    <span className="flex items-center gap-0.5 shrink-0">
+    <span className={`${FOCUS_STRIP_CHIP_FRAME} shrink-0 px-0.5 gap-0`}>
       <button
         type="button"
         onClick={(e) => {
@@ -138,7 +149,7 @@ function WorkDurationControl({
           onNudge(-WORK_MINUTE_STEP);
         }}
         disabled={disabled || totalSeconds <= MIN_WORK_SECONDS}
-        className={miniDockGhostButtonClass(false)}
+        className={nudgeBtn}
         aria-label={`Decrease duration by ${stepLabel}`}
         title={`−${secondSteps ? `${WORK_SECOND_STEP}s` : `${WORK_MINUTE_STEP} min`}`}
       >
@@ -165,7 +176,7 @@ function WorkDurationControl({
             }
           }}
           onClick={(e) => e.stopPropagation()}
-          className="w-16 h-7 rounded-md border border-blue-300 dark:border-blue-600 bg-white dark:bg-[#0f172a] text-sm font-semibold tabular-nums text-center text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-400"
+          className="w-16 h-7 border-0 bg-transparent text-sm font-semibold tabular-nums text-center text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-400 rounded-sm"
         />
       ) : (
         <button
@@ -175,7 +186,7 @@ function WorkDurationControl({
             setEditing(true);
           }}
           disabled={disabled}
-          className={`${timeClassName} rounded-md px-0.5 hover:bg-slate-100/80 dark:hover:bg-white/5`}
+          className={`${timeClassName} min-w-[2.75rem] px-0.5 hover:bg-slate-100/80 dark:hover:bg-white/5 rounded-sm`}
           aria-label={`Work duration ${formatWorkDurationAria(totalSeconds)}. Click to type a new length.`}
           title="Click to type minutes, or 0:30 for seconds"
         >
@@ -189,7 +200,7 @@ function WorkDurationControl({
           onNudge(WORK_MINUTE_STEP);
         }}
         disabled={disabled || totalSeconds >= MAX_WORK_SECONDS}
-        className={miniDockGhostButtonClass(false)}
+        className={nudgeBtn}
         aria-label={`Increase duration by ${stepLabel}`}
         title={`+${secondSteps ? `${WORK_SECOND_STEP}s` : `${WORK_MINUTE_STEP} min`}`}
       >
@@ -197,6 +208,7 @@ function WorkDurationControl({
           +
         </span>
       </button>
+      {trailing}
     </span>
   );
 }
@@ -471,18 +483,37 @@ export function FocusDockToolbar({
         : "text-slate-800 dark:text-slate-100"
   }`;
 
+  const chipExpand = (
+    <button
+      type="button"
+      onClick={onToggleExpanded}
+      className="w-6 h-6 rounded flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-200"
+      aria-expanded={expanded}
+      aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
+      title={
+        expanded
+          ? "Collapse timer"
+          : showShortcutHint
+            ? "Expand timer — press ? for shortcuts"
+            : "Expand timer"
+      }
+    >
+      <FocusStripChipChevron open={expanded} />
+    </button>
+  );
+
   const timerLabelCluster = (
     <div className={`flex items-center gap-1.5 shrink-0 min-w-0 ${embedded ? "" : "flex-1 sm:flex-initial"}`}>
       {embedded && workDurationMs ? (
-        <span className="relative shrink-0 w-4 h-4" aria-hidden>
+        <span className="relative shrink-0 w-4 h-4 text-slate-500 dark:text-slate-400" aria-hidden>
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 20 20" style={{ transform: "rotate(-90deg)" }}>
-            <circle cx="10" cy="10" r={arcR} fill="none" strokeWidth="2.5" className="stroke-slate-200 dark:stroke-slate-600" />
+            <circle cx="10" cy="10" r={arcR} fill="none" strokeWidth="2" className="stroke-slate-300 dark:stroke-slate-500" />
             <circle
               cx="10" cy="10" r={arcR} fill="none"
-              stroke={isBreak ? "var(--success-green)" : isRunning ? "var(--primary-blue)" : "#94a3b8"}
-              strokeWidth="2.5"
+              stroke={isBreak ? "var(--success-green)" : isRunning ? "var(--primary-blue)" : "currentColor"}
+              strokeWidth="2"
               strokeDasharray={arcCircumference}
-              strokeDashoffset={arcOffset}
+              strokeDashoffset={isRunning || isBreak ? arcOffset : 0}
               strokeLinecap="round"
               style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s" }}
             />
@@ -490,10 +521,8 @@ export function FocusDockToolbar({
         </span>
       ) : null}
       <span
-        className={`app-section-label shrink-0 ${
-          isBreak
-            ? "text-green-600 dark:text-green-400"
-            : "text-slate-500 dark:text-slate-400"
+        className={`${FOCUS_STRIP_LABEL} ${
+          isBreak ? "text-green-600 dark:text-green-400" : "text-slate-500 dark:text-slate-400"
         }`}
       >
         {isBreak ? "Break" : "Timer"}
@@ -506,9 +535,13 @@ export function FocusDockToolbar({
           onNudge={onNudgeWorkMinutes}
           onSetSeconds={onSetWorkSeconds}
           timeClassName={timeClassName}
+          trailing={embedded ? chipExpand : undefined}
         />
       ) : (
-        <span className={timeClassName}>{displayTime}</span>
+        <span className={`${FOCUS_STRIP_CHIP_FRAME} ${embedded ? "pl-2 pr-0.5" : "px-2"}`}>
+          <span className={timeClassName}>{displayTime}</span>
+          {embedded ? chipExpand : null}
+        </span>
       )}
       {activeTaskTitle ? (
         <span className="min-w-0 hidden lg:inline-flex items-center gap-1 text-xs font-medium text-blue-700 dark:text-blue-300 truncate max-w-[7rem] xl:max-w-[12rem]">
@@ -602,14 +635,12 @@ export function FocusDockToolbar({
   if (embedded) {
     return (
       <div
-        className={`group flex items-center gap-1 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
+        className={`group flex items-center gap-1.5 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
         data-foci-timer-strip
       >
         {timerLabelCluster}
-        <div className="flex items-center gap-0 shrink-0">
+        <div className="flex items-center gap-0.5 shrink-0">
           {timerControls}
-          {settingsButton}
-          {expandChevron}
         </div>
       </div>
     );
@@ -718,6 +749,7 @@ export default function FocusDockPanel({
             type="button"
             onClick={openTimerSettings}
             className="btn-ghost px-2.5 py-1.5 text-xs"
+            aria-label="Timer settings"
             title="Timer settings"
           >
             Settings

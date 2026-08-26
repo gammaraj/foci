@@ -42,6 +42,7 @@ import TaskPanelMenu from "@/components/TaskPanelMenu";
 import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
 import { FocusBarTitle, FocusBarActions } from "@/components/AppFocusBar";
+import { FOCUS_BAR_ICON_BTN } from "@/components/FocusStripControls";
 
 import SmartPlan from "@/components/SmartPlan";
 import TaskCalendarView from "@/components/task-list/TaskCalendarView";
@@ -2644,7 +2645,7 @@ export default function TaskList({
             </>
           ) : (
             <>
-              <h2 className="text-sm sm:text-base font-bold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
+              <h2 className="text-sm sm:text-base font-semibold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
                 {drillInProject ? (
                   <>
                     <span
@@ -2718,15 +2719,14 @@ export default function TaskList({
             <button
               type="button"
               onClick={handlePrint}
-              className="hidden roomy:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-xs font-medium text-slate-600 dark:text-blue-200/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors"
+              className={`no-print hidden roomy:inline-flex ${FOCUS_BAR_ICON_BTN}`}
               title={`Print ${VIEW_PRINT_LABELS[viewMode]} view`}
               aria-label="Print current view"
               data-tour="print-tasks"
             >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
               </svg>
-              <span className="hidden md:inline">Print</span>
             </button>
           )}
           {onOpenSettings && (
@@ -2744,16 +2744,16 @@ export default function TaskList({
           {onToggleFullscreen && (
             <button
               onClick={onToggleFullscreen}
-              className={`no-print hidden roomy:inline-flex p-1.5 rounded-lg transition-colors ${isFullscreen ? "bg-blue-700 text-white" : "text-slate-500 dark:text-blue-200/60 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10"}`}
+              className={`no-print hidden roomy:inline-flex ${FOCUS_BAR_ICON_BTN} ${isFullscreen ? "!bg-blue-700 !text-white hover:!bg-blue-800" : ""}`}
               title={isFullscreen ? "Exit expand" : "Expand tasks"}
               aria-label={isFullscreen ? "Exit expand" : "Expand tasks"}
             >
               {isFullscreen ? (
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9L4 4m0 0h4M4 4v4m11-1V3m0 0h-4m4 0v4M4 15v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
               ) : (
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
               )}

@@ -4,6 +4,7 @@ import React from "react";
 
 import { doneMascotCaption } from "@/lib/done-today";
 import { FociDoneMascot } from "@/components/task-list/FociDoneMascot";
+import { STATUS_PILL_COMPACT } from "@/components/task-list/TaskUrgencySummary";
 
 interface DoneTodayTallyProps {
   count: number;
@@ -35,7 +36,7 @@ export function DoneTodayTally({
 
   /* text-xs (12px) minimum — readable on phones; slightly larger from sm up */
   const shell = compact
-    ? "inline-flex items-center gap-1 h-7 min-h-[1.75rem] px-1.5 sm:gap-1.5 sm:px-2 rounded-md text-xs sm:text-[13px] font-semibold tabular-nums whitespace-nowrap shrink-0 leading-none"
+    ? `${STATUS_PILL_COMPACT} sm:gap-1.5`
     : "inline-flex items-center gap-1.5 px-2.5 min-h-[2.25rem] rounded-lg text-xs sm:text-sm font-semibold tabular-nums whitespace-nowrap shrink-0";
 
   const tone = empty

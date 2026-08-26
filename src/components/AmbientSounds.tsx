@@ -11,7 +11,16 @@ import {
   type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
-import { MiniPlayPauseIcon, miniPlayButtonClass } from "@/components/FocusStripControls";
+import {
+  FOCUS_STRIP_CHIP,
+  FOCUS_STRIP_CHIP_OPEN,
+  FOCUS_STRIP_LABEL,
+  FocusStripChipChevron,
+  MiniMusicIcon,
+  MiniPlayPauseIcon,
+  miniMusicPlayButtonClass,
+  miniPlayButtonClass,
+} from "@/components/FocusStripControls";
 import {
   getAmbientMode,
   getAmbientSound,
@@ -233,26 +242,6 @@ interface AmbientSoundsProps {
 
 const FOCUS_STRIP_ICON_BTN =
   "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
-
-const MUSIC_CHIP =
-  "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
-
-const MUSIC_CHIP_OPEN =
-  "border-blue-300 dark:border-blue-600 bg-blue-50/80 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200";
-
-function MusicChipChevron({ open }: { open: boolean }) {
-  return (
-    <svg
-      className={`w-3 h-3 shrink-0 text-slate-400 dark:text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-    </svg>
-  );
-}
 
 type SpotifyEmbedController = {
   play?: () => void;
@@ -804,7 +793,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         onClick={() => setModeMenuOpen((o) => !o)}
         className={`inline-flex items-center justify-center ${
           stripEmbedded
-            ? `${MUSIC_CHIP} gap-0.5 px-1.5 ${modeMenuOpen ? MUSIC_CHIP_OPEN : ""}`
+            ? `${FOCUS_STRIP_CHIP} gap-0.5 px-1.5 ${modeMenuOpen ? FOCUS_STRIP_CHIP_OPEN : ""}`
             : "gap-1 px-1 py-0.5 rounded-md hover:bg-slate-100/90 dark:hover:bg-white/10"
         } text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors whitespace-nowrap leading-none`}
         aria-haspopup="listbox"
@@ -816,7 +805,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         {!stripEmbedded && (
           <span className="truncate max-w-[4.5rem]">{activeModeTab.label}</span>
         )}
-        <MusicChipChevron open={modeMenuOpen} />
+        <FocusStripChipChevron open={modeMenuOpen} />
       </button>
       <StripSourceMenu open={modeMenuOpen} anchorRef={modeMenuRef} onClose={closeModeMenu}>
         {modeTabs.map((tab) => {
@@ -866,32 +855,34 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
         <div
-          className="relative flex items-center gap-2 w-[23rem] shrink-0"
+          className="relative flex items-center gap-1.5 w-[23.5rem] shrink-0"
           ref={stripAnchorRef}
           data-foci-music-strip
         >
-          <span className="app-section-label shrink-0 text-slate-500 dark:text-slate-400">Music</span>
+          <span className="inline-flex items-center gap-1.5 shrink-0">
+            <MiniMusicIcon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <span className={`${FOCUS_STRIP_LABEL} text-slate-500 dark:text-slate-400`}>Music</span>
+          </span>
           {modePicker}
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className={`${MUSIC_CHIP} w-[13.75rem] shrink-0 gap-1 px-1.5 ${!collapsed ? MUSIC_CHIP_OPEN : ""}`}
+            className={`${FOCUS_STRIP_CHIP} w-[13.75rem] shrink-0 gap-1 px-1.5 ${!collapsed ? FOCUS_STRIP_CHIP_OPEN : ""}`}
             title={`${nowPlayingLabel} — click to choose a ${mode === "sounds" ? "sound" : "playlist"}`}
             aria-expanded={!collapsed}
             aria-haspopup="dialog"
             aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}
           >
             <span className="min-w-0 flex-1 truncate text-left">{nowPlayingLabel}</span>
-            <MusicChipChevron open={!collapsed} />
+            <FocusStripChipChevron open={!collapsed} />
           </button>
           <button
             type="button"
             onClick={handleMiniPlayPause}
-            className={`flex-shrink-0 ${miniPlayButtonClass(
+            className={`flex-shrink-0 ${miniMusicPlayButtonClass(
               !!(mode === "sounds" && activeSound) ||
                 (mode === "soundcloud" && !collapsed) ||
                 (mode === "spotify" && spotifyPlaying),
-              true
             )}`}
             aria-label={
               mode === "sounds"

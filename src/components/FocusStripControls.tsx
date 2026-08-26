@@ -22,6 +22,60 @@ export function MiniPlayPauseIcon({ playing, size = "md" }: { playing: boolean; 
 const DOCK_BTN =
   "w-7 h-7 rounded-md flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50";
 
+/** Page-title row icon actions (Print, ⋮, expand) — icon-only, same size. */
+export const FOCUS_BAR_ICON_BTN =
+  "items-center justify-center p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors";
+
+/** Music / Timer section labels — sentence case, quieter than the page title. */
+export const FOCUS_STRIP_LABEL =
+  "text-xs font-semibold tracking-tight leading-none shrink-0";
+
+/** Bordered chips for source, track, and timer duration. */
+export const FOCUS_STRIP_CHIP =
+  "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
+
+export const FOCUS_STRIP_CHIP_OPEN =
+  "border-blue-300 dark:border-blue-600 bg-blue-50/80 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200";
+
+/** Static frame (no hover) for composite chips that contain their own buttons. */
+export const FOCUS_STRIP_CHIP_FRAME =
+  "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04]";
+
+export function MiniMusicIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={`${className} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+      />
+    </svg>
+  );
+}
+
+export function FocusStripChipChevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      className={`w-3 h-3 shrink-0 text-slate-400 dark:text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
+/** Music play — ghost, so the solid blue play in the row is always the timer. */
+export function miniMusicPlayButtonClass(playing: boolean) {
+  if (playing) {
+    return `${DOCK_BTN} text-slate-700 dark:text-slate-100 bg-slate-100 dark:bg-white/10 hover:bg-slate-200/80 dark:hover:bg-white/[0.14]`;
+  }
+  return `${DOCK_BTN} text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200`;
+}
+
 export function miniPlayButtonClass(playing: boolean, dock = false, emphasizeStart = false) {
   if (dock) {
     if (playing) {
