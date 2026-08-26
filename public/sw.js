@@ -180,7 +180,7 @@ function offlineTaskShell() {
 <title>Foci</title>
 <style>
 html,body{margin:0;min-height:100%;font-family:-apple-system,system-ui,sans-serif}
-body{background:#e8eef6;color:#0f172a;padding:calc(20px + env(safe-area-inset-top)) 18px 28px}
+body{background:#d7e2f2;color:#0f172a;padding:calc(20px + env(safe-area-inset-top)) 18px 28px}
 html.dark body{background:#070b16;color:#e2e8f0}
 h1{font-size:1.5rem;margin:0 0 .35rem;letter-spacing:-.02em}
 .note{color:#64748b;font-size:.875rem;margin:0 0 1.1rem;line-height:1.4}

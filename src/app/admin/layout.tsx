@@ -18,7 +18,7 @@ export default async function AdminLayout({
   const user = await requireAdmin();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--page-bg,#e3ebf7)] dark:bg-[#070b16] text-slate-800 dark:text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[var(--page-bg,#d7e2f2)] dark:bg-[#070b16] text-slate-800 dark:text-slate-100">
       <AppNavbar />
       <AdminSubnav email={user.email ?? ""} />
       {children}
