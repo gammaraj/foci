@@ -1,7 +1,7 @@
 import type { Project, Task } from "./types";
 import { DEFAULT_PROJECT, DEFAULT_PROJECT_ID, PROJECT_COLORS } from "./types";
 import { formatDateLocal } from "./dates";
-import type { OneThingPreference } from "./one-thing";
+import { canBeOneThing, type OneThingPreference } from "./one-thing";
 
 export const GUEST_DEMO_GROCERY_ID = "__demo_grocery__";
 /** Stable id — originally Places to visit; now Bucket list. */
@@ -80,10 +80,12 @@ export function createGuestDemoWorkspace(now: number = Date.now()): {
   tasks: Task[];
   projects: Project[];
   oneThing: OneThingPreference;
+  /** Leaf One Thing; subtasked sample starts expanded so visitors see the UI. */
+  expandedSubtasksTaskId: string;
 } {
   const today = formatDateLocal(new Date(now));
   const yesterday = formatDateLocal(new Date(now - 86_400_000));
-  const reviewId = crypto.randomUUID();
+  const mockupsId = crypto.randomUUID();
 
   const grocery: Project = {
     id: GUEST_DEMO_GROCERY_ID,
@@ -100,23 +102,14 @@ export function createGuestDemoWorkspace(now: number = Date.now()): {
     order: 2,
   };
 
+  const barcelonaId = crypto.randomUUID();
+
   const tasks: Task[] = [
-    {
-      id: reviewId,
-      title: "Review project requirements",
-      completed: false,
-      sessions: 0,
-      timeSpent: 0,
-      createdAt: now - 86_400_000,
-      projectId: DEFAULT_PROJECT_ID,
-      dueDate: yesterday,
-      priority: 1,
-      subtasks: [
-        { id: crypto.randomUUID(), title: "Skim the brief", completed: true },
-        { id: crypto.randomUUID(), title: "List open questions", completed: false },
-      ],
-    },
-    demoTask(DEFAULT_PROJECT_ID, "Draft design mockups", now - 3_600_000, { dueDate: today }),
+    demoTask(DEFAULT_PROJECT_ID, "Review project requirements", now - 86_400_000),
+    demoTask(DEFAULT_PROJECT_ID, "Draft design mockups", now - 3_600_000, {
+      id: mockupsId,
+      dueDate: today,
+    }),
     demoTask(DEFAULT_PROJECT_ID, "Write unit tests", now, { recurrence: "weekly" }),
     demoTask(DEFAULT_PROJECT_ID, "Send kickoff notes", now - 4 * 3_600_000, {
       completed: true,
@@ -124,10 +117,16 @@ export function createGuestDemoWorkspace(now: number = Date.now()): {
       sessions: 1,
       timeSpent: 25 * 60_000,
     }),
-    demoTask(GUEST_DEMO_GROCERY_ID, "Milk and eggs", now - 1_800_000),
+    demoTask(GUEST_DEMO_GROCERY_ID, "Milk and eggs", now - 1_800_000, { dueDate: yesterday }),
     demoTask(GUEST_DEMO_GROCERY_ID, "Coffee beans", now - 1_200_000),
-    demoTask(GUEST_DEMO_GROCERY_ID, "Restock snacks", now - 600_000),
-    demoTask(GUEST_DEMO_BUCKET_ID, "Visit Barcelona", now - 900_000),
+    demoTask(GUEST_DEMO_GROCERY_ID, "Restock snacks", now - 600_000, { priority: 1 }),
+    demoTask(GUEST_DEMO_BUCKET_ID, "Visit Barcelona", now - 900_000, {
+      id: barcelonaId,
+      subtasks: [
+        { id: crypto.randomUUID(), title: "Pick a travel month", completed: true },
+        { id: crypto.randomUUID(), title: "Shortlist neighborhoods", completed: false },
+      ],
+    }),
     demoTask(GUEST_DEMO_BUCKET_ID, "Sky dive", now - 500_000),
     demoTask(GUEST_DEMO_BUCKET_ID, "See the Northern Lights", now - 200_000),
   ];
@@ -135,8 +134,80 @@ export function createGuestDemoWorkspace(now: number = Date.now()): {
   return {
     tasks,
     projects: [{ ...DEFAULT_PROJECT, order: 0 }, grocery, bucket],
-    oneThing: { taskId: reviewId, date: today },
+    oneThing: { taskId: mockupsId, date: today },
+    expandedSubtasksTaskId: barcelonaId,
   };
+}
+
+/** Prefer a dated General task with no subtasks as the guest One Thing. */
+export function pickGuestDemoOneThingTask(tasks: Task[]): Task | null {
+  const openLeaf = tasks.filter((t) => canBeOneThing(t) && !(t.subtasks && t.subtasks.length > 0));
+  return (
+    openLeaf.find((t) => t.title === "Draft design mockups") ??
+    openLeaf.find((t) => t.projectId === DEFAULT_PROJECT_ID) ??
+    openLeaf[0] ??
+    null
+  );
+}
+
+/** Sample task that should start expanded so visitors see subtasks. */
+export function pickGuestDemoExpandedSubtasksTask(tasks: Task[]): Task | null {
+  const titled = tasks.find((t) => t.title === "Visit Barcelona" && (t.subtasks?.length ?? 0) > 0);
+  if (titled && !titled.completed && !titled.archivedAt) return titled;
+  return (
+    tasks.find((t) => !t.completed && !t.archivedAt && (t.subtasks?.length ?? 0) > 0) ?? null
+  );
+}
+
+const DEMO_REVIEW_SUB_TITLES = new Set(["Skim the brief", "List open questions"]);
+
+function hasDemoReviewSubtasks(task: Task): boolean {
+  const subs = task.subtasks ?? [];
+  return subs.length > 0 && subs.every((s) => DEMO_REVIEW_SUB_TITLES.has(s.title));
+}
+
+/**
+ * Move overdue / HIGH / expanded subtasks off General onto Grocery and Bucket.
+ * Returns null when the sample already has that spread.
+ */
+export function spreadGuestDemoFeatures(tasks: Task[], now: number = Date.now()): Task[] | null {
+  const review = tasks.find((t) => t.title === "Review project requirements");
+  const milk = tasks.find((t) => t.title === "Milk and eggs");
+  const snacks = tasks.find((t) => t.title === "Restock snacks");
+  const barcelona = tasks.find((t) => t.title === "Visit Barcelona");
+  if (!review && !milk && !snacks && !barcelona) return null;
+
+  const yesterday = formatDateLocal(new Date(now - 86_400_000));
+  const reviewBundled =
+    !!review &&
+    (hasDemoReviewSubtasks(review) || !!review.dueDate || review.priority != null);
+  const milkNeedsDue = !!milk && !milk.dueDate;
+  const snacksNeedPriority = !!snacks && snacks.priority == null;
+  const barcelonaNeedsSubs = !!barcelona && !(barcelona.subtasks && barcelona.subtasks.length > 0);
+
+  if (!reviewBundled && !milkNeedsDue && !snacksNeedPriority && !barcelonaNeedsSubs) return null;
+
+  return tasks.map((t) => {
+    if (reviewBundled && t.id === review!.id) {
+      return { ...t, dueDate: undefined, priority: undefined, subtasks: undefined };
+    }
+    if (milkNeedsDue && t.id === milk!.id) {
+      return { ...t, dueDate: yesterday };
+    }
+    if (snacksNeedPriority && t.id === snacks!.id) {
+      return { ...t, priority: 1 };
+    }
+    if (barcelonaNeedsSubs && t.id === barcelona!.id) {
+      return {
+        ...t,
+        subtasks: [
+          { id: crypto.randomUUID(), title: "Pick a travel month", completed: true },
+          { id: crypto.randomUUID(), title: "Shortlist neighborhoods", completed: false },
+        ],
+      };
+    }
+    return t;
+  });
 }
 
 export function extraGuestDemoTasks(demo: { tasks: Task[] }): Task[] {

@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Project, Task } from "@/lib/types";
-import { getToday, getTomorrow } from "@/lib/dates";
 import { sortCardTasks } from "@/components/task-list/bucket-order";
 import { getProjectsDragPreview } from "@/components/task-list/utils";
 import {
@@ -10,7 +9,6 @@ import {
   formatOverdueChip,
   formatOverdueLabel,
   getDaysOverdue,
-  isDueDateOverdue,
   MAX_TASK_TITLE,
   OVERDUE_ROW_CLASS,
   overdueDayChipClass,
@@ -25,6 +23,8 @@ import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { TaskRecurrenceBadge } from "@/components/task-list/TaskRecurrenceBadge";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
+import { DueChip } from "@/components/task-list/DueChip";
+import { subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
 
@@ -255,44 +255,6 @@ function overdueTitleClass(daysLate: number): string {
   return "text-slate-700 dark:text-slate-200 font-medium";
 }
 
-function CardDuePrefix({ task }: { task: Task }) {
-  if (!task.dueDate) return null;
-
-  const blocked = !!task.blocked;
-  const overdue = !blocked && !task.someday && isDueDateOverdue(task.dueDate);
-  // Overdue cards already show the Nd chip — skip duplicate [date] prefix.
-  if (overdue) return null;
-
-  const isToday = task.dueDate === getToday();
-  const isTomorrow = task.dueDate === getTomorrow();
-  const label = formatDueDate(task.dueDate);
-
-  const tone = blocked
-    ? "bg-amber-100/90 dark:bg-amber-950/45 text-amber-800 dark:text-amber-200 border-amber-200/80 dark:border-amber-700/45"
-    : isToday
-      ? "bg-amber-100/95 dark:bg-amber-950/50 text-amber-900 dark:text-amber-100 border-amber-300/90 dark:border-amber-600/55"
-      : isTomorrow
-        ? "bg-amber-50/95 dark:bg-amber-950/35 text-amber-800 dark:text-amber-200 border-amber-200/80 dark:border-amber-700/45"
-        : "bg-slate-100/90 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#2a3f5f]/80";
-
-  return (
-    <span
-      className={`${META_CHIP_CLASS} border ${tone}`}
-      title={
-        blocked
-          ? "Waiting on external blocker"
-          : isToday
-            ? "Due today"
-            : isTomorrow
-              ? "Due tomorrow"
-              : `Due ${label}`
-      }
-    >
-      {label}
-    </span>
-  );
-}
-
 function CardHeaderCounts({
   open,
   completed,
@@ -378,7 +340,12 @@ function CardTaskRow({
   const isDragOver = dragOverTaskId === task.id && dragTaskId !== task.id;
   const daysLate = overdue && task.dueDate ? getDaysOverdue(task.dueDate) : 0;
   const overdueLabel = overdue ? formatOverdueLabel(daysLate) : null;
-  const titleTooltip = [overdueLabel, task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null, task.title]
+  const titleTooltip = [
+    isOneThing ? "Today's One Thing" : null,
+    overdueLabel,
+    task.dueDate && !overdue ? `Due ${formatDueDate(task.dueDate)}` : null,
+    task.title,
+  ]
     .filter(Boolean)
     .join(" — ");
 
@@ -408,13 +375,15 @@ function CardTaskRow({
         e.stopPropagation();
         onTaskDragEnd?.();
       }}
-      className={`group/row relative rounded-md pl-0.5 sm:pl-1 pr-0.5 py-0.5 sm:py-1 min-w-0 transition-colors border border-transparent ${
+      className={`group/row relative rounded-md pl-0.5 sm:pl-1 pr-0.5 py-0.5 min-w-0 transition-colors border border-transparent ${
         isActive
           ? "bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-400/40 border-blue-200/80 dark:border-transparent"
           : isExpanded
             ? "bg-violet-50/70 dark:bg-violet-900/15 border-violet-200/70 dark:border-transparent"
             : overdue
               ? cardOverdueRowClass()
+              : isOneThing
+                ? "card-row--one-thing"
               : blocked
                 ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-transparent"
                 : "hover:bg-slate-100/90 dark:hover:bg-white/[0.03] hover:border-slate-200/90 dark:hover:border-transparent"
@@ -422,7 +391,7 @@ function CardTaskRow({
         isDragging ? "opacity-40" : ""
       } ${isDragOver ? "ring-1 ring-inset ring-blue-400/60 dark:ring-blue-500/50" : ""}`}
     >
-      <div className="flex items-start sm:items-center gap-1 min-h-[2rem] sm:min-h-[2rem] w-full min-w-0">
+      <div className="flex items-center gap-1 min-h-[1.5rem] w-full min-w-0">
         {onToggleComplete && (
           <button
             type="button"
@@ -430,7 +399,7 @@ function CardTaskRow({
               e.stopPropagation();
               onToggleComplete(task.id);
             }}
-            className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 -ml-1 rounded-md hover:bg-slate-100/90 dark:hover:bg-white/[0.06] transition-colors"
+            className="flex-shrink-0 inline-flex items-center justify-center w-6 h-6 -ml-0.5 rounded-md hover:bg-slate-100/90 dark:hover:bg-white/[0.06] transition-colors"
             aria-label={`Mark "${task.title}" complete`}
           >
             <span
@@ -460,7 +429,7 @@ function CardTaskRow({
             onOpen={onToggleTaskDetail ? () => onToggleTaskDetail(task.id) : undefined}
             onRename={onStartEdit ? () => onStartEdit(task) : undefined}
             titleAttr={titleTooltip}
-            className={`group/title relative flex-1 min-w-0 basis-0 flex items-start sm:items-center gap-1 sm:gap-1.5 text-sm font-normal leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0.5 sm:py-0 ${
+            className={`group/title relative flex-1 min-w-0 basis-0 flex items-center gap-1 sm:gap-1.5 text-sm font-normal leading-snug text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors py-0 ${
               overdue ? overdueTitleClass(daysLate) : "text-slate-700 dark:text-slate-200"
             }`}
           >
@@ -474,15 +443,22 @@ function CardTaskRow({
               </span>
             )}
             {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
-            {isOneThing && <OneThingBadge size="compact" />}
-            {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
-            {task.recurrence && <TaskRecurrenceBadge recurrence={task.recurrence} size="compact" />}
-            {task.dueDate && <CardDuePrefix task={task} />}
-            <span className="min-w-0 line-clamp-2 break-words [overflow-wrap:anywhere]">{task.title}</span>
+            <span className="min-w-0 flex-1 line-clamp-2 break-words [overflow-wrap:anywhere] text-left">
+              {task.title}
+            </span>
           </TaskTitleButton>
         )}
         {!isEditing && (
-          <div className="shrink-0 flex items-start sm:items-center gap-0.5 pt-0.5 sm:pt-0 self-start">
+          <div className="shrink-0 flex items-center gap-0.5">
+            {isOneThing ? (
+              <OneThingBadge size="compact" />
+            ) : (
+              task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />
+            )}
+            {task.recurrence && <TaskRecurrenceBadge recurrence={task.recurrence} size="compact" />}
+            {task.dueDate && (
+              <DueChip dueDate={task.dueDate} blocked={blocked} skipIfOverdue />
+            )}
             {(task.subtasks?.length ?? 0) > 0 && (
               <button
                 type="button"
@@ -492,11 +468,7 @@ function CardTaskRow({
                   if (isExpanded) onToggleTaskDetail?.(task.id);
                   else (onToggleSubtasks ?? onToggleTaskDetail)?.(task.id);
                 }}
-                className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
-                  subtasksExpanded || isExpanded
-                    ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
-                    : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
-                }`}
+                className={subtaskCountChipClass(subtasksExpanded || !!isExpanded)}
                 title={
                   subtasksExpanded || isExpanded
                     ? `Hide subtasks (${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length})`
@@ -514,7 +486,6 @@ function CardTaskRow({
                   compact
                   isOpen={isExpanded}
                   taskTitle={task.title}
-                  className="!p-1.5"
                   onClick={(e) => {
                     e.stopPropagation();
                     onToggleTaskDetail(task.id);
@@ -869,7 +840,7 @@ function ProjectCard({
         </button>
       ) : (
         <>
-          <div className="flex-1 flex flex-col gap-0 sm:gap-0.5 min-h-0">
+          <div className="flex-1 flex flex-col gap-0 min-h-0">
             {topTasks.length === 0 ? (
               <p className="app-text-meta text-slate-400 dark:text-slate-500 py-0.5">No tasks</p>
             ) : (

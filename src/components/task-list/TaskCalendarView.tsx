@@ -7,6 +7,7 @@ import { formatDueDate, MAX_TASK_TITLE } from "./utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
+import { subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -114,11 +115,7 @@ export default function TaskCalendarView({
           if (detailOpen) onToggleTaskDetail?.(task.id);
           else (onToggleSubtasks ?? onToggleTaskDetail)?.(task.id);
         }}
-        className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
-          shown
-            ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
-            : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
-        }`}
+        className={subtaskCountChipClass(shown)}
         title={shown ? `Hide subtasks (${completed}/${subtaskCount})` : `Show subtasks (${completed}/${subtaskCount})`}
         aria-expanded={shown}
         aria-label={`${completed} of ${subtaskCount} subtasks complete. ${shown ? "Hide" : "Show"} subtasks.`}
@@ -298,13 +295,13 @@ export default function TaskCalendarView({
               )}
             </div>
           ) : (
-            <div className="space-y-1.5">
+            <div className="space-y-0.5">
               {selectedTasks.map((task) => {
                 const detailOpen = expandedTaskId === task.id;
                 return (
                 <div key={task.id}>
                 <div
-                  className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-colors ${
+                  className={`flex items-center gap-1.5 px-2 py-0.5 rounded-lg border transition-colors ${
                     detailOpen
                       ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
                       : task.completed
@@ -408,13 +405,13 @@ export default function TaskCalendarView({
           <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
             No due date ({unscheduledTasks.length})
           </h4>
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {unscheduledTasks.slice(0, 8).map((task) => {
               const detailOpen = expandedTaskId === task.id;
               return (
               <div key={task.id}>
               <div
-                className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
+                className={`flex items-center gap-2 px-2 py-0.5 rounded-lg border transition-colors ${
                   detailOpen
                     ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15"
                     : "border-transparent hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"

@@ -75,7 +75,7 @@ export function DoneTodaySection({
               <div
                 key={task.id}
                 className={`flex items-center gap-2 rounded-lg transition-colors hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 ${
-                  compact ? "px-1.5 py-1.5" : "p-2"
+                  compact ? "px-1.5 py-0.5" : "px-2 py-0.5"
                 }`}
               >
                 <button

@@ -1,27 +1,17 @@
 import type { TaskPriority } from "@/lib/types";
+import { CHIP_TONE, META_CHIP_CLASS } from "@/components/task-list/utils";
 
 export function TaskPriorityBadge({
   priority,
-  size = "default",
 }: {
   priority: TaskPriority;
   size?: "default" | "compact";
 }) {
-  const label = priority === 1 ? "HIGH" : priority === 2 ? "MED" : "LOW";
-  const colors =
-    priority === 1
-      ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-900/50"
-      : priority === 2
-        ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-900/50"
-        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/50";
+  const label = priority === 1 ? "High" : priority === 2 ? "Med" : "Low";
+  const tone = priority === 1 ? CHIP_TONE.high : priority === 2 ? CHIP_TONE.med : CHIP_TONE.low;
 
   return (
-    <span
-      className={`inline-flex items-center font-semibold uppercase rounded border shrink-0 ${
-        size === "compact" ? "px-1 py-0 text-xs leading-tight" : "px-1.5 py-0.5 text-xs"
-      } ${colors}`}
-      title={`${label} priority`}
-    >
+    <span className={`${META_CHIP_CLASS} ${tone}`} title={`${label} priority`}>
       {label}
     </span>
   );

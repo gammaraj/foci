@@ -2,9 +2,7 @@
 
 import React from "react";
 import type { Task } from "@/lib/types";
-import { getToday } from "@/lib/dates";
-import { formatDueDate, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass } from "@/components/task-list/utils";
-import { DueDateField } from "@/components/task-list/DueDateField";
+import { CHIP_TONE, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass } from "@/components/task-list/utils";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import {
@@ -14,7 +12,11 @@ import {
   type TaskListSection,
 } from "@/lib/task-status";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
+import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskRecurrenceBadge } from "@/components/task-list/TaskRecurrenceBadge";
+import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
+import { DueChip } from "@/components/task-list/DueChip";
+import { SomedayBadge, WaitingBadge, subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 
 export interface OpenTaskListProps {
   tasks: Task[];
@@ -102,7 +104,7 @@ export default function OpenTaskList({
   onDragEnd,
   renderBelowTask,
   emptyMessage = "No open tasks",
-  className = "space-y-1.5",
+  className = "space-y-0.5",
 }: OpenTaskListProps) {
   if (tasks.length === 0) {
     if (!emptyMessage) return null;
@@ -190,13 +192,15 @@ export default function OpenTaskList({
                 : isBlocked
                   ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15"
                   : isOverdue
-                  ? `${OVERDUE_ROW_CLASS} border border-transparent`
-                  : "border-slate-200/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-[#131d30]"
+                    ? `${OVERDUE_ROW_CLASS} border border-transparent`
+                    : oneThingTaskId === task.id
+                      ? "card-row--one-thing border border-transparent"
+                      : "border-slate-200/90 dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-[#131d30]"
           } ${dragTaskId === task.id ? "opacity-50" : ""} ${
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
           }`}
         >
-        <div className="relative flex items-center gap-1.5 sm:gap-2 px-1.5 py-1 sm:px-2 sm:py-1">
+        <div className="relative flex items-center gap-1.5 sm:gap-2 px-1.5 py-0.5 sm:px-2">
           <div className="hidden sm:flex flex-shrink-0 items-center cursor-grab active:cursor-grabbing text-slate-400 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
               <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z" />
@@ -228,7 +232,7 @@ export default function OpenTaskList({
                   title={task.title}
                   onOpen={() => onToggleTaskDetail(task.id)}
                   onRename={() => onStartEdit(task)}
-                  className="cursor-pointer text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  className="cursor-pointer text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors min-w-[8rem] flex-1"
                 >
                   {task.title}
                 </TaskTitleButton>
@@ -236,7 +240,6 @@ export default function OpenTaskList({
               {activeTaskId === task.id && isTimerRunning && (
                 <span className="sm:hidden ml-1.5 inline-flex items-center w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse align-middle" />
               )}
-              {oneThingTaskId === task.id && <OneThingBadge />}
               {isOverdue && (
                 <span
                   className={`${META_CHIP_CLASS} ${overdueDayChipClass(daysLate)}`}
@@ -246,60 +249,27 @@ export default function OpenTaskList({
                   {formatOverdueChip(daysLate)}
                 </span>
               )}
-              {task.kind && task.kind !== "task" && (
-                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded border ${
-                  task.kind === "note"
-                    ? "bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600/60"
-                    : "bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800/50"
-                }`}>
-                  {task.kind === "note" ? "NOTE" : "Q"}
-                </span>
-              )}
-              {task.blocked && (
-                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
-                  WAITING
-                </span>
-              )}
-              {task.someday && (
-                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold rounded bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800/50">
-                  SOMEDAY
-                </span>
-              )}
-              {task.priority && (
-                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded ${task.priority === 1 ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50" : task.priority === 2 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50" : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50"}`}>
-                  {task.priority === 1 ? "HIGH" : task.priority === 2 ? "MED" : "LOW"}
-                </span>
+              {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} />}
+              {task.blocked && <WaitingBadge />}
+              {task.someday && <SomedayBadge />}
+              {oneThingTaskId === task.id ? (
+                <OneThingBadge />
+              ) : (
+                task.priority != null && <TaskPriorityBadge priority={task.priority} />
               )}
               {showProjectBadge && (isAllProjects || isTimeFilter) && getProjectName && (
-                <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300">
+                <span className={`${META_CHIP_CLASS} ${CHIP_TONE.project}`}>
                   {getProjectName(task.projectId)}
                 </span>
               )}
               {task.dueDate && (
-                <DueDateField
-                  value={task.dueDate}
-                  onChange={(date) => onSetDueDate(task.id, date)}
-                  ariaLabel="Change due date"
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded-md transition-colors ${
-                    isBlocked
-                      ? "text-amber-700 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50"
-                      : !task.completed && isDueDateOverdue(task.dueDate)
-                        ? "text-red-500 dark:text-rose-300 hover:bg-red-50 dark:hover:bg-red-950/30"
-                        : !task.completed && task.dueDate === getToday()
-                          ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                          : "text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-[#2a3f5f]/80 hover:text-blue-600 dark:hover:text-blue-400"
-                  }`}
-                >
-                  <span
-                    className="inline-flex items-center gap-1"
-                    title={isBlocked ? `Waiting — due ${formatDueDate(task.dueDate)}` : `Due: ${formatDueDate(task.dueDate)}`}
-                  >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    {formatDueDate(task.dueDate)}
-                    {!task.completed && !isBlocked && isDueDateOverdue(task.dueDate) && " (overdue)"}
-                    {isBlocked && " (waiting)"}
-                  </span>
-                </DueDateField>
+                <DueChip
+                  dueDate={task.dueDate}
+                  blocked={isBlocked}
+                  skipIfOverdue
+                  taskId={task.id}
+                  onSetDueDate={onSetDueDate}
+                />
               )}
               {task.description && (
                 <span className="app-text-meta text-slate-500 dark:text-slate-300 flex items-center gap-0.5" title="Has description">
@@ -324,11 +294,7 @@ export default function OpenTaskList({
                     if (isExpanded) onToggleTaskDetail(task.id);
                     else (onToggleSubtasks ?? onToggleTaskDetail)(task.id);
                   }}
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
-                    subtasksExpanded || isExpanded
-                      ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
-                      : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
-                  }`}
+                  className={subtaskCountChipClass(subtasksExpanded || isExpanded)}
                   title={
                     subtasksExpanded || isExpanded
                       ? `Hide subtasks (${completedSubtaskCount}/${subtaskCount})`

@@ -38,7 +38,7 @@ function TaskRow({
   return (
     <div
       className={`group flex items-start gap-1.5 rounded-md transition-colors ${
-        compact ? "px-1.5 py-1.5" : "px-2 py-1.5"
+        compact ? "px-1.5 py-0.5" : "px-2 py-0.5"
       } ${
         isOneThing
           ? "bg-blue-50/90 dark:bg-blue-950/35"

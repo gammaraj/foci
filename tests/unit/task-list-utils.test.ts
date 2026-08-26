@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   formatDuration,
+  formatDueChip,
+  formatDueDate,
   getNextDueDate,
   isDueDateOverdue,
   sortProjectsForDisplay,
@@ -11,12 +13,20 @@ import {
   resolveProjectColor,
 } from "@/components/task-list/utils";
 import type { Project, Subtask } from "@/lib/types";
+import { getToday, getTomorrow } from "@/lib/dates";
 
 describe("task-list utils", () => {
   it("formatDuration shows hours and minutes", () => {
     expect(formatDuration(45 * 60_000)).toBe("45m");
     expect(formatDuration(90 * 60_000)).toBe("1h 30m");
     expect(formatDuration(120 * 60_000)).toBe("2h");
+  });
+
+  it("formatDueChip uses sentence case for today/tomorrow", () => {
+    expect(formatDueChip(getToday())).toBe("Today");
+    expect(formatDueChip(getTomorrow())).toBe("Tomorrow");
+    expect(formatDueChip(getToday())).toBe(formatDueDate(getToday()));
+    expect(formatDueChip("2020-01-15")).toBe(formatDueDate("2020-01-15"));
   });
 
   it("getNextDueDate advances recurrence", () => {

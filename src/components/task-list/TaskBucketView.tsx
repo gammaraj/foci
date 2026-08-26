@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { formatDueDate, formatOverdueChip, formatOverdueLabel, getDaysOverdue, isDueDateOverdue, MAX_TASK_TITLE, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass, resolveProjectColor } from "@/components/task-list/utils";
+import { MAX_TASK_TITLE, OVERDUE_ROW_CLASS, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -19,6 +19,8 @@ import { TaskPriorityBadge } from "@/components/task-list/TaskPriorityBadge";
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { TaskRecurrenceBadge } from "@/components/task-list/TaskRecurrenceBadge";
 import { OneThingBadge } from "@/components/task-list/OneThingBadge";
+import { DueChip } from "@/components/task-list/DueChip";
+import { SelectedBadge, TimingBadge, subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 
@@ -149,86 +151,6 @@ function buildSwimlanes(
   });
 }
 
-function DueBadge({
-  dueDate,
-  taskId,
-  onSetDueDate,
-  compact = false,
-  blocked = false,
-}: {
-  dueDate: string;
-  taskId?: string;
-  onSetDueDate?: (taskId: string, date: string | undefined) => void;
-  compact?: boolean;
-  blocked?: boolean;
-}) {
-  const today = getToday();
-  const overdue = !blocked && isDueDateOverdue(dueDate);
-  const isToday = dueDate === today;
-  const daysLate = overdue ? getDaysOverdue(dueDate) : 0;
-  const label = isToday ? "Today" : formatDueDate(dueDate);
-  const interactive = !!(taskId && onSetDueDate);
-
-  const badgeClass = overdue
-    ? `${META_CHIP_CLASS} ${overdueDayChipClass(daysLate)} ${interactive ? "cursor-pointer" : ""}`
-    : `inline-flex items-center gap-0.5 font-semibold shrink-0 leading-none ${
-        compact ? "text-xs px-1.5 py-0.5 rounded-md" : "text-xs gap-1 px-2 py-0.5 rounded-md"
-      } ${
-        blocked
-          ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-          : isToday
-            ? "text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-950/45 border border-amber-200/80 dark:border-amber-700/45"
-            : "text-slate-700 dark:text-slate-200 bg-slate-100/95 dark:bg-white/8 border border-slate-300/80 dark:border-[#2a3f5f]/80"
-      } ${interactive ? "cursor-pointer hover:border-blue-300 dark:hover:border-blue-600" : ""}`;
-
-  const badgeTitle =
-    blocked
-      ? "Waiting on external blocker"
-      : overdue
-        ? `${formatOverdueLabel(daysLate)}${interactive ? " — click to change" : ""}`
-        : isToday
-          ? "Due today"
-          : interactive
-            ? "Change due date"
-            : undefined;
-
-  const badgeContent = (
-    <>
-      {!compact && !overdue && (
-        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      )}
-      {overdue ? (
-        <span className="tabular-nums tracking-normal whitespace-nowrap">{formatOverdueChip(daysLate)}</span>
-      ) : (
-        label
-      )}
-    </>
-  );
-
-  if (!interactive) {
-    return (
-      <span className={badgeClass} title={badgeTitle}>
-        {badgeContent}
-      </span>
-    );
-  }
-
-  return (
-    <DueDateField
-      value={dueDate}
-      onChange={(date) => onSetDueDate!(taskId!, date)}
-      ariaLabel="Change due date"
-      className={badgeClass}
-    >
-      <span className="inline-flex items-center gap-0.5" title={badgeTitle}>
-        {badgeContent}
-      </span>
-    </DueDateField>
-  );
-}
-
 function BucketTaskCard({
   task,
   isActive,
@@ -289,7 +211,7 @@ function BucketTaskCard({
   const isDueToday = !isBlocked && !isOverdue && task.dueDate === getToday();
   const isLowUrgency = !isBlocked && !task.dueDate;
   const compactPlayBtn = (playing: boolean, filled: boolean) =>
-    `w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ${
+    `w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ${
       playing || filled
         ? "bg-blue-700 text-white shadow-sm shadow-blue-700/25 hover:bg-blue-800"
         : "text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/90 dark:hover:bg-blue-950/40"
@@ -318,7 +240,7 @@ function BucketTaskCard({
         onDrop?.();
       }}
       onDragEnd={onDragEnd}
-      className={`group relative rounded-lg border px-2 py-1.5 transition-all duration-150 ${
+      className={`group relative rounded-lg border px-2 py-0.5 transition-all duration-150 ${
         isDetailOpen
           ? "border-violet-200/90 dark:border-violet-500/40 bg-violet-50/80 dark:bg-violet-950/25"
           : isActive && isTimerRunning
@@ -329,6 +251,8 @@ function BucketTaskCard({
               ? "border-amber-200/80 dark:border-amber-800/50 border-l-[3px] border-l-amber-500 dark:border-l-amber-400 bg-amber-50/55 dark:bg-amber-950/20 hover:border-amber-300/90 dark:hover:border-amber-700/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               : isOverdue
               ? `${OVERDUE_ROW_CLASS} border border-transparent`
+              : isOneThing
+              ? "card-row--one-thing border border-transparent"
               : isDueToday
               ? "border-amber-200/70 dark:border-amber-800/45 bg-amber-50/65 dark:bg-amber-950/38 hover:border-amber-300/85 dark:hover:border-amber-700/55 hover:bg-amber-50/85 dark:hover:bg-amber-950/48"
               : isLowUrgency
@@ -455,29 +379,18 @@ function BucketTaskCard({
         )}
       </div>
       {!isEditing && (
-        <div className="flex flex-wrap items-center gap-1.5 mt-1 pl-6 sm:pl-7">
+        <div className="flex flex-wrap items-center gap-1 mt-0.5 pl-6 sm:pl-7">
           {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
-          {isOneThing && <OneThingBadge size="compact" />}
-          {task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />}
+          {isOneThing ? (
+            <OneThingBadge size="compact" />
+          ) : (
+            task.priority != null && <TaskPriorityBadge priority={task.priority} size="compact" />
+          )}
           {task.recurrence && <TaskRecurrenceBadge recurrence={task.recurrence} size="compact" />}
-          {isOverdue && (
-            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded urgency-chip--soft">
-              Overdue
-            </span>
-          )}
-          {isActive && isTimerRunning && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-blue-700 text-white">
-              <span className="w-1 h-1 rounded-full bg-white animate-pulse" aria-hidden />
-              Timing
-            </span>
-          )}
-          {isActive && !isTimerRunning && (
-            <span className="inline-flex items-center px-1.5 py-0.5 text-xs font-semibold uppercase rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50">
-              Selected
-            </span>
-          )}
+          {isActive && isTimerRunning && <TimingBadge />}
+          {isActive && !isTimerRunning && <SelectedBadge />}
           {task.dueDate && (
-            <DueBadge dueDate={task.dueDate} taskId={task.id} onSetDueDate={onSetDueDate} compact blocked={isBlocked} />
+            <DueChip dueDate={task.dueDate} blocked={isBlocked} taskId={task.id} onSetDueDate={onSetDueDate} />
           )}
           {!task.dueDate && onSetDueDate && (
             <DueDateField
@@ -502,11 +415,7 @@ function BucketTaskCard({
                 if (isDetailOpen) onToggleTaskDetail?.(task.id);
                 else (onToggleSubtasks ?? onToggleTaskDetail)?.(task.id);
               }}
-              className={`inline-flex items-center px-1.5 py-0.5 text-xs font-semibold tabular-nums rounded-md border transition-colors ${
-                subtasksExpanded || isDetailOpen
-                  ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700"
-                  : "bg-violet-50 dark:bg-violet-900/25 text-violet-600 dark:text-violet-300 border-violet-200/80 dark:border-violet-800/50 hover:bg-violet-100 dark:hover:bg-violet-900/40"
-              }`}
+              className={subtaskCountChipClass(subtasksExpanded || isDetailOpen)}
               title={
                 subtasksExpanded || isDetailOpen
                   ? `Hide subtasks (${task.subtasks!.filter((s) => s.completed).length}/${task.subtasks!.length})`
@@ -853,7 +762,7 @@ function BucketColumn({
                   )
                 )}
                 {!isCollapsed && (
-                <div className="space-y-1 min-h-[1.25rem]">
+                <div className="space-y-0.5 min-h-[1.25rem]">
                   {lane.tasks.map((task) => (
                     <div key={task.id} className="min-w-0">
                     <BucketTaskCard

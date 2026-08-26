@@ -13,6 +13,9 @@ import {
   isGuestSampleWorkspace,
   isSparseGuestDemo,
   mergeGuestDemoProjects,
+  pickGuestDemoExpandedSubtasksTask,
+  pickGuestDemoOneThingTask,
+  spreadGuestDemoFeatures,
   upgradePlacesToBucketList,
 } from "@/lib/guest-demo";
 
@@ -66,7 +69,7 @@ describe("guest demo", () => {
 
   it("creates three project cards with done, late, due today, and One Thing", () => {
     const now = new Date("2026-04-10T15:00:00").getTime();
-    const { tasks, projects, oneThing } = createGuestDemoWorkspace(now);
+    const { tasks, projects, oneThing, expandedSubtasksTaskId } = createGuestDemoWorkspace(now);
     expect(projects.map((p) => p.name)).toEqual(["General", "Grocery list", "Bucket list"]);
     expect(tasks.filter((t) => t.projectId === DEFAULT_PROJECT_ID).length).toBe(4);
     expect(tasks.filter((t) => t.projectId === GUEST_DEMO_GROCERY_ID).length).toBe(3);
@@ -76,11 +79,28 @@ describe("guest demo", () => {
       "See the Northern Lights",
     ]);
     expect(tasks.some((t) => t.completed && t.completedAt)).toBe(true);
-    expect(tasks.some((t) => t.dueDate === "2026-04-09")).toBe(true);
+    const milk = tasks.find((t) => t.title === "Milk and eggs");
+    const snacks = tasks.find((t) => t.title === "Restock snacks");
+    const review = tasks.find((t) => t.title === "Review project requirements");
+    expect(milk?.dueDate).toBe("2026-04-09");
+    expect(milk?.projectId).toBe(GUEST_DEMO_GROCERY_ID);
+    expect(snacks?.priority).toBe(1);
+    expect(review?.dueDate).toBeUndefined();
+    expect(review?.priority).toBeUndefined();
+    expect(review?.subtasks?.length ?? 0).toBe(0);
     expect(tasks.some((t) => t.dueDate === "2026-04-10")).toBe(true);
     expect(tasks.some((t) => t.recurrence === "weekly")).toBe(true);
     expect(oneThing.date).toBe("2026-04-10");
-    expect(tasks.some((t) => t.id === oneThing.taskId && !t.completed)).toBe(true);
+    const oneThingTask = tasks.find((t) => t.id === oneThing.taskId);
+    expect(oneThingTask?.title).toBe("Draft design mockups");
+    expect(oneThingTask?.subtasks?.length ?? 0).toBe(0);
+    expect(oneThingTask?.completed).toBe(false);
+    const expanded = tasks.find((t) => t.id === expandedSubtasksTaskId);
+    expect(expanded?.title).toBe("Visit Barcelona");
+    expect(expanded?.projectId).toBe(GUEST_DEMO_PLACES_ID);
+    expect(expanded?.subtasks?.length).toBe(2);
+    expect(pickGuestDemoOneThingTask(tasks)?.id).toBe(oneThing.taskId);
+    expect(pickGuestDemoExpandedSubtasksTask(tasks)?.id).toBe(expandedSubtasksTaskId);
   });
 
   it("merges extra demo projects onto a General-only workspace", () => {
@@ -130,5 +150,32 @@ describe("guest demo", () => {
       "See the Northern Lights",
     ]);
     expect(upgradePlacesToBucketList(upgraded!.tasks, upgraded!.projects, now)).toBeNull();
+  });
+
+  it("spreads bundled General features onto Grocery and Bucket", () => {
+    const now = new Date("2026-04-10T15:00:00").getTime();
+    const bundled = [
+      makeTask({
+        id: "review",
+        title: "Review project requirements",
+        dueDate: "2026-04-09",
+        priority: 1,
+        subtasks: [
+          { id: "s1", title: "Skim the brief", completed: true },
+          { id: "s2", title: "List open questions", completed: false },
+        ],
+      }),
+      makeTask({ id: "milk", title: "Milk and eggs", projectId: GUEST_DEMO_GROCERY_ID }),
+      makeTask({ id: "snacks", title: "Restock snacks", projectId: GUEST_DEMO_GROCERY_ID }),
+      makeTask({ id: "bcn", title: "Visit Barcelona", projectId: GUEST_DEMO_PLACES_ID }),
+    ];
+    const spread = spreadGuestDemoFeatures(bundled, now);
+    expect(spread).not.toBeNull();
+    expect(spread!.find((t) => t.id === "review")?.dueDate).toBeUndefined();
+    expect(spread!.find((t) => t.id === "review")?.subtasks).toBeUndefined();
+    expect(spread!.find((t) => t.id === "milk")?.dueDate).toBe("2026-04-09");
+    expect(spread!.find((t) => t.id === "snacks")?.priority).toBe(1);
+    expect(spread!.find((t) => t.id === "bcn")?.subtasks?.length).toBe(2);
+    expect(spreadGuestDemoFeatures(createGuestDemoWorkspace(now).tasks, now)).toBeNull();
   });
 });

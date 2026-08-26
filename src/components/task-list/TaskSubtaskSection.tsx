@@ -161,7 +161,7 @@ export function TaskSubtaskSection({
                     ? "py-0.5"
                     : spacious
                       ? "gap-2 py-2 px-2.5 rounded-lg hover:bg-white dark:hover:bg-white/[0.04]"
-                      : "py-1 gap-2"
+                      : "py-0.5 gap-2"
                 } ${indent} ${borderColor} ${isDragging ? "opacity-50" : ""} ${
                   isDropTarget ? "border-t-2 border-t-blue-500" : ""
                 }`}

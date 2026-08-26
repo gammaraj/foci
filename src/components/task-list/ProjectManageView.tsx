@@ -471,7 +471,7 @@ function ProjectRow({
 
       {expanded && (
         <div className="border-t border-slate-100 dark:border-[#243350] overflow-hidden rounded-b-xl">
-          {renderOpenTasks(openTasks, { className: "space-y-2 px-1 sm:px-2 py-2" })}
+          {renderOpenTasks(openTasks, { className: "space-y-0.5 px-1 sm:px-2 py-1.5" })}
 
           <div className="flex flex-wrap items-center gap-1 px-3 py-2 border-t border-slate-100 dark:border-[#243350] bg-slate-50/50 dark:bg-[#0f172a]/40">
             <button

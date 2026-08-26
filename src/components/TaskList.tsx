@@ -23,10 +23,14 @@ import {
   guestHasCustomProjects,
   hasClearedGuestDemo,
   isGuestGeneralDemo,
+  isGuestSampleWorkspace,
   isSparseGuestDemo,
   markGuestDemoCleared,
   mergeGuestDemoProjects,
+  pickGuestDemoExpandedSubtasksTask,
+  pickGuestDemoOneThingTask,
   upgradePlacesToBucketList,
+  spreadGuestDemoFeatures,
 } from "@/lib/guest-demo";
 import {
   doneTodayToastMessage,
@@ -183,6 +187,7 @@ export default function TaskList({
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   /** Inline subtasks under a row (card/bucket/list) — separate from the Details pane. */
   const [expandedSubtasksTaskId, setExpandedSubtasksTaskId] = useState<string | null>(null);
+  const guestDemoShowcaseAppliedRef = useRef(false);
   const [noDueDateExpanded, setNoDueDateExpanded] = useState(false);
   const [somedayExpanded, setSomedayExpanded] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
@@ -243,6 +248,28 @@ export default function TaskList({
     if (pref) setOneThingPromptDismissed(false);
     saveOneThing(pref).catch((err) => console.error("[Foci] Failed to save One Thing:", err));
   }, []);
+
+  /** Guest sample: One Thing is a leaf task; a different task starts with subtasks open. */
+  useEffect(() => {
+    if (guestDemoShowcaseAppliedRef.current) return;
+    if (authLoading || !tasksReady || user || hasClearedGuestDemo()) return;
+    if (!isGuestSampleWorkspace(tasks, projects)) return;
+
+    const leaf = pickGuestDemoOneThingTask(tasks);
+    const withSubs = pickGuestDemoExpandedSubtasksTask(tasks);
+    if (!leaf && !withSubs) return;
+
+    guestDemoShowcaseAppliedRef.current = true;
+    if (withSubs) setExpandedSubtasksTaskId(withSubs.id);
+
+    const current = oneThingPref
+      ? tasks.find((t) => t.id === oneThingPref.taskId)
+      : undefined;
+    const oneThingOnSubtasks = !!(current && (current.subtasks?.length ?? 0) > 0);
+    if (leaf && (!oneThingPref || oneThingOnSubtasks)) {
+      persistOneThing({ taskId: leaf.id, date: getToday() });
+    }
+  }, [authLoading, tasksReady, user, tasks, projects, oneThingPref, persistOneThing]);
 
   const setAsOneThing = useCallback(
     (taskId: string) => {
@@ -647,47 +674,47 @@ export default function TaskList({
           guestDemoMissingExtraProjects(existingProjects) &&
           isGuestGeneralDemo(baseTasks);
 
+        let nextTasks = existing;
+        let nextProjects = existingProjects;
+        let nextOneThing = oneThing;
+
         if (shouldReplaceGuestDemo) {
           const demo = createGuestDemoWorkspace();
+          nextTasks = demo.tasks;
+          nextProjects = demo.projects;
+          nextOneThing = demo.oneThing;
           saveTasks(demo.tasks).catch((err) => {
             console.error("[Foci] Failed to save sample tasks:", err);
           });
           saveProjects(demo.projects).catch((err) => {
             console.error("[Foci] Failed to save sample projects:", err);
           });
-          if (!oneThing) {
-            persistOneThing(demo.oneThing);
-          }
-          setProjects(demo.projects);
-          setTasks(demo.tasks);
+          persistOneThing(demo.oneThing);
         } else if (shouldAddDemoProjects) {
           const demo = createGuestDemoWorkspace();
-          const nextProjects = mergeGuestDemoProjects(existingProjects, demo.projects);
-          const nextTasks = [...baseTasks, ...extraGuestDemoTasks(demo)];
+          nextProjects = mergeGuestDemoProjects(existingProjects, demo.projects);
+          nextTasks = [...baseTasks, ...extraGuestDemoTasks(demo)];
           saveTasks(nextTasks).catch((err) => {
             console.error("[Foci] Failed to save sample tasks:", err);
           });
           saveProjects(nextProjects).catch((err) => {
             console.error("[Foci] Failed to save sample projects:", err);
           });
-          setProjects(nextProjects);
-          setTasks(nextTasks);
         } else {
           const bucketUpgrade =
             !demoCleared && !user
               ? upgradePlacesToBucketList(existing, existingProjects)
               : null;
           if (bucketUpgrade) {
+            nextTasks = bucketUpgrade.tasks;
+            nextProjects = bucketUpgrade.projects;
             saveTasks(bucketUpgrade.tasks).catch((err) => {
               console.error("[Foci] Failed to save sample tasks:", err);
             });
             saveProjects(bucketUpgrade.projects).catch((err) => {
               console.error("[Foci] Failed to save sample projects:", err);
             });
-            setProjects(bucketUpgrade.projects);
-            setTasks(bucketUpgrade.tasks);
           } else {
-            // Migrate tasks missing projectId
             const migrated = existing.map((t) => ({
               ...t,
               projectId: t.projectId || DEFAULT_PROJECT_ID,
@@ -697,9 +724,34 @@ export default function TaskList({
                 console.error("[Foci] Failed to save migrated tasks:", err);
               });
             }
-            setTasks(migrated);
+            nextTasks = migrated;
           }
         }
+
+        if (!user && !demoCleared) {
+          const spread = spreadGuestDemoFeatures(nextTasks);
+          if (spread) {
+            nextTasks = spread;
+            saveTasks(spread).catch((err) => {
+              console.error("[Foci] Failed to spread sample features:", err);
+            });
+          }
+        }
+
+        if (!user && !demoCleared && isGuestSampleWorkspace(nextTasks, nextProjects)) {
+          const withSubs = pickGuestDemoExpandedSubtasksTask(nextTasks);
+          if (withSubs) setExpandedSubtasksTaskId(withSubs.id);
+          const leaf = pickGuestDemoOneThingTask(nextTasks);
+          const current = nextOneThing
+            ? nextTasks.find((t) => t.id === nextOneThing!.taskId)
+            : undefined;
+          if (leaf && (!nextOneThing || (current && (current.subtasks?.length ?? 0) > 0))) {
+            persistOneThing({ taskId: leaf.id, date: getToday() });
+          }
+        }
+
+        setProjects(nextProjects);
+        setTasks(nextTasks);
 
         // Paint cards immediately — shared projects are not needed for own data.
         setTasksReady(true);
@@ -2516,7 +2568,7 @@ export default function TaskList({
       onDragEnd={handleDragEnd}
       renderBelowTask={renderTaskInlineExpansion}
       {...createTaskListDnD(taskList)}
-      className={options?.className ?? "space-y-2"}
+      className={options?.className ?? "space-y-0.5"}
     />
   );
 
@@ -3861,7 +3913,7 @@ export default function TaskList({
                 {earlierCompletedTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-[#131d30] transition-colors min-w-0"
+                    className="flex items-center gap-2 px-2 py-0.5 rounded-lg hover:bg-slate-50 dark:hover:bg-[#131d30] transition-colors min-w-0"
                   >
                     <button
                       onClick={() => toggleComplete(task.id)}
@@ -4029,7 +4081,7 @@ export default function TaskList({
                 {archivedTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="group flex items-center gap-2 p-2 rounded-lg"
+                    className="group flex items-center gap-2 px-2 py-0.5 rounded-lg"
                   >
                     <svg className="w-4 h-4 flex-shrink-0 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
