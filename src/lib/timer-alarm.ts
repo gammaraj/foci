@@ -90,7 +90,6 @@ type AudioContextCtor = typeof AudioContext;
 
 let ctx: AudioContext | null = null;
 let keepAliveOsc: OscillatorNode | null = null;
-let keepAliveGain: GainNode | null = null;
 let activeNodes: AudioNode[] = [];
 let pendingPlay: { preview: boolean; sound?: AlarmSoundId } | null = null;
 let listenersInstalled = false;
@@ -120,18 +119,6 @@ async function resumeContext(): Promise<AudioContext | null> {
   return audio;
 }
 
-function stopKeepAlive() {
-  try {
-    keepAliveOsc?.stop();
-  } catch {
-    /* already stopped */
-  }
-  keepAliveOsc?.disconnect();
-  keepAliveGain?.disconnect();
-  keepAliveOsc = null;
-  keepAliveGain = null;
-}
-
 function ensureKeepAlive(audio: AudioContext) {
   if (keepAliveOsc) return;
   const osc = audio.createOscillator();
@@ -142,7 +129,6 @@ function ensureKeepAlive(audio: AudioContext) {
   gain.connect(audio.destination);
   osc.start();
   keepAliveOsc = osc;
-  keepAliveGain = gain;
 }
 
 function stopActiveAlarm() {
@@ -331,10 +317,6 @@ export function unlockTimerAlarm(): void {
   void resumeContext().then((audio) => {
     if (audio) ensureKeepAlive(audio);
   });
-}
-
-export function releaseTimerAlarmKeepAlive(): void {
-  stopKeepAlive();
 }
 
 /** Play the configured alarm, or a one-off preview of a specific sound. */

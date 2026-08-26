@@ -1,30 +1,17 @@
-export type FociDotMood =
-  | "happy"
-  | "ready"
-  | "focusing"
-  | "meh"
-  | "sad"
-  | "lost"
-  | "worried";
+export type FociDotMood = "happy" | "ready" | "meh" | "sad";
 
 const SMILE: Record<FociDotMood, number> = {
   happy: 2.4,
   ready: 0.9,
-  focusing: 0.15,
   meh: 0,
   sad: -2.0,
-  lost: -0.5,
-  worried: -1.4,
 };
 
 const MOOD_CLASS: Record<FociDotMood, string> = {
   happy: "text-emerald-500 dark:text-emerald-300",
   ready: "text-blue-500 dark:text-sky-300",
-  focusing: "text-blue-600 dark:text-blue-300",
   meh: "text-slate-500 dark:text-slate-400",
   sad: "text-amber-500 dark:text-amber-300",
-  lost: "text-blue-500 dark:text-sky-300",
-  worried: "text-amber-500 dark:text-amber-300",
 };
 
 /** Beavy the Beaver — small mood face for the Done bar and empty states. Uses currentColor. */
@@ -40,12 +27,11 @@ export function FociDot({
   const smile = SMILE[mood];
   const mouthY = 20.6;
   const controlY = mouthY + smile;
-  const lookX = mood === "lost" ? 1.5 : 0;
-  const eyeY = mood === "sad" || mood === "worried" ? 13.5 : 12.9;
-  const eyeR = mood === "focusing" ? 1.15 : mood === "sad" ? 1.2 : 1.45;
-  const lid = mood === "sad" || mood === "worried";
-  const leftEyeX = 12.0 + lookX;
-  const rightEyeX = 20.0 + lookX;
+  const eyeY = mood === "sad" ? 13.5 : 12.9;
+  const eyeR = mood === "sad" ? 1.2 : 1.45;
+  const lid = mood === "sad";
+  const leftEyeX = 12.0;
+  const rightEyeX = 20.0;
   const showTeeth = smile >= 0.4;
 
   return (
@@ -111,22 +97,6 @@ export function FociDot({
           <circle cx={rightEyeX} cy={eyeY} r={eyeR} fill="currentColor" />
         </>
       )}
-      {mood === "worried" ? (
-        <>
-          <path
-            d={`M ${leftEyeX - 1.8} ${eyeY - 3.0} L ${leftEyeX + 0.4} ${eyeY - 2.1}`}
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-          <path
-            d={`M ${rightEyeX + 1.8} ${eyeY - 3.0} L ${rightEyeX - 0.4} ${eyeY - 2.1}`}
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-        </>
-      ) : null}
       {showTeeth ? (
         <>
           <rect x="14.25" y={mouthY + 0.15} width="1.65" height="2.15" rx="0.35" fill="currentColor" />

@@ -5,7 +5,7 @@ import {
   FOCI_TAGLINE_CALM,
   FOCI_TAGLINE_FOCUS,
   FOCI_TAGLINE_OG_PX,
-  FOCI_WORDMARK_GRADIENT_CSS,
+  FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
   FOCI_WORDMARK_OG_PX,
 } from "@/lib/logo-brand";
 
@@ -42,7 +42,7 @@ function OgBrandImage() {
               fontSize: FOCI_WORDMARK_OG_PX,
               fontWeight: 700,
               letterSpacing: -3,
-              background: FOCI_WORDMARK_GRADIENT_CSS,
+              background: FOCI_WORDMARK_GRADIENT_DARK_BG_CSS,
               backgroundClip: "text",
               color: "transparent",
             }}

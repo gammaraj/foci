@@ -14,16 +14,9 @@ import { useTimer, type TimerState } from "@/hooks/useTimer";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
-import { clampWorkSeconds, nudgeWorkSeconds } from "@/lib/timer-utils";
+import { clampWorkSeconds, formatTimerDisplay, nudgeWorkSeconds } from "@/lib/timer-utils";
 import { unlockTimerAlarm } from "@/lib/timer-alarm";
 import ConfirmModal from "@/components/ConfirmModal";
-
-function formatTime(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-}
 
 interface FocusSessionContextValue {
   timer: TimerState;
@@ -115,10 +108,10 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
   const isRunning = timer.status === "running";
   const displayTime =
     timer.status === "idle"
-      ? formatTime(timer.settings.workDuration)
-      : formatTime(timer.remainingTime);
+      ? formatTimerDisplay(timer.settings.workDuration)
+      : formatTimerDisplay(timer.remainingTime);
   const mobileDisplayTime =
-    timer.status === "break" ? formatTime(timer.remainingTime) : displayTime;
+    timer.status === "break" ? formatTimerDisplay(timer.remainingTime) : displayTime;
 
   useEffect(() => {
     activeTaskIdRef.current = activeTaskId;

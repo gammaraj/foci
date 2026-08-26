@@ -234,9 +234,6 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   },
 ];
 
-/** @deprecated Use PROJECT_TEMPLATES */
-export const TASK_TEMPLATES = PROJECT_TEMPLATES;
-
 /** Convert a project template into Task objects ready to save */
 export function templateToTasks(
   template: ProjectTemplate,

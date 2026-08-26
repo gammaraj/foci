@@ -3,17 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { Task } from "@/lib/types";
 import { loadTasks } from "@/lib/storage";
-
-function todayStr(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function tomorrowStr(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
+import { getToday, getTomorrow } from "@/lib/dates";
 
 const CHECK_INTERVAL = 60 * 60 * 1000; // re-check every hour
 
@@ -21,13 +11,13 @@ export default function DueDateReminders() {
   const lastCheckDateRef = useRef<string>("");
 
   const checkDueDates = useCallback(async () => {
-    const today = todayStr();
+    const today = getToday();
 
     // Only send browser notifications once per day
     const shouldNotify = lastCheckDateRef.current !== today;
     lastCheckDateRef.current = today;
 
-    const tomorrow = tomorrowStr();
+    const tomorrow = getTomorrow();
     let tasks: Task[];
     try {
       tasks = await loadTasks();

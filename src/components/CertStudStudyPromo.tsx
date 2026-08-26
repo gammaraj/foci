@@ -11,13 +11,11 @@ import { trackCertStudReturnClick } from "@/lib/analytics";
 
 interface CertStudStudyPromoProps {
   context: CertStudContext;
-  variant?: "sidebar" | "inline";
   className?: string;
 }
 
 export default function CertStudStudyPromo({
   context,
-  variant = "sidebar",
   className = "",
 }: CertStudStudyPromoProps) {
   const [dismissed, setDismissed] = useState<boolean | null>(null);
@@ -43,16 +41,25 @@ export default function CertStudStudyPromo({
 
   if (dismissed !== false) return null;
 
-  const card = (
-    <>
+  return (
+    <aside
+      className={`relative rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 px-4 py-4 ${className}`}
+      aria-label="Partner link: CertStud certification practice"
+    >
+      <button
+        type="button"
+        onClick={dismiss}
+        className="absolute top-2.5 right-2.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
+        aria-label="Dismiss CertStud link"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       <p className="app-section-label text-emerald-600 dark:text-emerald-400">
         Studying for a certification?
       </p>
-      <p
-        className={`mt-1 font-semibold text-slate-800 dark:text-slate-100 ${
-          variant === "inline" ? "text-base" : "text-sm sm:text-base"
-        }`}
-      >
+      <p className="mt-1 font-semibold text-slate-800 dark:text-slate-100 text-base">
         Pair focus sprints with CertStud practice
       </p>
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -74,46 +81,6 @@ export default function CertStudStudyPromo({
       >
         {label} →
       </a>
-    </>
-  );
-
-  if (variant === "inline") {
-    return (
-      <aside
-        className={`relative rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 px-4 py-4 ${className}`}
-        aria-label="Partner link: CertStud certification practice"
-      >
-        <button
-          type="button"
-          onClick={dismiss}
-          className="absolute top-2.5 right-2.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
-          aria-label="Dismiss CertStud link"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        {card}
-      </aside>
-    );
-  }
-
-  return (
-    <aside
-      className={`relative mx-3 mb-3 rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 px-3 py-3 ${className}`}
-      aria-label="Partner link: CertStud certification practice"
-    >
-      <button
-        type="button"
-        onClick={dismiss}
-        className="absolute top-2 right-2 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors"
-        aria-label="Dismiss CertStud link"
-      >
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      {card}
     </aside>
   );
 }

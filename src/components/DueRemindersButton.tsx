@@ -7,14 +7,10 @@ import type { Task } from "@/lib/types";
 import { isActionableOverdue } from "@/lib/task-status";
 import { formatOverdueChip, getDaysOverdue } from "@/components/task-list/utils";
 import { isExactTasksAppPath } from "@/lib/task-view-url";
+import { getToday } from "@/lib/dates";
 
 /** Ask TaskList on /app to show the Today/overdue filter (and optionally a task). */
 export const VIEW_DUE_TASKS_EVENT = "foci-view-due-tasks";
-
-function todayStr(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 type DueItem = {
   task: Task;
@@ -39,7 +35,7 @@ export default function DueRemindersButton() {
     setLoading(true);
     try {
       const [tasks, projects] = await Promise.all([loadTasks(), loadProjects()]);
-      const today = todayStr();
+      const today = getToday();
       const byId = new Map(projects.map((p) => [p.id, p.name]));
       const next: DueItem[] = [];
 

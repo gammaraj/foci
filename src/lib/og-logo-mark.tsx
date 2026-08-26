@@ -3,7 +3,6 @@ import {
   FOCI_LOGO_BG,
   FOCI_LOGO_DOT,
   FOCI_RING_COLORS,
-  FOCI_WORDMARK_GRADIENT_CSS,
 } from "@/lib/logo-brand";
 
 export function OgLogoMark({ size = 96 }: { size?: number }) {
@@ -91,5 +90,3 @@ export function OgLogoMark({ size = 96 }: { size?: number }) {
     </div>
   );
 }
-
-export { FOCI_WORDMARK_GRADIENT_CSS as FOCI_LOGO_GRADIENT };

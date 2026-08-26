@@ -79,13 +79,13 @@ function AppPageContent() {
       <div className={tasksFullscreen ? "w-full px-2 sm:px-4" : "app-container"}>
         {certStudContext && !focusMode && (
           <div className="no-print">
-            <CertStudStudyPromo context={certStudContext} variant="inline" className="mb-3" />
+            <CertStudStudyPromo context={certStudContext} className="mb-3" />
           </div>
         )}
 
         {boostLogikContext && !focusMode && (
           <div className="no-print">
-            <BoostLogikPromo context={boostLogikContext} variant="inline" className="mb-3" />
+            <BoostLogikPromo context={boostLogikContext} className="mb-3" />
           </div>
         )}
 

@@ -3,32 +3,10 @@ import { isProjectCodeName } from "@/components/task-list/utils";
 /** Project tab label — description first only for short ALL-CAPS codes (CD, BK). */
 export function ProjectTabName({
   project,
-  variant = "tab",
 }: {
   project: { name: string; description?: string };
-  /** tab: acronym tabs show description + code badge. column: name first with muted subtitle. */
-  variant?: "tab" | "column";
 }) {
   const desc = project.description?.trim();
-
-  if (variant === "column") {
-    if (desc && desc !== project.name) {
-      return (
-        <span className="block min-w-0 max-w-full">
-          <span className="block truncate font-bold text-slate-900 dark:text-white leading-tight">
-            {project.name}
-          </span>
-          <span
-            className="block truncate text-xs app-text-meta font-medium leading-tight mt-0.5 text-slate-500 dark:text-slate-400"
-            title={desc}
-          >
-            {desc}
-          </span>
-        </span>
-      );
-    }
-    return <span className="truncate font-bold text-slate-900 dark:text-white">{project.name}</span>;
-  }
 
   if (isProjectCodeName(project.name) && desc) {
     return (

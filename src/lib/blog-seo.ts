@@ -269,21 +269,6 @@ export const GUIDE_HUB_LINKS: GuideLink[] = [
   },
 ];
 
-/** Slugs that should prominently link to the Flowtime guide (GSC: position ~88). */
-export const FLOWTIME_INBOUND_SLUGS = new Set([
-  "pomodoro-technique-guide",
-  "pomodoro-vs-flowtime-vs-52-17",
-  "52-17-rule-guide",
-  "how-to-stop-procrastinating",
-  "how-to-stay-focused-while-studying",
-  "deep-work-in-the-age-of-ai",
-  "adhd-focus-strategies",
-  "time-blocking-method",
-  "brown-noise-for-studying-and-focus",
-  "best-free-pomodoro-apps-2026",
-  "best-music-for-studying-and-focus",
-]);
-
 export interface BlogFaq {
   question: string;
   answer: string;

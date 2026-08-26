@@ -16,18 +16,11 @@ export interface OneThingCardProps {
   onChange: () => void;
   onClear: () => void;
   onDismissEmpty?: () => void;
-  /**
-   * `strip` — full-width row under When/Layout (default everywhere).
-   * `inline` — same chrome, for embedding in a toolbar row (Cards desktop).
-   */
-  variant?: "strip" | "inline";
 }
 
 /** Active / done — soft plate, left accent, no heavy outline box. */
 const plate =
-  "no-print flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1";
-const stripPlate = `${plate} panel-inset-x mt-1 mb-0.5`;
-const inlinePlate = `${plate} max-w-full`;
+  "no-print flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1 panel-inset-x mt-1 mb-0.5";
 
 const activePlate =
   "ring-blue-500/20 dark:ring-blue-400/25 bg-blue-500/[0.07] dark:bg-blue-500/10 border-l-[3px] border-l-blue-500 dark:border-l-blue-400";
@@ -86,9 +79,7 @@ export function OneThingCard({
   onChange,
   onClear,
   onDismissEmpty,
-  variant = "strip",
 }: OneThingCardProps) {
-  const plateShell = variant === "inline" ? inlinePlate : stripPlate;
   const [detailsOpen, setDetailsOpen] = useState(false);
   const detailsId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -122,11 +113,7 @@ export function OneThingCard({
     return (
       <div ref={rootRef} data-tour="one-thing" className="relative min-w-0 land-compact:hidden">
         {/* Borderless intent row — reads as guidance, not another chrome box */}
-        <div
-          className={`relative flex items-center justify-center min-h-[2.25rem] ${
-            variant === "inline" ? "" : "panel-inset-x mt-0.5 mb-0.5"
-          }`}
-        >
+        <div className="relative flex items-center justify-center min-h-[2.25rem] panel-inset-x mt-0.5 mb-0.5">
           <button
             type="button"
             onClick={() => setDetailsOpen((v) => !v)}
@@ -171,11 +158,7 @@ export function OneThingCard({
             id={detailsId}
             role="region"
             aria-label="Today’s One Thing details"
-            className={
-              variant === "inline"
-                ? "absolute left-0 right-0 top-full z-40 mt-1.5"
-                : "panel-inset-x mt-1 mb-1"
-            }
+            className="panel-inset-x mt-1 mb-1"
           >
             <OneThingHowTo />
           </div>
@@ -186,7 +169,7 @@ export function OneThingCard({
 
   if (status === "done" && task) {
     return (
-      <div data-tour="one-thing" className={`${plateShell} ${donePlate}`}>
+      <div data-tour="one-thing" className={`${plate} ${donePlate}`}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span className="inline-flex items-center shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-emerald-700 dark:text-emerald-300">
             Done
@@ -211,7 +194,7 @@ export function OneThingCard({
 
   if (status === "active" && task) {
     return (
-      <div data-tour="one-thing" className={`${plateShell} ${activePlate}`}>
+      <div data-tour="one-thing" className={`${plate} ${activePlate}`}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span
             className="inline-flex items-center gap-1 shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300"

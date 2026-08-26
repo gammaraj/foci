@@ -6,9 +6,6 @@ export const FOCI_LOGO_BG = "#0f172a";
 /** Light-mode logo tile — soft blue-white so the mark matches a light navbar */
 export const FOCI_LOGO_BG_LIGHT = "#eff6ff";
 
-/** Primary brand color — blue-600 */
-export const FOCI_BRAND_CYAN = "#2563eb";
-
 export const FOCI_RING_COLORS = {
   dim: "#2563eb",    // blue-600 — dim arc segment
   mid: "#3b82f6",    // blue-500 — main arc
@@ -22,20 +19,12 @@ export const FOCI_LOGO_DOT = "#60a5fa"; // blue-400
 /** Wordmark on white/light pages — blue-700, strong on #fff */
 export const FOCI_WORDMARK_ON_LIGHT = "#1d4ed8";
 
-/** Solid CTA fill — same as wordmark on light surfaces */
-export const FOCI_BUTTON_BG = FOCI_WORDMARK_ON_LIGHT;
-
 /** Wordmark on dark nav — blue-300 */
 export const FOCI_WORDMARK_ON_DARK = "#93c5fd";
 
 /** Decorative wordmark gradient for OG / social (dark backgrounds only) */
 export const FOCI_WORDMARK_GRADIENT_DARK_BG_CSS =
   "linear-gradient(90deg, #60a5fa 0%, #3b82f6 55%, #2563eb 100%)";
-
-/** @deprecated Use FOCI_WORDMARK_GRADIENT_DARK_BG_CSS — kept for OG exports */
-export const FOCI_WORDMARK_GRADIENT_CSS = FOCI_WORDMARK_GRADIENT_DARK_BG_CSS;
-
-export const FOCI_LOGO_SVG_STOPS = FOCI_RING_COLORS;
 
 /** Blue glow — dark chrome, hero on navy, OG tiles */
 export const FOCI_LOGO_SHADOW_DARK =
@@ -58,16 +47,12 @@ export const FOCI_HERO_HEADLINE = "Plan your day. Finish your tasks.";
 /** Wordmark typography — Plus Jakarta Sans; bold not extrabold (less early-2010s chunk). */
 export const FOCI_WORDMARK_NAV =
   "font-wordmark text-[1.625rem] sm:text-[1.8125rem] font-bold leading-none tracking-[-0.04em]";
-export const FOCI_WORDMARK_MOCKUP =
-  "font-wordmark text-[1.375rem] sm:text-[1.5rem] font-bold leading-none tracking-[-0.04em]";
 export const FOCI_WORDMARK_INLINE = "font-wordmark text-[1rem] font-semibold tracking-[-0.02em]";
 export const FOCI_WORDMARK_OG_PX = 86;
 
 /** Tagline typography — subordinate to the wordmark, still ≥10px. */
 export const FOCI_TAGLINE_NAV =
   "text-[0.625rem] sm:text-[0.6875rem] font-medium tracking-[0.12em] sm:tracking-[0.14em] uppercase leading-none";
-export const FOCI_TAGLINE_MOCKUP =
-  "text-[0.625rem] sm:text-[0.6875rem] font-medium tracking-[0.12em] uppercase leading-none";
 export const FOCI_TAGLINE_OG_PX = 12;
 
 /** Tagline color on dark surfaces — softer than wordmark */

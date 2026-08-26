@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { Task, Project } from "@/lib/types";
 import { ALL_PROJECTS_ID } from "@/lib/types";
 import { formatDueDate, MAX_TASK_TITLE } from "./utils";
+import { formatDateLocal, getToday } from "@/lib/dates";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -72,8 +73,7 @@ export default function TaskCalendarView({
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startingDow = new Date(year, month, 1).getDay();
 
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const todayStr = getToday();
 
   const filteredTasks =
     projectFilter === ALL_PROJECTS_ID
@@ -200,7 +200,7 @@ export default function TaskCalendarView({
           <div key={`e-${i}`} className="min-h-[68px]" />
         ))}
         {dayCells.map((day) => {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          const dateStr = formatDateLocal(new Date(year, month, day));
           const dayTasks = tasksByDate[dateStr] ?? [];
           const isToday = dateStr === todayStr;
           const isSelected = dateStr === selectedDay;
