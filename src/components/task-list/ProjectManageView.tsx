@@ -397,6 +397,7 @@ function ProjectRow({
                 open={openTasks.length}
                 completed={completedCount}
                 overdue={openTasks.filter((t) => t.dueDate && isDueDateOverdue(t.dueDate)).length}
+                showOverdue
               />
               {project.dueDate && (
                 <span

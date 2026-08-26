@@ -566,7 +566,7 @@ function BucketColumn({
             className={`flex-shrink-0 touch-target-sm p-0.5 rounded transition-colors ${
               project.favorite
                 ? "text-amber-400 hover:text-amber-500"
-                : "text-slate-400 dark:text-slate-500 opacity-70 hover:opacity-100 hover:text-amber-400"
+                : "hidden max-sm:!inline-flex sm:group-hover/col:inline-flex sm:focus-visible:inline-flex text-slate-400 dark:text-slate-500 hover:text-amber-400"
             }`}
             title={
               project.favorite

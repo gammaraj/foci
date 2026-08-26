@@ -5,11 +5,14 @@ export function ProjectTaskCounts({
   open,
   completed = 0,
   overdue = 0,
+  showOverdue = false,
   variant = "badge",
 }: {
   open: number;
   completed?: number;
   overdue?: number;
+  /** Manage list only — cards/buckets already show −Nd on rows and a global late pill. */
+  showOverdue?: boolean;
   variant?: "badge" | "inline";
 }) {
   const title = `${open} open · ${completed} completed${overdue > 0 ? ` · ${overdue} overdue` : ""}`;
@@ -33,7 +36,7 @@ export function ProjectTaskCounts({
           <span className={doneClass}>{completed} done</span>
         </>
       )}
-      {overdue > 0 && (
+      {showOverdue && overdue > 0 && (
         <>
           <span className={labelClass} aria-hidden>
             ·

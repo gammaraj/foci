@@ -271,14 +271,6 @@ function CardHeaderCounts({
   return (
     <span className="text-xs app-text-meta tabular-nums leading-snug shrink-0 ml-auto pl-2 text-right" title={title}>
       <span className="text-slate-500 dark:text-slate-400">{open} open</span>
-      {overdue > 0 && (
-        <>
-          <span className="text-slate-400 dark:text-slate-500"> · </span>
-          <span className="urgency-text--mild font-medium">
-            {overdue} late
-          </span>
-        </>
-      )}
     </span>
   );
 }
@@ -433,6 +425,14 @@ function CardTaskRow({
               overdue ? overdueTitleClass(daysLate) : "text-slate-700 dark:text-slate-200"
             }`}
           >
+            {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
+            <span className="min-w-0 flex-1 line-clamp-2 break-words [overflow-wrap:anywhere] text-left">
+              {task.title}
+            </span>
+          </TaskTitleButton>
+        )}
+        {!isEditing && (
+          <div className="shrink-0 flex items-center gap-0.5">
             {overdue && (
               <span
                 className={`${META_CHIP_CLASS} ${overdueDayChipClass(daysLate)}`}
@@ -442,14 +442,6 @@ function CardTaskRow({
                 {formatOverdueChip(daysLate)}
               </span>
             )}
-            {task.kind && task.kind !== "task" && <TaskKindBadge kind={task.kind} size="compact" />}
-            <span className="min-w-0 flex-1 line-clamp-2 break-words [overflow-wrap:anywhere] text-left">
-              {task.title}
-            </span>
-          </TaskTitleButton>
-        )}
-        {!isEditing && (
-          <div className="shrink-0 flex items-center gap-0.5">
             {isOneThing ? (
               <OneThingBadge size="compact" />
             ) : (
@@ -674,9 +666,9 @@ function ProjectCard({
                 e.stopPropagation();
                 onToggleCollapsed();
               }}
-              className={`flex-shrink-0 p-0.5 rounded transition-colors ${
+              className={`flex-shrink-0 p-0.5 rounded transition-colors sm:opacity-0 sm:group-hover/card:opacity-100 sm:focus-visible:opacity-100 ${
                 collapsed
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 sm:opacity-100"
                   : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               }`}
               title={
@@ -736,7 +728,7 @@ function ProjectCard({
                 touchOverIdRef.current = null;
                 onProjectDragEnd?.();
               }}
-              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100 hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
             >
@@ -779,7 +771,7 @@ function ProjectCard({
               className={`flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md transition-colors ${
                 project.favorite
                   ? "bg-amber-100 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400 hover:bg-amber-200/90 dark:hover:bg-amber-900/50"
-                  : "text-slate-400 dark:text-slate-500 hover:text-amber-400 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
+                  : "hidden max-sm:!inline-flex sm:group-hover/card:inline-flex sm:focus-visible:inline-flex text-slate-400 dark:text-slate-500 hover:text-amber-400 hover:bg-amber-50/80 dark:hover:bg-amber-950/30"
               }`}
               title={
                 project.favorite
