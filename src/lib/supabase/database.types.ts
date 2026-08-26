@@ -472,6 +472,18 @@ export type Database = {
           expires_at: string
         }[]
       }
+      admin_list_users: {
+        Args: Record<string, never>
+        Returns: {
+          user_id: string
+          email: string | null
+          display_name: string | null
+          last_sign_in_at: string | null
+          created_at: string | null
+          task_count: number
+          streak: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

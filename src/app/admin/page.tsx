@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminGaPanel } from "@/components/admin/AdminGaPanel";
+import { AdminUsersPanel } from "@/components/admin/AdminUsersPanel";
 import { ADMIN_SHELL } from "@/components/admin/admin-shell";
 import { fetchAdminGaSummary, type AdminGaSummary } from "@/lib/ga-data-api";
 import {
@@ -11,6 +12,8 @@ import {
 } from "@/lib/monetization-plans";
 import { ADSENSE_CLIENT_ID, CONTACT_EMAIL } from "@/lib/product-facts";
 import { activeBacklogItems, backlogCounts } from "@/lib/admin-backlog";
+import { createClient } from "@/lib/supabase/server";
+import type { AdminUserRow } from "@/lib/admin-users";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -26,8 +29,22 @@ async function loadGa(): Promise<{ data: AdminGaSummary | null; error: string | 
   }
 }
 
+async function loadUsers(): Promise<{ users: AdminUserRow[]; error: string | null }> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("admin_list_users");
+    if (error) return { users: [], error: error.message };
+    return { users: data ?? [], error: null };
+  } catch (e) {
+    return { users: [], error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 export default async function AdminPage() {
-  const { data: ga, error: gaError } = await loadGa();
+  const [{ data: ga, error: gaError }, { users, error: usersError }] = await Promise.all([
+    loadGa(),
+    loadUsers(),
+  ]);
   const counts = backlogCounts();
   const topOpen = activeBacklogItems().slice(0, 3);
 
@@ -50,6 +67,8 @@ export default async function AdminPage() {
       </div>
 
       <AdminGaPanel ga={ga} error={gaError} />
+
+      <AdminUsersPanel users={users} error={usersError} />
 
       {topOpen.length > 0 ? (
         <section aria-labelledby="open-backlog-heading" className="space-y-3">
