@@ -170,7 +170,7 @@ export default function TaskCalendarView({
           </svg>
         </button>
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {MONTH_NAMES[month]} {year}
           </h3>
           <button

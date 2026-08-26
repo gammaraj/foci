@@ -212,7 +212,7 @@ function CalendarView({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h3 className="text-base font-bold text-slate-700 dark:text-slate-100">
+        <h3 className="text-base font-semibold text-slate-700 dark:text-slate-100">
           {MONTH_NAMES[month]} {year}
         </h3>
         <button

@@ -73,7 +73,7 @@ function WeatherStat({
       className={`${className} flex-col items-center justify-center gap-1`}
       title={title}
     >
-      <span className="text-xs font-semibold uppercase tracking-wide !leading-none text-slate-400 dark:text-slate-500">
+      <span className="app-section-label !leading-none text-slate-400 dark:text-slate-500">
         {label}
       </span>
       <span className="text-xs font-semibold tabular-nums !leading-none text-slate-600 dark:text-slate-300">

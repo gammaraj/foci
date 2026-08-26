@@ -8,7 +8,6 @@ import TimerControls from "@/components/TimerControls";
 import TimerAlarmPicker from "@/components/TimerAlarmPicker";
 import {
   FOCUS_STRIP_CHIP_FRAME,
-  FOCUS_STRIP_LABEL,
   FocusStripChipChevron,
   miniDockGhostButtonClass,
   MiniSettingsIcon,
@@ -521,7 +520,7 @@ export function FocusDockToolbar({
         </span>
       ) : null}
       <span
-        className={`${FOCUS_STRIP_LABEL} ${
+        className={`app-section-label ${
           isBreak ? "text-green-600 dark:text-green-400" : "text-slate-500 dark:text-slate-400"
         }`}
       >
@@ -800,7 +799,7 @@ export default function FocusDockPanel({
       >
         <header className="panel-header-calm px-3 sm:px-4 py-2 flex items-center justify-between gap-2 rounded-t-xl">
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-slate-700 dark:text-white">Focus Timer</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-white">Focus timer</h2>
             {!activeTaskId && (
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Pick a task below</p>
             )}

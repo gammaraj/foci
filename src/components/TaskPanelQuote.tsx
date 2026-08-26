@@ -29,7 +29,7 @@ export default function TaskPanelQuote({ variant = "inline" }: TaskPanelQuotePro
   if (variant === "hero") {
     return (
       <div className="hidden sm:block text-center px-4 py-6 mb-4 rounded-xl bg-slate-50/80 dark:bg-[#131d30]/50 border border-slate-100 dark:border-[#1e3050]">
-        <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+        <p className="app-section-label text-slate-400 dark:text-slate-500 mb-2">
           Quote of the day
         </p>
         <p className="text-base sm:text-lg italic text-slate-600 dark:text-slate-300 leading-relaxed max-w-md mx-auto">

@@ -53,7 +53,7 @@ export function ProjectTemplatePicker({
     const section = (title: string, items: ProjectTemplate[]) =>
       items.length === 0 ? null : (
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 px-0.5">
+          <p className="app-section-label text-slate-500 dark:text-slate-400 px-0.5">
             {title}
           </p>
           <div className="grid grid-cols-2 gap-2">

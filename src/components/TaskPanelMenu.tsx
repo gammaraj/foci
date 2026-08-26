@@ -159,7 +159,7 @@ export default function TaskPanelMenu({
             <>
               <div className="my-1 border-t border-slate-100 dark:border-[#243350]" />
               <div className="px-3 py-1.5">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                <span className="app-section-label text-slate-500 dark:text-slate-400">
                   Project templates
                 </span>
               </div>

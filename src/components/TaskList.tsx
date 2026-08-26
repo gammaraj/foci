@@ -2633,7 +2633,7 @@ export default function TaskList({
                 </svg>
                 Back to {VIEW_RETURN_LABELS[viewBeforeManageRef.current] ?? "tasks"}
               </button>
-              <h2 className="text-base sm:text-lg font-semibold leading-tight">Projects</h2>
+              <h2 className="text-sm sm:text-base font-semibold tracking-tight leading-none">Projects</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
                 {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
                 {pinnedProjectCount > 0 && (

@@ -176,7 +176,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
 
         {showQr && (
           <div className="rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50 dark:bg-[#0f172a] p-3 sm:p-4 mb-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+            <p className="app-section-label text-slate-500 dark:text-slate-400 mb-2">
               On your phone
             </p>
             <div className="flex items-center gap-3">

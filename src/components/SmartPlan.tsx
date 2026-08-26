@@ -143,7 +143,7 @@ function DayColumn({
     >
       <div className="flex items-baseline justify-between gap-2 px-0.5 mb-1.5">
         <h3
-          className={`text-xs font-semibold tracking-wide uppercase ${
+          className={`app-section-label ${
             isToday ? "text-blue-700 dark:text-blue-300" : "text-slate-500 dark:text-slate-400"
           }`}
         >
@@ -255,7 +255,7 @@ export default function SmartPlan({
         {recommended && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-slate-200/90 dark:border-[#243350] bg-slate-50/80 dark:bg-[#131d30] px-3 py-2 min-w-0 roomy:max-w-xl roomy:flex-1">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <p className="app-section-label text-slate-500 dark:text-slate-400">
                 Start with
               </p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white truncate" title={recommended.task.title}>
@@ -321,7 +321,7 @@ export default function SmartPlan({
             className="flex items-center gap-2 w-full text-left px-1"
             aria-expanded={backlogOpen}
           >
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <span className="app-section-label text-slate-500 dark:text-slate-400">
               Beyond window
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">

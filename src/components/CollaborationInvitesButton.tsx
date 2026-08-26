@@ -288,7 +288,7 @@ export default function CollaborationInvitesButton() {
                 {/* Pending invites */}
                 {inviteCount > 0 && (
                   <div className="border-b border-slate-200 dark:border-[#243350]">
-                    <p className="px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <p className="px-4 pt-3 pb-1.5 app-section-label text-slate-500 dark:text-slate-400">
                       Pending invites
                     </p>
                     <ul className="divide-y divide-slate-100 dark:divide-[#243350]">
@@ -351,7 +351,7 @@ export default function CollaborationInvitesButton() {
 
                 {/* Shared projects */}
                 <div>
-                  <p className="px-4 pt-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <p className="px-4 pt-3 pb-1.5 app-section-label text-slate-500 dark:text-slate-400">
                     Shared with you
                   </p>
                   {sharedCount === 0 ? (

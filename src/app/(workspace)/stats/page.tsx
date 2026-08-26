@@ -565,10 +565,10 @@ export default function StatsPage() {
     <>
       <FocusBarTitle>
         <div className="min-w-0">
-          <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-800 dark:text-white">
+          <h1 className="text-sm sm:text-base font-semibold tracking-tight text-slate-800 dark:text-white leading-none">
             Stats
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
             Focus habits, sessions, and backlog health
           </p>
         </div>
@@ -596,7 +596,7 @@ export default function StatsPage() {
         {/* Summary cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <StatCard
-            label="Total Sessions"
+            label="Total sessions"
             value={String(totalSessions)}
             trend={trendData}
             accentBg="bg-blue-50 dark:bg-blue-900/30"
@@ -608,7 +608,7 @@ export default function StatsPage() {
             }
           />
           <StatCard
-            label="Focus Time"
+            label="Focus time"
             value={formatMs(totalFocusMs)}
             accentBg="bg-emerald-50 dark:bg-emerald-900/30"
             accentText="text-emerald-600 dark:text-emerald-400"
@@ -619,7 +619,7 @@ export default function StatsPage() {
             }
           />
           <StatCard
-            label="Current Streak"
+            label="Current streak"
             value={`${currentStreak}d`}
             accentBg="bg-orange-50 dark:bg-orange-900/30"
             accentText="text-orange-600 dark:text-orange-400"
@@ -630,7 +630,7 @@ export default function StatsPage() {
             }
           />
           <StatCard
-            label="Avg / Active Day"
+            label="Avg / active day"
             value={avgSessionsPerDay}
             accentBg="bg-violet-50 dark:bg-violet-900/30"
             accentText="text-violet-600 dark:text-violet-400"
@@ -657,7 +657,7 @@ export default function StatsPage() {
               }
             />
             <StatCard
-              label="Open Tasks"
+              label="Open tasks"
               value={String(openTasks.length)}
               accentBg="bg-blue-50 dark:bg-blue-900/30"
               accentText="text-blue-600 dark:text-blue-400"
@@ -679,7 +679,7 @@ export default function StatsPage() {
               }
             />
             <StatCard
-              label="Completion Rate"
+              label="Completion rate"
               value={`${completionRate}%`}
               accentBg="bg-violet-50 dark:bg-violet-900/30"
               accentText="text-violet-600 dark:text-violet-400"
@@ -692,7 +692,7 @@ export default function StatsPage() {
           </div>
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
-              Backlog Snapshot
+              Backlog snapshot
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               {rangeSessions} focus session{rangeSessions !== 1 ? "s" : ""} in the last {range} days
@@ -713,7 +713,7 @@ export default function StatsPage() {
           {/* Project distribution donut + bars */}
           <div className="lg:col-span-2 bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-5">
-              Focus by Project
+              Focus by project
             </h2>
             {projectItems.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
@@ -731,7 +731,7 @@ export default function StatsPage() {
           {/* Today's activity */}
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
-              Today&apos;s Activity
+              Today&apos;s activity
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
               {todaySessionCount} session{todaySessionCount !== 1 ? "s" : ""} · {formatMs(todaySessionCount * workDuration)} focused
@@ -771,7 +771,7 @@ export default function StatsPage() {
           {/* Goal completion */}
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Goal Completion
+              Goal completion
             </h2>
             <div className="flex items-center justify-center mb-4">
               <div className="relative w-28 h-28">
@@ -797,7 +797,7 @@ export default function StatsPage() {
           {/* Best day + insights */}
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Weekly Pattern
+              Weekly pattern
             </h2>
             <div className="flex items-end gap-1.5 h-24 mb-4">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => {
@@ -832,19 +832,19 @@ export default function StatsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{longestStreak}d</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Longest Streak</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Longest streak</p>
               </div>
               <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{activeDays}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Active Days</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Active days</p>
               </div>
               <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{goalDays}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Goals Met</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Goals met</p>
               </div>
               <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{tasks.length}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total Tasks</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total tasks</p>
               </div>
             </div>
           </div>
@@ -872,7 +872,7 @@ export default function StatsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Sessions per Day
+              Sessions per day
             </h2>
             <BarChart
               data={sessionsData}
@@ -883,7 +883,7 @@ export default function StatsPage() {
 
           <div className="bg-white dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Focus Time per Day
+              Focus time per day
             </h2>
             <BarChart
               data={focusData}

@@ -39,7 +39,7 @@ export function NotFoundView({ embedded = false }: { embedded?: boolean }) {
           <div className="flex items-end justify-between gap-3 mb-4">
             <h2
               id="not-found-reads-heading"
-              className="text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+              className="app-section-label text-slate-400 dark:text-slate-500"
             >
               While Beavy rebuilds the dam
             </h2>

@@ -14,7 +14,6 @@ import { createPortal } from "react-dom";
 import {
   FOCUS_STRIP_CHIP,
   FOCUS_STRIP_CHIP_OPEN,
-  FOCUS_STRIP_LABEL,
   FocusStripChipChevron,
   MiniMusicIcon,
   MiniPlayPauseIcon,
@@ -861,7 +860,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         >
           <span className="inline-flex items-center gap-1.5 shrink-0">
             <MiniMusicIcon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-            <span className={`${FOCUS_STRIP_LABEL} text-slate-500 dark:text-slate-400`}>Music</span>
+            <span className="app-section-label text-slate-500 dark:text-slate-400">Music</span>
           </span>
           {modePicker}
           <button

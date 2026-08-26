@@ -6,15 +6,15 @@ test.describe("Stats Page", () => {
   });
 
   test("renders page heading and subtitle", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Stats & Analytics" })).toBeVisible();
-    await expect(page.getByText("Track your focus habits")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Stats", exact: true })).toBeVisible();
+    await expect(page.getByText("Focus habits, sessions, and backlog health")).toBeVisible();
   });
 
   test("renders 4 stat cards", async ({ page }) => {
-    await expect(page.getByText("Total Sessions")).toBeVisible();
-    await expect(page.getByText("Focus Time", { exact: true })).toBeVisible();
-    await expect(page.getByText("Current Streak")).toBeVisible();
-    await expect(page.getByText("Avg / Active Day")).toBeVisible();
+    await expect(page.getByText("Total sessions")).toBeVisible();
+    await expect(page.getByText("Focus time", { exact: true })).toBeVisible();
+    await expect(page.getByText("Current streak")).toBeVisible();
+    await expect(page.getByText("Avg / active day")).toBeVisible();
   });
 
   test("renders range toggle with 7D and 30D options", async ({ page }) => {
@@ -44,37 +44,37 @@ test.describe("Stats Page", () => {
   });
 
   test("renders sessions per day chart", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Sessions per Day" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sessions per day" })).toBeVisible();
   });
 
   test("renders focus time per day chart", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Focus Time per Day" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Focus time per day" })).toBeVisible();
   });
 
   test("renders focus by project section", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Focus by Project" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Focus by project" })).toBeVisible();
   });
 
   test("renders today's activity section", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Today's Activity" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Today's activity" })).toBeVisible();
   });
 
   test("renders goal completion section", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Goal Completion" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Goal completion" })).toBeVisible();
   });
 
   test("renders weekly pattern section", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Weekly Pattern" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Weekly pattern" })).toBeVisible();
     // Day labels should be visible
     await expect(page.getByText("Mo").first()).toBeVisible();
   });
 
   test("renders overview section with stats", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
-    await expect(page.getByText("Longest Streak")).toBeVisible();
-    await expect(page.getByText("Active Days", { exact: true })).toBeVisible();
-    await expect(page.getByText("Goals Met")).toBeVisible();
-    await expect(page.getByText("Total Tasks")).toBeVisible();
+    await expect(page.getByText("Longest streak")).toBeVisible();
+    await expect(page.getByText("Active days", { exact: true })).toBeVisible();
+    await expect(page.getByText("Goals met")).toBeVisible();
+    await expect(page.getByText("Total tasks")).toBeVisible();
   });
 
   test("page uses shared app container width", async ({ page }) => {

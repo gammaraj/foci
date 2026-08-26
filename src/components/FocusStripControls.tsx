@@ -26,10 +26,6 @@ const DOCK_BTN =
 export const FOCUS_BAR_ICON_BTN =
   "items-center justify-center p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors";
 
-/** Music / Timer section labels — sentence case, quieter than the page title. */
-export const FOCUS_STRIP_LABEL =
-  "text-xs font-semibold tracking-tight leading-none shrink-0";
-
 /** Bordered chips for source, track, and timer duration. */
 export const FOCUS_STRIP_CHIP =
   "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
