@@ -54,7 +54,7 @@ export default function DailyQuoteBanner({
             aria-hidden
           />
         )}
-        <div className="relative flex items-center gap-1 min-w-0 shrink-0 overflow-hidden">
+        <div className="relative flex items-center gap-1 min-w-0 shrink-0 overflow-visible">
           {timerToolbar}
           {timerPanel}
         </div>

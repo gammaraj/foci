@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { BusyBeaver } from "@/components/BusyBeaver";
+import TimerAlarmPicker from "@/components/TimerAlarmPicker";
 
 interface SessionCelebrationProps {
   show: boolean;
@@ -26,7 +27,7 @@ export default function SessionCelebration({
       const t = setTimeout(() => {
         setVisible(false);
         onDismiss();
-      }, 8000);
+      }, 12000);
       return () => clearTimeout(t);
     }
     setVisible(false);
@@ -69,6 +70,9 @@ export default function SessionCelebration({
                 ))}
               </div>
             )}
+            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-[#243350]">
+              <TimerAlarmPicker compact afterFinish />
+            </div>
           </div>
           <button
             type="button"

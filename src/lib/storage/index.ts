@@ -15,6 +15,13 @@ import { SupabaseStorageAdapter } from "./supabase";
 import { CachedSupabaseAdapter, clearOfflineCache, hasOfflineCache } from "./cached-supabase";
 import type { StorageAdapter } from "./types";
 import { createClient } from "../supabase/client";
+import { DEFAULT_SETTINGS } from "../types";
+import {
+  clearSessionAlarm,
+  getTimerAlarmEnabled,
+  getTimerAlarmSound,
+  hasSessionAlarmOverride,
+} from "../timer-alarm";
 
 export { hasOfflineCache };
 export {
@@ -97,7 +104,13 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
         }
       }
       if (localSettings) {
-        await adapter.saveSettings(JSON.parse(localSettings));
+        const parsed = JSON.parse(localSettings);
+        await adapter.saveSettings({
+          ...DEFAULT_SETTINGS,
+          ...parsed,
+          alarmEnabled: hasSessionAlarmOverride() ? getTimerAlarmEnabled() : parsed.alarmEnabled ?? DEFAULT_SETTINGS.alarmEnabled,
+          alarmSound: hasSessionAlarmOverride() ? getTimerAlarmSound() : parsed.alarmSound ?? DEFAULT_SETTINGS.alarmSound,
+        });
       }
       if (localStreak) {
         await adapter.saveStreakHistory(JSON.parse(localStreak));
@@ -129,6 +142,21 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
     }
   }
 
+  if (hasSessionAlarmOverride()) {
+    try {
+      const existing = await adapter.loadSettings();
+      await adapter.saveSettings({
+        ...DEFAULT_SETTINGS,
+        ...existing,
+        alarmEnabled: getTimerAlarmEnabled(),
+        alarmSound: getTimerAlarmSound(),
+      });
+    } catch {
+      /* Guest session alarm could not be copied — signed-in defaults still apply. */
+    }
+    clearSessionAlarm();
+  }
+
   // Clear guest keys only after successful migration path (or when none needed).
   // If localTasks existed but remote already had data, still clear guest keys
   // so we don't keep re-attempting; signed-in data lives in foci_cache_*.
@@ -144,6 +172,8 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
     "foci_task_view_mode",
     "foci_task_view_explicit",
     "foci_one_thing",
+    "foci_timer_alarm_enabled",
+    "foci_timer_alarm_sound",
     "tempo_settings",
     "tempo_daily_goal",
     "tempo_streak_history",

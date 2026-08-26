@@ -7,6 +7,8 @@ export interface Settings {
   dailyGoal: number;
   autoStartEnabled: boolean;
   notificationsEnabled: boolean;
+  alarmEnabled: boolean;
+  alarmSound: "chime" | "bell" | "digital" | "wood" | "soft";
 }
 
 export interface DailyGoalData {
@@ -135,4 +137,6 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyGoal: 3,
   autoStartEnabled: false,
   notificationsEnabled: true,
+  alarmEnabled: true,
+  alarmSound: "digital",
 };

@@ -19,10 +19,34 @@ test.describe("App Page (unauthenticated)", () => {
     await dismissChrome(page);
   });
 
-  test("renders the timer display", async ({ page }) => {
+  test("renders the timer display with a Timer label and settings", async ({ page }) => {
     const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
     await expect(dock).toBeVisible();
+    await expect(dock.getByText("Timer", { exact: true })).toBeVisible();
     await expect(dock.getByText(/\d{2}:\d{2}/)).toBeVisible();
+    await expect(dock.getByLabel("Timer settings")).toBeVisible();
+    await expect(dock.getByLabel("Decrease duration by 5 minutes")).toBeVisible();
+    await dock.getByLabel("Increase duration by 5 minutes").click();
+    await expect(dock.getByLabel(/Work duration 35 minutes/)).toBeVisible();
+    await dock.getByLabel(/Work duration 35 minutes/).click();
+    await dock.getByLabel(/Work duration. Type minutes/).fill("0:30");
+    await dock.getByLabel(/Work duration. Type minutes/).press("Enter");
+    await expect(dock.getByLabel(/Work duration 30 seconds/)).toBeVisible();
+    await dock.getByLabel("Timer settings").click();
+    await expect(page.getByRole("dialog", { name: "Settings" })).toBeVisible();
+    await expect(page.getByText("Session alarm")).toBeVisible();
+  });
+
+  test("shows the countdown in the tab title while the timer is running", async ({ page }) => {
+    const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
+    await expect(dock).toBeVisible();
+    await dock.getByLabel("Start timer").click();
+    await expect(page).toHaveTitle(/^\d{2}:\d{2} · Focus$/);
+    await dock.getByLabel("Pause timer").click();
+    await expect(page).toHaveTitle(/^\d{2}:\d{2} · Paused$/);
+    await dock.getByLabel("Reset timer").click();
+    await page.getByRole("button", { name: "Reset", exact: true }).click();
+    await expect(page).not.toHaveTitle(/^\d{2}:\d{2} · (Focus|Paused|Break)$/);
   });
 
   test("renders the tasks panel", async ({ page }) => {
@@ -77,8 +101,9 @@ test.describe("App Page (unauthenticated)", () => {
 
   test("can open settings panel", async ({ page }) => {
     await page.getByLabel("Task panel menu").click();
-    await page.getByRole("button", { name: "Settings" }).click();
-    await expect(page.getByText("Work (min)", { exact: false })).toBeVisible();
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(page.getByLabel("Work minutes")).toBeVisible();
+    await expect(page.getByLabel("Work seconds")).toBeVisible();
   });
 
   test("layout is responsive - mobile viewport", async ({ page }) => {

@@ -214,6 +214,15 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       dailyGoal: data.daily_goal,
       autoStartEnabled: data.auto_start_enabled,
       notificationsEnabled: data.notifications_enabled,
+      alarmEnabled: data.alarm_enabled ?? DEFAULT_SETTINGS.alarmEnabled,
+      alarmSound:
+        data.alarm_sound === "chime" ||
+        data.alarm_sound === "bell" ||
+        data.alarm_sound === "digital" ||
+        data.alarm_sound === "wood" ||
+        data.alarm_sound === "soft"
+          ? data.alarm_sound
+          : DEFAULT_SETTINGS.alarmSound,
     };
   }
 
@@ -228,6 +237,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         daily_goal: settings.dailyGoal,
         auto_start_enabled: settings.autoStartEnabled,
         notifications_enabled: settings.notificationsEnabled,
+        alarm_enabled: settings.alarmEnabled,
+        alarm_sound: settings.alarmSound,
         updated_at: new Date().toISOString(),
       })
     );

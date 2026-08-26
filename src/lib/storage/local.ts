@@ -17,6 +17,13 @@ import {
 } from "../task-view-preference";
 import { parseOneThingPreference, type OneThingPreference } from "../one-thing";
 import { getToday, getYesterday, formatDateLocal } from "../dates";
+import {
+  getTimerAlarmEnabled,
+  getTimerAlarmSound,
+  isAlarmSoundId,
+  setTimerAlarmEnabled,
+  setTimerAlarmSound,
+} from "../timer-alarm";
 
 const SETTINGS_KEY = "foci_settings";
 const DAILY_GOAL_KEY = "foci_daily_goal";
@@ -72,18 +79,29 @@ export class LocalStorageAdapter implements StorageAdapter {
     if (!isBrowser()) return DEFAULT_SETTINGS;
     try {
       const raw = localStorage.getItem(SETTINGS_KEY);
-      if (!raw) return DEFAULT_SETTINGS;
-      const parsed = JSON.parse(raw);
-      return { ...DEFAULT_SETTINGS, ...parsed };
+      const parsed = raw ? JSON.parse(raw) : {};
+      const merged = { ...DEFAULT_SETTINGS, ...parsed };
+      return {
+        ...merged,
+        alarmEnabled: getTimerAlarmEnabled(),
+        alarmSound: getTimerAlarmSound(),
+      };
     } catch {
-      return DEFAULT_SETTINGS;
+      return {
+        ...DEFAULT_SETTINGS,
+        alarmEnabled: getTimerAlarmEnabled(),
+        alarmSound: getTimerAlarmSound(),
+      };
     }
   }
 
   async saveSettings(settings: Settings): Promise<void> {
     if (!isBrowser()) return;
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      setTimerAlarmEnabled(settings.alarmEnabled);
+      setTimerAlarmSound(isAlarmSoundId(settings.alarmSound) ? settings.alarmSound : DEFAULT_SETTINGS.alarmSound);
+      const { alarmEnabled: _enabled, alarmSound: _sound, ...rest } = settings;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(rest));
     } catch { /* quota exceeded — silently fail */ }
   }
 

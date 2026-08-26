@@ -14,6 +14,7 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import type { ImportResult } from "@/components/TaskImportExport";
 import { hasLocalWorkspaceSnapshot } from "@/lib/storage";
+import { useTimerDocumentTitle } from "@/hooks/useTimerDocumentTitle";
 
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
 
@@ -41,6 +42,8 @@ function WorkspaceChromeInner({
     goalMet,
     timerAnnouncement,
   } = useFocusSession();
+
+  useTimerDocumentTitle(timer.status, timer.remainingTime);
 
   if (loading && !hasSnapshot) {
     return (

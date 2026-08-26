@@ -22,6 +22,7 @@ import {
   trackTimerReset,
   trackSessionComplete,
 } from "@/lib/analytics";
+import { playTimerAlarm, unlockTimerAlarm } from "@/lib/timer-alarm";
 
 export interface TimerState {
   // Timer
@@ -357,6 +358,10 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     const quote = getRandomQuote();
     setLastQuote(quote);
     showNotification(quote, goalMet, dgd.sessionCount, s.dailyGoal);
+    void playTimerAlarm({
+      sound: s.alarmSound,
+      enabled: s.alarmEnabled,
+    });
 
     // Notify external callback (e.g. task list)
     if (onSessionCompleteCbRef.current) {
@@ -386,6 +391,10 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
       breakEnd,
       () => {
         clearTimer();
+        void playTimerAlarm({
+          sound: settingsRef.current.alarmSound,
+          enabled: settingsRef.current.alarmEnabled,
+        });
         if (settingsRef.current.autoStartEnabled) {
           resetToIdle();
           startWork();
@@ -400,6 +409,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
   // Start work timer
   const startWork = useCallback(() => {
     clearTimer();
+    unlockTimerAlarm();
     const s = settingsRef.current;
     trackTimerStart(s.workDuration);
 
@@ -432,6 +442,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
   const start = useCallback(() => {
     if (statusRef.current === "paused") {
       // Resume from pause
+      unlockTimerAlarm();
       const s = settingsRef.current;
       const currentRemaining =
         statusRef.current === "paused"

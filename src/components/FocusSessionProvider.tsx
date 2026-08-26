@@ -15,6 +15,8 @@ import { useTimer, type TimerState } from "@/hooks/useTimer";
 import { useAuth } from "@/components/AuthProvider";
 import { loadTasks } from "@/lib/storage";
 import { getFocusModeAuto, getStartTimerOnFocus } from "@/lib/focus-mode";
+import { clampWorkSeconds, nudgeWorkSeconds } from "@/lib/timer-utils";
+import { unlockTimerAlarm } from "@/lib/timer-alarm";
 import ConfirmModal from "@/components/ConfirmModal";
 
 function formatTime(ms: number): string {
@@ -43,6 +45,8 @@ interface FocusSessionContextValue {
   handleStartTask: (taskId: string) => void;
   handleCompleteTask: (taskId: string) => number;
   handleSelectWorkPreset: (minutes: number) => void;
+  handleSetWorkSeconds: (seconds: number) => void;
+  handleNudgeWorkMinutes: (deltaMinutes: number) => void;
   showShortcuts: boolean;
   setShowShortcuts: (v: boolean) => void;
   showCelebration: boolean;
@@ -144,6 +148,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
     if (next === "break" && prev === "running") {
       announceTimer("Break time started");
       setShowCelebration(true);
+      setTimerCollapsed(false);
       localStorage.setItem("foci_sessions_completed", "1");
     } else if (next === "idle" && prev === "break") {
       announceTimer("Break finished");
@@ -151,6 +156,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
     } else if (next === "idle" && prev === "running") {
       announceTimer("Focus session complete");
       setShowCelebration(true);
+      setTimerCollapsed(false);
       setFocusMode(false);
       localStorage.setItem("foci_sessions_completed", "1");
     }
@@ -158,6 +164,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
 
   const handleStartPause = useCallback(() => {
     if (timer.status === "break") return;
+    unlockTimerAlarm();
     if (isRunning) {
       timer.pause();
       announceTimer("Focus timer paused");
@@ -186,6 +193,7 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
   const handleStartTask = useCallback(
     (taskId: string) => {
       setActiveTaskId(taskId);
+      unlockTimerAlarm();
       if (timer.status !== "running" && timer.status !== "break") {
         if (getFocusModeAuto()) setFocusMode(true);
         if (getStartTimerOnFocus()) timer.start();
@@ -204,13 +212,29 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
     [timer],
   );
 
-  const handleSelectWorkPreset = useCallback(
-    (minutes: number) => {
-      const nextDuration = minutes * 60 * 1000;
+  const handleSetWorkSeconds = useCallback(
+    (seconds: number) => {
+      const nextDuration = clampWorkSeconds(seconds) * 1000;
       if (timer.settings.workDuration === nextDuration) return;
       timer.saveSettings({ ...timer.settings, workDuration: nextDuration });
     },
     [timer],
+  );
+
+  const handleSelectWorkPreset = useCallback(
+    (minutes: number) => {
+      handleSetWorkSeconds(minutes * 60);
+    },
+    [handleSetWorkSeconds],
+  );
+
+  const handleNudgeWorkMinutes = useCallback(
+    (deltaMinutes: number) => {
+      const current = Math.round(timer.settings.workDuration / 1000);
+      const direction = deltaMinutes < 0 ? -1 : 1;
+      handleSetWorkSeconds(nudgeWorkSeconds(current, direction));
+    },
+    [timer.settings.workDuration, handleSetWorkSeconds],
   );
 
   useEffect(() => {
@@ -265,6 +289,8 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
       handleStartTask,
       handleCompleteTask,
       handleSelectWorkPreset,
+      handleSetWorkSeconds,
+      handleNudgeWorkMinutes,
       showShortcuts,
       setShowShortcuts,
       showCelebration,
@@ -287,6 +313,8 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
       handleStartTask,
       handleCompleteTask,
       handleSelectWorkPreset,
+      handleSetWorkSeconds,
+      handleNudgeWorkMinutes,
       showShortcuts,
       showCelebration,
       timerAnnouncement,

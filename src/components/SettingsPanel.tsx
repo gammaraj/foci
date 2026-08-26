@@ -9,6 +9,7 @@ import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
 import { loadProjects, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
 import { getFocusModeAuto, setFocusModeAuto, getStartTimerOnFocus, setStartTimerOnFocus } from "@/lib/focus-mode";
+import TimerAlarmPicker from "@/components/TimerAlarmPicker";
 import {
   DEFAULT_TASK_VIEW_OPTIONS,
   DEFAULT_VIEW_CHANGED_EVENT,
@@ -94,7 +95,8 @@ export default function SettingsPanel({
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [shareModalProject, setShareModalProject] = useState<Project | null>(null);
-  const [workMin, setWorkMin] = useState(Math.floor(settings.workDuration / 60000));
+  const [workMin, setWorkMin] = useState(Math.floor(Math.round(settings.workDuration / 1000) / 60));
+  const [workSec, setWorkSec] = useState(Math.round(settings.workDuration / 1000) % 60);
   const [breakMin, setBreakMin] = useState(Math.floor(settings.breakDuration / 60000));
   const [inactivityMin, setInactivityMin] = useState(
     Math.floor(settings.inactivityThreshold / 60000),
@@ -197,7 +199,10 @@ export default function SettingsPanel({
     e.preventDefault();
 
     const errors: Record<string, string> = {};
-    if (workMin <= 0 || workMin > 120) errors.workMin = "Must be 1–120";
+    const workTotalSec = workMin * 60 + workSec;
+    if (workMin < 0 || workMin > 120 || workSec < 0 || workSec > 59 || workTotalSec < 1 || workTotalSec > 120 * 60) {
+      errors.workMin = "1 second–120 minutes";
+    }
     if (breakMin <= 0 || breakMin > 60) errors.breakMin = "Must be 1–60";
     if (inactivityMin <= 0) errors.inactivityMin = "Must be > 0";
     if (dailyGoal <= 0 || dailyGoal > 20) errors.dailyGoal = "Must be 1–20";
@@ -208,12 +213,14 @@ export default function SettingsPanel({
     }
 
     onSave({
-      workDuration: workMin * 60 * 1000,
+      workDuration: (workMin * 60 + workSec) * 1000,
       breakDuration: breakMin * 60 * 1000,
       inactivityThreshold: inactivityMin * 60 * 1000,
       dailyGoal,
       autoStartEnabled: autoStart,
       notificationsEnabled: notifications,
+      alarmEnabled: settings.alarmEnabled,
+      alarmSound: settings.alarmSound,
     });
     setDirty(false);
     setSaved(true);
@@ -287,13 +294,14 @@ export default function SettingsPanel({
                     <div className="flex flex-wrap gap-2">
                       {TIMER_PRESETS.map((preset) => {
                         const isActive =
-                          workMin === preset.workMin && breakMin === preset.breakMin;
+                          workMin === preset.workMin && workSec === 0 && breakMin === preset.breakMin;
                         return (
                           <button
                             key={preset.label}
                             type="button"
                             onClick={() => {
                               setWorkMin(preset.workMin);
+                              setWorkSec(0);
                               setBreakMin(preset.breakMin);
                               markDirty();
                             }}
@@ -320,29 +328,63 @@ export default function SettingsPanel({
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label htmlFor="workDuration" className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1.5">
-                          Work (min)
-                        </label>
-                        <input
-                          type="number"
-                          id="workDuration"
-                          min={1}
-                          max={120}
-                          value={workMin}
-                          onChange={(e) => {
-                            setWorkMin(Number(e.target.value));
-                            markDirty();
-                            setValidationErrors((v) => {
-                              const { workMin: _, ...rest } = v;
-                              return rest;
-                            });
-                          }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
-                            validationErrors.workMin
-                              ? "border-red-400"
-                              : "border-slate-200 dark:border-[#243350]"
-                          }`}
-                        />
+                        <span className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+                          Work
+                        </span>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label htmlFor="workDuration" className="sr-only">
+                              Work minutes
+                            </label>
+                            <input
+                              type="number"
+                              id="workDuration"
+                              min={0}
+                              max={120}
+                              value={workMin}
+                              onChange={(e) => {
+                                setWorkMin(Number(e.target.value));
+                                markDirty();
+                                setValidationErrors((v) => {
+                                  const { workMin: _, ...rest } = v;
+                                  return rest;
+                                });
+                              }}
+                              className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                                validationErrors.workMin
+                                  ? "border-red-400"
+                                  : "border-slate-200 dark:border-[#243350]"
+                              }`}
+                            />
+                            <p className="text-xs text-slate-400 mt-1">min</p>
+                          </div>
+                          <div>
+                            <label htmlFor="workDurationSec" className="sr-only">
+                              Work seconds
+                            </label>
+                            <input
+                              type="number"
+                              id="workDurationSec"
+                              min={0}
+                              max={59}
+                              value={workSec}
+                              onChange={(e) => {
+                                setWorkSec(Number(e.target.value));
+                                markDirty();
+                                setValidationErrors((v) => {
+                                  const { workMin: _, ...rest } = v;
+                                  return rest;
+                                });
+                              }}
+                              className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                                validationErrors.workMin
+                                  ? "border-red-400"
+                                  : "border-slate-200 dark:border-[#243350]"
+                              }`}
+                            />
+                            <p className="text-xs text-slate-400 mt-1">sec</p>
+                          </div>
+                        </div>
                         <FieldError message={validationErrors.workMin} />
                       </div>
                       <div>
@@ -454,6 +496,14 @@ export default function SettingsPanel({
                       onChange={(next) => {
                         setAutoStart(next);
                         markDirty();
+                      }}
+                    />
+                  </section>
+
+                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5">
+                    <TimerAlarmPicker
+                      onPersist={(alarmEnabled, alarmSound) => {
+                        onSave({ ...settings, alarmEnabled, alarmSound });
                       }}
                     />
                   </section>

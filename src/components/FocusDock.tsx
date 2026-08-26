@@ -4,9 +4,212 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import CircularTimer from "@/components/CircularTimer";
 import TimerControls from "@/components/TimerControls";
-import { miniDockGhostButtonClass } from "@/components/FocusStripControls";
+import TimerAlarmPicker from "@/components/TimerAlarmPicker";
+import { miniDockGhostButtonClass, MiniSettingsIcon } from "@/components/FocusStripControls";
+import {
+  formatTimerDisplay,
+  formatWorkDurationAria,
+  MAX_WORK_SECONDS,
+  MIN_WORK_SECONDS,
+  parseDurationInput,
+  WORK_MINUTE_STEP,
+  WORK_SECOND_STEP,
+} from "@/lib/timer-utils";
 
 const WORK_DURATION_PRESETS = [15, 25, 30, 45] as const;
+
+function openTimerSettings() {
+  window.dispatchEvent(new CustomEvent("foci-open-settings", { detail: { tab: "timer" } }));
+}
+
+function WorkDurationControl({
+  totalSeconds,
+  displayTime,
+  disabled,
+  onNudge,
+  onSetSeconds,
+  timeClassName,
+}: {
+  totalSeconds: number;
+  displayTime: string;
+  disabled: boolean;
+  onNudge: (delta: number) => void;
+  onSetSeconds: (seconds: number) => void;
+  timeClassName: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(displayTime);
+  const secondSteps = totalSeconds <= 60;
+  const stepLabel = secondSteps
+    ? `${WORK_SECOND_STEP} seconds`
+    : `${WORK_MINUTE_STEP} minutes`;
+
+  useEffect(() => {
+    if (!editing) setDraft(displayTime);
+  }, [displayTime, editing]);
+
+  const commit = () => {
+    const next = parseDurationInput(draft);
+    if (next == null) {
+      setDraft(displayTime);
+      setEditing(false);
+      return;
+    }
+    onSetSeconds(next);
+    setDraft(formatTimerDisplay(next * 1000));
+    setEditing(false);
+  };
+
+  return (
+    <span className="flex items-center gap-0.5 shrink-0">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onNudge(-WORK_MINUTE_STEP);
+        }}
+        disabled={disabled || totalSeconds <= MIN_WORK_SECONDS}
+        className={miniDockGhostButtonClass(false)}
+        aria-label={`Decrease duration by ${stepLabel}`}
+        title={`−${secondSteps ? `${WORK_SECOND_STEP}s` : `${WORK_MINUTE_STEP} min`}`}
+      >
+        <span className="text-base leading-none font-semibold" aria-hidden>
+          −
+        </span>
+      </button>
+      {editing ? (
+        <input
+          type="text"
+          inputMode="decimal"
+          value={draft}
+          autoFocus
+          aria-label="Work duration. Type minutes, or 0:30 for 30 seconds"
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              commit();
+            } else if (e.key === "Escape") {
+              setDraft(displayTime);
+              setEditing(false);
+            }
+          }}
+          onClick={(e) => e.stopPropagation()}
+          className="w-16 h-7 rounded-md border border-blue-300 dark:border-blue-600 bg-white dark:bg-[#0f172a] text-sm font-semibold tabular-nums text-center text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-blue-400"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditing(true);
+          }}
+          disabled={disabled}
+          className={`${timeClassName} rounded-md px-0.5 hover:bg-slate-100/80 dark:hover:bg-white/5`}
+          aria-label={`Work duration ${formatWorkDurationAria(totalSeconds)}. Click to type a new length.`}
+          title="Click to type minutes, or 0:30 for seconds"
+        >
+          {displayTime}
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onNudge(WORK_MINUTE_STEP);
+        }}
+        disabled={disabled || totalSeconds >= MAX_WORK_SECONDS}
+        className={miniDockGhostButtonClass(false)}
+        aria-label={`Increase duration by ${stepLabel}`}
+        title={`+${secondSteps ? `${WORK_SECOND_STEP}s` : `${WORK_MINUTE_STEP} min`}`}
+      >
+        <span className="text-base leading-none font-semibold" aria-hidden>
+          +
+        </span>
+      </button>
+    </span>
+  );
+}
+
+function DurationAndAlarmBlock({
+  workDurationMs,
+  timerStatus,
+  onSelectWorkPreset,
+  onSetWorkSeconds,
+  afterFinish,
+}: {
+  workDurationMs: number;
+  timerStatus: string;
+  onSelectWorkPreset: (minutes: number) => void;
+  onSetWorkSeconds: (seconds: number) => void;
+  afterFinish: boolean;
+}) {
+  const durationLocked = timerStatus === "running" || timerStatus === "break";
+  const [draft, setDraft] = useState(formatTimerDisplay(workDurationMs));
+  const inputId = React.useId();
+
+  useEffect(() => {
+    setDraft(formatTimerDisplay(workDurationMs));
+  }, [workDurationMs]);
+
+  const commitDraft = () => {
+    const next = parseDurationInput(draft);
+    if (next == null) {
+      setDraft(formatTimerDisplay(workDurationMs));
+      return;
+    }
+    onSetWorkSeconds(next);
+    setDraft(formatTimerDisplay(next * 1000));
+  };
+
+  return (
+    <div className="space-y-2.5">
+      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
+        {WORK_DURATION_PRESETS.map((minutes) => {
+          const active = workDurationMs === minutes * 60 * 1000;
+          return (
+            <button
+              key={minutes}
+              type="button"
+              onClick={() => onSelectWorkPreset(minutes)}
+              disabled={durationLocked}
+              className={`flex-1 px-2 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
+                active
+                  ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              } disabled:opacity-40 disabled:cursor-not-allowed`}
+            >
+              {minutes}m
+            </button>
+          );
+        })}
+        <label className="sr-only" htmlFor={inputId}>
+          Custom duration (minutes or 0:30 for seconds)
+        </label>
+        <input
+          id={inputId}
+          type="text"
+          inputMode="decimal"
+          value={draft}
+          disabled={durationLocked}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commitDraft}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              commitDraft();
+            }
+          }}
+          aria-label="Custom work duration. Type minutes, or 0:30 for 30 seconds"
+          title="Minutes, or 0:30 / 30s for seconds"
+          className="w-16 shrink-0 px-1 py-1 rounded-md text-xs sm:text-sm font-semibold tabular-nums text-center bg-white dark:bg-[#1a2d4a] border border-transparent text-slate-700 dark:text-slate-200 disabled:opacity-40"
+        />
+      </div>
+      <TimerAlarmPicker compact afterFinish={afterFinish} />
+    </div>
+  );
+}
 
 export interface FocusDockProps {
   expanded: boolean;
@@ -31,6 +234,8 @@ export interface FocusDockProps {
   timerStatus: string;
   workDurationMs: number;
   onSelectWorkPreset: (minutes: number) => void;
+  onSetWorkSeconds: (seconds: number) => void;
+  onNudgeWorkMinutes: (deltaMinutes: number) => void;
   lastQuote?: string | null;
   emphasizeStart: boolean;
   /** Compact inline expand inside the focus strip column (no full card chrome). */
@@ -53,6 +258,10 @@ export function FocusDockToolbar({
   remainingTime,
   workDurationMs,
   showReset = true,
+  timerStatus,
+  onSelectWorkPreset,
+  onSetWorkSeconds,
+  onNudgeWorkMinutes,
 }: Pick<
   FocusDockProps,
   | "expanded"
@@ -64,6 +273,10 @@ export function FocusDockToolbar({
   | "onStartPause"
   | "onReset"
   | "emphasizeStart"
+  | "timerStatus"
+  | "onSelectWorkPreset"
+  | "onSetWorkSeconds"
+  | "onNudgeWorkMinutes"
 > & {
   embedded?: boolean;
   sessions?: { count: number; goal: number; streak: number };
@@ -177,23 +390,21 @@ export function FocusDockToolbar({
     </Link>
   ) : null;
 
-  const timerLabelButton = (
-    <button
-      type="button"
-      onClick={onToggleExpanded}
-      className={`flex items-center gap-1.5 shrink-0 text-left rounded-md px-0.5 transition-colors hover:bg-slate-100/80 dark:hover:bg-white/5 ${embedded ? "" : "flex-1 sm:flex-initial min-w-0"}`}
-      aria-expanded={expanded}
-      aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
-      title={
-        expanded
-          ? "Collapse timer"
-          : showShortcutHint
-            ? "Expand timer — press ? for shortcuts"
-            : "Expand timer"
-      }
-    >
+  const workSeconds = Math.max(0, Math.round((workDurationMs ?? 0) / 1000));
+  const canAdjustDuration =
+    timerStatus === "idle" && !isBreak && !!onNudgeWorkMinutes && !!onSetWorkSeconds && workSeconds >= MIN_WORK_SECONDS;
+
+  const timeClassName = `${embedded ? "text-sm" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
+    isBreak
+      ? "text-green-700 dark:text-green-300"
+      : isRunning
+        ? "text-blue-600 dark:text-blue-400"
+        : "text-slate-800 dark:text-slate-100"
+  }`;
+
+  const timerLabelCluster = (
+    <div className={`flex items-center gap-1.5 shrink-0 min-w-0 ${embedded ? "" : "flex-1 sm:flex-initial"}`}>
       {embedded && workDurationMs ? (
-        /* Mini progress arc replaces "Timer/Break" label when in strip */
         <span className="relative shrink-0 w-4 h-4" aria-hidden>
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 20 20" style={{ transform: "rotate(-90deg)" }}>
             <circle cx="10" cy="10" r={arcR} fill="none" strokeWidth="2.5" className="stroke-slate-200 dark:stroke-slate-600" />
@@ -208,28 +419,28 @@ export function FocusDockToolbar({
             />
           </svg>
         </span>
-      ) : (
-        <span
-          className={`app-section-label shrink-0 ${
-            isBreak
-              ? "text-green-600 dark:text-green-400"
-              : "text-slate-500 dark:text-slate-400"
-          }`}
-        >
-          {isBreak ? "Break" : "Timer"}
-        </span>
-      )}
+      ) : null}
       <span
-        className={`${embedded ? "text-sm" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
+        className={`app-section-label shrink-0 ${
           isBreak
-            ? "text-green-700 dark:text-green-300"
-            : isRunning
-              ? "text-blue-600 dark:text-blue-400"
-              : "text-slate-800 dark:text-slate-100"
+            ? "text-green-600 dark:text-green-400"
+            : "text-slate-500 dark:text-slate-400"
         }`}
       >
-        {displayTime}
+        {isBreak ? "Break" : "Timer"}
       </span>
+      {canAdjustDuration ? (
+        <WorkDurationControl
+          totalSeconds={workSeconds}
+          displayTime={displayTime}
+          disabled={false}
+          onNudge={onNudgeWorkMinutes}
+          onSetSeconds={onSetWorkSeconds}
+          timeClassName={timeClassName}
+        />
+      ) : (
+        <span className={timeClassName}>{displayTime}</span>
+      )}
       {activeTaskTitle ? (
         <span className="min-w-0 hidden lg:inline-flex items-center gap-1 text-xs font-medium text-blue-700 dark:text-blue-300 truncate max-w-[7rem] xl:max-w-[12rem]">
           <span className="shrink-0 text-blue-500 dark:text-blue-400" aria-hidden>
@@ -242,7 +453,7 @@ export function FocusDockToolbar({
           Select a task ↓
         </span>
       ) : null}
-    </button>
+    </div>
   );
 
   const timerControls = (
@@ -255,6 +466,18 @@ export function FocusDockToolbar({
       emphasizeStart={emphasizeStart}
       showReset={showReset}
     />
+  );
+
+  const settingsButton = (
+    <button
+      type="button"
+      onClick={openTimerSettings}
+      className={embedded ? miniDockGhostButtonClass(false) : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"}
+      aria-label="Timer settings"
+      title="Timer settings"
+    >
+      <MiniSettingsIcon size={embedded ? "sm" : "md"} />
+    </button>
   );
 
   const shortcutsButton =
@@ -282,12 +505,18 @@ export function FocusDockToolbar({
       onClick={onToggleExpanded}
       className={`flex-shrink-0 ${
         embedded
-          ? `${miniDockGhostButtonClass(false)} hidden sm:flex`
+          ? miniDockGhostButtonClass(false)
           : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
       }`}
       aria-expanded={expanded}
       aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
-      title={expanded ? "Collapse timer" : "Expand timer"}
+      title={
+        expanded
+          ? "Collapse timer"
+          : showShortcutHint
+            ? "Expand timer — press ? for shortcuts"
+            : "Expand timer"
+      }
     >
       <svg
         className={`${embedded ? "w-4 h-4" : "w-3.5 h-3.5"} transition-transform ${expanded ? "rotate-180" : ""}`}
@@ -306,10 +535,11 @@ export function FocusDockToolbar({
       <div
         className={`group flex items-center gap-1 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
       >
-        {timerLabelButton}
+        {timerLabelCluster}
         <div className="flex items-center gap-0 shrink-0">
           {timerControls}
-          <span className="hidden sm:contents">{expandChevron}</span>
+          {settingsButton}
+          {expandChevron}
         </div>
       </div>
     );
@@ -331,8 +561,9 @@ export function FocusDockToolbar({
           ·
         </span>
       )}
-      <div className="flex-1 sm:flex-initial min-w-0">{timerLabelButton}</div>
+      <div className="flex-1 sm:flex-initial min-w-0">{timerLabelCluster}</div>
       {timerControls}
+      {settingsButton}
       {expandChevron}
     </div>
   );
@@ -360,6 +591,7 @@ export default function FocusDockPanel({
   timerStatus,
   workDurationMs,
   onSelectWorkPreset,
+  onSetWorkSeconds,
   lastQuote,
   emphasizeStart,
   compactStrip = false,
@@ -406,27 +638,22 @@ export default function FocusDockPanel({
             showReset={timerStatus !== "idle"}
           />
         </div>
-        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
-          {WORK_DURATION_PRESETS.map((minutes) => {
-            const active = workDurationMs === minutes * 60 * 1000;
-            return (
-              <button
-                key={minutes}
-                type="button"
-                onClick={() => onSelectWorkPreset(minutes)}
-                disabled={timerStatus === "running" || timerStatus === "break"}
-                className={`flex-1 px-2 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
-                  active
-                    ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                } disabled:opacity-40 disabled:cursor-not-allowed`}
-              >
-                {minutes}m
-              </button>
-            );
-          })}
-        </div>
+        <DurationAndAlarmBlock
+          workDurationMs={workDurationMs}
+          timerStatus={timerStatus}
+          onSelectWorkPreset={onSelectWorkPreset}
+          onSetWorkSeconds={onSetWorkSeconds}
+          afterFinish={timerStatus === "break"}
+        />
         <div className="flex items-center justify-center gap-1 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 mt-2">
+          <button
+            type="button"
+            onClick={openTimerSettings}
+            className="btn-ghost px-2.5 py-1.5 text-xs"
+            title="Timer settings"
+          >
+            Settings
+          </button>
           <button
             type="button"
             onClick={onToggleFocusMode}
@@ -482,6 +709,15 @@ export default function FocusDockPanel({
             )}
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={openTimerSettings}
+              className="p-2 rounded-lg text-slate-500 dark:text-white/70 hover:bg-black/[0.04] dark:hover:bg-white/10"
+              aria-label="Timer settings"
+              title="Timer settings"
+            >
+              <MiniSettingsIcon size="md" />
+            </button>
             <button
               type="button"
               onClick={onToggleFocusMode}
@@ -544,28 +780,13 @@ export default function FocusDockPanel({
             />
           </div>
 
-          <div className="pb-2">
-            <div className="flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-[#131d30] rounded-lg p-1 border border-slate-200 dark:border-[#243350]">
-              {WORK_DURATION_PRESETS.map((minutes) => {
-                const active = workDurationMs === minutes * 60 * 1000;
-                return (
-                  <button
-                    key={minutes}
-                    type="button"
-                    onClick={() => onSelectWorkPreset(minutes)}
-                    disabled={timerStatus === "running" || timerStatus === "break"}
-                    className={`px-2.5 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
-                      active
-                        ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
-                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}
-                  >
-                    {minutes}m
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <DurationAndAlarmBlock
+            workDurationMs={workDurationMs}
+            timerStatus={timerStatus}
+            onSelectWorkPreset={onSelectWorkPreset}
+            onSetWorkSeconds={onSetWorkSeconds}
+            afterFinish={timerStatus === "break"}
+          />
 
           {readyToFocus && timerStatus === "idle" && !isBreak && (
             <p className="text-center text-xs text-blue-700/90 dark:text-blue-300/90 mb-2">

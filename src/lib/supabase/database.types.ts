@@ -195,6 +195,8 @@ export type Database = {
           daily_goal: number
           inactivity_threshold: number
           notifications_enabled: boolean
+          alarm_enabled: boolean
+          alarm_sound: string
           updated_at: string
           user_id: string
           work_duration: number
@@ -205,6 +207,8 @@ export type Database = {
           daily_goal?: number
           inactivity_threshold?: number
           notifications_enabled?: boolean
+          alarm_enabled?: boolean
+          alarm_sound?: string
           updated_at?: string
           user_id: string
           work_duration?: number
@@ -215,6 +219,8 @@ export type Database = {
           daily_goal?: number
           inactivity_threshold?: number
           notifications_enabled?: boolean
+          alarm_enabled?: boolean
+          alarm_sound?: string
           updated_at?: string
           user_id?: string
           work_duration?: number

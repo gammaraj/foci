@@ -61,6 +61,8 @@ export default function AppFocusBar() {
     handleStartPause,
     handleReset,
     handleSelectWorkPreset,
+    handleSetWorkSeconds,
+    handleNudgeWorkMinutes,
     setFocusMode,
     setShowShortcuts,
     timer,
@@ -93,6 +95,10 @@ export default function AppFocusBar() {
           emphasizeStart={readyToFocus}
           remainingTime={timer.remainingTime}
           workDurationMs={timer.settings.workDuration}
+          timerStatus={timer.status}
+          onSelectWorkPreset={handleSelectWorkPreset}
+          onSetWorkSeconds={handleSetWorkSeconds}
+          onNudgeWorkMinutes={handleNudgeWorkMinutes}
           showReset={timer.status !== "idle"}
           sessions={{
             count: timer.dailyGoalData.sessionCount,
@@ -128,6 +134,8 @@ export default function AppFocusBar() {
           timerStatus={timer.status}
           workDurationMs={timer.settings.workDuration}
           onSelectWorkPreset={handleSelectWorkPreset}
+          onSetWorkSeconds={handleSetWorkSeconds}
+          onNudgeWorkMinutes={handleNudgeWorkMinutes}
           lastQuote={timer.lastQuote}
           emphasizeStart={readyToFocus}
         />
@@ -150,7 +158,7 @@ export default function AppFocusBar() {
         </div>
 
         {/* Narrow phones only — focus strip under title */}
-        <div className="no-print min-[480px]:hidden mt-0.5 pt-0.5 border-t border-[color:var(--surface-border)] dark:border-[#243350]/70">
+        <div className="no-print min-[480px]:hidden mt-0.5 pt-0.5 border-t border-[color:var(--surface-border)] dark:border-[#243350]/70 overflow-x-auto">
           {focusStrip}
         </div>
       </div>
