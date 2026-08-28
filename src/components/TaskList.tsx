@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, subscribeSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted, trackSharedProjectOpened } from "@/lib/analytics";
@@ -1092,13 +1092,16 @@ export default function TaskList({
     }
   }, []);
 
-  // Poll shared project tasks while viewing one (v1 — no Realtime yet)
+  // Live shared project tasks via Realtime; poll only if Realtime fails to subscribe
   useEffect(() => {
     if (!selectedSharedProject || !selectedProjectId.startsWith("shared:")) return;
 
+    const shared = selectedSharedProject;
+    const key = `${shared._ownerId}:${shared.id}`;
+    let pollId: ReturnType<typeof setInterval> | null = null;
+    let usingRealtime = false;
+
     const refresh = () => {
-      const shared = selectedSharedProject;
-      const key = `${shared._ownerId}:${shared.id}`;
       loadSharedProjectTasks(shared.id, shared._ownerId)
         .then((loaded) => {
           setSharedTasks((prev) => ({ ...prev, [key]: loaded }));
@@ -1106,14 +1109,44 @@ export default function TaskList({
         .catch((err) => console.error("[Foci] Shared project refresh failed:", err));
     };
 
-    const interval = setInterval(refresh, 30_000);
+    const startPolling = () => {
+      if (pollId != null || usingRealtime) return;
+      pollId = setInterval(refresh, 30_000);
+    };
+
+    const unsub = subscribeSharedProjectTasks(
+      shared.id,
+      shared._ownerId,
+      refresh,
+      (status) => {
+        if (status === "subscribed") {
+          usingRealtime = true;
+          if (pollId != null) {
+            clearInterval(pollId);
+            pollId = null;
+          }
+        } else {
+          usingRealtime = false;
+          startPolling();
+        }
+      },
+    );
+
+    // If Realtime never confirms, fall back to polling after a short grace period
+    const fallbackTimer = setTimeout(() => {
+      if (!usingRealtime) startPolling();
+    }, 4_000);
+
     const onVisible = () => {
       if (document.visibilityState === "visible") refresh();
     };
     document.addEventListener("visibilitychange", onVisible);
+
     return () => {
-      clearInterval(interval);
+      clearTimeout(fallbackTimer);
+      if (pollId != null) clearInterval(pollId);
       document.removeEventListener("visibilitychange", onVisible);
+      unsub();
     };
   }, [selectedProjectId, selectedSharedProject]);
 

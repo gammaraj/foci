@@ -15,7 +15,9 @@ import { SupabaseStorageAdapter } from "./supabase";
 import { CachedSupabaseAdapter, clearOfflineCache, hasOfflineCache } from "./cached-supabase";
 import type { StorageAdapter } from "./types";
 import { createClient } from "../supabase/client";
-import { DEFAULT_SETTINGS } from "../types";
+import { DEFAULT_SETTINGS, type DailyGoalData, type Project, type Settings, type StreakHistory, type Task } from "../types";
+import type { TaskViewPreferences } from "../task-view-preference";
+import type { OneThingPreference } from "../one-thing";
 import {
   clearSessionAlarm,
   getTimerAlarmEnabled,
@@ -93,51 +95,75 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
   if (localTasks) {
     const existingTasks = await adapter.loadTasks();
     if (existingTasks.length === 0) {
-      const tasks = JSON.parse(localTasks);
-      if (Array.isArray(tasks) && tasks.length > 0) {
-        await adapter.saveTasks(tasks);
-      }
-      if (localProjects) {
-        const projects = JSON.parse(localProjects);
-        if (Array.isArray(projects) && projects.length > 0) {
-          await adapter.saveProjects(projects);
+      const tasks = JSON.parse(localTasks) as Task[];
+      if (!Array.isArray(tasks) || tasks.length === 0) {
+        // Nothing useful to migrate — fall through to clear guest keys
+      } else {
+        let projects: Project[] = [];
+        if (localProjects) {
+          const parsed = JSON.parse(localProjects);
+          if (Array.isArray(parsed)) projects = parsed;
         }
-      }
-      if (localSettings) {
-        const parsed = JSON.parse(localSettings);
-        await adapter.saveSettings({
-          ...DEFAULT_SETTINGS,
-          ...parsed,
-          alarmEnabled: hasSessionAlarmOverride() ? getTimerAlarmEnabled() : parsed.alarmEnabled ?? DEFAULT_SETTINGS.alarmEnabled,
-          alarmSound: hasSessionAlarmOverride() ? getTimerAlarmSound() : parsed.alarmSound ?? DEFAULT_SETTINGS.alarmSound,
-        });
-      }
-      if (localStreak) {
-        await adapter.saveStreakHistory(JSON.parse(localStreak));
-      }
-      if (localGoal) {
-        await adapter.saveDailyGoalData(JSON.parse(localGoal));
-      }
 
-      const legacyDefaultView = localStorage.getItem("foci_default_task_view");
-      const legacyLastView = localStorage.getItem("foci_task_view_mode");
-      const legacyExplicit = localStorage.getItem("foci_task_view_explicit") === "1";
-      if (legacyDefaultView || legacyLastView || legacyExplicit) {
-        const { isDefaultTaskView } = await import("../task-view-preference");
-        await adapter.saveTaskViewPreferences({
-          ...(isDefaultTaskView(legacyDefaultView) ? { defaultTaskView: legacyDefaultView } : {}),
-          ...(isDefaultTaskView(legacyLastView) ? { lastTaskView: legacyLastView } : {}),
-          ...(legacyExplicit ? { taskViewExplicit: true } : {}),
-        });
-      }
+        let settings: Settings | null = null;
+        if (localSettings) {
+          const parsed = JSON.parse(localSettings);
+          settings = {
+            ...DEFAULT_SETTINGS,
+            ...parsed,
+            alarmEnabled: hasSessionAlarmOverride()
+              ? getTimerAlarmEnabled()
+              : parsed.alarmEnabled ?? DEFAULT_SETTINGS.alarmEnabled,
+            alarmSound: hasSessionAlarmOverride()
+              ? getTimerAlarmSound()
+              : parsed.alarmSound ?? DEFAULT_SETTINGS.alarmSound,
+          };
+        }
 
-      const localOneThing = localStorage.getItem("foci_one_thing");
-      if (localOneThing) {
-        try {
-          const { parseOneThingPreference } = await import("../one-thing");
-          const pref = parseOneThingPreference(JSON.parse(localOneThing));
-          if (pref) await adapter.saveOneThing(pref);
-        } catch { /* ignore bad local one-thing */ }
+        let streakHistory: StreakHistory | null = null;
+        if (localStreak) {
+          streakHistory = JSON.parse(localStreak);
+        }
+
+        let dailyGoal: DailyGoalData | null = null;
+        if (localGoal) {
+          dailyGoal = JSON.parse(localGoal);
+        }
+
+        let taskViewPrefs: Partial<TaskViewPreferences> | null = null;
+        const legacyDefaultView = localStorage.getItem("foci_default_task_view");
+        const legacyLastView = localStorage.getItem("foci_task_view_mode");
+        const legacyExplicit = localStorage.getItem("foci_task_view_explicit") === "1";
+        if (legacyDefaultView || legacyLastView || legacyExplicit) {
+          const { isDefaultTaskView } = await import("../task-view-preference");
+          taskViewPrefs = {
+            ...(isDefaultTaskView(legacyDefaultView) ? { defaultTaskView: legacyDefaultView } : {}),
+            ...(isDefaultTaskView(legacyLastView) ? { lastTaskView: legacyLastView } : {}),
+            ...(legacyExplicit ? { taskViewExplicit: true } : {}),
+          };
+        }
+
+        let oneThing: OneThingPreference | null = null;
+        const localOneThing = localStorage.getItem("foci_one_thing");
+        if (localOneThing) {
+          try {
+            const { parseOneThingPreference } = await import("../one-thing");
+            oneThing = parseOneThingPreference(JSON.parse(localOneThing));
+          } catch {
+            /* ignore bad local one-thing */
+          }
+        }
+
+        // Atomic RPC (or sequential fallback). Throws on failure so guest keys are kept.
+        await adapter.migrateGuestWorkspace({
+          tasks,
+          projects,
+          settings,
+          streakHistory,
+          dailyGoal,
+          taskViewPrefs,
+          oneThing,
+        });
       }
     }
   }
@@ -266,6 +292,9 @@ export const declineInvite = (...args: Parameters<StorageAdapter["declineInvite"
 export const getSharedProjects = () => currentAdapter.getSharedProjects();
 export const loadSharedProjectTasks = (...args: Parameters<StorageAdapter["loadSharedProjectTasks"]>) =>
   currentAdapter.loadSharedProjectTasks(...args);
+export const subscribeSharedProjectTasks = (
+  ...args: Parameters<StorageAdapter["subscribeSharedProjectTasks"]>
+) => currentAdapter.subscribeSharedProjectTasks(...args);
 export const updateSharedTask = (...args: Parameters<StorageAdapter["updateSharedTask"]>) =>
   currentAdapter.updateSharedTask(...args);
 export const leaveProject = (...args: Parameters<StorageAdapter["leaveProject"]>) =>

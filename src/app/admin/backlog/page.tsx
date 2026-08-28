@@ -9,6 +9,7 @@ import {
   activeBacklogItems,
   backlogCounts,
   backlogItemsByArea,
+  doneBacklogItems,
   goalCounts,
   laterBacklogItems,
   wontBacklogItems,
@@ -34,6 +35,7 @@ const STATUS_TONE: Record<BacklogStatus, string> = {
   todo: "bg-blue-50 text-blue-800 dark:bg-blue-500/15 dark:text-blue-200",
   blocked: "bg-amber-50 text-amber-900 dark:bg-amber-500/15 dark:text-amber-200",
   later: "bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300",
+  done: "bg-emerald-50 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-200",
   wont: "bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-slate-400",
 };
 
@@ -41,6 +43,7 @@ const STATUS_LABEL: Record<BacklogStatus, string> = {
   todo: "To do",
   blocked: "Blocked",
   later: "Later",
+  done: "Done",
   wont: "Won't",
 };
 
@@ -120,6 +123,7 @@ export default function AdminBacklogPage() {
   const counts = backlogCounts();
   const active = activeBacklogItems();
   const later = laterBacklogItems();
+  const done = doneBacklogItems();
   const wont = wontBacklogItems();
 
   return (
@@ -192,6 +196,12 @@ export default function AdminBacklogPage() {
         heading="Later"
         description="Optional Pro and ops hygiene. Do not start Stripe until share/stats signals justify checkout."
         items={later}
+      />
+
+      <ItemSection
+        heading="Done"
+        description="Shipped items kept for history."
+        items={done}
       />
 
       <ItemSection

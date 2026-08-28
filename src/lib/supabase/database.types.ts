@@ -484,6 +484,10 @@ export type Database = {
           streak: number
         }[]
       }
+      migrate_guest_workspace: {
+        Args: { payload: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -397,6 +397,15 @@ export class LocalStorageAdapter implements StorageAdapter {
     return [];
   }
 
+  subscribeSharedProjectTasks(
+    _projectId: string,
+    _ownerId: string,
+    _onChange: () => void,
+    _onStatus?: (status: "subscribed" | "fallback") => void,
+  ): () => void {
+    return () => {};
+  }
+
   async updateSharedTask(_task: Task, _ownerId: string): Promise<void> {
     throw new Error("Sign in to update shared tasks");
   }

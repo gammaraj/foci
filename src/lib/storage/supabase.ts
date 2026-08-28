@@ -13,7 +13,7 @@ import {
   ALL_PROJECTS_ID,
   TODAY_FILTER_ID,
 } from "../types";
-import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite } from "./types";
+import type { StorageAdapter, CollaboratorInfo, CollaborationInvite, SharedProject, CollaboratorRole, AccountCollaboratorInfo, AccountInvite, GuestMigrationPayload } from "./types";
 import {
   DEFAULT_TASK_VIEW_PREFERENCES,
   isDefaultTaskView,
@@ -21,6 +21,8 @@ import {
 } from "../task-view-preference";
 import type { OneThingPreference } from "../one-thing";
 import { getToday, getYesterday, formatDateLocal, migrateDate } from "../dates";
+import { chunkArray } from "./chunk";
+import { appendAccountSharedProjects } from "./shared-projects";
 
 type TaskRow = {
   id: string;
@@ -387,10 +389,12 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     await withRetries(async () => {
       const userId = await this.getUserId();
       const rows = tasks.map((t) => taskToRow(t, userId));
-      const result = await this.supabase.from("tasks").upsert(rows, { onConflict: "user_id,id" }).select("id");
-      if (result.error) {
-        console.error("[Foci] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
-        throw new Error(result.error.message);
+      for (const chunk of chunkArray(rows)) {
+        const result = await this.supabase.from("tasks").upsert(chunk, { onConflict: "user_id,id" }).select("id");
+        if (result.error) {
+          console.error("[Foci] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
+          throw new Error(result.error.message);
+        }
       }
     }, { label: "saveTasks" });
   }
@@ -480,10 +484,12 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       created_at: p.createdAt,
     }));
 
-    const result = await this.supabase.from("projects").upsert(rows, { onConflict: "user_id,id" }).select("id");
-    if (result.error) {
-      console.error("[Foci] Supabase saveProjects error:", result.error.message, result.error.details, result.error.hint);
-      throw new Error(result.error.message);
+    for (const chunk of chunkArray(rows)) {
+      const result = await this.supabase.from("projects").upsert(chunk, { onConflict: "user_id,id" }).select("id");
+      if (result.error) {
+        console.error("[Foci] Supabase saveProjects error:", result.error.message, result.error.details, result.error.hint);
+        throw new Error(result.error.message);
+      }
     }
   }
 
@@ -1042,51 +1048,225 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       }
     }
     
-    // Process account-level shared projects
-    if (accountData) {
-      for (const accountRow of accountData) {
-        const profile = Array.isArray(accountRow.user_profiles) ? accountRow.user_profiles[0] : accountRow.user_profiles;
-        
-        // Fetch all projects for this owner
-        const { data: ownerProjects, error: ownerError } = await this.supabase
-          .from("projects")
-          .select("*")
-          .eq("user_id", accountRow.owner_id);
-          
-        if (ownerError) {
-          console.error("[Foci] getSharedProjects (fetch owner projects) error:", ownerError);
-          continue;
-        }
-        
-        if (ownerProjects) {
-          for (const project of ownerProjects) {
-            // Skip if already added via project-level sharing
-            if (result.some((p) => p.id === project.id && p._ownerId === project.user_id)) {
-              continue;
-            }
-            
-            result.push({
-              id: project.id,
-              name: project.name,
-              description: project.description ?? undefined,
-              color: project.color ?? undefined,
-              dueDate: project.due_date ?? undefined,
-              archived: project.archived ?? undefined,
-              order: project.sort_order ?? undefined,
-              createdAt: project.created_at,
-              _isShared: true as const,
-              _ownerId: project.user_id,
-              _ownerEmail: profile?.email ?? "",
-              _ownerName: profile?.display_name ?? undefined,
-              _myRole: accountRow.role as CollaboratorRole,
-              _shareSource: "account",
-            });
-          }
-        }
+    // Process account-level shared projects (single batched query — no N+1)
+    if (accountData && accountData.length > 0) {
+      const accountShares = accountData.map((accountRow) => {
+        const profile = Array.isArray(accountRow.user_profiles)
+          ? accountRow.user_profiles[0]
+          : accountRow.user_profiles;
+        return {
+          owner_id: accountRow.owner_id,
+          role: accountRow.role as CollaboratorRole,
+          ownerEmail: profile?.email ?? "",
+          ownerName: profile?.display_name ?? undefined,
+        };
+      });
+
+      const ownerIds = [...new Set(accountShares.map((s) => s.owner_id))];
+      const { data: ownerProjects, error: ownerError } = await this.supabase
+        .from("projects")
+        .select("*")
+        .in("user_id", ownerIds);
+
+      if (ownerError) {
+        console.error("[Foci] getSharedProjects (fetch owner projects) error:", ownerError);
+        throw new Error(ownerError.message);
       }
+
+      appendAccountSharedProjects(result, accountShares, ownerProjects ?? []);
     }
     
     return result;
+  }
+
+  /**
+   * Live updates for a shared project. Falls back to a no-op unsub if Realtime is unavailable.
+   * Caller should still refresh on visibility; optional polling is only needed if subscribe fails.
+   */
+  subscribeSharedProjectTasks(
+    projectId: string,
+    ownerId: string,
+    onChange: () => void,
+    onStatus?: (status: "subscribed" | "fallback") => void,
+  ): () => void {
+    const channelName = `shared-tasks:${ownerId}:${projectId}`;
+    const channel = this.supabase
+      .channel(channelName)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tasks",
+          filter: `user_id=eq.${ownerId}`,
+        },
+        (payload) => {
+          const row = (payload.new && Object.keys(payload.new).length > 0
+            ? payload.new
+            : payload.old) as { project_id?: string } | null;
+          if (row?.project_id && row.project_id !== projectId) return;
+          onChange();
+        },
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          onStatus?.("subscribed");
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          onStatus?.("fallback");
+        }
+      });
+
+    return () => {
+      void this.supabase.removeChannel(channel);
+    };
+  }
+
+  /** Atomic guest→cloud migration via RPC; sequential fallback if RPC is not deployed yet. */
+  async migrateGuestWorkspace(payload: GuestMigrationPayload): Promise<void> {
+    const userId = await this.getUserId();
+    const rpcPayload = this.buildGuestMigrationRpcPayload(payload, userId);
+    const { error } = await this.supabase.rpc("migrate_guest_workspace", {
+      payload: rpcPayload,
+    });
+
+    if (!error) return;
+
+    const message = error.message ?? "";
+    const missingRpc =
+      error.code === "PGRST202" ||
+      /migrate_guest_workspace/i.test(message) ||
+      /could not find.*function/i.test(message);
+
+    if (!missingRpc) {
+      throw new Error(message);
+    }
+
+    console.warn("[Foci] migrate_guest_workspace RPC unavailable; using sequential fallback");
+    await this.migrateGuestWorkspaceSequential(payload);
+  }
+
+  private buildGuestMigrationRpcPayload(
+    payload: GuestMigrationPayload,
+    userId: string,
+  ): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+
+    if (payload.projects.length > 0) {
+      out.projects = payload.projects.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description ?? null,
+        color: p.color ?? null,
+        due_date: p.dueDate ?? null,
+        archived: p.archived ?? false,
+        sort_order: p.order ?? null,
+        is_favorite: p.favorite ?? false,
+        created_at: p.createdAt,
+      }));
+    }
+
+    if (payload.tasks.length > 0) {
+      out.tasks = payload.tasks.map((t) => {
+        const row = taskToRow(t, userId);
+        return {
+          id: row.id,
+          title: row.title,
+          completed: row.completed,
+          sessions: row.sessions,
+          time_spent: row.time_spent,
+          created_at: row.created_at,
+          completed_at: row.completed_at,
+          project_id: row.project_id,
+          subtasks: row.subtasks,
+          description: row.description,
+          due_date: row.due_date,
+          order: row.order,
+          archived_at: row.archived_at,
+          recurrence: row.recurrence,
+          priority: row.priority,
+          blocked: row.blocked,
+          someday: row.someday,
+          kind: row.kind,
+        };
+      });
+    }
+
+    if (payload.settings) {
+      out.settings = {
+        work_duration: payload.settings.workDuration,
+        break_duration: payload.settings.breakDuration,
+        inactivity_threshold: payload.settings.inactivityThreshold,
+        daily_goal: payload.settings.dailyGoal,
+        auto_start_enabled: payload.settings.autoStartEnabled,
+        notifications_enabled: payload.settings.notificationsEnabled,
+        alarm_enabled: payload.settings.alarmEnabled,
+        alarm_sound: payload.settings.alarmSound,
+      };
+    }
+
+    if (payload.dailyGoal) {
+      out.daily_goal = {
+        date: payload.dailyGoal.date,
+        session_count: payload.dailyGoal.sessionCount,
+        streak: payload.dailyGoal.streak,
+        last_streak_update: payload.dailyGoal.lastStreakUpdate,
+      };
+    }
+
+    if (payload.streakHistory && Object.keys(payload.streakHistory.days).length > 0) {
+      out.streak_history = Object.entries(payload.streakHistory.days).map(([dateKey, day]) => ({
+        date_key: dateKey,
+        session_count: day.sessionCount,
+        goal_met: day.goalMet,
+        recorded_at: day.timestamp,
+      }));
+    }
+
+    const preferences: Record<string, unknown> = {};
+    if (payload.taskViewPrefs) {
+      if (payload.taskViewPrefs.defaultTaskView) {
+        preferences.default_task_view = payload.taskViewPrefs.defaultTaskView;
+      }
+      if (payload.taskViewPrefs.lastTaskView) {
+        preferences.last_task_view = payload.taskViewPrefs.lastTaskView;
+      }
+      if (payload.taskViewPrefs.taskViewExplicit != null) {
+        preferences.task_view_explicit = payload.taskViewPrefs.taskViewExplicit;
+      }
+    }
+    if (payload.oneThing) {
+      preferences.one_thing_task_id = payload.oneThing.taskId;
+      preferences.one_thing_date = payload.oneThing.date;
+    }
+    if (Object.keys(preferences).length > 0) {
+      out.preferences = preferences;
+    }
+
+    return out;
+  }
+
+  private async migrateGuestWorkspaceSequential(payload: GuestMigrationPayload): Promise<void> {
+    if (payload.tasks.length > 0) {
+      await this.saveTasks(payload.tasks);
+    }
+    if (payload.projects.length > 0) {
+      await this.saveProjects(payload.projects);
+    }
+    if (payload.settings) {
+      await this.saveSettings(payload.settings);
+    }
+    if (payload.streakHistory) {
+      await this.saveStreakHistory(payload.streakHistory);
+    }
+    if (payload.dailyGoal) {
+      await this.saveDailyGoalData(payload.dailyGoal);
+    }
+    if (payload.taskViewPrefs && Object.keys(payload.taskViewPrefs).length > 0) {
+      await this.saveTaskViewPreferences(payload.taskViewPrefs);
+    }
+    if (payload.oneThing) {
+      await this.saveOneThing(payload.oneThing);
+    }
   }
 
   async loadSharedProjectTasks(projectId: string, ownerId: string): Promise<Task[]> {

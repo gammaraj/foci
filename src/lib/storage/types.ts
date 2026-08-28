@@ -152,6 +152,17 @@ export interface StorageAdapter {
   
   // Load tasks for a shared project
   loadSharedProjectTasks(projectId: string, ownerId: string): Promise<Task[]>;
+
+  /**
+   * Subscribe to live task changes for a shared project.
+   * Returns an unsubscribe function. Local/guest adapters are no-ops.
+   */
+  subscribeSharedProjectTasks(
+    projectId: string,
+    ownerId: string,
+    onChange: () => void,
+    onStatus?: (status: "subscribed" | "fallback") => void,
+  ): () => void;
   
   // Update a task in a shared project (editors only)
   updateSharedTask(task: Task, ownerId: string): Promise<void>;
@@ -193,3 +204,14 @@ export interface StorageAdapter {
   // Get accounts I have full access to (via account-level sharing)
   getSharedAccounts(): Promise<{ ownerId: string; ownerEmail: string; ownerName?: string; role: CollaboratorRole }[]>;
 }
+
+/** Payload for atomic guest → cloud workspace migration. */
+export type GuestMigrationPayload = {
+  tasks: Task[];
+  projects: Project[];
+  settings: Settings | null;
+  streakHistory: StreakHistory | null;
+  dailyGoal: DailyGoalData | null;
+  taskViewPrefs: Partial<TaskViewPreferences> | null;
+  oneThing: OneThingPreference | null;
+};

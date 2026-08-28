@@ -70,6 +70,7 @@ const REQUIRED_MARKERS = [
   "invitee_is_caller",
   "REVOKE EXECUTE ON FUNCTION public.resolve_invitee_id",
   "user_profiles_email_lower_key",
+  "migrate_guest_workspace",
   'WITH CHECK',
 ];
 

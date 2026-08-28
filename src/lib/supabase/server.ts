@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import type { Database } from "./database.types";
 
 const _supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -14,7 +15,11 @@ if (!_supabaseUrl || !_supabaseAnonKey) {
 const supabaseUrl: string = _supabaseUrl;
 const supabaseAnonKey: string = _supabaseAnonKey;
 
-export async function createClient() {
+/**
+ * Per-request memoized Supabase server client.
+ * Dedupes layout + page calls (e.g. requireAdmin + admin RPC) within one render.
+ */
+export const createClient = cache(async () => {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(
@@ -38,4 +43,4 @@ export async function createClient() {
       },
     },
   );
-}
+});

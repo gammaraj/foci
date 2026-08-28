@@ -90,7 +90,7 @@ export const PRODUCT_GOALS: ProductGoal[] = [
   },
 ];
 
-export type BacklogStatus = "todo" | "blocked" | "later" | "wont";
+export type BacklogStatus = "todo" | "blocked" | "later" | "done" | "wont";
 export type BacklogArea =
   | "collaboration"
   | "quality"
@@ -123,12 +123,12 @@ export const BACKLOG_ITEMS: BacklogItem[] = [
   {
     id: "realtime-shared",
     title: "Supabase Realtime for shared projects",
-    status: "todo",
+    status: "done",
     area: "collaboration",
     priority: "p2",
     why: "Collaborators can miss each other’s edits for up to 30 seconds while a shared project is open.",
     notes:
-      "v1 polls TaskList every 30s. v2: postgres_changes on tasks filtered by project_id. Explicit non-goal: Google Docs–style cursors.",
+      "Shipped: postgres_changes on tasks (filtered by owner user_id, client-filtered by project_id). Polling retained only as Realtime fallback. Non-goal: Google Docs–style cursors.",
   },
   {
     id: "collab-e2e",
@@ -262,7 +262,13 @@ export const BACKLOG_AREAS: { id: BacklogArea; label: string }[] = [
 ];
 
 const PRIORITY_RANK: Record<BacklogPriority, number> = { p0: 0, p1: 1, p2: 2, p3: 3 };
-const STATUS_RANK: Record<BacklogStatus, number> = { blocked: 0, todo: 1, later: 2, wont: 3 };
+const STATUS_RANK: Record<BacklogStatus, number> = {
+  blocked: 0,
+  todo: 1,
+  later: 2,
+  done: 3,
+  wont: 4,
+};
 
 export function isActiveBacklogStatus(status: BacklogStatus): boolean {
   return status === "todo" || status === "blocked";
@@ -280,6 +286,10 @@ export function activeBacklogItems(): BacklogItem[] {
 
 export function laterBacklogItems(): BacklogItem[] {
   return BACKLOG_ITEMS.filter((item) => item.status === "later").sort(compareBacklogItems);
+}
+
+export function doneBacklogItems(): BacklogItem[] {
+  return BACKLOG_ITEMS.filter((item) => item.status === "done").sort(compareBacklogItems);
 }
 
 export function wontBacklogItems(): BacklogItem[] {
@@ -305,12 +315,14 @@ export function backlogCounts(): {
   active: number;
   blocked: number;
   later: number;
+  done: number;
   wont: number;
 } {
   return {
     active: activeBacklogItems().length,
     blocked: BACKLOG_ITEMS.filter((i) => i.status === "blocked").length,
     later: laterBacklogItems().length,
+    done: doneBacklogItems().length,
     wont: wontBacklogItems().length,
   };
 }
