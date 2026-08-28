@@ -72,13 +72,13 @@ export default function CompareLandingView({ page }: { page: CompareLanding }) {
         <div className="mt-12 flex flex-col sm:flex-row gap-3">
           <Link
             href="/app"
-            className="btn-primary px-6 py-3 text-sm"
+            className="btn-primary w-full sm:w-auto px-6 py-3 text-sm text-center"
           >
             Try Foci — free
           </Link>
           <Link
             href={`/blog/${page.blogSlug}`}
-            className="btn-chip px-6 py-3 text-sm"
+            className="btn-chip w-full sm:w-auto px-6 py-3 text-sm text-center"
           >
             {page.blogLabel}
           </Link>

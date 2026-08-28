@@ -303,7 +303,7 @@ function DonutChart({
   });
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
       <div className="relative flex-shrink-0">
         <svg width="140" height="140" viewBox="0 0 140 140">
           {segments}
@@ -587,7 +587,7 @@ export default function StatsPage() {
 
       <main className="app-container py-4 sm:py-6">
         {/* Summary cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <StatCard
             label="Total sessions"
             value={String(totalSessions)}
@@ -637,7 +637,7 @@ export default function StatsPage() {
 
         {/* Task backlog health */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
-          <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="lg:col-span-2 grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <StatCard
               label="Overdue"
               value={String(overdueOpen.length)}
@@ -822,7 +822,7 @@ export default function StatsPage() {
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Overview
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-4">
               <div className="bg-slate-50 dark:bg-[#162a4a] rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{longestStreak}d</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Longest streak</p>

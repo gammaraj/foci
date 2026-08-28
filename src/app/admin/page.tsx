@@ -96,12 +96,12 @@ export default async function AdminPage() {
         </section>
       ) : null}
 
-      <div className="grid xl:grid-cols-5 gap-8">
-        <section aria-labelledby="ops-heading" className="space-y-3 xl:col-span-2">
+      <div className="grid lg:grid-cols-5 gap-8">
+        <section aria-labelledby="ops-heading" className="space-y-3 lg:col-span-2">
           <h2 id="ops-heading" className="text-lg font-semibold text-slate-900 dark:text-white">
             Ops checklist
           </h2>
-          <ul className="grid sm:grid-cols-2 xl:grid-cols-1 gap-2 text-sm">
+          <ul className="grid sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
             {[
               {
                 label: "AdSense",
@@ -131,7 +131,7 @@ export default async function AdminPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="plans-heading" className="space-y-4 xl:col-span-3">
+        <section aria-labelledby="plans-heading" className="space-y-4 lg:col-span-3">
           <div>
             <h2 id="plans-heading" className="text-lg font-semibold text-slate-900 dark:text-white">
               Free / Pro (draft)
@@ -187,7 +187,7 @@ export default async function AdminPage() {
         </section>
       </div>
 
-      <div className="grid xl:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-8">
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Realistic targets</h2>
           <ul className="grid sm:grid-cols-3 gap-2 text-sm">
@@ -205,7 +205,7 @@ export default async function AdminPage() {
           </ul>
         </section>
 
-        <section className="space-y-3 pb-8 xl:pb-0">
+        <section className="space-y-3 pb-8 lg:pb-0">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Quick links</h2>
           <ul className="flex flex-wrap gap-2 text-sm">
             {[

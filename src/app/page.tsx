@@ -518,25 +518,30 @@ export default function LandingPage() {
       <footer className="py-8 px-4 text-center border-t border-slate-200 dark:border-slate-800">
         <GuideLinkHub variant="footer" className="mb-4" />
         <SatTutoringPromo variant="footer" className="mb-3" />
-        <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-          Preparing for a certification?{" "}
-          <a
-            href="https://certstud.com/certifications?ref=foci-footer"
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline-offset-2 hover:underline"
-          >
-            Free practice questions on CertStud
-          </a>
-          {" "}· Running SEO for your business?{" "}
-          <a
-            href="https://boostlogik.com/dashboard?ref=foci-footer"
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 underline-offset-2 hover:underline"
-          >
-            SEO workspace on BoostLogik
-          </a>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mb-3 max-w-lg mx-auto leading-relaxed">
+          <span className="block sm:inline">
+            Preparing for a certification?{" "}
+            <a
+              href="https://certstud.com/certifications?ref=foci-footer"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline-offset-2 hover:underline"
+            >
+              Free practice questions on CertStud
+            </a>
+          </span>
+          <span className="hidden sm:inline"> · </span>
+          <span className="block sm:inline mt-1 sm:mt-0">
+            Running SEO for your business?{" "}
+            <a
+              href="https://boostlogik.com/dashboard?ref=foci-footer"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 underline-offset-2 hover:underline"
+            >
+              SEO workspace on BoostLogik
+            </a>
+          </span>
         </p>
         <p className="text-sm text-slate-500 dark:text-slate-400">
           <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400">

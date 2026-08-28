@@ -45,7 +45,7 @@ export function AdminUsersPanel({
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2">
             <Stat label="Accounts" value={summary.total} />
             <Stat label="Signed in 7d" value={summary.last7d} />
             <Stat label="Active 30d" value={summary.last30d} />

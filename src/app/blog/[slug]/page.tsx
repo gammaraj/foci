@@ -235,16 +235,16 @@ export default async function BlogPostPage({ params }: Props) {
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Open the app in this browser — no signup. Optional account syncs streaks later.
               </p>
-              <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center">
                 <Link
                   href="/app"
-                  className="btn-primary px-5 py-2.5 text-sm"
+                  className="btn-primary w-full sm:w-auto px-5 py-2.5 text-sm text-center"
                 >
                   Try Foci — free
                 </Link>
                 <Link
                   href="/login"
-                  className="btn-chip px-5 py-2.5 text-sm"
+                  className="btn-chip w-full sm:w-auto px-5 py-2.5 text-sm text-center"
                 >
                   Create free account
                 </Link>

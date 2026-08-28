@@ -1,7 +1,7 @@
 /** Landing preview — cropped to the task board so visitors land on “organized,” not chrome noise. */
 export default function HomeAppMockup() {
   return (
-    <div className="relative w-full max-w-5xl mx-auto">
+    <div className="relative w-full max-w-5xl mx-auto overflow-hidden">
       <div className="rounded-t-2xl bg-slate-200/90 dark:bg-[#1a1a2e] px-4 py-3 flex items-center gap-2">
         <div className="flex gap-1.5">
           <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />

@@ -241,7 +241,7 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
 
       {ga && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3">
+          <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3">
             <StatCard
               label="Users 30d"
               value={fmt(ga.users30d)}

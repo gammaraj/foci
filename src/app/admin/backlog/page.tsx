@@ -136,7 +136,7 @@ export default function AdminBacklogPage() {
         </p>
       </div>
 
-      <dl className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+      <dl className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
         {[
           { label: "Goals achieved", value: `${goals.achieved}/${goals.total}` },
           { label: "Open now", value: String(counts.active) },
