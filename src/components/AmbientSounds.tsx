@@ -14,6 +14,7 @@ import { createPortal } from "react-dom";
 import {
   FOCUS_STRIP_CHIP,
   FOCUS_STRIP_CHIP_OPEN,
+  FOCUS_STRIP_ROW,
   FocusStripChipChevron,
   MiniMusicIcon,
   MiniPlayPauseIcon,
@@ -709,6 +710,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           ? spotifyPlaylist.label
           : scPlaylist.label;
 
+  const isAmbientPlaceholder = mode === "sounds" && nowPlayingLabel === "Ambient sounds";
+
   const handleMiniPlayPause = (e: MouseEvent) => {
     e.stopPropagation();
     if (mode === "sounds") {
@@ -792,9 +795,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         onClick={() => setModeMenuOpen((o) => !o)}
         className={`inline-flex items-center justify-center ${
           stripEmbedded
-            ? `${FOCUS_STRIP_CHIP} gap-0.5 px-1.5 ${modeMenuOpen ? FOCUS_STRIP_CHIP_OPEN : ""}`
+            ? `${FOCUS_STRIP_CHIP} gap-0.5 px-1.5 font-semibold ${modeMenuOpen ? FOCUS_STRIP_CHIP_OPEN : ""}`
             : "gap-1 px-1 py-0.5 rounded-md hover:bg-slate-100/90 dark:hover:bg-white/10"
-        } text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors whitespace-nowrap leading-none`}
+        } text-xs text-slate-700 dark:text-slate-200 transition-colors whitespace-nowrap leading-none`}
         aria-haspopup="listbox"
         aria-expanded={modeMenuOpen}
         aria-label={`Music source: ${activeModeLabel}. Change source`}
@@ -845,7 +848,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       id="ambient-sounds"
       className={
         stripEmbedded
-          ? "flex w-fit flex-col items-start scroll-mt-24 relative"
+          ? "flex w-full min-w-0 flex-col items-stretch scroll-mt-24 relative"
           : inline
             ? `${collapsed ? "flex-shrink-0" : "w-full basis-full"} space-y-1.5 scroll-mt-24`
             : "mx-2 sm:mx-3 mb-2 space-y-1.5 scroll-mt-24"
@@ -854,35 +857,49 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {/* Mini player bar (always visible) */}
       {stripEmbedded ? (
         <div
-          className="relative flex items-center gap-1.5 w-[23.5rem] shrink-0"
+          className={FOCUS_STRIP_ROW}
           ref={stripAnchorRef}
           data-foci-music-strip
         >
-          <span className="inline-flex items-center gap-1.5 shrink-0">
+          <span className="hidden roomy:inline-flex items-center gap-1.5 shrink-0">
             <MiniMusicIcon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             <span className="app-section-label text-slate-500 dark:text-slate-400">Music</span>
           </span>
-          {modePicker}
+          <div className="flex items-center justify-center w-7 h-7 shrink-0 roomy:w-auto roomy:h-auto">
+            {modePicker}
+          </div>
+          <span className="roomy:hidden app-section-label text-slate-500 dark:text-slate-400 shrink-0 leading-none">
+            Music
+          </span>
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
-            className={`${FOCUS_STRIP_CHIP} w-[13.75rem] shrink-0 gap-1 px-1.5 ${!collapsed ? FOCUS_STRIP_CHIP_OPEN : ""}`}
+            className={`${FOCUS_STRIP_CHIP} min-w-0 w-full gap-1 px-1.5 ${!collapsed ? FOCUS_STRIP_CHIP_OPEN : ""} ${
+              isAmbientPlaceholder ? "justify-center" : ""
+            }`}
             title={`${nowPlayingLabel} — click to choose a ${mode === "sounds" ? "sound" : "playlist"}`}
             aria-expanded={!collapsed}
             aria-haspopup="dialog"
             aria-label={collapsed ? `Show ${nowPlayingLabel} options` : "Hide music options"}
           >
-            <span className="min-w-0 flex-1 truncate text-left">{nowPlayingLabel}</span>
+            <span
+              className={`min-w-0 flex-1 truncate text-xs font-semibold leading-none ${
+                isAmbientPlaceholder ? "text-center" : "text-left"
+              }`}
+            >
+              {nowPlayingLabel}
+            </span>
             <FocusStripChipChevron open={!collapsed} />
           </button>
-          <button
-            type="button"
-            onClick={handleMiniPlayPause}
-            className={`flex-shrink-0 ${miniMusicPlayButtonClass(
-              !!(mode === "sounds" && activeSound) ||
-                (mode === "soundcloud" && !collapsed) ||
-                (mode === "spotify" && spotifyPlaying),
-            )}`}
+          <div className="flex items-center justify-center w-7 h-7 shrink-0">
+            <button
+              type="button"
+              onClick={handleMiniPlayPause}
+              className={miniMusicPlayButtonClass(
+                !!(mode === "sounds" && activeSound) ||
+                  (mode === "soundcloud" && !collapsed) ||
+                  (mode === "spotify" && spotifyPlaying),
+              )}
             aria-label={
               mode === "sounds"
                 ? activeSound
@@ -913,6 +930,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               size="md"
             />
           </button>
+          </div>
 
           {/* Expanded music — popover so the Tasks header stays one row */}
           {!collapsed && (

@@ -8,6 +8,7 @@ import TimerControls from "@/components/TimerControls";
 import TimerAlarmPicker from "@/components/TimerAlarmPicker";
 import {
   FOCUS_STRIP_CHIP_FRAME,
+  FOCUS_STRIP_ROW,
   FocusStripChipChevron,
   miniDockGhostButtonClass,
   MiniSettingsIcon,
@@ -474,7 +475,7 @@ export function FocusDockToolbar({
   const canAdjustDuration =
     timerStatus === "idle" && !isBreak && !!onNudgeWorkMinutes && !!onSetWorkSeconds && workSeconds >= MIN_WORK_SECONDS;
 
-  const timeClassName = `${embedded ? "text-sm" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
+  const timeClassName = `${embedded ? "text-xs" : "text-sm sm:text-base"} font-semibold tabular-nums leading-none shrink-0 ${
     isBreak
       ? "text-green-700 dark:text-green-300"
       : isRunning
@@ -632,15 +633,57 @@ export function FocusDockToolbar({
   );
 
   if (embedded) {
+    const timerRing = workDurationMs ? (
+      <span className="relative w-4 h-4 text-slate-500 dark:text-slate-400" aria-hidden>
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 20 20" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx="10" cy="10" r={arcR} fill="none" strokeWidth="2" className="stroke-slate-300 dark:stroke-slate-500" />
+          <circle
+            cx="10" cy="10" r={arcR} fill="none"
+            stroke={isBreak ? "var(--success-green)" : isRunning ? "var(--primary-blue)" : "currentColor"}
+            strokeWidth="2"
+            strokeDasharray={arcCircumference}
+            strokeDashoffset={isRunning || isBreak ? arcOffset : 0}
+            strokeLinecap="round"
+            style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s" }}
+          />
+        </svg>
+      </span>
+    ) : (
+      <span className="w-4 h-4" aria-hidden />
+    );
+
+    const timerMain = canAdjustDuration ? (
+      <WorkDurationControl
+        totalSeconds={workSeconds}
+        displayTime={displayTime}
+        disabled={false}
+        onNudge={onNudgeWorkMinutes}
+        onSetSeconds={onSetWorkSeconds}
+        timeClassName={timeClassName}
+        trailing={chipExpand}
+      />
+    ) : (
+      <span className={`${FOCUS_STRIP_CHIP_FRAME} pl-2 pr-0.5`}>
+        <span className={timeClassName}>{displayTime}</span>
+        {chipExpand}
+      </span>
+    );
+
     return (
       <div
-        className={`group flex items-center gap-1.5 min-w-0 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-start transition-colors ${embeddedChrome}`}
+        className={`${FOCUS_STRIP_ROW} transition-colors ${embeddedChrome}`}
         data-foci-timer-strip
       >
-        {timerLabelCluster}
-        <div className="flex items-center gap-0.5 shrink-0">
-          {timerControls}
-        </div>
+        <div className="flex items-center justify-center w-7 h-7 shrink-0">{timerRing}</div>
+        <span
+          className={`app-section-label shrink-0 leading-none ${
+            isBreak ? "text-green-600 dark:text-green-400" : "text-slate-500 dark:text-slate-400"
+          }`}
+        >
+          {isBreak ? "Break" : "Timer"}
+        </span>
+        <div className="min-w-0 w-full flex justify-center">{timerMain}</div>
+        <div className="flex items-center justify-center w-7 h-7 shrink-0">{timerControls}</div>
       </div>
     );
   }

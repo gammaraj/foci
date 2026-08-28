@@ -126,7 +126,8 @@ export function OneThingCard({
           >
             <StarIcon className="w-3.5 h-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
             <span className="shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300">
-              One Thing
+              <span className="roomy:hidden">ONE</span>
+              <span className="hidden roomy:inline">One Thing</span>
             </span>
             <span className="hidden sm:inline text-blue-400/70 dark:text-blue-500/70" aria-hidden>
               ·
@@ -195,13 +196,14 @@ export function OneThingCard({
   if (status === "active" && task) {
     return (
       <div data-tour="one-thing" className={`${plate} ${activePlate}`}>
-        <div className="flex items-center gap-2 min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
           <span
             className="inline-flex items-center gap-1 shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300"
             title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
           >
-            <StarIcon className="w-3 h-3" />
-            One Thing
+            <StarIcon className="w-3 h-3 hidden min-[400px]:block" />
+            <span className="roomy:hidden">ONE</span>
+            <span className="hidden roomy:inline">One Thing</span>
           </span>
           <p
             className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white"
@@ -210,26 +212,27 @@ export function OneThingCard({
             {task.title}
           </p>
         </div>
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button
             type="button"
             onClick={onFocus}
             className={
               isFocused
-                ? "btn-primary gap-1 px-2.5 py-1 text-xs"
-                : "inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
+                ? "btn-primary gap-1 px-2 sm:px-2.5 py-1 text-xs"
+                : "inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
             }
             title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
+            aria-label={isFocused ? "Focused on One Thing" : "Focus on One Thing"}
           >
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
               <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
             </svg>
-            {isFocused ? "On" : "Focus"}
+            <span className="hidden min-[400px]:inline">{isFocused ? "On" : "Focus"}</span>
           </button>
           <button
             type="button"
             onClick={onComplete}
-            className="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
           >
             Done
           </button>

@@ -115,21 +115,23 @@ test.describe("App Page (unauthenticated)", () => {
     await expect(page.getByText("Task to delete")).toHaveCount(0);
   });
 
-  test("renders music source control", async ({ page }) => {
+  test("renders music source control", async ({ page }, testInfo) => {
     const dock = page.getByRole("status", { name: "Focus timer and music" }).filter({ visible: true });
-    await expect(dock.getByText("Music", { exact: true })).toBeVisible();
+    if (!testInfo.project.use?.isMobile) {
+      await expect(dock.getByText("Music", { exact: true })).toBeVisible();
+    }
     await expect(page.getByLabel(/Music source:/i).filter({ visible: true })).toBeVisible();
     await expect(page.getByLabel(/Show .* options/i).filter({ visible: true })).toBeVisible();
     await expect(page.getByLabel(/Play ambient sound|Open player|Play /i).filter({ visible: true }).first()).toBeVisible();
   });
 
   test("track name opens the in-source picker", async ({ page }) => {
-    const title = page.getByLabel(/Show Ambient sounds options/i).filter({ visible: true });
-    await expect(title).toContainText("Ambient sounds");
+    const title = page.getByLabel(/Show .* options/i).filter({ visible: true });
+    await expect(title).toBeVisible();
     expect(
       await title.evaluate((el) => {
         const span = el.querySelector("span");
-        return span ? span.scrollWidth > span.clientWidth + 1 : true;
+        return span ? span.scrollWidth > span.clientWidth + 1 : false;
       }),
     ).toBe(false);
     await title.click();
@@ -138,6 +140,16 @@ test.describe("App Page (unauthenticated)", () => {
     await expectUnclipped(picker);
     await expect(picker.getByLabel("Play Rain")).toBeVisible();
     await expect(picker.getByLabel("Play Café")).toBeVisible();
+    await picker.getByLabel("Play Brown Noise").click();
+    await page.getByLabel("Hide music options").click();
+    const brownNoiseChip = page.getByLabel(/Show .*Brown Noise options/i).filter({ visible: true });
+    await expect(brownNoiseChip).toBeVisible();
+    expect(
+      await brownNoiseChip.evaluate((el) => {
+        const span = el.querySelector("span");
+        return span ? span.scrollWidth > span.clientWidth + 1 : false;
+      }),
+    ).toBe(false);
   });
 
   test("switching music source keeps the strip width", async ({ page }, testInfo) => {

@@ -30,6 +30,10 @@ export const FOCUS_BAR_ICON_BTN =
 export const FOCUS_STRIP_CHIP =
   "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
 
+/** Shared 4-column grid for stacked music + timer rows (icon · label · control · play). */
+export const FOCUS_STRIP_ROW =
+  "relative grid w-full min-w-0 max-w-full items-center gap-x-1.5 grid-cols-[1.75rem_2.75rem_minmax(0,1fr)_1.75rem] roomy:flex roomy:items-center roomy:gap-1.5";
+
 export const FOCUS_STRIP_CHIP_OPEN =
   "border-blue-300 dark:border-blue-600 bg-blue-50/80 dark:bg-blue-900/25 text-blue-700 dark:text-blue-200";
 

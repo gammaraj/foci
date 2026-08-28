@@ -155,7 +155,7 @@ export default function AppFocusBar() {
         </div>
 
         {/* Narrow phones only — focus strip under title */}
-        <div className="no-print min-[480px]:hidden mt-0.5 pt-0.5 border-t border-[color:var(--surface-border)] dark:border-[#243350]/70 overflow-x-auto">
+        <div className="no-print min-[480px]:hidden mt-0.5 pt-0.5 border-t border-[color:var(--surface-border)] dark:border-[#243350]/70">
           {focusStrip}
         </div>
       </div>
