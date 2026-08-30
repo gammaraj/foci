@@ -24,6 +24,7 @@ import { SelectedBadge, TimingBadge, subtaskCountChipClass } from "@/components/
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import {
+  ProjectColorSwatch,
   ProjectEditMenu,
   ProjectNameInput,
   canRenameProject,
@@ -58,7 +59,7 @@ function BucketColumnTitle({
     <div className="min-w-0 flex-1">
       <h3
         className="truncate text-sm sm:text-base font-semibold tracking-tight text-slate-900 dark:text-white leading-tight"
-        title={`${project.name}. Right-click to rename or change color.`}
+        title={`${project.name}. Right-click to rename.`}
       >
         {project.name}
       </h3>
@@ -482,6 +483,7 @@ function BucketColumn({
   onExpandProject,
   projectEdit,
   editMenuBind,
+  onOpenColorMenu,
   editingTaskId,
   editTitle = "",
   onStartEdit,
@@ -521,6 +523,7 @@ function BucketColumn({
   onExpandProject?: (projectId: string) => void;
   projectEdit?: ProjectEditHandlers;
   editMenuBind?: ReturnType<typeof useProjectEditMenu>["bind"];
+  onOpenColorMenu?: (projectId: string, x: number, y: number) => void;
   editingTaskId?: string | null;
   editTitle?: string;
   onStartEdit?: (task: Task) => void;
@@ -590,7 +593,7 @@ function BucketColumn({
       <div
         {...(editMenuBind ? editMenuBind(project.id) : {})}
         className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80 select-none"
-        title={project.description?.trim() || `${project.name}. Right-click to rename or change color.`}
+        title={project.description?.trim() || `${project.name}. Right-click to rename.`}
       >
         {onToggleProjectFavorite ? (
           <button
@@ -626,11 +629,14 @@ function BucketColumn({
             </svg>
           </span>
         ) : null}
-        <span
-          className="project-accent-swatch w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-          title={`${project.name} color — right-click to change`}
-          role="img"
-          aria-label={`${project.name} color`}
+        <ProjectColorSwatch
+          projectName={project.name}
+          useAccentVar
+          onOpenColor={
+            onOpenColorMenu
+              ? (x, y) => onOpenColorMenu(project.id, x, y)
+              : undefined
+          }
         />
         <BucketColumnTitle project={project} projectEdit={projectEdit} />
         {isPersonal && (
@@ -980,6 +986,7 @@ export default function TaskBucketView({
             onExpandProject={onExpandProject}
             projectEdit={projectEdit}
             editMenuBind={projectEdit ? projectMenu.bind : undefined}
+            onOpenColorMenu={projectEdit ? projectMenu.openColor : undefined}
             editingTaskId={editingTaskId}
             editTitle={editTitle}
             onStartEdit={onStartEdit}
@@ -1033,6 +1040,7 @@ export default function TaskBucketView({
           project={menuProject}
           x={menu.x}
           y={menu.y}
+          mode={menu.mode}
           onClose={projectMenu.close}
           onUpdateColor={projectEdit.onUpdateColor}
           onRename={

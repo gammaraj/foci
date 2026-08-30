@@ -26,7 +26,7 @@ export interface OneThingCardProps {
 }
 
 const twoCol =
-  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-x-4 gap-y-1.5 items-stretch panel-inset-x mt-1 mb-0.5 land-compact:hidden";
+  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-x-3 gap-y-1 items-center panel-inset-x mt-1 mb-0.5 land-compact:hidden";
 
 const plate =
   "flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1";
@@ -76,6 +76,30 @@ function OneThingHowTo() {
   );
 }
 
+function PencilIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+      />
+    </svg>
+  );
+}
+
+function PinIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+      <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v12.5a.5.5 0 01-.8.4L10 14.118 5.8 16.9A.5.5 0 015 16.5V4z" />
+    </svg>
+  );
+}
+
+const quoteShell =
+  "hidden min-[520px]:flex min-w-0 items-center gap-1.5 min-h-[2.25rem] rounded-xl px-2 py-1 ring-1 ring-slate-200/70 dark:ring-[#243350] bg-slate-50/70 dark:bg-white/[0.03]";
+
 function QuoteColumn({
   quote,
   isCustomQuote,
@@ -88,7 +112,6 @@ function QuoteColumn({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const skipCommitRef = useRef(false);
 
   useEffect(() => {
     if (!editing) return;
@@ -100,43 +123,34 @@ function QuoteColumn({
     }
   }, [editing]);
 
-  const startEdit = () => {
+  const startEdit = (seed?: string) => {
     if (!onSaveQuote) return;
-    setDraft(isCustomQuote && quote ? quote : "");
+    setDraft((seed ?? quote ?? "").slice(0, MAX_CUSTOM_QUOTE));
     setEditing(true);
   };
 
   const commit = () => {
     if (!onSaveQuote) return;
-    if (skipCommitRef.current) {
-      skipCommitRef.current = false;
-      return;
-    }
     const next = draft.trim().slice(0, MAX_CUSTOM_QUOTE);
     setEditing(false);
     onSaveQuote(next || null);
   };
 
   const cancel = () => {
-    skipCommitRef.current = true;
     setEditing(false);
     setDraft("");
   };
 
   if (editing && onSaveQuote) {
     return (
-      <div className="min-w-0 flex flex-col justify-center gap-1 min-h-[2.25rem] rounded-2xl px-2.5 py-1.5 ring-1 ring-slate-200/80 dark:ring-[#243350] bg-white/60 dark:bg-white/[0.03]">
-        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-500">
-          Your quote
-        </span>
+      <div className="hidden min-[520px]:flex min-w-0 flex-col gap-1 rounded-xl px-2 py-1.5 ring-1 ring-slate-200/70 dark:ring-[#243350] bg-slate-50/70 dark:bg-white/[0.03]">
         <textarea
           ref={inputRef}
           value={draft}
           maxLength={MAX_CUSTOM_QUOTE}
           rows={2}
-          placeholder="Write a quote that stays — leave blank for daily"
+          placeholder="A line that stays until you change it"
           onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
           onKeyDown={(e) => {
             if (e.key === "Escape") {
               e.preventDefault();
@@ -147,12 +161,30 @@ function QuoteColumn({
               commit();
             }
           }}
-          className="w-full resize-none bg-transparent text-xs italic text-slate-700 dark:text-slate-200 placeholder:not-italic placeholder:text-slate-400 outline-none"
+          className="w-full resize-none rounded-md px-1.5 py-1 text-xs italic text-slate-700 dark:text-slate-200 bg-white dark:bg-[#0f172a] ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
           aria-label="Your custom quote"
         />
-        <span className="text-[10px] text-slate-400 tabular-nums self-end">
-          {draft.trim().length}/{MAX_CUSTOM_QUOTE}
-        </span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[10px] text-slate-400 tabular-nums">
+            {draft.trim().length}/{MAX_CUSTOM_QUOTE}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={cancel}
+              className="px-2 py-0.5 text-[11px] font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 dark:hover:bg-white/10"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={commit}
+              className="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Save
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -162,52 +194,90 @@ function QuoteColumn({
     return (
       <button
         type="button"
-        onClick={startEdit}
-        className="hidden min-[520px]:flex min-w-0 items-center justify-end min-h-[2.25rem] rounded-2xl px-2.5 py-1.5 text-right text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-500/[0.06] dark:hover:bg-white/[0.04] transition-colors"
+        onClick={() => startEdit("")}
+        className={`${quoteShell} justify-center text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-500/[0.06] dark:hover:bg-blue-400/10 transition-colors`}
       >
-        Add your quote
+        <PencilIcon className="w-3.5 h-3.5" />
+        Add a quote
       </button>
     );
   }
 
   const { text, author } = parseQuote(quote);
   const label = author ? `${text} — ${author}` : text;
+  const canEdit = !!onSaveQuote;
 
   return (
-    <div
-      className={
-        "hidden min-[520px]:flex min-w-0 flex-col justify-center gap-0.5 min-h-[2.25rem] pl-3 border-l border-slate-200/80 dark:border-[#243350]"
-      }
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-500">
-          {isCustomQuote ? "Your quote" : "Today"}
-        </span>
-        {onSaveQuote && (
-          <button
-            type="button"
-            onClick={startEdit}
-            className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            {isCustomQuote ? "Edit" : "Make yours"}
-          </button>
-        )}
-      </div>
-      <p
-        className="min-w-0 line-clamp-2 text-xs italic font-normal text-slate-500 dark:text-slate-400 text-left"
-        title={label}
+    <div className={quoteShell}>
+      <span
+        className={
+          isCustomQuote
+            ? "inline-flex items-center gap-0.5 shrink-0 rounded px-1 py-0.5 text-[10px] font-bold uppercase tracking-[0.05em] bg-blue-500/10 text-blue-700 dark:text-blue-300"
+            : "inline-flex items-center shrink-0 rounded px-1 py-0.5 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-500 dark:text-slate-400 bg-slate-500/10 dark:bg-white/5"
+        }
+        title={isCustomQuote ? "Stays until you change it" : "Changes each day"}
       >
-        &ldquo;{text}&rdquo;
-        {author ? <span className="not-italic opacity-80"> — {author}</span> : null}
-      </p>
-      {isCustomQuote && onSaveQuote && (
+        {isCustomQuote ? (
+          <>
+            <PinIcon className="w-2.5 h-2.5" />
+            Pinned
+          </>
+        ) : (
+          "Daily"
+        )}
+      </span>
+
+      {canEdit ? (
         <button
           type="button"
-          onClick={() => onSaveQuote(null)}
-          className="self-start text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          onClick={() => startEdit(quote)}
+          className="min-w-0 flex-1 text-left rounded-md px-1 py-0.5 hover:bg-slate-500/[0.06] dark:hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+          title={`${label} — click to edit`}
         >
-          Use daily quote
+          <span className="block truncate text-xs italic font-normal text-slate-600 dark:text-slate-300">
+            &ldquo;{text}&rdquo;
+            {author ? <span className="not-italic opacity-80"> — {author}</span> : null}
+          </span>
         </button>
+      ) : (
+        <p className="min-w-0 flex-1 truncate text-xs italic font-normal text-slate-600 dark:text-slate-300" title={label}>
+          &ldquo;{text}&rdquo;
+          {author ? <span className="not-italic opacity-80"> — {author}</span> : null}
+        </p>
+      )}
+
+      {canEdit && (
+        <div className="flex items-center gap-0.5 shrink-0">
+          {isCustomQuote ? (
+            <button
+              type="button"
+              onClick={() => onSaveQuote(null)}
+              className="px-1.5 py-0.5 text-[11px] font-semibold rounded-md text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 dark:hover:bg-blue-400/15"
+              title="Back to daily rotating quotes"
+            >
+              Daily
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onSaveQuote(quote.trim().slice(0, MAX_CUSTOM_QUOTE))}
+              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] font-semibold rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-500/10 dark:hover:bg-white/10"
+              title="Keep showing this quote every day"
+            >
+              <PinIcon className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+              Keep
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => startEdit(quote)}
+            className="inline-flex items-center justify-center p-1 rounded-md text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
+            aria-label="Edit quote"
+            title="Edit quote"
+          >
+            <PencilIcon className="w-3.5 h-3.5" />
+          </button>
+        </div>
       )}
     </div>
   );

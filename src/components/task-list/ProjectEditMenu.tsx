@@ -5,10 +5,13 @@ import { createPortal } from "react-dom";
 import { DEFAULT_PROJECT_ID, PROJECT_COLORS, type Project } from "@/lib/types";
 import { MAX_PROJECT_NAME, resolveProjectColor } from "@/components/task-list/utils";
 
+export type ProjectEditMenuMode = "full" | "color";
+
 export interface ProjectEditMenuCoords {
   projectId: string;
   x: number;
   y: number;
+  mode: ProjectEditMenuMode;
 }
 
 export interface ProjectEditHandlers {
@@ -29,9 +32,14 @@ export function useProjectEditMenu() {
   const [menu, setMenu] = useState<ProjectEditMenuCoords | null>(null);
   const pressRef = useRef<{ id: string; x: number; y: number; timer: number } | null>(null);
 
-  const open = useCallback((projectId: string, x: number, y: number) => {
-    setMenu({ projectId, x, y });
+  const open = useCallback((projectId: string, x: number, y: number, mode: ProjectEditMenuMode = "full") => {
+    setMenu({ projectId, x, y, mode });
   }, []);
+
+  const openColor = useCallback(
+    (projectId: string, x: number, y: number) => open(projectId, x, y, "color"),
+    [open],
+  );
 
   const close = useCallback(() => setMenu(null), []);
 
@@ -45,7 +53,7 @@ export function useProjectEditMenu() {
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        open(projectId, e.clientX, e.clientY);
+        open(projectId, e.clientX, e.clientY, "full");
       },
       onTouchStart: (e: React.TouchEvent) => {
         const t = e.touches[0];
@@ -58,7 +66,7 @@ export function useProjectEditMenu() {
           timer: window.setTimeout(() => {
             const p = pressRef.current;
             if (!p || p.id !== projectId) return;
-            open(projectId, p.x, p.y);
+            open(projectId, p.x, p.y, "full");
             pressRef.current = null;
           }, 520),
         };
@@ -75,7 +83,65 @@ export function useProjectEditMenu() {
     [open, clearPress],
   );
 
-  return { menu, open, close, bind };
+  return { menu, open, openColor, close, bind };
+}
+
+/** Clickable project color dot — left-click opens the color picker. */
+export function ProjectColorSwatch({
+  projectName,
+  onOpenColor,
+  color,
+  useAccentVar = false,
+  className = "",
+}: {
+  projectName: string;
+  onOpenColor?: (x: number, y: number) => void;
+  /** Explicit fill when not using CSS project accent var. */
+  color?: string;
+  /** Use `.project-accent-swatch` (parent sets `--project-accent`). */
+  useAccentVar?: boolean;
+  className?: string;
+}) {
+  const dot = (
+    <span
+      className={`block w-3.5 h-3.5 rounded-full ring-1 ring-black/10 dark:ring-white/15 ${
+        useAccentVar ? "project-accent-swatch" : ""
+      }`}
+      style={useAccentVar || !color ? undefined : { backgroundColor: color }}
+      aria-hidden
+    />
+  );
+
+  if (!onOpenColor) {
+    return (
+      <span
+        className={`inline-flex shrink-0 ${className}`}
+        title={`${projectName} color`}
+        role="img"
+        aria-label={`${projectName} color`}
+      >
+        {dot}
+      </span>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const r = e.currentTarget.getBoundingClientRect();
+        onOpenColor(r.left, r.bottom + 6);
+      }}
+      onPointerDown={(e) => e.stopPropagation()}
+      className={`inline-flex shrink-0 items-center justify-center p-1 -m-0.5 rounded-full hover:bg-slate-500/10 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 transition-colors ${className}`}
+      title={`Change ${projectName} color`}
+      aria-label={`Change ${projectName} color`}
+    >
+      {dot}
+    </button>
+  );
 }
 
 export function ProjectNameInput({
@@ -123,6 +189,7 @@ export function ProjectEditMenu({
   project,
   x,
   y,
+  mode = "full",
   onClose,
   onUpdateColor,
   onRename,
@@ -130,6 +197,7 @@ export function ProjectEditMenu({
   project: Project;
   x: number;
   y: number;
+  mode?: ProjectEditMenuMode;
   onClose: () => void;
   onUpdateColor: (id: string, color: string) => void;
   onRename?: () => void;
@@ -137,7 +205,7 @@ export function ProjectEditMenu({
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ left: x, top: y });
   const current = resolveProjectColor(project);
-  const showRename = !!onRename && canRenameProject(project);
+  const showRename = mode === "full" && !!onRename && canRenameProject(project);
 
   useLayoutEffect(() => {
     const el = panelRef.current;
@@ -181,7 +249,7 @@ export function ProjectEditMenu({
       className="fixed z-[9998] w-[13.5rem] py-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-xl"
       style={{ left: pos.left, top: pos.top }}
       role="menu"
-      aria-label={`Edit ${project.name}`}
+      aria-label={showRename ? `Edit ${project.name}` : `Change ${project.name} color`}
       onContextMenu={(e) => e.preventDefault()}
     >
       <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">

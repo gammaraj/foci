@@ -28,6 +28,7 @@ import { subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
 import {
+  ProjectColorSwatch,
   ProjectEditMenu,
   ProjectNameInput,
   canRenameProject,
@@ -554,6 +555,7 @@ function ProjectCard({
   autoQuickAdd = false,
   projectEdit,
   editMenuBind,
+  onOpenColorMenu,
 }: {
   project: Project;
   projectIndex: number;
@@ -600,6 +602,7 @@ function ProjectCard({
   autoQuickAdd?: boolean;
   projectEdit?: ProjectEditHandlers;
   editMenuBind?: ReturnType<typeof useProjectEditMenu>["bind"];
+  onOpenColorMenu?: (projectId: string, x: number, y: number) => void;
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -812,11 +815,14 @@ function ProjectCard({
               </svg>
             </span>
           ) : null}
-          <span
-            className="project-accent-swatch w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-            title={`${project.name} color — right-click to change`}
-            role="img"
-            aria-label={`${project.name} color`}
+          <ProjectColorSwatch
+            projectName={project.name}
+            useAccentVar
+            onOpenColor={
+              onOpenColorMenu
+                ? (x, y) => onOpenColorMenu(project.id, x, y)
+                : undefined
+            }
           />
           {projectEdit && projectEdit.editingId === project.id ? (
             <ProjectNameInput
@@ -835,7 +841,7 @@ function ProjectCard({
                 onOpenProject?.(project.id);
               }}
               className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-              title={`View all tasks in ${project.name}. Right-click to rename or change color.`}
+              title={`View all tasks in ${project.name}. Right-click to rename.`}
             >
               {project.name}
             </button>
@@ -1209,6 +1215,7 @@ export default function TaskCardView({
               autoQuickAdd={autoQuickAddProjectId === project.id}
               projectEdit={projectEdit}
               editMenuBind={projectEdit ? projectMenu.bind : undefined}
+              onOpenColorMenu={projectEdit ? projectMenu.openColor : undefined}
             />
           );
         })}
@@ -1250,6 +1257,7 @@ export default function TaskCardView({
           project={menuProject}
           x={menu.x}
           y={menu.y}
+          mode={menu.mode}
           onClose={projectMenu.close}
           onUpdateColor={projectEdit.onUpdateColor}
           onRename={

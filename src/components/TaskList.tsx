@@ -108,6 +108,7 @@ import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 import { TaskSearchField } from "@/components/task-list/TaskSearchField";
 import {
+  ProjectColorSwatch,
   ProjectEditMenu,
   ProjectNameInput,
   canRenameProject,
@@ -3610,7 +3611,11 @@ export default function TaskList({
               return (
                 <div key={p.id} className={tabClass}>
                   {p.color && (
-                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                    <ProjectColorSwatch
+                      projectName={p.name}
+                      color={p.color}
+                      onOpenColor={(x, y) => listProjectEditMenu.openColor(p.id, x, y)}
+                    />
                   )}
                   <ProjectNameInput
                     value={editProjectName}
@@ -3640,7 +3645,7 @@ export default function TaskList({
                 selectProjectScope(p.id);
               }}
               className={`${tabClass} cursor-grab active:cursor-grabbing`}
-              title={`${projectTabTooltip(p)} — drag to reorder. Right-click to rename or change color.`}
+              title={`${projectTabTooltip(p)} — drag to reorder. Click the color to change it; right-click to rename.`}
             >
               {p.favorite && (
                 <span title="Pinned — appears first" className="flex-shrink-0">
@@ -3650,7 +3655,11 @@ export default function TaskList({
                 </span>
               )}
               {p.color && (
-                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                <ProjectColorSwatch
+                  projectName={p.name}
+                  color={p.color}
+                  onOpenColor={(x, y) => listProjectEditMenu.openColor(p.id, x, y)}
+                />
               )}
               <span className="min-w-0 max-w-[10rem] sm:max-w-[14rem]" title={projectTabTooltip(p)}>
                 <ProjectTabName project={p} />
@@ -3721,7 +3730,11 @@ export default function TaskList({
                       title={projectTabTooltip(p)}
                     >
                       {p.color && (
-                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                        <ProjectColorSwatch
+                          projectName={p.name}
+                          color={p.color}
+                          onOpenColor={(x, y) => listProjectEditMenu.openColor(p.id, x, y)}
+                        />
                       )}
                       <span className="truncate flex-1" title={projectTabTooltip(p)}>{projectTabLabel(p)}</span>
                       {count > 0 && (
@@ -3759,6 +3772,7 @@ export default function TaskList({
           project={listMenuProject}
           x={listMenu.x}
           y={listMenu.y}
+          mode={listMenu.mode}
           onClose={listProjectEditMenu.close}
           onUpdateColor={updateProjectColor}
           onRename={
