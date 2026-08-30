@@ -1,4 +1,5 @@
 /** Refresh public/home-app-preview.webp from the guest cards board (dev server on :3000). */
+import { chromium } from "playwright";
 import sharp from "sharp";
 import { writeFile } from "fs/promises";
 import path from "path";

@@ -26,7 +26,10 @@ const appJsonLd = {
     "Task tracking with projects, subtasks, and per-task time logging",
     "Smart Plan day-by-day scheduling with One Thing and Focus actions",
     "Shareable layout URLs: /app/cards, /app/buckets, /app/list, /app/calendar, /app/plan",
-    "Today's One Thing borderless intent row with Focus / complete actions",
+    "Today's One Thing beside Focus actions under When/Layout",
+    "Task search across Cards, Buckets, List, Calendar, and Plan",
+    "Sticky custom quote or rotating daily quote next to One Thing",
+    "Click project color swatches to change color; right-click to rename",
     "Done tally in the Tasks focus bar (mobile compact labels, pulse on complete)",
     "Solid Add project CTA and scrollable shortLabel templates in Projects manage",
     "Shared with me list with Remove access (not Leave)",
@@ -38,6 +41,7 @@ const appJsonLd = {
     "Card, list, bucket (kanban), calendar, and Smart Plan views",
     "Import from Todoist, Notion, Asana, Google Tasks",
     "Recurring tasks (daily, weekly, monthly, yearly) with next occurrence on complete",
+    "Account and project collaboration with viewer/editor roles",
     "Installable PWA with offline support",
     "Optional free account for cross-device sync",
   ],
@@ -92,10 +96,12 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
             <li>Timer presets: Pomodoro (25/5), Deep Work (50/10), 52/17, Ultra Focus (90/20)</li>
             <li>Task tracking with automatic per-task session logging</li>
             <li>Smart Plan algorithmic day-by-day scheduling with Focus / One Thing actions</li>
-            <li>Today&apos;s One Thing borderless intent row under When/Layout</li>
+            <li>Today&apos;s One Thing beside Focus actions under When/Layout</li>
+            <li>Search tasks in every layout; sticky custom quote or daily rotating quote</li>
+            <li>Click project color swatches to change color; right-click to rename</li>
             <li>Done tally in the Tasks focus bar (mobile compact labels; pulses on complete)</li>
             <li>Solid Add project CTA; Projects manage templates as a one-row chip scroller</li>
-            <li>Shared with me + Remove access for shared projects</li>
+            <li>Shared with me + Remove access for shared projects; account and project collaboration</li>
             <li>Muted project color swatches; 2–3 column Projects grid</li>
             <li>Offline ambient sounds: rain, café, white noise, brown noise</li>
             <li>Card, list, bucket (kanban), calendar, and Smart Plan views</li>

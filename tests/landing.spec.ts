@@ -34,7 +34,7 @@ test.describe("Landing Page", () => {
 
   test("renders app preview screenshot", async ({ page }) => {
     const preview = page.getByRole("img", {
-      name: /Foci task board with projects organized as cards/i,
+      name: /Foci task board: Today's One Thing/i,
     });
     await expect(preview).toBeVisible();
     await expect(preview).toHaveAttribute("src", "/home-app-preview.webp");
@@ -74,7 +74,8 @@ test.describe("Landing Page", () => {
       page.getByRole("heading", { name: "More than a to-do list" }),
     ).toBeVisible();
     await expect(page.getByText("Tasks + projects, same screen")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Smart Plan scheduling" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Smart Plan + One Thing" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Share projects or your whole workspace" })).toBeVisible();
     await expect(page.getByText("Import from your tools")).toBeVisible();
     await expect(page.getByText("Streaks that stick")).toBeVisible();
   });

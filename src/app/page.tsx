@@ -90,7 +90,10 @@ const jsonLd = {
     "Smart Plan: day-by-day scheduling from due dates and capacity, with One Thing and Focus actions",
     "Shareable layouts: /app/cards, /app/buckets, /app/list, /app/calendar, /app/plan",
     "Done tally for completions today, this week, and this month (mobile compact labels; pulses on complete)",
-    "Today's One Thing as a borderless intent row under When/Layout",
+    "Today's One Thing beside Focus actions under When/Layout — set priority, focus, and finish from one row",
+    "Task search across Cards, Buckets, List, Calendar, and Plan layouts",
+    "Sticky custom quote (or rotating daily quote) next to One Thing; synced with account when signed in",
+    "Click a project color swatch to change color; right-click to rename",
     "Solid Add project CTA opens Projects manage with a one-row shortLabel template scroller",
     "Shared with me multi-column list; Remove access to drop shared project or account access",
     "Projects manage: 2–3 column grid, full-width expand, muted compact color swatches",
@@ -111,14 +114,14 @@ const jsonLd = {
     "Project tab reorder: drag tabs or use Projects admin; pin favorites to the front",
     "Delete project permanently removes the project and its tasks; archive to keep tasks",
     "Status bar flyouts for timer and music — compact strip with expandable panels",
-    "Daily motivational quote in the tasks header on desktop",
+    "Motivational quotes after sessions; optional sticky custom quote instead of the daily rotation",
     "Projects and subtasks for organized workflows",
     "Browser notifications and motivational quotes",
     "Installable PWA — works offline",
     "Optional free account for cloud sync across devices",
     "Modern light theme atmosphere plus dark mode (Light / Dark / System)",
     "Brown noise generator for deep focus and ADHD support",
-    "Muted project color accents with compact swatches, plus due date tracking",
+    "Muted project color accents with compact clickable swatches, plus due date tracking",
     "Productivity stats dashboard with heatmap, charts, streak tracking, overdue count, and completion rate",
     "Recurring tasks (daily, weekly, monthly, yearly) — next occurrence created when you complete the task",
     "Subtask due dates for granular deadline tracking",
@@ -147,7 +150,7 @@ const howToJsonLd = {
   step: [
     { "@type": "HowToStep", name: "Open the app", text: "Visit usefoci.com/app — no signup required to start. Optionally create a free account later to sync across devices." },
     { "@type": "HowToStep", name: "Add your tasks", text: "Create tasks and organize them into projects. Break larger tasks into subtasks for clarity." },
-    { "@type": "HowToStep", name: "Plan your day", text: "Open Smart Plan (usefoci.com/app/plan) to turn due dates and daily capacity into a day-by-day schedule. Set Today's One Thing and start Focus. Or switch Cards, Buckets, List, and Calendar via Layout." },
+    { "@type": "HowToStep", name: "Plan your day", text: "Open Smart Plan (usefoci.com/app/plan) to turn due dates and daily capacity into a day-by-day schedule. Set Today's One Thing beside Focus actions under When/Layout. Or switch Cards, Buckets, List, and Calendar via Layout." },
     { "@type": "HowToStep", name: "Focus when you need it", text: "Optionally start a focus session with presets like Classic Pomodoro (25/5), Deep Work (50/10), or 52/17. Turn on ambient sound if you like. Time is logged per-task." },
     { "@type": "HowToStep", name: "Build your streak", text: "Hit your daily session goal and watch your streak grow. Track progress with stats, charts, and a calendar view." },
   ],
@@ -299,11 +302,12 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">Plan your day</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Smart Plan schedules work from due dates and daily capacity — set One Thing and Focus from{" "}
+                Smart Plan schedules work from due dates and daily capacity. Set Today&apos;s One Thing beside Focus
+                actions under When/Layout — or open{" "}
                 <Link href="/app/plan" className="underline underline-offset-2 hover:text-slate-700 dark:hover:text-slate-200">
                   /app/plan
                 </Link>
-                . Use Cards, Buckets, List, or Calendar — and an optional focus timer when a session helps.
+                . Switch Cards, Buckets, List, or Calendar anytime.
               </p>
             </div>
 
@@ -345,12 +349,20 @@ export default function LandingPage() {
                 iconClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
               },
               {
-                title: "Smart Plan scheduling",
-                desc: "Day-by-day capacity plan with One Thing and Focus — open /app/plan anytime.",
+                title: "Smart Plan + One Thing",
+                desc: "Day-by-day capacity plan. One Thing sits with Focus actions so priority and start stay together.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 ),
                 iconClass: "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30",
+              },
+              {
+                title: "Share projects or your whole workspace",
+                desc: "Invite viewers or editors in-app — account-wide or one project. No public invite links.",
+                icon: (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                ),
+                iconClass: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/30",
               },
               {
                 title: "Import from your tools",

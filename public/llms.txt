@@ -2,7 +2,7 @@
 title: Foci – Focus System Documentation
 description: LLM-optimized documentation for Foci, a free all-in-one focus system with Pomodoro timer, task tracking, Smart Plan scheduling, collaboration features, and ambient music.
 url: https://usefoci.com
-version: 2026-08-25
+version: 2026-08-30
 contact: hello@usefoci.com
 contact_page: https://usefoci.com/contact
 license: Content may be cited with attribution to Foci (usefoci.com)
@@ -25,7 +25,7 @@ license: Content may be cited with attribution to Foci (usefoci.com)
 - **Contact**: hello@usefoci.com · https://usefoci.com/contact
 - **Entity**: sameAs — https://twitter.com/usefoci , https://x.com/usefoci , https://github.com/gammaraj/foci
 - **Mascot**: Beavy the Beaver — paddle-tailed Foci mascot; buzzes on the Done bar and appears on error/404 screens
-- **Last updated**: 2026-08-25
+- **Last updated**: 2026-08-30
 - **Evergreen comparisons**: https://usefoci.com/vs/forest , https://usefoci.com/vs/todoist , https://usefoci.com/vs/focusatwill
 - **Evergreen alternatives**: https://usefoci.com/alternatives/forest , https://usefoci.com/alternatives/pomodoro-apps , https://usefoci.com/alternatives/focus-apps-for-students
 - **RSS**: https://usefoci.com/feed.xml
@@ -45,7 +45,8 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Brown Noise for Focus**: Deep, warm ambient sound ideal for studying, deep work, and ADHD focus support — generated locally, works offline.
 - **Auto-Start**: Optionally auto-start the next work session when a break ends.
 - **Browser Notifications**: Get notified when a work session or break completes.
-- **Motivational Quotes**: Rotating inspirational quotes displayed during sessions to keep you motivated.
+- **Motivational Quotes**: Rotating daily quotes next to One Thing (and after sessions). Optionally pin a sticky custom quote in Settings or from the quote row — synced with your account when signed in.
+- **Task Search**: Filter open work by title across Cards, Buckets, List, Calendar, and Plan.
 - **Light & dark themes**: Modernized light atmosphere (soft sky wash + crisp work plates) plus full dark mode; Appearance: Light → Dark → System.
 - **Cloud Sync**: Optionally sign up to sync settings, tasks, and progress across devices via Supabase.
 - **Installable PWA**: Install Foci on your device and use it offline.
@@ -53,11 +54,11 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Task Import & Export**: Import tasks from Google Tasks (JSON), Todoist (CSV), Asana (CSV), Notion (CSV), or any CSV file. Preview shows new vs existing projects; choose a destination project or create projects from the file. Import from ⋯ → Import tasks, Settings → Data, or the Projects page. Export as JSON or CSV.
 - **Smart Filters**: Filter tasks by Today, This Week, This Month, or This Year (due in range or overdue) with project tabs for quick prioritization.
 - **Smart Plan**: Algorithmic day-by-day task scheduler at https://usefoci.com/app/plan. Analyzes tasks, due dates, and daily session capacity; flags overdue and won't-fit items; recommends Today's One Thing and starts Focus. Day-column schedule UI. No AI required.
-- **Project Metadata**: Assign muted colors, due dates, and descriptions to projects. Archive completed projects to keep their tasks. Deleting a project permanently deletes its tasks. Compact muted color swatches on project rows and tabs.
+- **Project Metadata**: Assign muted colors, due dates, and descriptions to projects. Click a color swatch to change color; right-click a project to rename. Archive completed projects to keep their tasks. Deleting a project permanently deletes its tasks.
 - **Tasks vs Projects**: Tasks is where you work (Cards, Buckets, List, Calendar, Plan). Projects in the top nav is where you manage, create, import, and delete projects.
 - **Layout URLs**: Shareable deep links — https://usefoci.com/app/cards , /app/buckets , /app/list , /app/calendar , /app/plan (bare /app uses your default view).
 - **Done tally**: Compact chip in the Tasks focus-bar title row beside late/today urgency. Mobile short labels (N today · W wk · M mo); larger screens use full period words. Pulses briefly on complete; tap jumps to completed work.
-- **Today's One Thing**: Borderless intent row under When/Layout (soft plate + left accent when set — not a heavy bordered card). Set from task detail → Set as Today's One Thing; Focus / complete / clear inline. Empty state is a quiet prompt.
+- **Today's One Thing**: Intent row under When/Layout next to Focus actions (soft plate + left accent when set). Set from task detail → Set as Today's One Thing; Focus / complete / clear inline. Empty state is a quiet prompt. Quote column sits beside it on wider screens.
 - **Add project**: Solid primary CTA on Tasks (and mobile toolbar) that opens Projects manage — not a ghost/outline control.
 - **Productivity Stats**: Dashboard with session heatmap, per-project charts, streak history, and daily/weekly/monthly analytics.
 - **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly in the task detail drawer. Completing a recurring task auto-creates the next open occurrence with an advanced due date and reset subtasks (not a background cron). Shared projects do not auto-spawn the next occurrence.
@@ -85,7 +86,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Print Task Views**: Print the active Cards, List, or Buckets layout from the toolbar.
 - **Project Tab Reorder**: Drag project tabs to reorder, or open Projects (top nav) — reorder via drag / ▲▼, pin with ★. Your projects grid is 1/2/3 columns (md/xl); expanding a project spans full width.
 - **Status Bar Flyouts**: Timer and music expand as flyout panels from the compact status bar — timer stays visually primary while weather, clock, and ambient music stay one click away.
-- **Daily Quote in Header**: Rotating motivational quote in the navbar between the logo and nav links on desktop.
+- **Daily Quote beside One Thing**: Rotating motivational quote in a compact column next to One Thing on desktop; keep/edit your own sticky quote anytime.
 - **Backlog Stats**: Stats dashboard with overdue count, open tasks, completion rate, and a backlog snapshot chart alongside session heatmaps and streak history.
 
 ## How to Use Foci
@@ -218,7 +219,7 @@ A: Cards (default) https://usefoci.com/app/cards , Buckets https://usefoci.com/a
 A: Yes. The Tasks focus-bar done tally shows completions for today, this week, and this month (compact labels on mobile). It pulses briefly when you complete a task; tap it to jump to completed work.
 
 **Q: Can I organize tasks with project colors?**
-A: Yes. Each project in Foci can have a muted custom color, due date, and description. Compact color swatches appear on project rows and tabs. You can archive completed projects to keep their tasks, or delete a project to permanently remove it and all of its tasks.
+A: Yes. Each project in Foci can have a muted custom color, due date, and description. Click the color swatch to open the color picker; right-click to rename. You can archive completed projects to keep their tasks, or delete a project to permanently remove it and all of its tasks.
 
 **Q: Does Foci have brown noise?**
 A: Yes. Foci includes a built-in brown noise generator that works completely offline using the Web Audio API. Brown noise is a deep, warm sound that's less harsh than white noise — ideal for long study sessions, deep work, and ADHD focus support.

@@ -19,7 +19,7 @@ export default function HomeAppMockup() {
         {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
         <img
           src="/home-app-preview.webp"
-          alt="Foci task board with projects organized as cards"
+          alt="Foci task board: Today's One Thing with Focus actions, plus project cards"
           width={1536}
           height={556}
           className="w-full h-auto block"
