@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useLayoutEffect, useState, type ReactNode } from "react";
+import React, { Suspense, useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import AppNavbar from "@/components/AppNavbar";
 import AppFocusBar from "@/components/AppFocusBar";
@@ -15,6 +15,8 @@ import { useAuth } from "@/components/AuthProvider";
 import type { ImportResult } from "@/components/TaskImportExport";
 import { hasLocalWorkspaceSnapshot } from "@/lib/storage";
 import { useTimerDocumentTitle } from "@/hooks/useTimerDocumentTitle";
+import { loadCustomQuote } from "@/lib/storage";
+import { CUSTOM_QUOTE_CHANGED_EVENT, getDisplayQuote } from "@/lib/quotes";
 
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
 
@@ -42,6 +44,18 @@ function WorkspaceChromeInner({
     goalMet,
     timerAnnouncement,
   } = useFocusSession();
+  const [customQuote, setCustomQuote] = useState<string | null>(null);
+
+  useEffect(() => {
+    const refresh = () => {
+      loadCustomQuote()
+        .then(setCustomQuote)
+        .catch((err) => console.error("[Foci] Failed to load custom quote:", err));
+    };
+    refresh();
+    window.addEventListener(CUSTOM_QUOTE_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(CUSTOM_QUOTE_CHANGED_EVENT, refresh);
+  }, []);
 
   useTimerDocumentTitle(timer.status, timer.remainingTime);
 
@@ -103,6 +117,7 @@ function WorkspaceChromeInner({
         show={showCelebration}
         goalMet={goalMet}
         streak={timer.dailyGoalData.streak}
+        quote={getDisplayQuote(customQuote)}
         onDismiss={() => setShowCelebration(false)}
       />
     </div>

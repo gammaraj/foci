@@ -359,6 +359,7 @@ export type Database = {
           task_view_explicit: boolean
           one_thing_task_id: string | null
           one_thing_date: string | null
+          custom_quote: string | null
         }
         Insert: {
           selected_project_id?: string
@@ -368,6 +369,7 @@ export type Database = {
           task_view_explicit?: boolean
           one_thing_task_id?: string | null
           one_thing_date?: string | null
+          custom_quote?: string | null
         }
         Update: {
           selected_project_id?: string
@@ -377,6 +379,7 @@ export type Database = {
           task_view_explicit?: boolean
           one_thing_task_id?: string | null
           one_thing_date?: string | null
+          custom_quote?: string | null
         }
         Relationships: []
       }

@@ -118,6 +118,8 @@ export interface StorageAdapter {
   saveTaskViewPreferences(prefs: Partial<TaskViewPreferences>): Promise<void>;
   loadOneThing(): Promise<OneThingPreference | null>;
   saveOneThing(pref: OneThingPreference | null): Promise<void>;
+  loadCustomQuote(): Promise<string | null>;
+  saveCustomQuote(quote: string | null): Promise<void>;
 
   // ── Collaboration ─────────────────────────────────────
   // Get collaborators for a project (owner only)
@@ -214,4 +216,5 @@ export type GuestMigrationPayload = {
   dailyGoal: DailyGoalData | null;
   taskViewPrefs: Partial<TaskViewPreferences> | null;
   oneThing: OneThingPreference | null;
+  customQuote: string | null;
 };

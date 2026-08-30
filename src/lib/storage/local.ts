@@ -16,6 +16,7 @@ import {
   type TaskViewPreferences,
 } from "../task-view-preference";
 import { parseOneThingPreference, type OneThingPreference } from "../one-thing";
+import { MAX_CUSTOM_QUOTE } from "../quotes";
 import { getToday, getYesterday, formatDateLocal, migrateDate } from "../dates";
 import {
   getTimerAlarmEnabled,
@@ -33,6 +34,8 @@ const PROJECTS_KEY = "foci_projects";
 const SELECTED_PROJECT_KEY = "foci_selected_project";
 const TASK_VIEW_PREFS_KEY = "foci_task_view_prefs";
 const ONE_THING_KEY = "foci_one_thing";
+const CUSTOM_QUOTE_KEY = "foci_custom_quote";
+const LEGACY_CUSTOM_QUOTE_KEY = "foci-custom-quote";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -348,6 +351,38 @@ export class LocalStorageAdapter implements StorageAdapter {
         return;
       }
       localStorage.setItem(ONE_THING_KEY, JSON.stringify(pref));
+    } catch { /* quota exceeded */ }
+  }
+
+  async loadCustomQuote(): Promise<string | null> {
+    if (!isBrowser()) return null;
+    try {
+      const raw =
+        localStorage.getItem(CUSTOM_QUOTE_KEY)?.trim() ||
+        localStorage.getItem(LEGACY_CUSTOM_QUOTE_KEY)?.trim() ||
+        "";
+      if (!raw) return null;
+      const quote = raw.slice(0, MAX_CUSTOM_QUOTE);
+      if (!localStorage.getItem(CUSTOM_QUOTE_KEY) && localStorage.getItem(LEGACY_CUSTOM_QUOTE_KEY)) {
+        localStorage.setItem(CUSTOM_QUOTE_KEY, quote);
+        localStorage.removeItem(LEGACY_CUSTOM_QUOTE_KEY);
+      }
+      return quote;
+    } catch {
+      return null;
+    }
+  }
+
+  async saveCustomQuote(quote: string | null): Promise<void> {
+    if (!isBrowser()) return;
+    try {
+      localStorage.removeItem(LEGACY_CUSTOM_QUOTE_KEY);
+      const trimmed = quote?.trim().slice(0, MAX_CUSTOM_QUOTE) ?? "";
+      if (!trimmed) {
+        localStorage.removeItem(CUSTOM_QUOTE_KEY);
+        return;
+      }
+      localStorage.setItem(CUSTOM_QUOTE_KEY, trimmed);
     } catch { /* quota exceeded */ }
   }
 

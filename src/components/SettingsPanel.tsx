@@ -7,8 +7,12 @@ import TaskImportExport, { type ImportResult } from "@/components/TaskImportExpo
 import AccountSharingModal from "@/components/AccountSharingModal";
 import ShareProjectModal from "@/components/ShareProjectModal";
 import { useAuth } from "@/components/AuthProvider";
-import { loadProjects, loadTaskViewPreferences, saveTaskViewPreferences } from "@/lib/storage";
+import { loadProjects, loadTaskViewPreferences, saveTaskViewPreferences, loadCustomQuote, saveCustomQuote } from "@/lib/storage";
 import { getFocusModeAuto, setFocusModeAuto, getStartTimerOnFocus, setStartTimerOnFocus } from "@/lib/focus-mode";
+import {
+  MAX_CUSTOM_QUOTE,
+  notifyCustomQuoteChanged,
+} from "@/lib/quotes";
 import TimerAlarmPicker from "@/components/TimerAlarmPicker";
 import {
   DEFAULT_TASK_VIEW_OPTIONS,
@@ -106,6 +110,7 @@ export default function SettingsPanel({
   const [notifications, setNotifications] = useState(settings.notificationsEnabled);
   const [focusModeAuto, setFocusModeAutoState] = useState(false);
   const [startTimerOnFocus, setStartTimerOnFocusState] = useState(true);
+  const [customQuoteDraft, setCustomQuoteDraft] = useState("");
   const [defaultTaskView, setDefaultTaskViewState] = useState<DefaultTaskView>("card");
   const [browserPerm, setBrowserPerm] = useState<NotificationPermission>("default");
   const [saved, setSaved] = useState(false);
@@ -118,6 +123,9 @@ export default function SettingsPanel({
   useEffect(() => {
     setFocusModeAutoState(getFocusModeAuto());
     setStartTimerOnFocusState(getStartTimerOnFocus());
+    loadCustomQuote()
+      .then((q) => setCustomQuoteDraft(q ?? ""))
+      .catch((err) => console.error("[Foci] Failed to load custom quote:", err));
     loadTaskViewPreferences()
       .then((prefs) => setDefaultTaskViewState(prefs.defaultTaskView))
       .catch((err) => console.error("[Foci] Failed to load task view preference:", err));
@@ -545,7 +553,60 @@ export default function SettingsPanel({
                     />
                   </section>
 
-                  <section>
+                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5 space-y-2">
+                    <div>
+                      <label
+                        htmlFor="custom-quote"
+                        className="text-sm font-medium text-slate-800 dark:text-slate-100"
+                      >
+                        Your quote
+                      </label>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                        Shown next to One Thing. When set, it stays put and won&apos;t rotate daily.
+                        Clear it to go back to the daily quote.
+                        {user ? " Synced with your account." : " Saved with your local workspace."}
+                      </p>
+                    </div>
+                    <textarea
+                      id="custom-quote"
+                      value={customQuoteDraft}
+                      maxLength={MAX_CUSTOM_QUOTE}
+                      rows={2}
+                      placeholder='e.g. Deep work first — then everything else'
+                      onChange={(e) => setCustomQuoteDraft(e.target.value)}
+                      onBlur={() => {
+                        const next = customQuoteDraft.trim().slice(0, MAX_CUSTOM_QUOTE);
+                        void saveCustomQuote(next || null)
+                          .then(() => {
+                            setCustomQuoteDraft(next);
+                            notifyCustomQuoteChanged();
+                          })
+                          .catch((err) => console.error("[Foci] Failed to save custom quote:", err));
+                      }}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y min-h-[2.75rem]"
+                    />
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-slate-400 tabular-nums">
+                        {customQuoteDraft.trim().length}/{MAX_CUSTOM_QUOTE}
+                      </span>
+                      {customQuoteDraft.trim() && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomQuoteDraft("");
+                            void saveCustomQuote(null)
+                              .then(() => notifyCustomQuoteChanged())
+                              .catch((err) => console.error("[Foci] Failed to clear custom quote:", err));
+                          }}
+                          className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+                        >
+                          Use daily quote instead
+                        </button>
+                      )}
+                    </div>
+                  </section>
+
+                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <label

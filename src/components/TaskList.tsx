@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, subscribeSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, subscribeSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, loadCustomQuote, saveCustomQuote, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted, trackSharedProjectOpened } from "@/lib/analytics";
@@ -96,6 +96,7 @@ import {
   moveProjectInDisplayOrder,
   resolveProjectColor,
   pickProjectColor,
+  filterTasksByQuery,
 } from "@/components/task-list/utils";
 import { OneThingCard } from "@/components/task-list/OneThingCard";
 import {
@@ -105,12 +106,14 @@ import {
 } from "@/lib/one-thing";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
+import { TaskSearchField } from "@/components/task-list/TaskSearchField";
 import {
   ProjectEditMenu,
   ProjectNameInput,
   canRenameProject,
   useProjectEditMenu,
 } from "@/components/task-list/ProjectEditMenu";
+import { CUSTOM_QUOTE_CHANGED_EVENT, getDisplayQuote, notifyCustomQuoteChanged } from "@/lib/quotes";
 
 const VIEW_RETURN_LABELS: Record<string, string> = {
   card: "Cards",
@@ -213,6 +216,19 @@ export default function TaskList({
   const [preparingPrint, setPreparingPrint] = useState(false);
   const [oneThingPref, setOneThingPref] = useState<OneThingPreference | null>(null);
   const [oneThingPromptDismissed, setOneThingPromptDismissed] = useState(false);
+  const [customQuote, setCustomQuote] = useState<string | null>(null);
+  const displayQuote = getDisplayQuote(customQuote);
+
+  useEffect(() => {
+    const refreshQuote = () => {
+      loadCustomQuote()
+        .then((q) => setCustomQuote(q))
+        .catch((err) => console.error("[Foci] Failed to load custom quote:", err));
+    };
+    refreshQuote();
+    window.addEventListener(CUSTOM_QUOTE_CHANGED_EVENT, refreshQuote);
+    return () => window.removeEventListener(CUSTOM_QUOTE_CHANGED_EVENT, refreshQuote);
+  }, []);
 
   // Instant paint from last local snapshot — after hydrate, before browser paint.
   useLayoutEffect(() => {
@@ -2248,10 +2264,11 @@ export default function TaskList({
       : isAllProjects
         ? tasks.filter((t) => !t.archivedAt)
         : tasks.filter((t) => t.projectId === selectedProjectId && !t.archivedAt);
-  const projectTasks =
+  const projectTasksUnfiltered =
     isTimeFilter && projectFilterId !== ALL_PROJECTS_ID
       ? timeScopedTasks.filter((t) => t.projectId === projectFilterId)
       : timeScopedTasks;
+  const projectTasks = filterTasksByQuery(projectTasksUnfiltered, cardQuery, projects);
   const isAllProjectsScopeActive = isTimeFilter
     ? projectFilterId === ALL_PROJECTS_ID
     : isAllProjects;
@@ -2386,7 +2403,11 @@ export default function TaskList({
     }
     return tasks.filter((t) => !t.archivedAt);
   })();
-  const bucketOpenTasks = bucketScopedTasks.filter((t) => !t.completed && !t.archivedAt);
+  const bucketOpenTasks = filterTasksByQuery(
+    bucketScopedTasks.filter((t) => !t.completed && !t.archivedAt),
+    cardQuery,
+    projects,
+  );
   const bucketDatedCount = bucketOpenTasks.filter((t) => t.dueDate).length;
   const bucketUndatedCount = bucketOpenTasks.filter((t) => !t.dueDate).length;
   const bucketTasksByProject = new Map<string, Task[]>();
@@ -2408,14 +2429,17 @@ export default function TaskList({
 
   // Done today must ignore time filters (those scopes are open-task-only).
   const listCompletedScope = (() => {
-    if (isViewingSharedProject) {
-      return currentSharedProjectTasks.filter((t) => !t.archivedAt);
-    }
-    const scopeId = isTimeFilter ? projectFilterId : selectedProjectId;
-    if (scopeId === ALL_PROJECTS_ID) {
-      return tasks.filter((t) => !t.archivedAt);
-    }
-    return tasks.filter((t) => !t.archivedAt && t.projectId === scopeId);
+    const scoped = (() => {
+      if (isViewingSharedProject) {
+        return currentSharedProjectTasks.filter((t) => !t.archivedAt);
+      }
+      const scopeId = isTimeFilter ? projectFilterId : selectedProjectId;
+      if (scopeId === ALL_PROJECTS_ID) {
+        return tasks.filter((t) => !t.archivedAt);
+      }
+      return tasks.filter((t) => !t.archivedAt && t.projectId === scopeId);
+    })();
+    return filterTasksByQuery(scoped, cardQuery, projects);
   })();
   const completedTasks = listCompletedScope.filter((t) => t.completed);
   const doneTodayTasks = getDoneTodayTasks(listCompletedScope);
@@ -2920,29 +2944,11 @@ export default function TaskList({
             </div>
 
             <div className="flex-1 min-w-0 flex justify-center px-1">
-              {viewMode === "card" && (
-                <label className="relative w-full max-w-md min-w-0">
-                  <span className="sr-only">Search projects and tasks</span>
-                  <svg
-                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
-                  </svg>
-                  <input
-                    type="search"
-                    value={cardQuery}
-                    onChange={(e) => setCardQuery(e.target.value)}
-                    placeholder="Filter projects or tasks…"
-                    className="w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 shadow-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
-                    aria-label="Filter projects or tasks"
-                    data-tour="card-filter"
-                  />
-                </label>
-              )}
+              <TaskSearchField
+                value={cardQuery}
+                onChange={setCardQuery}
+                className="w-full max-w-md"
+              />
             </div>
 
             <div className="flex items-center justify-end gap-2 shrink-0 min-w-0" data-tour="view-modes">
@@ -3028,9 +3034,13 @@ export default function TaskList({
           onClearTimeFilter={() => selectProject(ALL_PROJECTS_ID)}
           cardQuery={cardQuery}
           onCardQueryChange={setCardQuery}
-          showCardSearch={viewMode === "card"}
+          showCardSearch
         />
         )}
+
+        <div className="roomy:hidden land-compact:hidden mt-1.5">
+          <TaskSearchField value={cardQuery} onChange={setCardQuery} size="compact" />
+        </div>
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
           <p className="no-print roomy:hidden land-compact:hidden mt-1 text-xs text-slate-500 dark:text-slate-400 leading-none flex items-center gap-2">
@@ -3079,6 +3089,16 @@ export default function TaskList({
             hasOpenTasks={allOpenCount > 0}
             isTimerRunning={isTimerRunning}
             isFocused={!!oneThingResolved.task && activeTaskId === oneThingResolved.task.id}
+            quote={displayQuote || null}
+            isCustomQuote={!!customQuote?.trim()}
+            onSaveQuote={(next) => {
+              void saveCustomQuote(next)
+                .then(() => {
+                  setCustomQuote(next);
+                  notifyCustomQuoteChanged();
+                })
+                .catch((err) => console.error("[Foci] Failed to save custom quote:", err));
+            }}
             onFocus={() => {
               if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
             }}
@@ -3145,7 +3165,7 @@ export default function TaskList({
       {/* Smart Plan view */}
       {!projectManageOpen && viewMode === "plan" && (
         <SmartPlan
-          tasks={tasks}
+          tasks={filterTasksByQuery(tasks, cardQuery, projects)}
           projects={projects}
           settings={planSettings}
           onStartTask={onStartTask}
@@ -3157,7 +3177,7 @@ export default function TaskList({
       {/* Calendar view */}
       {!projectManageOpen && viewMode === "calendar" && (
         <TaskCalendarView
-          tasks={tasks}
+          tasks={filterTasksByQuery(tasks, cardQuery, projects)}
           projects={projects}
           calendarDate={calendarDate}
           setCalendarDate={setCalendarDate}
@@ -3928,18 +3948,22 @@ export default function TaskList({
         {tasksReady && pendingTasks.length === 0 && completedTasks.length === 0 && (
           <div className="py-4">
             <div className="text-center mb-6 px-4">
-              {isTimeFilter ? (
+              {isTimeFilter || cardQuery.trim() ? (
                 <FociDot mood="meh" size={56} className="mx-auto mb-3" />
               ) : (
                 <BusyBeaver size={96} className="mx-auto mb-3" />
               )}
               <p className="text-slate-700 dark:text-slate-200 text-lg font-semibold mb-2">
-                {isTimeFilter 
+                {cardQuery.trim()
+                  ? `No tasks match “${cardQuery.trim()}”`
+                  : isTimeFilter 
                   ? `No tasks due ${isTodayFilter ? "today" : isThisWeekFilter ? "this week" : isThisMonthFilter ? "this month" : "this year"}` 
                   : "Your task list is empty"}
               </p>
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto mb-4">
-                {isTimeFilter 
+                {cardQuery.trim()
+                  ? "Try a different search, or clear the filter."
+                  : isTimeFilter 
                   ? "Add a task above to get started" 
                   : isListDrillIn
                     ? "Add a task above to get started"
@@ -3949,7 +3973,7 @@ export default function TaskList({
                 <AddProjectButton onClick={openProjectManage} />
               )}
             </div>
-            {!isTimeFilter && !isListDrillIn && (
+            {!isTimeFilter && !isListDrillIn && !cardQuery.trim() && (
               <ProjectTemplatePicker variant="cards" onSelect={addProject} />
             )}
           </div>

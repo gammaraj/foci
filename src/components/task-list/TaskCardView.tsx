@@ -1106,29 +1106,6 @@ export default function TaskCardView({
 
   return (
     <div className="pb-3 pt-0.5">
-      {/* Portrait phone only — landscape inlines search in MobileTaskToolbar */}
-      <div className="panel-pad-x mb-1.5 roomy:hidden land-compact:hidden">
-        <label className="relative block w-full">
-          <span className="sr-only">Search projects and tasks</span>
-          <svg
-            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
-          </svg>
-          <input
-            type="search"
-            value={cardQuery}
-            onChange={(e) => setCardQuery(e.target.value)}
-            placeholder="Filter projects or tasks…"
-            className="w-full pl-7 pr-2.5 py-1 min-h-[1.875rem] text-xs rounded-md border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 dark:focus:border-blue-400"
-            aria-label="Filter projects or tasks"
-          />
-        </label>
-      </div>
       {showSecondaryTools && (
       <div className="panel-pad-x mb-1.5 flex flex-wrap items-center gap-2">
         {!suppressOverdueBanner && overdueCount > 0 && onViewOverdue && (

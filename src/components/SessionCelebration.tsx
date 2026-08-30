@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { BusyBeaver } from "@/components/BusyBeaver";
 import TimerAlarmPicker from "@/components/TimerAlarmPicker";
+import { parseQuote } from "@/lib/quotes";
 
 interface SessionCelebrationProps {
   show: boolean;
   goalMet: boolean;
   streak: number;
+  quote?: string | null;
   onDismiss: () => void;
   onFeedback?: (rating: "focused" | "distracted" | "break-early") => void;
 }
@@ -16,6 +18,7 @@ export default function SessionCelebration({
   show,
   goalMet,
   streak,
+  quote,
   onDismiss,
   onFeedback,
 }: SessionCelebrationProps) {
@@ -35,6 +38,8 @@ export default function SessionCelebration({
 
   if (!visible) return null;
 
+  const parsed = quote ? parseQuote(quote) : null;
+
   return (
     <div className="fixed bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
       <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-blue-300 dark:border-blue-600 p-4 shadow-2xl">
@@ -49,6 +54,17 @@ export default function SessionCelebration({
                 ? `${streak}-day streak — Beavy says keep chewing.`
                 : "Nice work. Take a break or start another session."}
             </p>
+            {parsed ? (
+              <p className="text-sm italic text-slate-600 dark:text-slate-300 mt-2 leading-snug">
+                &ldquo;{parsed.text}&rdquo;
+                {parsed.author ? (
+                  <span className="not-italic text-slate-500 dark:text-slate-400">
+                    {" "}
+                    — {parsed.author}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
             {onFeedback && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {([

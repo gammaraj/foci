@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Task } from "@/lib/types";
 import type { OneThingStatus } from "@/lib/one-thing";
+import { MAX_CUSTOM_QUOTE, parseQuote } from "@/lib/quotes";
 
 export interface OneThingCardProps {
   status: OneThingStatus;
@@ -11,6 +12,12 @@ export interface OneThingCardProps {
   hasOpenTasks: boolean;
   isTimerRunning: boolean;
   isFocused: boolean;
+  /** Motivational line (custom sticky quote or today’s rotating quote). */
+  quote?: string | null;
+  /** True when the displayed quote is the user’s saved custom quote. */
+  isCustomQuote?: boolean;
+  /** Persist a custom quote (null clears → back to daily rotation). */
+  onSaveQuote?: (quote: string | null) => void;
   onFocus: () => void;
   onComplete: () => void;
   onChange: () => void;
@@ -18,9 +25,11 @@ export interface OneThingCardProps {
   onDismissEmpty?: () => void;
 }
 
-/** Active / done — soft plate, left accent, no heavy outline box. */
+const twoCol =
+  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-x-4 gap-y-1.5 items-stretch panel-inset-x mt-1 mb-0.5 land-compact:hidden";
+
 const plate =
-  "no-print flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1 panel-inset-x mt-1 mb-0.5";
+  "flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1";
 
 const activePlate =
   "ring-blue-500/20 dark:ring-blue-400/25 bg-blue-500/[0.07] dark:bg-blue-500/10 border-l-[3px] border-l-blue-500 dark:border-l-blue-400";
@@ -67,6 +76,143 @@ function OneThingHowTo() {
   );
 }
 
+function QuoteColumn({
+  quote,
+  isCustomQuote,
+  onSaveQuote,
+}: {
+  quote?: string | null;
+  isCustomQuote?: boolean;
+  onSaveQuote?: (quote: string | null) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const skipCommitRef = useRef(false);
+
+  useEffect(() => {
+    if (!editing) return;
+    inputRef.current?.focus();
+    const el = inputRef.current;
+    if (el) {
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    }
+  }, [editing]);
+
+  const startEdit = () => {
+    if (!onSaveQuote) return;
+    setDraft(isCustomQuote && quote ? quote : "");
+    setEditing(true);
+  };
+
+  const commit = () => {
+    if (!onSaveQuote) return;
+    if (skipCommitRef.current) {
+      skipCommitRef.current = false;
+      return;
+    }
+    const next = draft.trim().slice(0, MAX_CUSTOM_QUOTE);
+    setEditing(false);
+    onSaveQuote(next || null);
+  };
+
+  const cancel = () => {
+    skipCommitRef.current = true;
+    setEditing(false);
+    setDraft("");
+  };
+
+  if (editing && onSaveQuote) {
+    return (
+      <div className="min-w-0 flex flex-col justify-center gap-1 min-h-[2.25rem] rounded-2xl px-2.5 py-1.5 ring-1 ring-slate-200/80 dark:ring-[#243350] bg-white/60 dark:bg-white/[0.03]">
+        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-500">
+          Your quote
+        </span>
+        <textarea
+          ref={inputRef}
+          value={draft}
+          maxLength={MAX_CUSTOM_QUOTE}
+          rows={2}
+          placeholder="Write a quote that stays — leave blank for daily"
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              cancel();
+            }
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              commit();
+            }
+          }}
+          className="w-full resize-none bg-transparent text-xs italic text-slate-700 dark:text-slate-200 placeholder:not-italic placeholder:text-slate-400 outline-none"
+          aria-label="Your custom quote"
+        />
+        <span className="text-[10px] text-slate-400 tabular-nums self-end">
+          {draft.trim().length}/{MAX_CUSTOM_QUOTE}
+        </span>
+      </div>
+    );
+  }
+
+  if (!quote?.trim()) {
+    if (!onSaveQuote) return null;
+    return (
+      <button
+        type="button"
+        onClick={startEdit}
+        className="hidden min-[520px]:flex min-w-0 items-center justify-end min-h-[2.25rem] rounded-2xl px-2.5 py-1.5 text-right text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-500/[0.06] dark:hover:bg-white/[0.04] transition-colors"
+      >
+        Add your quote
+      </button>
+    );
+  }
+
+  const { text, author } = parseQuote(quote);
+  const label = author ? `${text} — ${author}` : text;
+
+  return (
+    <div
+      className={
+        "hidden min-[520px]:flex min-w-0 flex-col justify-center gap-0.5 min-h-[2.25rem] pl-3 border-l border-slate-200/80 dark:border-[#243350]"
+      }
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-500">
+          {isCustomQuote ? "Your quote" : "Today"}
+        </span>
+        {onSaveQuote && (
+          <button
+            type="button"
+            onClick={startEdit}
+            className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            {isCustomQuote ? "Edit" : "Make yours"}
+          </button>
+        )}
+      </div>
+      <p
+        className="min-w-0 line-clamp-2 text-xs italic font-normal text-slate-500 dark:text-slate-400 text-left"
+        title={label}
+      >
+        &ldquo;{text}&rdquo;
+        {author ? <span className="not-italic opacity-80"> — {author}</span> : null}
+      </p>
+      {isCustomQuote && onSaveQuote && (
+        <button
+          type="button"
+          onClick={() => onSaveQuote(null)}
+          className="self-start text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+        >
+          Use daily quote
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function OneThingCard({
   status,
   task,
@@ -74,6 +220,9 @@ export function OneThingCard({
   hasOpenTasks,
   isTimerRunning,
   isFocused,
+  quote,
+  isCustomQuote,
+  onSaveQuote,
   onFocus,
   onComplete,
   onChange,
@@ -105,54 +254,58 @@ export function OneThingCard({
     };
   }, [detailsOpen, closeDetails]);
 
+  const quoteCol = (
+    <QuoteColumn quote={quote} isCustomQuote={isCustomQuote} onSaveQuote={onSaveQuote} />
+  );
+
   if (status === "unset") {
     const prompt = hasOpenTasks
       ? "Open a task → Set as One Thing"
       : "Add a task, then set it as your One Thing";
 
     return (
-      <div ref={rootRef} data-tour="one-thing" className="relative min-w-0 land-compact:hidden">
-        {/* Borderless intent row — reads as guidance, not another chrome box */}
-        <div className="relative flex items-center justify-center min-h-[2.25rem] panel-inset-x mt-0.5 mb-0.5">
-          <button
-            type="button"
-            onClick={() => setDetailsOpen((v) => !v)}
-            aria-expanded={detailsOpen}
-            aria-controls={detailsId}
-            className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 max-w-full min-w-0 rounded-lg px-3 py-1.5 text-left outline-none transition-colors hover:bg-blue-500/[0.08] dark:hover:bg-blue-400/10 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a] ${
-              onDismissEmpty ? "pr-8" : ""
-            }`}
-            title="How to set Today’s One Thing"
-          >
-            <StarIcon className="w-3.5 h-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
-            <span className="shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300">
-              <span className="roomy:hidden">ONE</span>
-              <span className="hidden roomy:inline">One Thing</span>
-            </span>
-            <span className="hidden sm:inline text-blue-400/70 dark:text-blue-500/70" aria-hidden>
-              ·
-            </span>
-            <span className="min-w-0 truncate text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
-              {prompt}
-            </span>
-            <ChevronIcon
-              open={detailsOpen}
-              className="w-3.5 h-3.5 shrink-0 text-slate-400 dark:text-slate-500"
-            />
-            <span className="sr-only">{detailsOpen ? "Hide details" : "Show how to pick"}</span>
-          </button>
-          {onDismissEmpty && (
+      <div ref={rootRef} data-tour="one-thing" className="relative min-w-0">
+        <div className={`${twoCol} ${onDismissEmpty ? "pr-9 min-[520px]:pr-0" : ""}`}>
+          <div className="relative flex items-center min-h-[2.25rem] min-w-0">
             <button
               type="button"
-              onClick={onDismissEmpty}
-              className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-500/10 dark:hover:bg-white/10"
-              aria-label="Dismiss One Thing prompt"
+              onClick={() => setDetailsOpen((v) => !v)}
+              aria-expanded={detailsOpen}
+              aria-controls={detailsId}
+              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 max-w-full min-w-0 rounded-lg px-2 sm:px-3 py-1.5 text-left outline-none transition-colors hover:bg-blue-500/[0.08] dark:hover:bg-blue-400/10 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#0f172a]"
+              title="How to set Today’s One Thing"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <StarIcon className="w-3.5 h-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+              <span className="shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300">
+                <span className="roomy:hidden">ONE</span>
+                <span className="hidden roomy:inline">One Thing</span>
+              </span>
+              <span className="hidden sm:inline text-blue-400/70 dark:text-blue-500/70" aria-hidden>
+                ·
+              </span>
+              <span className="min-w-0 truncate text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
+                {prompt}
+              </span>
+              <ChevronIcon
+                open={detailsOpen}
+                className="w-3.5 h-3.5 shrink-0 text-slate-400 dark:text-slate-500"
+              />
+              <span className="sr-only">{detailsOpen ? "Hide details" : "Show how to pick"}</span>
             </button>
-          )}
+            {onDismissEmpty && (
+              <button
+                type="button"
+                onClick={onDismissEmpty}
+                className="absolute right-0 top-1/2 -translate-y-1/2 min-[520px]:hidden p-1.5 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-500/10 dark:hover:bg-white/10"
+                aria-label="Dismiss One Thing prompt"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {quoteCol}
         </div>
         {detailsOpen && (
           <div
@@ -170,91 +323,97 @@ export function OneThingCard({
 
   if (status === "done" && task) {
     return (
-      <div data-tour="one-thing" className={`${plate} ${donePlate}`}>
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="inline-flex items-center shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-emerald-700 dark:text-emerald-300">
-            Done
-          </span>
-          <p
-            className="min-w-0 truncate text-sm font-medium text-slate-600 dark:text-emerald-50/90 line-through decoration-slate-400/70 dark:decoration-emerald-600/50"
-            title={task.title}
+      <div data-tour="one-thing" className={twoCol}>
+        <div className={`${plate} ${donePlate}`}>
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="inline-flex items-center shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-emerald-700 dark:text-emerald-300">
+              Done
+            </span>
+            <p
+              className="min-w-0 truncate text-sm font-medium text-slate-600 dark:text-emerald-50/90 line-through decoration-slate-400/70 dark:decoration-emerald-600/50"
+              title={task.title}
+            >
+              {task.title}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClear}
+            className="shrink-0 text-xs font-semibold text-slate-500 dark:text-emerald-200/90 hover:text-slate-800 dark:hover:text-emerald-50 hover:underline px-1.5 py-0.5"
           >
-            {task.title}
-          </p>
+            Clear
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onClear}
-          className="shrink-0 text-xs font-semibold text-slate-500 dark:text-emerald-200/90 hover:text-slate-800 dark:hover:text-emerald-50 hover:underline px-1.5 py-0.5"
-        >
-          Clear
-        </button>
+        {quoteCol}
       </div>
     );
   }
 
   if (status === "active" && task) {
     return (
-      <div data-tour="one-thing" className={`${plate} ${activePlate}`}>
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-          <span
-            className="inline-flex items-center gap-1 shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300"
-            title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
-          >
-            <StarIcon className="w-3 h-3 hidden min-[400px]:block" />
-            <span className="roomy:hidden">ONE</span>
-            <span className="hidden roomy:inline">One Thing</span>
-          </span>
-          <p
-            className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white"
-            title={projectName ? `${task.title} · ${projectName}` : task.title}
-          >
-            {task.title}
-          </p>
+      <div data-tour="one-thing" className={twoCol}>
+        <div className={`${plate} ${activePlate}`}>
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+            <span
+              className="inline-flex items-center gap-1 shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-blue-700 dark:text-blue-300"
+              title={projectName ? `Today's One Thing · ${projectName}` : "Today's One Thing"}
+            >
+              <StarIcon className="w-3 h-3 hidden min-[400px]:block" />
+              <span className="roomy:hidden">ONE</span>
+              <span className="hidden roomy:inline">One Thing</span>
+            </span>
+            <p
+              className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white"
+              title={projectName ? `${task.title} · ${projectName}` : task.title}
+            >
+              {task.title}
+            </p>
+          </div>
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={onFocus}
+              className={
+                isFocused
+                  ? "btn-primary gap-1 px-2 sm:px-2.5 py-1 text-xs"
+                  : "inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
+              }
+              title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
+              aria-label={isFocused ? "Focused on One Thing" : "Focus on One Thing"}
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+              </svg>
+              <span className="hidden min-[400px]:inline">{isFocused ? "On" : "Focus"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={onComplete}
+              className="inline-flex items-center px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            >
+              Done
+            </button>
+            <button
+              type="button"
+              onClick={onChange}
+              className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300"
+            >
+              Change
+            </button>
+            <button
+              type="button"
+              onClick={onClear}
+              className="inline-flex items-center p-1 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white hover:bg-slate-500/10 dark:hover:bg-white/10"
+              aria-label="Clear One Thing"
+              title="Clear"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={onFocus}
-            className={
-              isFocused
-                ? "btn-primary gap-1 px-2 sm:px-2.5 py-1 text-xs"
-                : "inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
-            }
-            title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
-            aria-label={isFocused ? "Focused on One Thing" : "Focus on One Thing"}
-          >
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-              <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-            </svg>
-            <span className="hidden min-[400px]:inline">{isFocused ? "On" : "Focus"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={onComplete}
-            className="inline-flex items-center px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
-          >
-            Done
-          </button>
-          <button
-            type="button"
-            onClick={onChange}
-            className="hidden sm:inline-flex items-center px-1.5 py-1 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300"
-          >
-            Change
-          </button>
-          <button
-            type="button"
-            onClick={onClear}
-            className="inline-flex items-center p-1 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white hover:bg-slate-500/10 dark:hover:bg-white/10"
-            aria-label="Clear One Thing"
-            title="Clear"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        {quoteCol}
       </div>
     );
   }

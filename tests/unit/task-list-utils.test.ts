@@ -11,8 +11,9 @@ import {
   getProjectsDragPreview,
   moveProjectInDisplayOrder,
   resolveProjectColor,
+  filterTasksByQuery,
 } from "@/components/task-list/utils";
-import type { Project, Subtask } from "@/lib/types";
+import type { Project, Subtask, Task } from "@/lib/types";
 import { getToday, getTomorrow } from "@/lib/dates";
 
 describe("task-list utils", () => {
@@ -100,5 +101,20 @@ describe("task-list utils", () => {
     expect(reorderSubtasks(subtasks, "c", "a")?.map((s) => s.id)).toEqual(["c", "a", "b"]);
     expect(reorderSubtasks(subtasks, "a", "a")).toBeNull();
     expect(reorderSubtasks(subtasks, "missing", "a")).toBeNull();
+  });
+
+  it("filterTasksByQuery matches title or project name", () => {
+    const projects: Pick<Project, "id" | "name">[] = [
+      { id: "p1", name: "Writing" },
+      { id: "p2", name: "Home" },
+    ];
+    const tasks = [
+      { id: "1", title: "Draft essay", projectId: "p1" },
+      { id: "2", title: "Buy milk", projectId: "p2" },
+    ] as Task[];
+    expect(filterTasksByQuery(tasks, "", projects).map((t) => t.id)).toEqual(["1", "2"]);
+    expect(filterTasksByQuery(tasks, "essay", projects).map((t) => t.id)).toEqual(["1"]);
+    expect(filterTasksByQuery(tasks, "home", projects).map((t) => t.id)).toEqual(["2"]);
+    expect(filterTasksByQuery(tasks, "xyz", projects)).toEqual([]);
   });
 });

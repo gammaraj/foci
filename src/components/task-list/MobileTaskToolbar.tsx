@@ -11,6 +11,7 @@ import {
   THIS_YEAR_FILTER_ID,
 } from "@/lib/types";
 import { projectTabLabel, projectTabTooltip } from "@/components/task-list/utils";
+import { TaskSearchField } from "@/components/task-list/TaskSearchField";
 
 const SELECT_CLASS =
   "min-w-0 px-1.5 py-1 min-h-[2rem] text-xs font-medium rounded-md border outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.3rem_center] bg-no-repeat pr-5 truncate";
@@ -175,27 +176,12 @@ export function MobileTaskToolbar({
         )}
 
         {landscapeSearch && (
-          <label className="relative hidden land-compact:block flex-1 min-w-[7rem]">
-            <span className="sr-only">Search projects and tasks</span>
-            <svg
-              className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
-            </svg>
-            <input
-              type="search"
-              value={cardQuery}
-              onChange={(e) => onCardQueryChange?.(e.target.value)}
-              placeholder="Filter…"
-              className="w-full pl-7 pr-2 py-1 min-h-[2rem] text-xs rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 outline-none focus:border-blue-500"
-              aria-label="Filter projects or tasks"
-              data-tour="card-filter"
-            />
-          </label>
+          <TaskSearchField
+            value={cardQuery}
+            onChange={onCardQueryChange ?? (() => {})}
+            size="compact"
+            className="hidden land-compact:block flex-1 min-w-[7rem]"
+          />
         )}
 
         <button

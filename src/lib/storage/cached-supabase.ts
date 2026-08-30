@@ -41,6 +41,7 @@ const CACHE_KEYS = {
   selectedProject: `${CACHE_PREFIX}selected_project`,
   taskViewPrefs: `${CACHE_PREFIX}task_view_prefs`,
   oneThing: `${CACHE_PREFIX}one_thing`,
+  customQuote: `${CACHE_PREFIX}custom_quote`,
 } as const;
 
 function isBrowser(): boolean {
@@ -159,6 +160,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   private refreshingProjects = false;
   private refreshingTaskViewPrefs = false;
   private refreshingOneThing = false;
+  private refreshingCustomQuote = false;
   /** In-flight task writes — background refresh must not clobber these. */
   private pendingTaskWrites = 0;
 
@@ -483,6 +485,36 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   async saveOneThing(pref: OneThingPreference | null): Promise<void> {
     cacheSet(CACHE_KEYS.oneThing, pref);
     await syncOrKeepLocal("one thing", () => this.remote.saveOneThing(pref));
+  }
+
+  async loadCustomQuote(): Promise<string | null> {
+    if (cacheHas(CACHE_KEYS.customQuote)) {
+      const cached = cacheGet<string | null>(CACHE_KEYS.customQuote) ?? null;
+      if (!this.refreshingCustomQuote) {
+        this.refreshingCustomQuote = true;
+        void this.remote
+          .loadCustomQuote()
+          .then((result) => cacheSet(CACHE_KEYS.customQuote, result))
+          .catch(() => {})
+          .finally(() => {
+            this.refreshingCustomQuote = false;
+          });
+      }
+      return cached;
+    }
+
+    try {
+      const result = await this.remote.loadCustomQuote();
+      cacheSet(CACHE_KEYS.customQuote, result);
+      return result;
+    } catch {
+      return cacheGet<string | null>(CACHE_KEYS.customQuote) ?? null;
+    }
+  }
+
+  async saveCustomQuote(quote: string | null): Promise<void> {
+    cacheSet(CACHE_KEYS.customQuote, quote);
+    await syncOrKeepLocal("custom quote", () => this.remote.saveCustomQuote(quote));
   }
 
   // ── Collaboration (delegate to remote, no caching) ────────

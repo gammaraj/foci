@@ -591,6 +591,31 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     );
   }
 
+  async loadCustomQuote(): Promise<string | null> {
+    const userId = await this.getUserId();
+    const data = check(
+      await this.supabase
+        .from("user_preferences")
+        .select("custom_quote")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      { silent: true },
+    );
+    const quote = data?.custom_quote?.trim();
+    return quote ? quote.slice(0, 160) : null;
+  }
+
+  async saveCustomQuote(quote: string | null): Promise<void> {
+    const userId = await this.getUserId();
+    const trimmed = quote?.trim().slice(0, 160) || null;
+    check(
+      await this.supabase.from("user_preferences").upsert({
+        user_id: userId,
+        custom_quote: trimmed,
+      })
+    );
+  }
+
   // ── Collaboration ─────────────────────────────────────
 
   async getProjectCollaborators(projectId: string): Promise<CollaboratorInfo[]> {
@@ -1238,6 +1263,9 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       preferences.one_thing_task_id = payload.oneThing.taskId;
       preferences.one_thing_date = payload.oneThing.date;
     }
+    if (payload.customQuote) {
+      preferences.custom_quote = payload.customQuote.slice(0, 160);
+    }
     if (Object.keys(preferences).length > 0) {
       out.preferences = preferences;
     }
@@ -1266,6 +1294,9 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     }
     if (payload.oneThing) {
       await this.saveOneThing(payload.oneThing);
+    }
+    if (payload.customQuote) {
+      await this.saveCustomQuote(payload.customQuote);
     }
   }
 

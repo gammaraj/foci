@@ -13,6 +13,7 @@ import {
   miniDockGhostButtonClass,
   MiniSettingsIcon,
 } from "@/components/FocusStripControls";
+import { parseQuote } from "@/lib/quotes";
 import {
   formatTimerDisplay,
   formatWorkDurationAria,
@@ -826,7 +827,8 @@ export default function FocusDockPanel({
         </div>
         {lastQuote && (timerStatus === "break" || timerStatus === "idle") && (
           <p className="text-xs italic text-slate-500 dark:text-slate-400 text-center leading-snug pt-2 line-clamp-2">
-            &ldquo;{lastQuote}&rdquo;
+            &ldquo;{parseQuote(lastQuote).text}&rdquo;
+            {parseQuote(lastQuote).author ? ` — ${parseQuote(lastQuote).author}` : ""}
           </p>
         )}
       </CompactTimerPopover>
@@ -940,7 +942,10 @@ export default function FocusDockPanel({
         {lastQuote && (timerStatus === "break" || timerStatus === "idle") && (
           <div className="px-4 pb-3">
             <p className="text-sm italic text-slate-500 dark:text-slate-400 text-center leading-relaxed">
-              &ldquo;{lastQuote}&rdquo;
+              &ldquo;{parseQuote(lastQuote).text}&rdquo;
+              {parseQuote(lastQuote).author ? (
+                <span className="not-italic"> — {parseQuote(lastQuote).author}</span>
+              ) : null}
             </p>
           </div>
         )}

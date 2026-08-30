@@ -1,4 +1,4 @@
-import type { Project, RecurrenceType, Subtask } from "@/lib/types";
+import type { Project, RecurrenceType, Subtask, Task } from "@/lib/types";
 import { LEGACY_PROJECT_COLOR_MAP, PROJECT_COLORS } from "@/lib/types";
 import { diffCalendarDays, formatDateLocal, getToday, getTomorrow, parseLocalDate } from "@/lib/dates";
 
@@ -284,4 +284,19 @@ export function getNextDueDate(currentDue: string | undefined, recurrence: Recur
       break;
   }
   return formatDateLocal(base);
+}
+
+/** Title or project-name match — used by every layout search field. */
+export function filterTasksByQuery<T extends Pick<Task, "title" | "projectId">>(
+  list: T[],
+  query: string,
+  projects: Pick<Project, "id" | "name">[],
+): T[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return list;
+  const nameById = new Map(projects.map((p) => [p.id, p.name.toLowerCase()]));
+  return list.filter((t) => {
+    if (t.title.toLowerCase().includes(q)) return true;
+    return (nameById.get(t.projectId) ?? "").includes(q);
+  });
 }

@@ -154,6 +154,13 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
           }
         }
 
+        let customQuote: string | null = null;
+        const localQuote =
+          localStorage.getItem("foci_custom_quote")?.trim() ||
+          localStorage.getItem("foci-custom-quote")?.trim() ||
+          "";
+        if (localQuote) customQuote = localQuote.slice(0, 160);
+
         // Atomic RPC (or sequential fallback). Throws on failure so guest keys are kept.
         await adapter.migrateGuestWorkspace({
           tasks,
@@ -163,6 +170,7 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
           dailyGoal,
           taskViewPrefs,
           oneThing,
+          customQuote,
         });
       }
     }
@@ -198,6 +206,8 @@ async function migrateGuestDataIfNeeded(adapter: SupabaseStorageAdapter): Promis
     "foci_task_view_mode",
     "foci_task_view_explicit",
     "foci_one_thing",
+    "foci_custom_quote",
+    "foci-custom-quote",
     "foci_timer_alarm_enabled",
     "foci_timer_alarm_sound",
     "tempo_settings",
@@ -270,6 +280,9 @@ export const saveTaskViewPreferences = (...args: Parameters<StorageAdapter["save
 export const loadOneThing = () => currentAdapter.loadOneThing();
 export const saveOneThing = (...args: Parameters<StorageAdapter["saveOneThing"]>) =>
   currentAdapter.saveOneThing(...args);
+export const loadCustomQuote = () => currentAdapter.loadCustomQuote();
+export const saveCustomQuote = (...args: Parameters<StorageAdapter["saveCustomQuote"]>) =>
+  currentAdapter.saveCustomQuote(...args);
 
 // ── Collaboration API ───────────────────────────────────
 export const getProjectCollaborators = (...args: Parameters<StorageAdapter["getProjectCollaborators"]>) =>
