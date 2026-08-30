@@ -23,16 +23,42 @@ import { DueChip } from "@/components/task-list/DueChip";
 import { SelectedBadge, TimingBadge, subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
+import {
+  ProjectEditMenu,
+  ProjectNameInput,
+  canRenameProject,
+  type ProjectEditHandlers,
+  useProjectEditMenu,
+} from "@/components/task-list/ProjectEditMenu";
 
-function BucketColumnTitle({ project }: { project: Project }) {
+function BucketColumnTitle({
+  project,
+  projectEdit,
+}: {
+  project: Project;
+  projectEdit?: ProjectEditHandlers;
+}) {
   const subtitle = project.description?.trim();
   const showSubtitle = !!subtitle && subtitle !== project.name;
+
+  if (projectEdit && projectEdit.editingId === project.id) {
+    return (
+      <ProjectNameInput
+        value={projectEdit.editName}
+        onChange={projectEdit.onEditNameChange}
+        onSave={projectEdit.onSaveRename}
+        onCancel={projectEdit.onCancelRename}
+        className="flex-1"
+        ariaLabel={`Rename ${project.name}`}
+      />
+    );
+  }
 
   return (
     <div className="min-w-0 flex-1">
       <h3
         className="truncate text-sm sm:text-base font-semibold tracking-tight text-slate-900 dark:text-white leading-tight"
-        title={project.name}
+        title={`${project.name}. Right-click to rename or change color.`}
       >
         {project.name}
       </h3>
@@ -88,6 +114,8 @@ interface TaskBucketViewProps {
   /** When set, scroll the matching column into view (use scrollToProjectToken to re-trigger). */
   scrollToProjectId?: string | null;
   scrollToProjectToken?: number;
+  /** Right-click / long-press to rename or recolor a project. */
+  projectEdit?: ProjectEditHandlers;
 }
 
 const LANE_COLLAPSE_THRESHOLD = 4;
@@ -452,6 +480,8 @@ function BucketColumn({
   onQuickAdd,
   onToggleProjectFavorite,
   onExpandProject,
+  projectEdit,
+  editMenuBind,
   editingTaskId,
   editTitle = "",
   onStartEdit,
@@ -489,6 +519,8 @@ function BucketColumn({
   onQuickAdd: (title: string, projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
   onExpandProject?: (projectId: string) => void;
+  projectEdit?: ProjectEditHandlers;
+  editMenuBind?: ReturnType<typeof useProjectEditMenu>["bind"];
   editingTaskId?: string | null;
   editTitle?: string;
   onStartEdit?: (task: Task) => void;
@@ -556,8 +588,9 @@ function BucketColumn({
       style={{ ["--project-accent" as string]: accentColor } as React.CSSProperties}
     >
       <div
-        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80"
-        title={project.description?.trim() || project.name}
+        {...(editMenuBind ? editMenuBind(project.id) : {})}
+        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80 select-none"
+        title={project.description?.trim() || `${project.name}. Right-click to rename or change color.`}
       >
         {onToggleProjectFavorite ? (
           <button
@@ -595,11 +628,11 @@ function BucketColumn({
         ) : null}
         <span
           className="project-accent-swatch w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-          title={`${project.name} color — change in Projects`}
+          title={`${project.name} color — right-click to change`}
           role="img"
           aria-label={`${project.name} color`}
         />
-        <BucketColumnTitle project={project} />
+        <BucketColumnTitle project={project} projectEdit={projectEdit} />
         {isPersonal && (
           <span
             className="text-xs font-medium text-slate-600 dark:text-slate-200 bg-slate-100/95 dark:bg-[#1e3050]/90 border border-slate-200/90 dark:border-[#3a5070]/70 rounded-full px-2 py-1 shrink-0"
@@ -851,7 +884,13 @@ export default function TaskBucketView({
   renderBelowTask,
   scrollToProjectId = null,
   scrollToProjectToken = 0,
+  projectEdit,
 }: TaskBucketViewProps) {
+  const projectMenu = useProjectEditMenu();
+  const menu = projectMenu.menu;
+  const menuProject = menu
+    ? projects.find((p) => p.id === menu.projectId)
+    : undefined;
   // Keep column order stable (favorites → manual order → name) regardless of active time filter.
   const orderedColumns = projects;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -939,6 +978,8 @@ export default function TaskBucketView({
             onQuickAdd={onQuickAdd}
             onToggleProjectFavorite={onToggleProjectFavorite}
             onExpandProject={onExpandProject}
+            projectEdit={projectEdit}
+            editMenuBind={projectEdit ? projectMenu.bind : undefined}
             editingTaskId={editingTaskId}
             editTitle={editTitle}
             onStartEdit={onStartEdit}
@@ -987,6 +1028,20 @@ export default function TaskBucketView({
           </>
         )}
       </div>
+      {projectEdit && menuProject && menu && (
+        <ProjectEditMenu
+          project={menuProject}
+          x={menu.x}
+          y={menu.y}
+          onClose={projectMenu.close}
+          onUpdateColor={projectEdit.onUpdateColor}
+          onRename={
+            canRenameProject(menuProject)
+              ? () => projectEdit.onStartRename(menuProject)
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 }

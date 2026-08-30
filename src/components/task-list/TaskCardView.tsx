@@ -27,6 +27,13 @@ import { DueChip } from "@/components/task-list/DueChip";
 import { subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
+import {
+  ProjectEditMenu,
+  ProjectNameInput,
+  canRenameProject,
+  type ProjectEditHandlers,
+  useProjectEditMenu,
+} from "@/components/task-list/ProjectEditMenu";
 
 const COLLAPSED_PROJECTS_KEY = "foci-collapsed-card-projects";
 
@@ -106,6 +113,8 @@ interface TaskCardViewProps {
   onCardQueryChange?: (value: string) => void;
   /** Empty-state CTA — opens Projects create. */
   onAddProject?: () => void;
+  /** Right-click / long-press to rename or recolor a project. */
+  projectEdit?: ProjectEditHandlers;
 }
 
 function CardTaskMoreMenu({
@@ -543,6 +552,8 @@ function ProjectCard({
   onToggleCollapsed,
   highlighted = false,
   autoQuickAdd = false,
+  projectEdit,
+  editMenuBind,
 }: {
   project: Project;
   projectIndex: number;
@@ -587,6 +598,8 @@ function ProjectCard({
   onToggleCollapsed?: () => void;
   highlighted?: boolean;
   autoQuickAdd?: boolean;
+  projectEdit?: ProjectEditHandlers;
+  editMenuBind?: ReturnType<typeof useProjectEditMenu>["bind"];
 }) {
   const [draft, setDraft] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -651,7 +664,8 @@ function ProjectCard({
       data-collapsed={collapsed ? "true" : "false"}
     >
       <header
-        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80 ${
+        {...(editMenuBind ? editMenuBind(project.id) : {})}
+        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80 select-none ${
           collapsed ? "pb-0 mb-0 border-b-0" : ""
         }`}
         style={{
@@ -666,9 +680,9 @@ function ProjectCard({
                 e.stopPropagation();
                 onToggleCollapsed();
               }}
-              className={`flex-shrink-0 p-0.5 rounded transition-colors sm:opacity-0 sm:group-hover/card:opacity-100 sm:focus-visible:opacity-100 ${
+              className={`flex-shrink-0 p-0.5 rounded transition-colors ${
                 collapsed
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 sm:opacity-100"
+                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40"
                   : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               }`}
               title={
@@ -728,7 +742,7 @@ function ProjectCard({
                 touchOverIdRef.current = null;
                 onProjectDragEnd?.();
               }}
-              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100 hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
               role="button"
@@ -800,21 +814,32 @@ function ProjectCard({
           ) : null}
           <span
             className="project-accent-swatch w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/10"
-            title={`${project.name} color — change in Projects`}
+            title={`${project.name} color — right-click to change`}
             role="img"
             aria-label={`${project.name} color`}
           />
-          <button
-            type="button"
-            onClick={() => {
-              if (collapsed) onToggleCollapsed?.();
-              onOpenProject?.(project.id);
-            }}
-            className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-            title={`View all tasks in ${project.name}`}
-          >
-            {project.name}
-          </button>
+          {projectEdit && projectEdit.editingId === project.id ? (
+            <ProjectNameInput
+              value={projectEdit.editName}
+              onChange={projectEdit.onEditNameChange}
+              onSave={projectEdit.onSaveRename}
+              onCancel={projectEdit.onCancelRename}
+              className="flex-1"
+              ariaLabel={`Rename ${project.name}`}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                if (collapsed) onToggleCollapsed?.();
+                onOpenProject?.(project.id);
+              }}
+              className="flex-1 min-w-0 truncate text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight text-left hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              title={`View all tasks in ${project.name}. Right-click to rename or change color.`}
+            >
+              {project.name}
+            </button>
+          )}
           <CardHeaderCounts
             open={tasks.length}
             completed={completedCount}
@@ -973,8 +998,14 @@ export default function TaskCardView({
   cardQuery: cardQueryProp,
   onCardQueryChange,
   onAddProject,
+  projectEdit,
 }: TaskCardViewProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
+  const projectMenu = useProjectEditMenu();
+  const menu = projectMenu.menu;
+  const menuProject = menu
+    ? projects.find((p) => p.id === menu.projectId)
+    : undefined;
   const [cardQueryLocal, setCardQueryLocal] = useState("");
   const cardQuery = cardQueryProp ?? cardQueryLocal;
   const setCardQuery = onCardQueryChange ?? setCardQueryLocal;
@@ -1199,6 +1230,8 @@ export default function TaskCardView({
               onToggleCollapsed={() => toggleCollapsed(project.id)}
               highlighted={highlightProjectId === project.id}
               autoQuickAdd={autoQuickAddProjectId === project.id}
+              projectEdit={projectEdit}
+              editMenuBind={projectEdit ? projectMenu.bind : undefined}
             />
           );
         })}
@@ -1233,6 +1266,21 @@ export default function TaskCardView({
             </>
           )}
         </div>
+      )}
+
+      {projectEdit && menuProject && menu && (
+        <ProjectEditMenu
+          project={menuProject}
+          x={menu.x}
+          y={menu.y}
+          onClose={projectMenu.close}
+          onUpdateColor={projectEdit.onUpdateColor}
+          onRename={
+            canRenameProject(menuProject)
+              ? () => projectEdit.onStartRename(menuProject)
+              : undefined
+          }
+        />
       )}
     </div>
   );

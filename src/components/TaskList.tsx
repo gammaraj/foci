@@ -105,6 +105,12 @@ import {
 } from "@/lib/one-thing";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
+import {
+  ProjectEditMenu,
+  ProjectNameInput,
+  canRenameProject,
+  useProjectEditMenu,
+} from "@/components/task-list/ProjectEditMenu";
 
 const VIEW_RETURN_LABELS: Record<string, string> = {
   card: "Cards",
@@ -1296,9 +1302,17 @@ export default function TaskList({
     setEditProjectName(p.name);
   };
 
+  const cancelEditingProject = () => {
+    setEditingProjectId(null);
+    setEditProjectName("");
+  };
+
   const saveProjectEdit = () => {
     const name = editProjectName.trim().slice(0, MAX_PROJECT_NAME);
-    if (!name || !editingProjectId) return;
+    if (!name || !editingProjectId) {
+      cancelEditingProject();
+      return;
+    }
     persistProjects(
       projects.map((p) => (p.id === editingProjectId ? { ...p, name } : p))
     );
@@ -1317,6 +1331,22 @@ export default function TaskList({
   const updateProjectColor = (id: string, color: string) => {
     persistProjects(projects.map((p) => (p.id === id ? { ...p, color } : p)));
   };
+
+  const projectEdit = {
+    editingId: editingProjectId,
+    editName: editProjectName,
+    onEditNameChange: setEditProjectName,
+    onStartRename: startEditingProject,
+    onSaveRename: saveProjectEdit,
+    onCancelRename: cancelEditingProject,
+    onUpdateColor: updateProjectColor,
+  };
+
+  const listProjectEditMenu = useProjectEditMenu();
+  const listMenu = listProjectEditMenu.menu;
+  const listMenuProject = listMenu
+    ? projects.find((p) => p.id === listMenu.projectId)
+    : undefined;
 
   const updateProjectDueDate = (id: string, dueDate: string | undefined) => {
     persistProjects(projects.map((p) => (p.id === id ? { ...p, dueDate } : p)));
@@ -2730,7 +2760,7 @@ export default function TaskList({
             </>
           ) : (
             <>
-              <h2 className="text-sm sm:text-base font-semibold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
+              <h2 className="text-base sm:text-lg font-semibold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
                 {drillInProject ? (
                   <>
                     <span
@@ -2754,7 +2784,7 @@ export default function TaskList({
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-[1.125rem] h-[1.125rem] sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     <span className="shrink-0">
@@ -2767,7 +2797,7 @@ export default function TaskList({
                 )}
                 {(showUrgencySummary ||
                   (!focusMode && !projectManageOpen && !drillInProject)) && (
-                  <span className="no-print inline-flex items-center gap-2 ml-1.5 sm:ml-2 shrink-0 min-w-0">
+                  <span className="no-print inline-flex items-center gap-2.5 ml-3 sm:ml-4 shrink-0 min-w-0">
                     {showUrgencySummary && (
                       <TaskUrgencySummary
                         compact
@@ -3095,7 +3125,7 @@ export default function TaskList({
           onUpdateDueDate={updateProjectDueDate}
           onStartRename={startEditingProject}
           onSaveRename={saveProjectEdit}
-          onCancelRename={() => setEditingProjectId(null)}
+          onCancelRename={cancelEditingProject}
           onShare={setShareModalProject}
           onArchive={toggleProjectArchived}
           onDelete={deleteProject}
@@ -3242,6 +3272,7 @@ export default function TaskList({
           scrollToProjectId={bucketJumpProjectId || null}
           scrollToProjectToken={bucketScrollToken}
           renderBelowTask={preparingPrint ? () => null : renderGridSubtasks}
+          projectEdit={projectEdit}
         />
       )}
 
@@ -3314,6 +3345,7 @@ export default function TaskList({
           cardQuery={cardQuery}
           onCardQueryChange={setCardQuery}
           onAddProject={openProjectManage}
+          projectEdit={projectEdit}
         />
       )}
 
@@ -3547,10 +3579,35 @@ export default function TaskList({
             const tabActive = isTimeFilter
               ? projectFilterId === p.id
               : selectedProjectId === p.id;
+            const tabClass = `flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm ${
+              tabActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
+            } ${dragProjectId === p.id ? "opacity-50" : ""} ${
+              dragOverProjectId === p.id && dragProjectId !== p.id
+                ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent"
+                : ""
+            }`;
+            if (editingProjectId === p.id) {
+              return (
+                <div key={p.id} className={tabClass}>
+                  {p.color && (
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                  )}
+                  <ProjectNameInput
+                    value={editProjectName}
+                    onChange={setEditProjectName}
+                    onSave={saveProjectEdit}
+                    onCancel={cancelEditingProject}
+                    className="w-36 max-w-[10rem] sm:max-w-[14rem]"
+                    ariaLabel={`Rename ${p.name}`}
+                  />
+                </div>
+              );
+            }
             return (
             <button
               key={p.id}
               draggable
+              {...listProjectEditMenu.bind(p.id)}
               onDragStart={() => handleProjectDragStart(p.id)}
               onDragOver={(e) => handleProjectDragOver(e, p.id)}
               onDrop={(e) => {
@@ -3562,14 +3619,8 @@ export default function TaskList({
                 if (projectDidDragRef.current) return;
                 selectProjectScope(p.id);
               }}
-              className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-1.5 text-sm cursor-grab active:cursor-grabbing ${
-                tabActive ? PROJECT_TAB_ACTIVE : PROJECT_TAB_INACTIVE
-              } ${dragProjectId === p.id ? "opacity-50" : ""} ${
-                dragOverProjectId === p.id && dragProjectId !== p.id
-                  ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent"
-                  : ""
-              }`}
-              title={`${projectTabTooltip(p)} — drag to reorder`}
+              className={`${tabClass} cursor-grab active:cursor-grabbing`}
+              title={`${projectTabTooltip(p)} — drag to reorder. Right-click to rename or change color.`}
             >
               {p.favorite && (
                 <span title="Pinned — appears first" className="flex-shrink-0">
@@ -3640,6 +3691,7 @@ export default function TaskList({
                   return (
                     <button
                       key={p.id}
+                      {...listProjectEditMenu.bind(p.id)}
                       onClick={() => selectProjectScope(p.id)}
                       className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
                         (isTimeFilter ? projectFilterId : selectedProjectId) === p.id
@@ -3681,6 +3733,23 @@ export default function TaskList({
         </div>
 
       </div>
+      )}
+      {listMenuProject && listMenu && (
+        <ProjectEditMenu
+          project={listMenuProject}
+          x={listMenu.x}
+          y={listMenu.y}
+          onClose={listProjectEditMenu.close}
+          onUpdateColor={updateProjectColor}
+          onRename={
+            canRenameProject(listMenuProject)
+              ? () => {
+                  startEditingProject(listMenuProject);
+                  selectProjectScope(listMenuProject.id);
+                }
+              : undefined
+          }
+        />
       )}
 
       <div className="task-list-composer no-print panel-pad-x py-2 space-y-1.5">
