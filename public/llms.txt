@@ -463,10 +463,10 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 
 Foci publishes articles about the Pomodoro technique, focus strategies, and time management. Blog posts are available at https://usefoci.com/blog.
 
-- [Best Free Pomodoro Apps 2026 — Ranked, No Signup](https://usefoci.com/blog/best-free-pomodoro-apps-2026) — 2026-07-19
-- [Best Study Music for Focus — Brown Noise, Lo-Fi & Classical](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-07-19
-- [What Is Flowtime? Flowmodoro Technique Guide (Free Timer)](https://usefoci.com/blog/flowtime-technique-guide) — 2026-07-19
-- [Pomodoro vs Flowtime vs 52/17 — Which Should You Use?](https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-07-19
+- [Best Free Pomodoro App 2026 (7 Tested, No Signup)](https://usefoci.com/blog/best-free-pomodoro-apps-2026) — 2026-07-19
+- [Best Music for Studying: What Actually Helps Focus](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-07-19
+- [Flowtime Technique Guide — How It Works (Free Timer)](https://usefoci.com/blog/flowtime-technique-guide) — 2026-07-19
+- [Flowtime vs Pomodoro vs 52/17: Which Is Better?](https://usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17) — 2026-07-19
 - [Best Focus Apps for Students 2026 (Free Options Ranked)](https://usefoci.com/blog/best-focus-apps-for-students-2026) — 2026-07-17
 - [How to Focus While Working From Home (2026 Guide)](https://usefoci.com/blog/how-to-focus-while-working-from-home) — 2026-07-17
 - [White Noise vs Brown Noise for Focus: Which Is Better?](https://usefoci.com/blog/white-noise-vs-brown-noise-for-focus) — 2026-07-17

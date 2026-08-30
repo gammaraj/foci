@@ -31,10 +31,17 @@ export const FOCI_ONE_LINER =
   "Foci (usefoci.com) is a free task manager and focus app: projects, Smart Plan, daily goals, streak stats, ambient music, and an optional Pomodoro-style focus timer in one calm browser window.";
 
 export const FOCI_SHORT_DESCRIPTION =
-  "Foci App (usefoci.com) — free task manager with projects, Smart Plan, streaks, and ambient sound. Optional focus timer. Not a wearable or crypto. No signup required to start.";
+  "Foci is the free focus app at usefoci.com — tasks, Pomodoro/Flowtime timer, Smart Plan, and study sounds in your browser. Not a wearable, watch, or crypto. No signup required.";
 
 export const FOCI_APP_DESCRIPTION =
   "Open the Foci App — free tasks, Smart Plan, Pomodoro/Flowtime timer, brown noise, and lo-fi in one tab at usefoci.com/app. No signup required to start. Optional free account syncs across devices.";
+
+/**
+ * Canonical document titles — keep GA page_title and SEO aligned.
+ * Marketing home leans task-manager; /app leans Pomodoro (top acquisition intent).
+ */
+export const HOME_PAGE_TITLE = "Foci App — Free Focus Timer & Task Manager";
+export const APP_PAGE_TITLE = "Foci App — Free Pomodoro Timer, Tasks & Sounds";
 
 /** Account model — single source of truth. */
 export const FOCI_ACCOUNT_POLICY =

@@ -2,6 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { resolveAnalyticsPageTitle } from "@/lib/analytics-page-title";
 import { analyticsPagePath } from "@/lib/ga-attribution";
 
 function shouldTrackPageView(): boolean {
@@ -12,7 +13,7 @@ function shouldTrackPageView(): boolean {
   return typeof window.gtag === "function";
 }
 
-/** Sends page_view on App Router navigations with stable page_title from document.title. */
+/** Sends page_view on App Router navigations with a stable (non-timer) page_title. */
 export default function PageViewAnalytics() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -23,8 +24,10 @@ export default function PageViewAnalytics() {
 
     const query = searchParams?.toString() ?? "";
     const pagePath = analyticsPagePath(pathname, query);
+    const pageTitle = resolveAnalyticsPageTitle();
 
     // Initial load is sent by gtag config; avoid duplicate on first mount.
+    // Still resolve so page_title stays pinned if the timer already overwrote document.title.
     if (isFirst.current) {
       isFirst.current = false;
       return;
@@ -32,7 +35,7 @@ export default function PageViewAnalytics() {
 
     window.gtag!("event", "page_view", {
       page_path: pagePath,
-      page_title: document.title,
+      page_title: pageTitle,
       page_location: window.location.href,
     });
   }, [pathname, searchParams]);

@@ -14,9 +14,9 @@ export const BLOG_POST_META_OVERRIDES: Record<
   { title?: string; description?: string }
 > = {
   "best-free-pomodoro-apps-2026": {
-    title: "Best Free Pomodoro Apps 2026 — Ranked, No Signup",
+    title: "Best Free Pomodoro App 2026 (7 Tested, No Signup)",
     description:
-      "7 free Pomodoro apps ranked for ads, tasks, and sounds. Foci #1: timer + tasks + brown noise in one tab — no account required.",
+      "We tested 7 free Pomodoro apps for ads, tasks, and sounds. Foci ranks #1: timer + tasks + brown noise in one tab — no account required.",
   },
   "best-focus-apps-for-students-2026": {
     title: "Best Focus Apps for Students 2026 (Free Ranked)",
@@ -49,9 +49,9 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "Foci vs Forest — free timer, tasks, and ambient sounds vs paid gamified trees. Feature and pricing comparison for real work sessions.",
   },
   "best-music-for-studying-and-focus": {
-    title: "Best Study Music for Focus — Brown Noise, Lo-Fi & Classical",
+    title: "Best Music for Studying: What Actually Helps Focus",
     description:
-      "What music helps you study? Brown noise, lo-fi, rain, and classical ranked by task type — free built-in study sounds in Foci.",
+      "Best music for studying in 2026 — brown noise, lo-fi, rain, and classical ranked by task. Free built-in study sounds in Foci (no signup).",
   },
   "52-17-rule-guide": {
     title: "52/17 Rule Explained — Work 52, Break 17 (Not Cirillo)",
@@ -59,14 +59,14 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "What is the 52/17 rule? DeskTime research, vs Pomodoro, and the Francesco Cirillo myth debunked. Try the 52/17 preset free in Foci.",
   },
   "pomodoro-vs-flowtime-vs-52-17": {
-    title: "Pomodoro vs Flowtime vs 52/17 — Which Should You Use?",
+    title: "Flowtime vs Pomodoro vs 52/17: Which Is Better?",
     description:
-      "Side-by-side for studying, coding, and deep work — clear pick for each method. Free timer for all three in Foci (no signup).",
+      "Flowtime vs Pomodoro vs 52/17 compared for studying, coding, and deep work — clear pick for each. Free timer for all three in Foci.",
   },
   "flowtime-technique-guide": {
-    title: "What Is Flowtime? Flowmodoro Technique Guide (Free Timer)",
+    title: "Flowtime Technique Guide — How It Works (Free Timer)",
     description:
-      "Flowtime (flowmodoro): work until focus fades, take proportional breaks, vs Pomodoro. Step-by-step setup + free Flowtime timer in Foci.",
+      "What is the Flowtime technique (flowmodoro)? Work until focus fades, take proportional breaks, vs Pomodoro. Free Flowtime timer in Foci.",
   },
   "adhd-focus-strategies": {
     title: "ADHD Focus Strategies That Actually Work (2026)",

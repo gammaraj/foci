@@ -130,9 +130,9 @@ export const ALTERNATIVES_LANDINGS: CompareLanding[] = [
   {
     slug: "pomodoro-apps",
     kind: "alternatives",
-    title: "Best Free Pomodoro Apps — Ranked, No Signup",
+    title: "Best Free Pomodoro App — 7 Tested, No Signup",
     description:
-      "7 free Pomodoro apps ranked for ads, tasks, and sounds. Foci #1: timer + tasks + brown noise in one tab — no account required.",
+      "We tested 7 free Pomodoro apps for ads, tasks, and sounds. Foci ranks #1: timer + tasks + brown noise in one tab — no account required.",
     h1: "Best free Pomodoro apps",
     answer:
       "Foci ranks best overall for a free Pomodoro app that also includes tasks, Smart Plan, ambient sounds, and streaks in one browser tab. Pick Pomofocus if you only want a minimal timer, or Forest if gamification matters more than tasks.",

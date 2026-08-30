@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import AppSeoShell from "@/components/AppSeoShell";
 import { absolutePageTitle } from "@/lib/site-metadata";
-import { FOCI_APP_DESCRIPTION, APP_KEYWORDS } from "@/lib/product-facts";
+import {
+  FOCI_APP_DESCRIPTION,
+  APP_KEYWORDS,
+  APP_PAGE_TITLE,
+} from "@/lib/product-facts";
 import AppPageClient from "./AppPageClient";
 
-const title = "Foci App — Free Pomodoro Timer, Tasks & Sounds";
+const title = APP_PAGE_TITLE;
 const description = FOCI_APP_DESCRIPTION;
 
 export const metadata: Metadata = {

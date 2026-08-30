@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { rememberAnalyticsPageTitle } from "@/lib/analytics-page-title";
 import {
   formatTimerDisplay,
   formatTimerTabTitle,
@@ -13,6 +14,7 @@ import type { TimerStatus } from "@/lib/types";
 /**
  * While a focus/break session is active, put MM:SS first in the browser tab title
  * so the countdown is visible when the tab is in the background.
+ * Keeps GA4 `page_title` on the real page title via rememberAnalyticsPageTitle.
  */
 export function useTimerDocumentTitle(status: TimerStatus, remainingTime: number) {
   const pathname = usePathname();
@@ -26,17 +28,25 @@ export function useTimerDocumentTitle(status: TimerStatus, remainingTime: number
     const apply = () => {
       if (!isTimerTabTitle(document.title)) {
         baseTitleRef.current = document.title;
+        rememberAnalyticsPageTitle(document.title);
+      } else if (baseTitleRef.current) {
+        // Timer title is showing — pin GA to the real page title.
+        rememberAnalyticsPageTitle(baseTitleRef.current);
       }
 
       if (!label) {
         if (baseTitleRef.current && isTimerTabTitle(document.title)) {
           document.title = baseTitleRef.current;
+          rememberAnalyticsPageTitle(baseTitleRef.current);
         }
         return;
       }
 
       const next = formatTimerTabTitle(displayTime, label);
       if (document.title !== next) document.title = next;
+      if (baseTitleRef.current) {
+        rememberAnalyticsPageTitle(baseTitleRef.current);
+      }
     };
 
     apply();
@@ -49,6 +59,7 @@ export function useTimerDocumentTitle(status: TimerStatus, remainingTime: number
     return () => {
       if (baseTitleRef.current && isTimerTabTitle(document.title)) {
         document.title = baseTitleRef.current;
+        rememberAnalyticsPageTitle(baseTitleRef.current);
       }
     };
   }, []);

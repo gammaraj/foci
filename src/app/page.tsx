@@ -21,13 +21,14 @@ import {
   FOCI_SAME_AS,
   PRODUCT_DATE_MODIFIED,
   CONTACT_EMAIL,
+  HOME_PAGE_TITLE,
 } from "@/lib/product-facts";
 
 const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Foci App — Free Task Manager & Focus Timer",
+    absolute: HOME_PAGE_TITLE,
   },
   description: FOCI_SHORT_DESCRIPTION,
   alternates: { canonical: "/" },

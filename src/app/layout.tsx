@@ -15,6 +15,7 @@ import {
   FOCI_SHORT_DESCRIPTION,
   ROOT_KEYWORDS,
   ADSENSE_CLIENT_ID,
+  HOME_PAGE_TITLE,
 } from "@/lib/product-facts";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -22,7 +23,7 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const SAFE_GA_ID = GA_ID && /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : undefined;
 
 const siteUrl = SITE_URL;
-const title = "Foci App — Free Task Manager & Focus Timer";
+const title = HOME_PAGE_TITLE;
 const description = FOCI_SHORT_DESCRIPTION;
 
 export const viewport: Viewport = {
@@ -184,7 +185,14 @@ export default async function RootLayout({
                     history.replaceState({},"",location.pathname+(q.toString()?"?"+q.toString():"")+location.hash);
                     ignoreRef=true;
                   }
-                  gtag('config','${SAFE_GA_ID}',{send_page_view:true,anonymize_ip:true,ignore_referrer:ignoreRef});
+                  // Never send timer tab titles (MM:SS · Focus) as GA page_title.
+                  var pageTitle=document.title||"";
+                  if(/^\\d{1,3}:\\d{2} · (Focus|Paused|Break)$/.test(pageTitle)){
+                    var og=document.querySelector('meta[property="og:title"]');
+                    pageTitle=(og&&og.getAttribute("content"))||"Foci";
+                  }
+                  document.documentElement.setAttribute("data-foci-analytics-title",pageTitle);
+                  gtag('config','${SAFE_GA_ID}',{send_page_view:true,anonymize_ip:true,ignore_referrer:ignoreRef,page_title:pageTitle});
                 })();
               `}
             </Script>
