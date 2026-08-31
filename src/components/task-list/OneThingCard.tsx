@@ -60,7 +60,7 @@ function ChevronIcon({ open, className }: { open: boolean; className?: string })
 
 function OneThingHowTo() {
   return (
-    <div className="rounded-2xl ring-1 ring-blue-500/15 dark:ring-blue-400/25 bg-white/95 dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg shadow-blue-900/5 dark:shadow-black/40 p-3.5 text-xs leading-relaxed text-center">
+    <div className="rounded-2xl ring-1 ring-blue-500/15 dark:ring-blue-400/25 bg-[color:var(--surface-elevated)]/95 dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg shadow-blue-900/5 dark:shadow-black/40 p-3.5 text-xs leading-relaxed text-center">
       <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
       <ol className="mt-1.5 mx-auto w-fit list-decimal list-inside space-y-1 text-left text-slate-600 dark:text-slate-300">
         <li>Open any open task (click its name).</li>
@@ -161,7 +161,7 @@ function QuoteColumn({
               commit();
             }
           }}
-          className="w-full resize-none rounded-md px-1.5 py-1 text-xs italic text-slate-700 dark:text-slate-200 bg-white dark:bg-[#0f172a] ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
+          className="w-full resize-none rounded-md px-1.5 py-1 text-xs italic text-slate-700 dark:text-slate-200 bg-[var(--surface-elevated)] dark:bg-[#0f172a] ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
           aria-label="Your custom quote"
         />
         <div className="flex items-center justify-between gap-2">

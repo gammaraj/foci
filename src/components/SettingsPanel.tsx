@@ -316,7 +316,7 @@ export default function SettingsPanel({
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                               isActive
                                 ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
-                                : "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
+                                : "bg-[var(--surface-elevated)] dark:bg-[#0f172a] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
                             }`}
                             title={preset.description}
                           >
@@ -583,7 +583,7 @@ export default function SettingsPanel({
                           })
                           .catch((err) => console.error("[Foci] Failed to save custom quote:", err));
                       }}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y min-h-[2.75rem]"
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y min-h-[2.75rem]"
                     />
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs text-slate-400 tabular-nums">

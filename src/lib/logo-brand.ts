@@ -3,8 +3,8 @@
 /** Dark logo tile — lifted above page navy (#070b16) so the mark reads as a badge */
 export const FOCI_LOGO_BG = "#0f172a";
 
-/** Light-mode logo tile — soft blue-white so the mark matches a light navbar */
-export const FOCI_LOGO_BG_LIGHT = "#eff6ff";
+/** Light-mode logo tile — blue mist, matches app surfaces */
+export const FOCI_LOGO_BG_LIGHT = "#eef3fa";
 
 export const FOCI_RING_COLORS = {
   dim: "#2563eb",    // blue-600 — dim arc segment

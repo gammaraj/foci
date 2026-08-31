@@ -258,7 +258,7 @@ function DurationAndAlarmBlock({
               disabled={durationLocked}
               className={`flex-1 px-2 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
                 active
-                  ? "bg-white dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                  ? "bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               } disabled:opacity-40 disabled:cursor-not-allowed`}
             >
@@ -285,7 +285,7 @@ function DurationAndAlarmBlock({
           }}
           aria-label="Custom work duration. Type minutes, or 0:30 for 30 seconds"
           title="Minutes, or 0:30 / 30s for seconds"
-          className="w-16 shrink-0 px-1 py-1 rounded-md text-xs sm:text-sm font-semibold tabular-nums text-center bg-white dark:bg-[#1a2d4a] border border-transparent text-slate-700 dark:text-slate-200 disabled:opacity-40"
+          className="w-16 shrink-0 px-1 py-1 rounded-md text-xs sm:text-sm font-semibold tabular-nums text-center bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] border border-transparent text-slate-700 dark:text-slate-200 disabled:opacity-40"
         />
       </div>
       <TimerAlarmPicker compact afterFinish={afterFinish} />

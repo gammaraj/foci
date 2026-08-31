@@ -115,7 +115,7 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white text-[15px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white text-[15px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               placeholder="you@example.com"
             />
           </div>
@@ -137,7 +137,7 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
                 mode === "sign-up" ? "new-password" : "current-password"
               }
               minLength={8}
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white text-[15px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white text-[15px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               placeholder="••••••••"
             />
           </div>

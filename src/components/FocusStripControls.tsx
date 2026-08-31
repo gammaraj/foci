@@ -28,7 +28,7 @@ export const FOCUS_BAR_ICON_BTN =
 
 /** Bordered chips for source, track, and timer duration. */
 export const FOCUS_STRIP_CHIP =
-  "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
+  "inline-flex items-center h-7 rounded-md border border-[color:var(--surface-border)] dark:border-[#2a3f5f] bg-[color:var(--surface-elevated)]/70 dark:bg-white/[0.04] text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-[color:var(--surface-muted)] dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white transition-colors";
 
 /** Shared 4-column grid for stacked music + timer rows (icon · label · control · play). */
 export const FOCUS_STRIP_ROW =
@@ -39,7 +39,7 @@ export const FOCUS_STRIP_CHIP_OPEN =
 
 /** Static frame (no hover) for composite chips that contain their own buttons. */
 export const FOCUS_STRIP_CHIP_FRAME =
-  "inline-flex items-center h-7 rounded-md border border-slate-200/90 dark:border-[#2a3f5f] bg-white/50 dark:bg-white/[0.04]";
+  "inline-flex items-center h-7 rounded-md border border-[color:var(--surface-border)] dark:border-[#2a3f5f] bg-[color:var(--surface-elevated)]/70 dark:bg-white/[0.04]";
 
 export function MiniMusicIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (

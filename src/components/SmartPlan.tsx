@@ -140,8 +140,8 @@ function TaskChip({
           : st.overdue && isHero
             ? "bg-[var(--urgency-soft-bg)] dark:bg-rose-950/25"
             : isHero
-              ? "bg-white/80 dark:bg-[#1a2d4a]/50"
-              : "hover:bg-slate-50 dark:hover:bg-[#1a2d4a]/70"
+              ? "bg-[var(--surface-elevated)]/80 dark:bg-[#1a2d4a]/50"
+              : "hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]/70"
       }`}
       style={{
         boxShadow: `inset 3px 0 0 ${color}`,
@@ -287,8 +287,8 @@ function WeekDayCard({
     <section
       className={`min-w-0 flex flex-col rounded-xl border px-2 py-2 ${
         weekend
-          ? "border-slate-200/70 dark:border-[#243350]/70 bg-slate-50/40 dark:bg-[#0d1526]/60"
-          : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
+          ? "border-[color:var(--surface-border)] dark:border-[#243350]/70 bg-[var(--surface-muted)]/40 dark:bg-[#0d1526]/60"
+          : "border-[color:var(--surface-border)] dark:border-[#243350] bg-[var(--surface-elevated)]/80 dark:bg-[#131d30]/90"
       }`}
     >
       <div className="flex items-start justify-between gap-1 px-0.5 mb-1.5">
@@ -343,7 +343,7 @@ function ProjectMix({
 }) {
   const inPlay = loads.filter((p) => p.scheduled > 0);
   return (
-    <section className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30] px-3 py-2.5 min-w-0 h-full">
+    <section className="rounded-xl border surface-panel px-3 py-2.5 min-w-0 h-full">
       <div className="flex items-baseline justify-between gap-2 mb-2">
         <h3 className="app-section-label text-slate-500 dark:text-slate-400">Across projects</h3>
         <span className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
@@ -377,8 +377,8 @@ function ProjectMix({
           aria-pressed={selectedId === null}
           className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border transition-colors ${
             selectedId === null
-              ? "border-blue-500 bg-white text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100"
-              : "border-slate-200 bg-white text-slate-600 dark:border-[#243350] dark:bg-[#0f172a] dark:text-slate-300"
+              ? "border-blue-500 bg-[var(--surface-elevated)] text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100"
+              : "border-[color:var(--surface-border)] bg-[var(--surface-elevated)] text-slate-600 dark:border-[#243350] dark:bg-[#0f172a] dark:text-slate-300"
           }`}
         >
           All
@@ -399,8 +399,8 @@ function ProjectMix({
               }
               className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium border transition-colors max-w-full ${
                 active
-                  ? "border-blue-500 bg-white text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100"
-                  : "border-slate-200 bg-white text-slate-600 dark:border-[#243350] dark:bg-[#0f172a] dark:text-slate-300"
+                  ? "border-blue-500 bg-[var(--surface-elevated)] text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100"
+                  : "border-[color:var(--surface-border)] bg-[var(--surface-elevated)] text-slate-600 dark:border-[#243350] dark:bg-[#0f172a] dark:text-slate-300"
               }`}
             >
               <span

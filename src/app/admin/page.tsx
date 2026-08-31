@@ -84,7 +84,7 @@ export default async function AdminPage() {
             {topOpen.map((item) => (
               <li
                 key={item.id}
-                className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/70 dark:bg-[#131d30]/70 px-3 py-2"
+                className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/70 dark:bg-[#131d30]/70 px-3 py-2"
               >
                 <p className="font-semibold text-slate-800 dark:text-slate-200">{item.title}</p>
                 <p className="text-slate-600 dark:text-slate-400 mt-0.5">
@@ -122,7 +122,7 @@ export default async function AdminPage() {
             ].map((item) => (
               <li
                 key={item.label}
-                className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/70 dark:bg-[#131d30]/70 px-3 py-2"
+                className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/70 dark:bg-[#131d30]/70 px-3 py-2"
               >
                 <p className="font-semibold text-slate-800 dark:text-slate-200">{item.label}</p>
                 <p className="text-slate-600 dark:text-slate-400 mt-0.5">{item.detail}</p>
@@ -142,21 +142,21 @@ export default async function AdminPage() {
           </div>
 
           <dl className="grid sm:grid-cols-3 gap-3 text-sm">
-            <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-3 py-3">
+            <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3">
               <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Billing</dt>
               <dd className="mt-1 text-slate-800 dark:text-slate-200">{MONETIZATION_STATUS.billing}</dd>
             </div>
-            <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-3 py-3">
+            <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3">
               <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Positioning</dt>
               <dd className="mt-1 text-slate-800 dark:text-slate-200">{MONETIZATION_STATUS.positioning}</dd>
             </div>
-            <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-3 py-3">
+            <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3">
               <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Near term</dt>
               <dd className="mt-1 text-slate-800 dark:text-slate-200">{MONETIZATION_STATUS.nearTerm}</dd>
             </div>
           </dl>
 
-          <div className="overflow-x-auto rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80">
+          <div className="overflow-x-auto rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80">
             <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#243350] text-xs uppercase tracking-wide text-slate-500">
                 <tr>
@@ -194,7 +194,7 @@ export default async function AdminPage() {
             {REALISTIC_TARGETS.map((t) => (
               <li
                 key={t.horizon}
-                className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/70 dark:bg-[#131d30]/70 px-3 py-2"
+                className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/70 dark:bg-[#131d30]/70 px-3 py-2"
               >
                 <p className="font-semibold text-slate-800 dark:text-slate-200">{t.horizon}</p>
                 <p className="text-slate-600 dark:text-slate-400">

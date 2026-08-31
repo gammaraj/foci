@@ -47,7 +47,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Browser Notifications**: Get notified when a work session or break completes.
 - **Motivational Quotes**: Rotating daily quotes next to One Thing (and after sessions). Optionally pin a sticky custom quote in Settings or from the quote row — synced with your account when signed in.
 - **Task Search**: Filter open work by title across Cards, Buckets, List, Calendar, and Plan.
-- **Light & dark themes**: Modernized light atmosphere (soft sky wash + crisp work plates) plus full dark mode; Appearance: Light → Dark → System.
+- **Light & dark themes**: Blue mist light theme (soft cool atmosphere, electric blue accents) plus full dark mode; Appearance: Light → Dark → System.
 - **Cloud Sync**: Optionally sign up to sync settings, tasks, and progress across devices via Supabase.
 - **Installable PWA**: Install Foci on your device and use it offline.
 - **Data Privacy**: Guest data stays local by default; optional account syncs via Supabase. No selling of task/focus content. Display ads may appear on marketing/blog pages; the /app workspace stays ad-free. Privacy: https://usefoci.com/privacy · Contact: https://usefoci.com/contact (hello@usefoci.com).

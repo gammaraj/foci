@@ -288,14 +288,14 @@ export default function AccountSharingModal({
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@example.com"
-              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
               disabled={inviting}
             />
             <div className="flex gap-2">
             <select
               value={inviteRole}
               onChange={(e) => setInviteRole(e.target.value as CollaboratorRole)}
-              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white dark:bg-[#0f172a] text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
               disabled={inviting}
             >
               <option value="editor">Can edit</option>

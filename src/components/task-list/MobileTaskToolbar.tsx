@@ -20,7 +20,7 @@ const SELECT_PRIMARY =
   `${SELECT_CLASS} bg-blue-50/90 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border-blue-200/80 dark:border-[#243350]`;
 
 const SELECT_SECONDARY =
-  `${SELECT_CLASS} bg-white dark:bg-[#0f172a] text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#243350]`;
+  `${SELECT_CLASS} bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-600 dark:text-slate-300 border-[color:var(--surface-border)] dark:border-[#243350]`;
 
 type TimeScopeId =
   | typeof ALL_PROJECTS_ID
@@ -140,7 +140,7 @@ export function MobileTaskToolbar({
           <button
             type="button"
             onClick={onClearTimeFilter}
-            className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200/90 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border border-[color:var(--surface-border)] dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
             aria-label="Clear time filter — show all times"
             title="Clear filter"
           >
@@ -187,7 +187,7 @@ export function MobileTaskToolbar({
         <button
           type="button"
           onClick={onManageProjects}
-          className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+          className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-[color:var(--surface-border)] dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
           data-tour="manage-projects"
           title="Projects — manage, pin, share, import"
           aria-label="Manage projects"

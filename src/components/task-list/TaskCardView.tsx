@@ -187,7 +187,7 @@ function CardTaskMoreMenu({
       </button>
       {open && (
         <div
-          className={`absolute right-0 z-40 min-w-[8.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-lg ${
+          className={`absolute right-0 z-40 min-w-[8.5rem] py-1 rounded-lg border surface-panel shadow-lg ${
             openUp ? "bottom-full mb-1" : "top-full mt-1"
           }`}
           role="menu"
@@ -201,7 +201,7 @@ function CardTaskMoreMenu({
                 setOpen(false);
                 onRename();
               }}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
             >
               Rename
             </button>
@@ -421,7 +421,7 @@ function CardTaskRow({
               if (e.key === "Escape") onCancelEdit?.();
             }}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
             autoFocus
             aria-label="Edit task title"
           />

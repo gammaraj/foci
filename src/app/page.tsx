@@ -120,7 +120,7 @@ const jsonLd = {
     "Browser notifications and motivational quotes",
     "Installable PWA — works offline",
     "Optional free account for cloud sync across devices",
-    "Modern light theme atmosphere plus dark mode (Light / Dark / System)",
+    "Blue mist light theme plus dark mode (Light / Dark / System)",
     "Brown noise generator for deep focus and ADHD support",
     "Muted project color accents with compact clickable swatches, plus due date tracking",
     "Productivity stats dashboard with heatmap, charts, streak tracking, overdue count, and completion rate",

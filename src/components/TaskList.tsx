@@ -3812,7 +3812,7 @@ export default function TaskList({
                   placeholder="Add a project description..."
                   maxLength={500}
                   rows={2}
-                  className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none resize-y"
+                  className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none resize-y"
                   autoFocus
                 />
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 px-1">Auto-saves when you click outside · ⌘Enter to save</p>
@@ -3858,7 +3858,7 @@ export default function TaskList({
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder="Task name..."
             maxLength={MAX_TASK_TITLE}
-            className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+            className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
           <div className="flex gap-2 min-w-0 w-full sm:w-auto">
           {!isListDrillIn && (
@@ -3874,7 +3874,7 @@ export default function TaskList({
                 : DEFAULT_PROJECT_ID
             }
             onChange={(e) => setNewTaskProjectId(e.target.value)}
-            className="app-placeholder flex-1 min-w-0 sm:flex-none sm:max-w-[11rem] px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none truncate"
+            className="app-placeholder flex-1 min-w-0 sm:flex-none sm:max-w-[11rem] px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none truncate"
             aria-label="Project"
             title="Project"
           >

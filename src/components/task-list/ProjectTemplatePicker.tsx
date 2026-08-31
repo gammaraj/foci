@@ -31,7 +31,7 @@ export function ProjectTemplatePicker({
           <button
             key={tpl.label}
             type="button"
-            className="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
+            className="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a] transition-colors border-b border-slate-50 dark:border-[#1e3050]/50 last:border-b-0"
             onClick={() => onSelect(tpl)}
           >
             <div className="flex items-center gap-2">

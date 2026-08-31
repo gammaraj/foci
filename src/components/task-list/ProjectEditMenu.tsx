@@ -178,7 +178,7 @@ export function ProjectNameInput({
       }}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
-      className={`min-w-0 px-2 py-1 text-sm font-semibold border border-blue-300 dark:border-blue-600 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none select-text ${className}`}
+      className={`min-w-0 px-2 py-1 text-sm font-semibold border border-blue-300 dark:border-blue-600 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none select-text ${className}`}
       aria-label={ariaLabel ?? "Project name"}
       autoFocus
     />
@@ -246,7 +246,7 @@ export function ProjectEditMenu({
   return createPortal(
     <div
       ref={panelRef}
-      className="fixed z-[9998] w-[13.5rem] py-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-xl"
+      className="fixed z-[9998] w-[13.5rem] py-2 rounded-lg border surface-panel shadow-xl"
       style={{ left: pos.left, top: pos.top }}
       role="menu"
       aria-label={showRename ? `Edit ${project.name}` : `Change ${project.name} color`}
@@ -275,7 +275,7 @@ export function ProjectEditMenu({
           );
         })}
       </div>
-      <label className="mx-3 mb-1 flex items-center gap-2 px-1 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] cursor-pointer">
+      <label className="mx-3 mb-1 flex items-center gap-2 px-1 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a] cursor-pointer">
         <span
           className="w-4 h-4 rounded-full ring-1 ring-black/15 dark:ring-white/20 shrink-0"
           style={{ backgroundColor: current }}
@@ -300,7 +300,7 @@ export function ProjectEditMenu({
               onClose();
               onRename();
             }}
-            className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
           >
             Rename
           </button>

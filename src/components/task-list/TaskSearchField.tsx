@@ -38,8 +38,8 @@ export function TaskSearchField({
         placeholder={compact ? "Filter…" : placeholder}
         className={
           compact
-            ? "w-full pl-7 pr-2.5 py-1 min-h-[1.875rem] text-xs rounded-md border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 dark:focus:border-blue-400"
-            : "w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-[var(--control-border)] dark:border-blue-500/45 bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 shadow-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
+            ? "w-full pl-7 pr-2.5 py-1 min-h-[1.875rem] text-xs rounded-md border border-[var(--control-border)] dark:border-blue-500/45 bg-[var(--surface-elevated)] dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            : "w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm rounded-lg border border-[var(--control-border)] dark:border-blue-500/45 bg-[var(--surface-elevated)] dark:bg-[#131d30] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-400 shadow-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
         }
         aria-label="Filter projects or tasks"
         data-tour="card-filter"

@@ -70,7 +70,7 @@ function Pill({ className, children }: { className: string; children: ReactNode 
 
 function ItemCard({ item }: { item: BacklogItem }) {
   return (
-    <article className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-4 py-3">
+    <article className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-4 py-3">
       <div className="flex flex-wrap items-center gap-1.5">
         <Pill className={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</Pill>
         <Pill className="bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300">
@@ -149,7 +149,7 @@ export default function AdminBacklogPage() {
         ].map((stat) => (
           <div
             key={stat.label}
-            className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-3 py-3"
+            className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3"
           >
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               {stat.label}
@@ -174,7 +174,7 @@ export default function AdminBacklogPage() {
           {PRODUCT_GOALS.map((goal) => (
             <li
               key={goal.id}
-              className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-4 py-3"
+              className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-4 py-3"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <Pill className={GOAL_TONE[goal.status]}>{GOAL_LABEL[goal.status]}</Pill>

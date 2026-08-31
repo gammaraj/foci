@@ -101,7 +101,7 @@ export function ListToolbarProjectMenu({
         className={`inline-flex items-center gap-1 touch-target-sm px-2.5 py-1.5 min-h-[2rem] text-xs font-semibold rounded-lg border transition-colors ${
           open
             ? "border-slate-300 dark:border-[#3a4f6e] bg-slate-200 dark:bg-[#1a2d4a] text-slate-800 dark:text-slate-100"
-            : "border-slate-200 dark:border-[#243350] bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a4f6e] hover:bg-slate-200 dark:hover:bg-[#1a2d4a] hover:text-slate-800 dark:hover:text-slate-100"
+            : "border-[color:var(--surface-border)] dark:border-[#243350] bg-slate-100 dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a4f6e] hover:bg-slate-200 dark:hover:bg-[#1a2d4a] hover:text-slate-800 dark:hover:text-slate-100"
         }`}
         title={title}
         aria-label={title}
@@ -119,7 +119,7 @@ export function ListToolbarProjectMenu({
       {open && coords && (
         <div
           ref={panelRef}
-          className="fixed z-[9998] min-w-[10.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-xl"
+          className="fixed z-[9998] min-w-[10.5rem] py-1 rounded-lg border surface-panel shadow-xl"
           style={{ top: coords.top, bottom: coords.bottom, left: coords.left }}
           role="menu"
         >
@@ -131,7 +131,7 @@ export function ListToolbarProjectMenu({
                 setOpen(false);
                 onStartRename(project);
               }}
-              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
             >
               Rename
             </button>
@@ -144,7 +144,7 @@ export function ListToolbarProjectMenu({
                 setOpen(false);
                 onShare(project);
               }}
-              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
             >
               Share
             </button>
@@ -185,7 +185,7 @@ export function ListToolbarProjectMenu({
               setOpen(false);
               onManageProjects();
             }}
-            className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
           >
             Manage projects
           </button>

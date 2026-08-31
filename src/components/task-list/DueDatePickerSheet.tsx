@@ -80,7 +80,7 @@ export function DueDatePickerSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="due-date-picker-title"
-        className="fixed left-4 right-4 bottom-4 safe-bottom z-[81] max-w-sm mx-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-2xl shadow-2xl p-4"
+        className="fixed left-4 right-4 bottom-4 safe-bottom z-[81] max-w-sm mx-auto surface-panel border rounded-2xl shadow-2xl p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 mb-3">

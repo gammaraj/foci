@@ -283,7 +283,7 @@ export default function TaskCalendarView({
                     value={quickAddTitle}
                     onChange={(e) => setQuickAddTitle(e.target.value)}
                     placeholder="Add a task for this day..."
-                    className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 outline-none"
+                    className="flex-1 px-3 py-2 text-sm border border-[color:var(--surface-border)] dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 outline-none"
                   />
                   <button
                     type="submit"
@@ -328,7 +328,7 @@ export default function TaskCalendarView({
                       }}
                       onClick={(e) => e.stopPropagation()}
                       maxLength={MAX_TASK_TITLE}
-                      className="flex-1 min-w-0 px-1.5 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+                      className="flex-1 min-w-0 px-1.5 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
                       autoFocus
                       aria-label="Edit task title"
                     />
@@ -429,7 +429,7 @@ export default function TaskCalendarView({
                     }}
                     onClick={(e) => e.stopPropagation()}
                     maxLength={MAX_TASK_TITLE}
-                    className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+                    className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
                     autoFocus
                     aria-label="Edit task title"
                   />

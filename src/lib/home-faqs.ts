@@ -88,7 +88,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "Does Foci support light and dark mode?",
     answer:
-      "Yes. Foci has a modernized light atmosphere (soft sky wash and crisp work plates) plus full dark mode. Choose Appearance: Light, Dark, or System in settings or via the navbar theme toggle.",
+      "Yes. Foci has a blue mist light theme (soft cool atmosphere, electric blue accents) plus full dark mode. Choose Appearance: Light, Dark, or System in settings or via the navbar theme toggle.",
   },
   {
     question: "Does Foci have ambient music and brown noise?",

@@ -28,7 +28,7 @@ function deltaLabel(current: number, prior: number): { text: string; tone: "up" 
 
 function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 px-3 py-3">
+    <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
         {label}
       </p>
@@ -43,7 +43,7 @@ const DAILY_CHART_BAR_MAX_PX = 96;
 function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/60 p-3">
+      <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
         <p className="text-sm text-slate-400">No daily data yet.</p>
       </div>
     );
@@ -52,7 +52,7 @@ function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
   const max = Math.max(...rows.map((r) => r.users), 1);
 
   return (
-    <div className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/60 p-3">
+    <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
       <div className="flex items-end gap-0.5 sm:gap-1" style={{ minHeight: DAILY_CHART_BAR_MAX_PX + 18 }}>
         {rows.map((row) => {
           const barPx =
@@ -90,7 +90,7 @@ function ReferralList({ rows }: { rows: AdminGaSummary["referralSources"] }) {
       <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
         Referral sources (30d)
       </h3>
-      <ul className="text-sm space-y-2 border border-slate-200/90 dark:border-[#243350] rounded-xl bg-white/60 dark:bg-[#131d30]/60 p-3">
+      <ul className="text-sm space-y-2 border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
         {rows.map((r) => {
           const label = `${r.source} / ${r.medium}`;
           return (
@@ -129,7 +129,7 @@ function BreakdownList({
   return (
     <div>
       <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">{title}</h3>
-      <ul className="text-sm space-y-2 border border-slate-200/90 dark:border-[#243350] rounded-xl bg-white/60 dark:bg-[#131d30]/60 p-3">
+      <ul className="text-sm space-y-2 border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
         {rows.map((r) => (
           <li key={r.channel}>
             <div className="flex justify-between gap-3 tabular-nums mb-1">
@@ -165,9 +165,9 @@ function SignalTable({
   return (
     <div>
       <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">{title}</h3>
-      <div className="overflow-x-auto rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white/60 dark:bg-[#131d30]/60">
+      <div className="overflow-x-auto rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60">
         <table className="w-full text-sm text-left">
-          <thead className="border-b border-slate-200 dark:border-[#243350] text-[11px] uppercase tracking-wide text-slate-500">
+          <thead className="border-b border-[color:var(--surface-border)] dark:border-[#243350] text-[11px] uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-3 py-2 font-semibold">Event</th>
               <th className="px-3 py-2 font-semibold text-right">7d</th>
@@ -279,7 +279,7 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
                 {ga.contentSegments.map((seg) => (
                   <div
                     key={seg.segment}
-                    className="rounded-lg border border-slate-200/90 dark:border-[#243350] bg-white/70 dark:bg-[#131d30]/70 px-3 py-2 text-sm"
+                    className="rounded-lg border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/70 dark:bg-[#131d30]/70 px-3 py-2 text-sm"
                   >
                     <p className="font-medium text-slate-800 dark:text-slate-200">{seg.segment}</p>
                     <p className="tabular-nums text-slate-500 mt-0.5">
@@ -307,7 +307,7 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
               <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                 Top events (30d)
               </h3>
-              <ul className="text-sm space-y-1.5 border border-slate-200/90 dark:border-[#243350] rounded-xl bg-white/60 dark:bg-[#131d30]/60 p-3">
+              <ul className="text-sm space-y-1.5 border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
                 {ga.topEvents.map((e) => (
                   <li key={e.name} className="flex justify-between gap-3 tabular-nums">
                     <span className="truncate font-mono text-xs text-slate-600 dark:text-slate-300">
@@ -322,7 +322,7 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
               <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                 Top pages (30d)
               </h3>
-              <ul className="text-sm space-y-1.5 border border-slate-200/90 dark:border-[#243350] rounded-xl bg-white/60 dark:bg-[#131d30]/60 p-3">
+              <ul className="text-sm space-y-1.5 border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
                 {ga.topPages.map((p) => (
                   <li key={p.path} className="flex justify-between gap-3">
                     <span className="truncate font-mono text-xs text-slate-600 dark:text-slate-300">

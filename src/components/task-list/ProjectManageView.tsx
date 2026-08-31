@@ -106,7 +106,7 @@ function FavoriteButton({
       className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
         active
           ? "text-amber-400 hover:text-amber-500 bg-amber-50/80 dark:bg-amber-900/20"
-          : "text-slate-300 dark:text-slate-600 hover:text-amber-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+          : "text-slate-300 dark:text-slate-600 hover:text-amber-400 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
       }`}
       title={active ? "Pinned — click to unpin (pinned projects appear first)" : "Pin — keep this project at the top"}
       aria-label={active ? `Unpin ${label}` : `Pin ${label} to front`}
@@ -180,7 +180,7 @@ function ProjectRowMenu({
       </button>
       {open && (
         <div
-          className={`absolute right-0 z-30 min-w-[9.5rem] py-1 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-lg ${
+          className={`absolute right-0 z-30 min-w-[9.5rem] py-1 rounded-lg border surface-panel shadow-lg ${
             openUp ? "bottom-full mb-1" : "top-full mt-1"
           }`}
           role="menu"
@@ -192,7 +192,7 @@ function ProjectRowMenu({
               setOpen(false);
               onStartRename(project);
             }}
-            className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
           >
             Rename
           </button>
@@ -204,7 +204,7 @@ function ProjectRowMenu({
                 setOpen(false);
                 onShare(project);
               }}
-              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
             >
               Share
             </button>
@@ -314,7 +314,7 @@ function ProjectRow({
         e.preventDefault();
         onProjectDrop(project.id);
       }}
-      className={`relative rounded-xl border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/50 hover:z-10 focus-within:z-20 transition-colors ${
+      className={`relative rounded-xl border surface-panel dark:bg-[#131d30]/50 hover:z-10 focus-within:z-20 transition-colors ${
         isDragging ? "opacity-50" : ""
       } ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent bg-blue-50/50 dark:bg-blue-900/10" : ""
@@ -385,7 +385,7 @@ function ProjectRow({
                   if (e.key === "Escape") onCancelRename();
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 text-sm border border-blue-300 rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+                className="w-full px-2 py-1 text-sm border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
                 autoFocus
               />
             ) : (
@@ -476,7 +476,7 @@ function ProjectRow({
         <div className="border-t border-slate-100 dark:border-[#243350] overflow-hidden rounded-b-xl">
           {renderOpenTasks(openTasks, { className: "space-y-0.5 px-1 sm:px-2 py-1.5" })}
 
-          <div className="flex flex-wrap items-center gap-1 px-3 py-2 border-t border-slate-100 dark:border-[#243350] bg-slate-50/50 dark:bg-[#0f172a]/40">
+          <div className="flex flex-wrap items-center gap-1 px-3 py-2 border-t border-slate-100 dark:border-[#243350] bg-[var(--surface-muted)]/50 dark:bg-[#0f172a]/40">
             <button
               type="button"
               onClick={() => onOpenProject(project.id)}
@@ -507,7 +507,7 @@ function ProjectRow({
                   onChange={(date) => onUpdateDueDate(project.id, date)}
                   requireExplicitPick={!project.dueDate}
                   ariaLabel="Project due date"
-                  className="inline-flex items-center px-2 py-1 text-xs rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-600 dark:text-slate-300"
+                  className="inline-flex items-center px-2 py-1 text-xs rounded-lg border surface-panel text-slate-600 dark:text-slate-300"
                 >
                   <span title="Project due date">
                     {project.dueDate ? formatDueDate(project.dueDate) : "Due date"}
@@ -613,7 +613,7 @@ export default function ProjectManageView({
       <div className="flex-1 overflow-y-auto overflow-x-hidden panel-pad-x py-3 pb-10 min-h-0 max-h-[min(calc(100dvh-11rem),720px)] sm:max-h-[min(70vh,720px)] space-y-5">
         {/* Create first — primary action, not buried under the list */}
         <section
-          className="rounded-xl border border-slate-200/90 dark:border-[#243350] bg-slate-50/70 dark:bg-[#0d1526]/55 p-3 sm:p-3.5 space-y-3"
+          className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[var(--surface-muted)]/70 dark:bg-[#0d1526]/55 p-3 sm:p-3.5 space-y-3"
           aria-labelledby="projects-create-heading"
         >
           <div className="flex items-center justify-between gap-2">
@@ -629,7 +629,7 @@ export default function ProjectManageView({
               className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                 showImport
                   ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
-                  : "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-[#1a2d4a]"
+                  : "border-[color:var(--surface-border)] dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:bg-[var(--surface-elevated)] dark:hover:bg-[#1a2d4a]"
               }`}
               aria-expanded={showImport}
             >
@@ -654,7 +654,7 @@ export default function ProjectManageView({
               onChange={(e) => setNewProjectName(e.target.value)}
               placeholder="Project name…"
               maxLength={MAX_PROJECT_NAME}
-              className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+              className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-[color:var(--surface-border)] dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
               aria-label="New project name"
             />
             <button
@@ -669,7 +669,7 @@ export default function ProjectManageView({
           <ProjectTemplatePicker onSelect={(tpl) => onAddProject(tpl)} />
 
           {showImport && (
-            <div className="rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30]/80 p-3 space-y-2">
+            <div className="rounded-lg border surface-panel p-3 space-y-2">
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Import into an existing project, a new one, or use the file’s Project column.
               </p>

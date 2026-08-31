@@ -54,7 +54,7 @@ export function NotFoundView({ embedded = false }: { embedded?: boolean }) {
             {posts.map((post) => (
               <article
                 key={post.slug}
-                className="group border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/80 rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors"
+                className="group border surface-panel rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors"
               >
                 <Link href={`/blog/${post.slug}`} className="block h-full">
                   <h3 className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-2">

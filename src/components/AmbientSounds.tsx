@@ -1204,7 +1204,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                    : "bg-white dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
+                    : "bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
                 }`}
                 aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
               >

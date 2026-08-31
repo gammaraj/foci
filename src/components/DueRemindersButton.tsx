@@ -161,7 +161,7 @@ export default function DueRemindersButton() {
           aria-label="Due and overdue tasks"
           className="absolute right-0 top-full mt-1.5 z-[80] w-[min(20rem,calc(100vw-1.5rem))] max-h-[min(24rem,70vh)] overflow-y-auto rounded-xl border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] shadow-xl"
         >
-          <div className="sticky top-0 flex items-center justify-between gap-2 px-3 py-2.5 border-b border-slate-200/80 dark:border-[#243350] bg-white/95 dark:bg-[#131d30]/95 backdrop-blur-sm">
+          <div className="sticky top-0 flex items-center justify-between gap-2 px-3 py-2.5 border-b border-slate-200/80 dark:border-[#243350] bg-[color:var(--surface-elevated)]/95 dark:bg-[#131d30]/95 backdrop-blur-sm">
             <div>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Due & overdue</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">

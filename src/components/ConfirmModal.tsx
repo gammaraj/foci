@@ -66,7 +66,7 @@ export default function ConfirmModal({
         aria-modal="true"
         aria-labelledby="confirm-title"
         aria-describedby="confirm-message"
-        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
+        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto surface-panel border rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
       >
         <h3 id="confirm-title" className="text-lg font-semibold text-slate-900 dark:text-white mb-1.5">
           {title}

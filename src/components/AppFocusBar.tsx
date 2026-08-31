@@ -141,7 +141,7 @@ export default function AppFocusBar() {
   );
 
   return (
-    <div className="no-print border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 bg-transparent dark:bg-[#0c1424]/90 backdrop-blur-sm">
+    <div className="no-print border-b border-[color:var(--surface-border)] dark:border-[#243350]/80 bg-[color:var(--chrome-bar-bg)] dark:bg-[#0c1424]/90 backdrop-blur-sm">
       <div className="app-container py-1 land-compact:py-0.5">
         <div className="flex items-center justify-between min-w-0 gap-1 panel-header-calm rounded-xl px-2 sm:px-2.5 py-0.5 shadow-sm shadow-blue-900/5 dark:shadow-none">
           <div id={TITLE_HOST_ID} className="min-w-0 shrink overflow-x-auto scrollbar-hide" />
