@@ -95,7 +95,7 @@ interface TaskBucketViewProps {
   onToggleComplete: (taskId: string) => void;
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
-  onQuickAdd: (title: string, projectId: string) => void;
+  onQuickAdd: (title: string, projectId: string, options?: { openDetail?: boolean }) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
   /** Focus on a single project in the full-screen list view. */
   onExpandProject?: (projectId: string) => void;
@@ -518,7 +518,7 @@ function BucketColumn({
   onToggleComplete: (taskId: string) => void;
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
-  onQuickAdd: (title: string, projectId: string) => void;
+  onQuickAdd: (title: string, projectId: string, options?: { openDetail?: boolean }) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
   onExpandProject?: (projectId: string) => void;
   projectEdit?: ProjectEditHandlers;
@@ -564,6 +564,13 @@ function BucketColumn({
     const title = draft.trim();
     if (!title) return;
     onQuickAdd(title, project.id);
+    setDraft("");
+  };
+
+  const submitQuickAddWithDetails = () => {
+    const title = draft.trim();
+    if (!title) return;
+    onQuickAdd(title, project.id, { openDetail: true });
     setDraft("");
   };
 
@@ -673,6 +680,7 @@ function BucketColumn({
           draft={draft}
           onDraftChange={setDraft}
           onSubmit={submitQuickAdd}
+          onAddWithDetails={submitQuickAddWithDetails}
           inputRef={topAddInputRef}
           className="px-3 pt-2 pb-2 shrink-0 border-b border-slate-200/60 dark:border-[#243350]/50"
         />
@@ -854,6 +862,7 @@ function BucketColumn({
         draft={draft}
         onDraftChange={setDraft}
         onSubmit={submitQuickAdd}
+        onAddWithDetails={submitQuickAddWithDetails}
         inputRef={addInputRef}
       />
     </div>

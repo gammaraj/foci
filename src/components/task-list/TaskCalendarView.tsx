@@ -26,7 +26,7 @@ export interface TaskCalendarViewProps {
   isTimerRunning: boolean;
   selectedDay: string | null;
   onSelectDay: (day: string | null) => void;
-  onQuickAdd?: (title: string, dueDate: string) => void;
+  onQuickAdd?: (title: string, dueDate: string, options?: { openDetail?: boolean }) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
   expandedSubtasksTaskId?: string | null;
@@ -270,7 +270,7 @@ export default function TaskCalendarView({
               <p className="text-sm text-slate-400 dark:text-slate-400">No tasks due on this day.</p>
               {onQuickAdd && selectedDay && (
                 <form
-                  className="flex gap-2"
+                  className="flex gap-2 items-center"
                   onSubmit={(e) => {
                     e.preventDefault();
                     if (!quickAddTitle.trim()) return;
@@ -282,9 +282,34 @@ export default function TaskCalendarView({
                     type="text"
                     value={quickAddTitle}
                     onChange={(e) => setQuickAddTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (!quickAddTitle.trim()) return;
+                      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                        e.preventDefault();
+                        onQuickAdd(quickAddTitle, selectedDay, { openDetail: true });
+                        setQuickAddTitle("");
+                      }
+                    }}
                     placeholder="Add a task for this day..."
                     className="flex-1 px-3 py-2 text-sm border border-[color:var(--surface-border)] dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 outline-none"
                   />
+                  {quickAddTitle.trim() ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onQuickAdd(quickAddTitle, selectedDay, { openDetail: true });
+                        setQuickAddTitle("");
+                      }}
+                      className="shrink-0 inline-flex items-center gap-0.5 px-2 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      aria-label="Add with details"
+                      title="Add with details (⌘/Ctrl+Enter)"
+                    >
+                      Details
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ) : null}
                   <button
                     type="submit"
                     className="btn-primary px-3 py-2 text-sm"

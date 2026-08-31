@@ -3188,7 +3188,9 @@ export default function TaskList({
           isTimerRunning={isTimerRunning}
           selectedDay={calendarSelectedDay}
           onSelectDay={setCalendarSelectedDay}
-          onQuickAdd={(title, dueDate) => addTaskWithTitle(title, dueDate, undefined, { openDetail: false })}
+          onQuickAdd={(title, dueDate, options) =>
+            addTaskWithTitle(title, dueDate, undefined, { openDetail: options?.openDetail ?? false })
+          }
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           onToggleTaskDetail={toggleTaskDetail}
           expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
@@ -3272,7 +3274,9 @@ export default function TaskList({
           onToggleComplete={toggleComplete}
           onStartTask={onStartTask}
           onSelectTask={onSelectTask}
-          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId, { openDetail: false })}
+          onQuickAdd={(title, projectId, options) =>
+            addTaskWithTitle(title, undefined, projectId, { openDetail: options?.openDetail ?? false })
+          }
           onToggleProjectFavorite={toggleProjectFavorite}
           onExpandProject={expandProjectToList}
           // Drawer owns title edit — don't mount row autoFocus input (steals caret).
@@ -3348,7 +3352,9 @@ export default function TaskList({
           onExpandProject={expandProjectToList}
           onOpenProject={expandProjectToList}
           onToggleProjectFavorite={toggleProjectFavorite}
-          onQuickAdd={(title, projectId) => addTaskWithTitle(title, undefined, projectId, { openDetail: false })}
+          onQuickAdd={(title, projectId, options) =>
+            addTaskWithTitle(title, undefined, projectId, { openDetail: options?.openDetail ?? false })
+          }
           onToggleComplete={toggleComplete}
           onToggleTaskDetail={toggleTaskDetail}
           onToggleSubtasks={toggleSubtasksExpanded}

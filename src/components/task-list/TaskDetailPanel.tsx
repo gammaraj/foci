@@ -577,7 +577,7 @@ export function TaskDetailPanel({
       <div
         className={`flex items-center gap-2 min-w-0 w-full ${pad} ${
           isDrawer
-            ? "pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:pb-4 sticky bottom-0 bg-[color:var(--surface-elevated)]/95 dark:bg-[#131d30]/95 backdrop-blur-sm border-t border-slate-100 dark:border-[#243350] mt-auto"
+            ? "pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:pb-4 sticky bottom-0 bg-[var(--surface-elevated)] dark:bg-[#131d30] border-t border-slate-100 dark:border-[#243350] mt-auto"
             : "pt-3 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2"
         }`}
       >

@@ -294,14 +294,10 @@ select {
   background: rgba(15, 23, 42, 0.85);
 }
 
-/* Landing page hero warm gradient — light and dark */
+/* Landing page hero — follows app theme class only (not OS prefers-color-scheme),
+   so nav/chrome and page stay in sync when the user picks light while the OS is dark. */
 .hero-gradient-bg {
   background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(37,99,235,0.08) 0%, transparent 62%), #f8fafc;
-}
-@media (prefers-color-scheme: dark) {
-  .hero-gradient-bg {
-    background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), #0a0f1a;
-  }
 }
 .dark .hero-gradient-bg {
   background: radial-gradient(ellipse 110% 55% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), #0a0f1a;
@@ -418,13 +414,15 @@ select {
     0 8px 24px -10px rgba(0, 0, 0, 0.55);
 }
 
-/* Elevated panels (menus, modals, stats cards) — mist paper, not porcelain */
+/* Elevated panels (menus, modals, stats cards) — solid mist paper, never glass */
 .surface-panel {
-  background: var(--surface-elevated);
+  background-color: var(--surface-elevated);
   border-color: var(--surface-border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .dark .surface-panel {
-  background: #131d30;
+  background-color: #131d30;
   border-color: #243350;
 }
 

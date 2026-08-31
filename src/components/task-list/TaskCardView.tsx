@@ -81,7 +81,7 @@ interface TaskCardViewProps {
   onTaskDragOver?: (e: React.DragEvent, taskId: string) => void;
   onTaskDrop?: (projectId: string, targetTaskId: string) => void;
   onTaskDragEnd?: () => void;
-  onQuickAdd: (title: string, projectId: string) => void;
+  onQuickAdd: (title: string, projectId: string, options?: { openDetail?: boolean }) => void;
   onToggleComplete?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
   onToggleSubtasks?: (taskId: string) => void;
@@ -586,7 +586,7 @@ function ProjectCard({
   onToggleComplete?: (taskId: string) => void;
   onToggleTaskDetail?: (taskId: string) => void;
   onToggleSubtasks?: (taskId: string) => void;
-  onQuickAdd: (title: string, projectId: string) => void;
+  onQuickAdd: (title: string, projectId: string, options?: { openDetail?: boolean }) => void;
   onStartEdit?: (task: Task) => void;
   onEditTitleChange?: (value: string) => void;
   onSaveEdit?: (taskId: string) => void;
@@ -630,6 +630,14 @@ function ProjectCard({
     const title = draft.trim();
     if (!title) return;
     onQuickAdd(title, project.id);
+    setDraft("");
+    setShowAdd(false);
+  };
+
+  const submitQuickAddWithDetails = () => {
+    const title = draft.trim();
+    if (!title) return;
+    onQuickAdd(title, project.id, { openDetail: true });
     setDraft("");
     setShowAdd(false);
   };
@@ -941,6 +949,7 @@ function ProjectCard({
                   draft={draft}
                   onDraftChange={setDraft}
                   onSubmit={submitQuickAdd}
+                  onAddWithDetails={submitQuickAddWithDetails}
                   inputRef={addInputRef}
                   compact
                   className="shrink-0"

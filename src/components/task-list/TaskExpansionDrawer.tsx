@@ -61,7 +61,7 @@ export function TaskExpansionDrawer({
     <>
       <button
         type="button"
-        className="fixed inset-0 z-40 bg-slate-900/25 dark:bg-black/50 backdrop-blur-[1px] cursor-default"
+        className="fixed inset-0 z-40 bg-slate-900/40 dark:bg-black/60 cursor-default"
         onMouseDown={(e) => handleOverlayDismiss(e, onClose)}
         aria-label="Close task details"
       />
@@ -69,7 +69,7 @@ export function TaskExpansionDrawer({
         role="dialog"
         aria-modal="true"
         aria-label={`Task details: ${task.title}`}
-        className="fixed z-50 inset-x-0 bottom-0 w-full max-w-full min-w-0 box-border sm:inset-x-auto sm:left-auto sm:right-3 sm:top-3 sm:bottom-3 sm:w-[min(calc(100%-1.5rem),40rem)] flex flex-col max-h-[min(94dvh,100%)] sm:max-h-none rounded-t-2xl sm:rounded-2xl border surface-panel shadow-2xl shadow-slate-900/15 overflow-hidden"
+        className="fixed z-50 inset-x-0 bottom-0 w-full max-w-full min-w-0 box-border sm:inset-x-auto sm:left-auto sm:right-3 sm:top-3 sm:bottom-3 sm:w-[min(calc(100%-1.5rem),40rem)] flex flex-col max-h-[min(94dvh,100%)] sm:max-h-none rounded-t-2xl sm:rounded-2xl border surface-panel bg-[var(--surface-elevated)] dark:bg-[#131d30] shadow-2xl shadow-slate-900/15 overflow-hidden isolate"
         style={{
           paddingLeft: "env(safe-area-inset-left, 0px)",
           paddingRight: "env(safe-area-inset-right, 0px)",
