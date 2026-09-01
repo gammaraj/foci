@@ -532,7 +532,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
   const scIframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  spotifyIdxRef.current = spotifyIdx;
+  useEffect(() => {
+    spotifyIdxRef.current = spotifyIdx;
+  }, [spotifyIdx]);
 
   useEffect(() => {
     if (mode !== "spotify") {

@@ -1034,9 +1034,15 @@ export default function TaskList({
   };
 
   const sharedProjectsRef = useRef(sharedProjects);
-  sharedProjectsRef.current = sharedProjects;
   const selectSharedProjectRef = useRef(selectSharedProject);
-  selectSharedProjectRef.current = selectSharedProject;
+
+  useEffect(() => {
+    sharedProjectsRef.current = sharedProjects;
+  }, [sharedProjects]);
+
+  useEffect(() => {
+    selectSharedProjectRef.current = selectSharedProject;
+  }, [selectSharedProject]);
 
   // Open a shared project from the Sharing hub (navbar people icon)
   useEffect(() => {
