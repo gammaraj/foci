@@ -68,7 +68,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
 - **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
 - **Due Date Reminders**: In-app bell for overdue and due-today tasks, plus optional browser notifications.
-- **Onboarding Tour**: Guided walkthrough for new users covering tasks, views, Today's One Thing, project templates, timer, ambient music, and settings. Replay anytime via Take product tour.
+- **Onboarding**: First-win checklist (You're in → set Today's One Thing → finish a task). Sample workspace is pre-filled; signup is asked after the first completed task. Replay via Take product tour.
 - **App Focus Bar**: Shared strip under the navbar — Tasks title with spaced late/today urgency + done tally, then Music/Timer dock and utilities. Compact status also shows session progress, clock, weather, and streak when active.
 - **Project Templates**: Create a new project with preset tasks. Workflow packs include Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Financial planning packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. In Projects manage, templates are a single horizontally scrollable chip row with short labels (Morning, Budget, etc.). Also via ⋯ → Project templates or Add project.
 - **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).

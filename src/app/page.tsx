@@ -135,7 +135,7 @@ const jsonLd = {
     "App Focus Bar with session progress, local weather, live clock, and streak when active",
     "Curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi",
     "Collapsible timer panel for full-width task management",
-    "Guided onboarding tour for new users (replay via Take product tour)",
+    "First-win checklist for new users (set One Thing, finish a task); replay via Take product tour",
     "Daily goal presets: Light (4), Standard (8), Intense (12)",
     "Account collaboration with viewer/editor roles (in-app invites; copy invite text)",
     "Project sharing with viewer/editor roles (no public invite links)",

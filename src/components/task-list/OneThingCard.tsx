@@ -464,6 +464,7 @@ export function OneThingCard({
             <button
               type="button"
               onClick={onComplete}
+              data-tour="one-thing-done"
               className="inline-flex items-center px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
             >
               Done

@@ -104,6 +104,7 @@ import {
   resolveOneThing,
   type OneThingPreference,
 } from "@/lib/one-thing";
+import { notifyOneThingChanged } from "@/lib/onboarding";
 import { getTaskListSection, getTaskListSectionOrder, isActionableOverdue } from "@/lib/task-status";
 import { ProjectTabName } from "@/components/task-list/ProjectTabName";
 import { TaskSearchField } from "@/components/task-list/TaskSearchField";
@@ -270,6 +271,7 @@ export default function TaskList({
     setOneThingPref(pref);
     if (pref) setOneThingPromptDismissed(false);
     saveOneThing(pref).catch((err) => console.error("[Foci] Failed to save One Thing:", err));
+    notifyOneThingChanged();
   }, []);
 
   /** Guest sample: One Thing is a leaf task; a different task starts with subtasks open. */

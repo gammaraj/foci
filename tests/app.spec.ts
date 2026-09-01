@@ -245,3 +245,18 @@ test.describe("App Page (unauthenticated)", () => {
     await expect(page.getByRole("dialog", { name: "Set due date" })).toHaveCount(0);
   });
 });
+
+test.describe("Onboarding first-win checklist", () => {
+  test("pre-checks You're in and does not block the app", async ({ page }) => {
+    await page.goto("/app");
+    await waitForBoot(page);
+    const card = page.getByRole("dialog", { name: "Get to your first win" });
+    await expect(card).toBeVisible();
+    await expect(card.getByText("You're in")).toBeVisible();
+    await expect(card.getByText("Set Today's One Thing")).toBeVisible();
+    await expect(card.getByText("Finish a task")).toBeVisible();
+    await expect(page.locator(".fixed.inset-0.bg-black\\/40")).toHaveCount(0);
+    await card.getByRole("button", { name: "Skip tour" }).click();
+    await expect(card).toHaveCount(0);
+  });
+});

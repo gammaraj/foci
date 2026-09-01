@@ -1,0 +1,22 @@
+Here is the concise, actionable framework for designing user onboarding:
+1. Identify the "Aha!" Moment
+Find the core value action: Pinpoint the exact moment a user realizes your product's worth (e.g., creating a first design, syncing a first file).
+Eliminate fluff: Strip away any step, button, or explanation that doesn't actively push the user toward that specific action.
+2. Choose the Right UX Pattern
+Interactive Walkthroughs: Have users do a micro-task rather than read about it.
+Onboarding Checklists: Use 3–5 items to tap into the human psychological desire to finish lists. Pre-check the first item (e.g., "Account created") to build momentum.
+Empty State Templates: Never drop users into a blank screen. Pre-populate dashboards with editable sample data or templates.
+Persona Segmentation: Ask 1–2 quick questions upfront to route users to a tailored workspace based on their goals.
+3. Minimize Sign-Up Friction
+Postpone non-essentials: Delay avatar uploads, billing details, and deep preference configurations until after the user experiences core value.
+Use single sign-on (SSO): Enable one-click Google, Apple, or GitHub login to decrease sign-up drop-off.
+4. Track Success Metrics
+Drop-off Points: Identify the exact step or tooltip where users exit the workflow.
+Time-to-Value (TTV): Measure and aggressively minimize the number of minutes it takes a user to reach their first "Aha!" moment.
+
+Foci mapping:
+- Aha: finish a task (Today's One Thing is the shortest path).
+- Pattern: 3-item checklist with "You're in" pre-checked; guest sample workspace already has One Thing set. The UI stays clickable — no full-screen overlay.
+- Sign-up: still after the first win (Keep this win). Google one-click is available; no persona quiz (it would delay TTV).
+- Metrics: onboarding_started, onboarding_step_viewed, onboarding_step_completed, onboarding_skipped, onboarding_completed (elapsed_seconds = TTV).
+

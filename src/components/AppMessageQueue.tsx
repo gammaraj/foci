@@ -15,6 +15,7 @@ import {
   isGuestSampleWorkspace,
   markGuestSampleBannerDismissed,
 } from "@/lib/guest-demo";
+import { isOnboardingDone, ONBOARDING_CHANGED_EVENT } from "@/lib/onboarding";
 import {
   dismissFirstWin,
   FIRST_WIN_EVENT,
@@ -70,9 +71,11 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
     const onSessionComplete = () => setSessionTick((n) => n + 1);
     window.addEventListener("tempo-session-complete", onSessionComplete);
     window.addEventListener(FIRST_WIN_EVENT, onSessionComplete);
+    window.addEventListener(ONBOARDING_CHANGED_EVENT, onSessionComplete);
     return () => {
       window.removeEventListener("tempo-session-complete", onSessionComplete);
       window.removeEventListener(FIRST_WIN_EVENT, onSessionComplete);
+      window.removeEventListener(ONBOARDING_CHANGED_EVENT, onSessionComplete);
     };
   }, []);
 
@@ -97,6 +100,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         if (id === "sample-workspace") {
           if (user) continue;
           if (hasFirstWin()) continue;
+          if (!isOnboardingDone()) continue;
           if (!isTasksAppPath(pathname)) continue;
           if (hasClearedGuestDemo() || hasDismissedGuestSampleBanner()) continue;
           try {
@@ -111,6 +115,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         }
 
         if (id === "first-session") {
+          if (!isOnboardingDone()) continue;
           const dismissedLocal =
             localStorage.getItem("foci_first_session_nudge_dismissed") ||
             localStorage.getItem("tempo_first_session_nudge_dismissed");
@@ -130,6 +135,7 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         }
 
         if (id === "signup") {
+          if (!isOnboardingDone()) continue;
           if (!user && hasFirstWin() && !hasDismissedFirstWin()) {
             setActiveId("signup");
             return;

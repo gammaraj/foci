@@ -69,7 +69,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Fullscreen Task Mode**: Expand the tasks panel to full screen for distraction-free task management.
 - **Indian Classical Music**: Curated SoundCloud playlists (sitar, flute, veena) for deep focus alongside lo-fi and ambient sounds.
 - **Due Date Reminders**: In-app bell for overdue and due-today tasks, plus optional browser notifications.
-- **Onboarding Tour**: Guided walkthrough for new users covering tasks, views, Today's One Thing, project templates, timer, ambient music, and settings. Replay anytime via Take product tour.
+- **Onboarding**: First-win checklist (You're in → set Today's One Thing → finish a task). Sample workspace is pre-filled; signup is asked after the first completed task. Replay via Take product tour.
 - **App Focus Bar**: Shared strip under the navbar — Tasks title with spaced late/today urgency + done tally, then Music/Timer dock and utilities. Compact status also shows session progress, clock, weather, and streak when active.
 - **Project Templates**: Create a new project with preset tasks. Workflow packs include Morning Routine, Study Session, Dev Sprint, Writing Block, Meeting Prep, Weekly Review, and Trip Planning. Financial planning packs include Financial Life Plan, Monthly Budget, Debt Payoff, Emergency Fund, Investing Setup, Tax Prep, and Net Worth Review. In Projects manage, templates are a single horizontally scrollable chip row with short labels (Morning, Budget, etc.). Also via ⋯ → Project templates or Add project.
 - **Timer Presets**: Pre-configured timer durations — Classic Pomodoro (25/5), Short Sprint (15/3), Deep Work (50/10), 52/17 Rule, and Ultra Focus (90/20).
@@ -386,11 +386,11 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - `src/lib/task-view-url.ts` – Layout path helpers (/app/cards → card mode, etc.).
 - `src/components/task-list/DoneTodayTally.tsx` – Done today / this week / this month header tally.
 - `src/components/TaskImportExport.tsx` – Import tasks from Google Tasks, Todoist, Asana, Notion, CSV with destination picker and new/existing project preview. Export as JSON/CSV.
-- `src/components/OnboardingTour.tsx` – Guided product tour (replay via Take product tour).
+- `src/components/OnboardingTour.tsx` – First-win checklist (set One Thing, finish a task); replay via Take product tour.
 - `src/components/WeatherTime.tsx` – Local weather, temperature, live clock, and date widget.
 - `src/lib/templates.ts` – Project templates (workflows + financial planning), timer presets, and daily goal presets.
 - `src/components/task-list/ProjectTemplatePicker.tsx` – Template picker for new projects (chips, cards, and menu).
-- `src/lib/onboarding.ts` – Start/replay onboarding tour helpers.
+- `src/lib/onboarding.ts` – First-win checklist helpers, TTV/drop-off analytics, replay.
 - `src/hooks/useTimer.ts` – Core timer logic hook (work/break cycles, callbacks).
 - `src/lib/types.ts` – TypeScript type definitions (Settings, Task, TimerStatus, etc.).
 - `src/lib/quotes.ts` – Array of motivational quotes.

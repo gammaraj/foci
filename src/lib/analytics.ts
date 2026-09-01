@@ -55,6 +55,28 @@ export function trackLogin(method: "email" | "google") {
   track("login", { method });
 }
 
+// ── Onboarding (aha = first completed task) ──────────────────────────────────
+
+export function trackOnboardingStarted() {
+  track("onboarding_started");
+}
+
+export function trackOnboardingStepViewed(step: string) {
+  track("onboarding_step_viewed", { step });
+}
+
+export function trackOnboardingStepCompleted(step: string, elapsedSeconds: number) {
+  track("onboarding_step_completed", { step, elapsed_seconds: elapsedSeconds });
+}
+
+export function trackOnboardingSkipped(step: string, elapsedSeconds: number) {
+  track("onboarding_skipped", { step, elapsed_seconds: elapsedSeconds });
+}
+
+export function trackOnboardingCompleted(elapsedSeconds: number) {
+  track("onboarding_completed", { elapsed_seconds: elapsedSeconds });
+}
+
 // ── Sharing / collaboration (monetization signals) ───────────────────────────
 
 export function trackShareModalOpened(scope: "project" | "account") {
