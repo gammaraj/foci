@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pingPostgrest } from "@/lib/postgrest-ping";
+import { reportError } from "@/lib/report-error";
 
 /** Lightweight DB ping for Vercel cron / GitHub Actions — prevents Supabase free-tier pause. */
 export async function GET(request: NextRequest) {
@@ -15,6 +16,10 @@ export async function GET(request: NextRequest) {
 
   const result = await pingPostgrest();
   if (!result.ok) {
+    reportError("keep-alive ping failed", result.error, {
+      attempts: result.attempts,
+      latencyMs: result.latencyMs,
+    });
     return NextResponse.json(
       {
         error: result.error ?? "keep_alive_failed",

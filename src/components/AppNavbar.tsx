@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
@@ -47,7 +48,7 @@ export default function AppNavbar({
         }
       })
       .catch((err) => {
-        console.error("[Foci] Failed to load settings for navbar:", err);
+        reportError("Failed to load settings for navbar", err);
         if (!cancelled) setSettingsLoaded(true);
       });
     return () => {
@@ -65,7 +66,7 @@ export default function AppNavbar({
       } else {
         setInternalSettings(next);
         persistSettings(next).catch((err) => {
-          console.error("[Foci] Failed to save settings:", err);
+          reportError("Failed to save settings", err);
         });
       }
     },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { reportError } from "@/lib/report-error";
 
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY ?? "893d4c6a-a4f4-4215-829e-df8b4dd1a1f6";
 const SITE_URL = "https://usefoci.com";
@@ -95,7 +96,8 @@ export async function POST(request: NextRequest) {
       },
       { status: response.status },
     );
-  } catch {
+  } catch (err) {
+    reportError("IndexNow submission failed", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

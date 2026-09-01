@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { loadTasks, loadProjects } from "@/lib/storage";
@@ -67,7 +68,7 @@ export default function DueRemindersButton() {
       });
       setItems(next);
     } catch (err) {
-      console.error("[Foci] Failed to load due reminders:", err);
+      reportError("Failed to load due reminders", err);
     } finally {
       setLoading(false);
     }

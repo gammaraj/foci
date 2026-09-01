@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { useState, useEffect, useRef } from "react";
 import { Project } from "@/lib/types";
 import {
@@ -61,14 +62,14 @@ export default function ShareProjectModal({
         if (collabsResult.status === "fulfilled") {
           setCollaborators(collabsResult.value);
         } else {
-          console.error("[Foci] Failed to load collaborators:", collabsResult.reason);
+          reportError("Failed to load collaborators", collabsResult.reason);
           setCollaborators([]);
         }
 
         if (invitesResult.status === "fulfilled") {
           setPendingInvites(invitesResult.value);
         } else {
-          console.error("[Foci] Failed to load invites:", invitesResult.reason);
+          reportError("Failed to load invites", invitesResult.reason);
           setPendingInvites([]);
         }
 
@@ -78,7 +79,7 @@ export default function ShareProjectModal({
           showToast("Some sharing settings could not be loaded", "error");
         }
       } catch (err) {
-        console.error("[Foci] Failed to load collaborators:", err);
+        reportError("Failed to load collaborators", err);
         showToast("Failed to load collaborators", "error");
       } finally {
         setLoading(false);

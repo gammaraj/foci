@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { reportError } from '@/lib/report-error'
 import { usePathname } from 'next/navigation'
 import { isCrossPromoExcludedPath } from '@/lib/ad-excluded-paths'
 
@@ -370,7 +371,7 @@ export function FilantusCrossPromoBanner({
           setIndex(0) // keep BoostLogik last in the Next cycle
         }
       })
-      .catch(() => {})
+      .catch((err) => reportError('Cross-promo ads fetch failed', err))
   }, [])
 
   useEffect(() => {

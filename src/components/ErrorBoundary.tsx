@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import * as Sentry from "@sentry/nextjs";
 import { BusyBeaver } from "@/components/BusyBeaver";
+import { reportError } from "@/lib/report-error";
 
 interface Props {
   children: React.ReactNode;
@@ -23,10 +23,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error("[Foci] Uncaught error:", error, info.componentStack);
-    Sentry.captureException(error, {
-      contexts: { react: { componentStack: info.componentStack } },
-    });
+    reportError("Uncaught error", error, { componentStack: info.componentStack });
   }
 
   render() {

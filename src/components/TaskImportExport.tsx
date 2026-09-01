@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Task,
@@ -290,9 +291,7 @@ export default function TaskImportExport({
       .then((projects) => {
         if (!cancelled) setLoadedProjects(projects);
       })
-      .catch(() => {
-        if (!cancelled) setLoadedProjects([]);
-      });
+      .catch((err) => { if (!cancelled) { reportError("Failed to load projects for import/export", err); setLoadedProjects([]); } });
     return () => {
       cancelled = true;
     };

@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { Suspense, useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import AppNavbar from "@/components/AppNavbar";
@@ -50,7 +51,7 @@ function WorkspaceChromeInner({
     const refresh = () => {
       loadCustomQuote()
         .then(setCustomQuote)
-        .catch((err) => console.error("[Foci] Failed to load custom quote:", err));
+        .catch((err) => reportError("Failed to load custom quote", err));
     };
     refresh();
     window.addEventListener(CUSTOM_QUOTE_CHANGED_EVENT, refresh);

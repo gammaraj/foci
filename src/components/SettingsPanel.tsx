@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { useState, useEffect, useRef } from "react";
 import { Settings, Project } from "@/lib/types";
 import { TIMER_PRESETS, GOAL_PRESETS } from "@/lib/templates";
@@ -125,10 +126,10 @@ export default function SettingsPanel({
     setStartTimerOnFocusState(getStartTimerOnFocus());
     loadCustomQuote()
       .then((q) => setCustomQuoteDraft(q ?? ""))
-      .catch((err) => console.error("[Foci] Failed to load custom quote:", err));
+      .catch((err) => reportError("Failed to load custom quote", err));
     loadTaskViewPreferences()
       .then((prefs) => setDefaultTaskViewState(prefs.defaultTaskView))
-      .catch((err) => console.error("[Foci] Failed to load task view preference:", err));
+      .catch((err) => reportError("Failed to load task view preference", err));
   }, []);
 
   useEffect(() => {
@@ -156,7 +157,7 @@ export default function SettingsPanel({
         const allProjects = await loadProjects();
         setProjects(allProjects.filter((p) => !p.archived && p.id !== "__general__"));
       } catch (err) {
-        console.error("[Foci] Failed to load projects:", err);
+        reportError("Failed to load projects", err);
       } finally {
         setLoadingProjects(false);
       }
@@ -581,7 +582,7 @@ export default function SettingsPanel({
                             setCustomQuoteDraft(next);
                             notifyCustomQuoteChanged();
                           })
-                          .catch((err) => console.error("[Foci] Failed to save custom quote:", err));
+                          .catch((err) => reportError("Failed to save custom quote", err));
                       }}
                       className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y min-h-[2.75rem]"
                     />
@@ -596,7 +597,7 @@ export default function SettingsPanel({
                             setCustomQuoteDraft("");
                             void saveCustomQuote(null)
                               .then(() => notifyCustomQuoteChanged())
-                              .catch((err) => console.error("[Foci] Failed to clear custom quote:", err));
+                              .catch((err) => reportError("Failed to clear custom quote", err));
                           }}
                           className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
                         >
@@ -635,7 +636,7 @@ export default function SettingsPanel({
                               new CustomEvent(DEFAULT_VIEW_CHANGED_EVENT, { detail: view }),
                             );
                           } catch (err) {
-                            console.error("[Foci] Failed to save task view preference:", err);
+                            reportError("Failed to save task view preference", err);
                           }
                         }}
                         className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"

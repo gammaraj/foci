@@ -1,8 +1,8 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 import { BusyBeaver } from "@/components/BusyBeaver";
+import { reportError } from "@/lib/report-error";
 
 export default function Error({
   error,
@@ -12,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    reportError("Route error", error, { digest: error.digest });
   }, [error]);
 
   return (

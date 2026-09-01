@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { reportError } from "@/lib/report-error";
 
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 20;
@@ -104,7 +105,8 @@ export async function GET(request: Request) {
       { temp, high, low, humidity, wind, windUnit, description, icon, city, unit },
       { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300" } },
     );
-  } catch {
+  } catch (err) {
+    reportError("Weather API request failed", err);
     return NextResponse.json({ error: "Failed to fetch weather" }, { status: 500 });
   }
 }

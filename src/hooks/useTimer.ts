@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Settings,
@@ -197,10 +198,10 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
           }
         }
       }).catch((err) => {
-        console.error("[Foci] Failed to load daily goal data:", err);
+        reportError("Failed to load daily goal data", err);
       });
     }).catch((err) => {
-      console.error("[Foci] Failed to load settings:", err);
+      reportError("Failed to load settings", err);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user?.id]);
@@ -346,10 +347,10 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
     const goalMet = dgd.sessionCount >= s.dailyGoal;
     trackSessionComplete(dgd.sessionCount, goalMet);
     recordDayCompletion(new Date(), dgd.sessionCount, goalMet).catch((err) => {
-      console.error("[Foci] Failed to record day completion:", err);
+      reportError("Failed to record day completion", err);
     });
     saveDailyGoalData(dgd).catch((err) => {
-      console.error("[Foci] Failed to save daily goal data:", err);
+      reportError("Failed to save daily goal data", err);
     });
     setDailyGoalData({ ...dgd });
     dailyGoalRef.current = dgd;
@@ -501,7 +502,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
       setSettings(newSettings);
       settingsRef.current = newSettings;
       persistSettings(newSettings).catch((err) => {
-        console.error("[Foci] Failed to save settings:", err);
+        reportError("Failed to save settings", err);
       });
 
       // If idle, update the displayed timer
@@ -531,7 +532,7 @@ export function useTimer({ authLoading = false, user }: TimerOptions = {}): Time
           setDailyGoalData(goal);
           dailyGoalRef.current = goal;
         }).catch((err) => {
-          console.error("[Foci] Failed to reload daily goal data:", err);
+          reportError("Failed to reload daily goal data", err);
         });
       }
     };

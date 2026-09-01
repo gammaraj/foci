@@ -10,6 +10,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { reportError } from "@/lib/report-error";
 import { createPortal } from "react-dom";
 import {
   FOCUS_STRIP_CHIP,
@@ -491,7 +492,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
     setMode(getAmbientMode());
     setVolume(getAmbientVolume());
     setPrefsLoaded(true);
-    loadSpotifyIframeApi().catch(() => {});
+    loadSpotifyIframeApi().catch((err) => reportError("Spotify IFrame API load failed", err));
   }, []);
 
   useEffect(() => {
@@ -597,8 +598,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           },
         );
       })
-      .catch(() => {
-        /* Header play needs the IFrame API; the playlist picker still works. */
+      .catch((err) => {
+        reportError("Spotify embed controller setup failed", err);
       });
     return () => {
       cancelled = true;

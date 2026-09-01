@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
@@ -81,7 +82,7 @@ async function applyAuthState(
   try {
     await ensureOfflineCapableStorage(sessionUser);
   } catch (err) {
-    console.error("[Foci] Storage activation failed:", err);
+    reportError("Storage activation failed", err);
   }
   setUser(sessionUser);
   setLoading(false);
@@ -99,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // reconcile without waiting on getSession (often slow on mobile data).
     if (hasOfflineCache()) {
       void activateSupabaseStorage().catch((err) => {
-        console.warn("[Foci] Early cache adapter activate failed:", err);
+        reportError("Early cache adapter activate failed", err);
       });
     }
 
@@ -121,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (cancelled) return;
 
       if (error && !isAuthLockError(error)) {
-        console.error("[Foci] Auth initialization error:", error);
+        reportError("Auth initialization error", error);
       } else if (error && isAuthLockError(error)) {
         console.warn("[Foci] Auth lock busy; using auth state event or guest mode");
       }

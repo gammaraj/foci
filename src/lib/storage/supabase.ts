@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { reportError } from "@/lib/report-error";
 import { showToastGlobal } from "@/components/ToastProvider";
 import {
   Settings,
@@ -392,7 +393,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       for (const chunk of chunkArray(rows)) {
         const result = await this.supabase.from("tasks").upsert(chunk, { onConflict: "user_id,id" }).select("id");
         if (result.error) {
-          console.error("[Foci] Supabase saveTasks error:", result.error.message, result.error.details, result.error.hint);
+          reportError("Supabase saveTasks error", result.error, { details: result.error.details, hint: result.error.hint });
           throw new Error(result.error.message);
         }
       }
@@ -405,7 +406,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       const row = taskToRow(task, userId);
       const result = await this.supabase.from("tasks").upsert(row, { onConflict: "user_id,id" }).select("id");
       if (result.error) {
-        console.error("[Foci] Supabase saveTask error:", result.error.message, result.error.details, result.error.hint);
+        reportError("Supabase saveTask error", result.error, { details: result.error.details, hint: result.error.hint });
         throw new Error(result.error.message);
       }
     }, { label: "saveTask" });
@@ -487,7 +488,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     for (const chunk of chunkArray(rows)) {
       const result = await this.supabase.from("projects").upsert(chunk, { onConflict: "user_id,id" }).select("id");
       if (result.error) {
-        console.error("[Foci] Supabase saveProjects error:", result.error.message, result.error.details, result.error.hint);
+        reportError("Supabase saveProjects error", result.error, { details: result.error.details, hint: result.error.hint });
         throw new Error(result.error.message);
       }
     }
@@ -715,8 +716,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("owner_id", userId);
 
     if (rowsError) {
-      console.error("[Foci] getProjectCollaborators error:", rowsError);
-      console.error("[Foci] getProjectCollaborators error details:", JSON.stringify(rowsError, null, 2));
+      reportError("getProjectCollaborators error", rowsError);
       throw new Error(rowsError.message);
     }
 
@@ -756,7 +756,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       if (error.message?.includes("already pending")) {
         throw new Error("An invite is already pending for this email");
       }
-      console.error("[Foci] inviteCollaborator error:", error);
+      reportError("inviteCollaborator error", error);
       throw new Error(error.message);
     }
   }
@@ -772,7 +772,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", collaboratorId);
       
     if (error) {
-      console.error("[Foci] removeCollaborator error:", error);
+      reportError("removeCollaborator error", error);
       throw new Error(error.message);
     }
   }
@@ -788,7 +788,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", collaboratorId);
       
     if (error) {
-      console.error("[Foci] updateCollaboratorRole error:", error);
+      reportError("updateCollaboratorRole error", error);
       throw new Error(error.message);
     }
   }
@@ -815,7 +815,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("status", "pending");
       
     if (error) {
-      console.error("[Foci] getSentInvites error:", error);
+      reportError("getSentInvites error", error);
       throw new Error(error.message);
     }
     
@@ -856,7 +856,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("owner_id", userId);
       
     if (error) {
-      console.error("[Foci] cancelInvite error:", error);
+      reportError("cancelInvite error", error);
       throw new Error(error.message);
     }
   }
@@ -940,8 +940,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       ),
     ]);
 
-    if (err1) { console.error("[Foci] getReceivedInvites (byId) error:", err1); throw new Error(err1.message); }
-    if (err2) { console.error("[Foci] getReceivedInvites (byEmail) error:", err2); throw new Error(err2.message); }
+    if (err1) { reportError("getReceivedInvites (byId) error:", err1); throw new Error(err1.message); }
+    if (err2) { reportError("getReceivedInvites (byEmail) error:", err2); throw new Error(err2.message); }
 
     // Merge and deduplicate by invite id
     const seen = new Set<string>();
@@ -979,7 +979,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     });
 
     if (error) {
-      console.error("[Foci] acceptInvite error:", error);
+      reportError("acceptInvite error", error);
       throw new Error(error.message);
     }
   }
@@ -990,7 +990,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     });
 
     if (error) {
-      console.error("[Foci] declineInvite error:", error);
+      reportError("declineInvite error", error);
       throw new Error(error.message);
     }
   }
@@ -1022,7 +1022,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", userId);
       
     if (projectError) {
-      console.error("[Foci] getSharedProjects (project-level) error:", projectError);
+      reportError("getSharedProjects (project-level) error", projectError);
       throw new Error(projectError.message);
     }
     
@@ -1040,7 +1040,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", userId);
       
     if (accountError) {
-      console.error("[Foci] getSharedProjects (account-level) error:", accountError);
+      reportError("getSharedProjects (account-level) error", accountError);
       throw new Error(accountError.message);
     }
     
@@ -1094,7 +1094,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         .in("user_id", ownerIds);
 
       if (ownerError) {
-        console.error("[Foci] getSharedProjects (fetch owner projects) error:", ownerError);
+        reportError("getSharedProjects (fetch owner projects) error", ownerError);
         throw new Error(ownerError.message);
       }
 
@@ -1309,7 +1309,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .order("created_at", { ascending: true });
       
     if (error) {
-      console.error("[Foci] loadSharedProjectTasks error:", error);
+      reportError("loadSharedProjectTasks error", error);
       throw new Error(error.message);
     }
     
@@ -1328,7 +1328,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("id", task.id);
       
     if (error) {
-      console.error("[Foci] updateSharedTask error:", error);
+      reportError("updateSharedTask error", error);
       throw new Error(error.message);
     }
   }
@@ -1345,7 +1345,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .select("id");
       
     if (error) {
-      console.error("[Foci] leaveProject error:", error);
+      reportError("leaveProject error", error);
       throw new Error(error.message);
     }
 
@@ -1365,7 +1365,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .select("id");
 
     if (error) {
-      console.error("[Foci] leaveSharedAccount error:", error);
+      reportError("leaveSharedAccount error", error);
       throw new Error(error.message);
     }
 
@@ -1470,8 +1470,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("owner_id", userId);
 
     if (rowsError) {
-      console.error("[Foci] getAccountCollaborators error:", rowsError);
-      console.error("[Foci] getAccountCollaborators error details:", JSON.stringify(rowsError, null, 2));
+      reportError("getAccountCollaborators error", rowsError);
       throw new Error(rowsError.message);
     }
 
@@ -1510,7 +1509,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       if (error.message?.includes("already pending")) {
         throw new Error("An invite is already pending for this email");
       }
-      console.error("[Foci] inviteAccountCollaborator error:", error);
+      reportError("inviteAccountCollaborator error", error);
       throw new Error(error.message);
     }
   }
@@ -1525,7 +1524,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", collaboratorId);
       
     if (error) {
-      console.error("[Foci] removeAccountCollaborator error:", error);
+      reportError("removeAccountCollaborator error", error);
       throw new Error(error.message);
     }
   }
@@ -1540,7 +1539,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", collaboratorId);
       
     if (error) {
-      console.error("[Foci] updateAccountCollaboratorRole error:", error);
+      reportError("updateAccountCollaboratorRole error", error);
       throw new Error(error.message);
     }
   }
@@ -1555,7 +1554,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("status", "pending");
       
     if (error) {
-      console.error("[Foci] getSentAccountInvites error:", error);
+      reportError("getSentAccountInvites error", error);
       throw new Error(error.message);
     }
     
@@ -1591,7 +1590,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("owner_id", userId);
       
     if (error) {
-      console.error("[Foci] cancelAccountInvite error:", error);
+      reportError("cancelAccountInvite error", error);
       throw new Error(error.message);
     }
   }
@@ -1628,8 +1627,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       ),
     ]);
 
-    if (err1) { console.error("[Foci] getReceivedAccountInvites (byId) error:", err1); throw new Error(err1.message); }
-    if (err2) { console.error("[Foci] getReceivedAccountInvites (byEmail) error:", err2); throw new Error(err2.message); }
+    if (err1) { reportError("getReceivedAccountInvites (byId) error:", err1); throw new Error(err1.message); }
+    if (err2) { reportError("getReceivedAccountInvites (byEmail) error:", err2); throw new Error(err2.message); }
 
     // Merge and deduplicate by invite id
     const seen = new Set<string>();
@@ -1664,7 +1663,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     });
 
     if (error) {
-      console.error("[Foci] acceptAccountInvite error:", error);
+      reportError("acceptAccountInvite error", error);
       throw new Error(error.message);
     }
   }
@@ -1675,7 +1674,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     });
 
     if (error) {
-      console.error("[Foci] declineAccountInvite error:", error);
+      reportError("declineAccountInvite error", error);
       throw new Error(error.message);
     }
   }
@@ -1696,7 +1695,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .eq("collaborator_id", userId);
       
     if (error) {
-      console.error("[Foci] getSharedAccounts error:", error);
+      reportError("getSharedAccounts error", error);
       throw new Error(error.message);
     }
     

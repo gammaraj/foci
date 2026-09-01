@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import { useState, useEffect, useCallback, useRef, type CSSProperties } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useFocusSession } from "@/components/FocusSessionProvider";
@@ -97,7 +98,7 @@ export default function OnboardingTour() {
         const supabase = createClient();
         supabase.auth
           .updateUser({ data: { onboarding_done: true } })
-          .catch((err) => console.error("[Foci] Failed to save onboarding status:", err));
+          .catch((err) => reportError("Failed to save onboarding status", err));
       }
       setOpen(false);
     },

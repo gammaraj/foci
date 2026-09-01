@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import { useState, useEffect } from "react";
 
 interface WeatherData {
@@ -76,9 +77,7 @@ export default function WeatherTime() {
           });
         }
       })
-      .catch(() => {
-        // Failed — just show clock
-      });
+      .catch((err) => reportError("Weather fetch failed", err));
 
     return () => {
       cancelled = true;

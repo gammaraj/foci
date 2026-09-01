@@ -1,3 +1,4 @@
+import { reportError } from "@/lib/report-error";
 /**
  * CachedSupabaseAdapter — wraps SupabaseStorageAdapter with a localStorage cache
  * so that authenticated users can still load their data when offline.
@@ -57,7 +58,7 @@ async function syncOrKeepLocal(label: string, write: () => Promise<void>): Promi
     await write();
   } catch (err) {
     if (isLikelyOffline()) {
-      console.warn(`[Foci] Offline: ${label} saved locally, sync pending`, err);
+      reportError(`Offline: ${label} saved locally, sync pending`, err, { offline: true });
       return;
     }
     throw err;
@@ -171,9 +172,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const cached = cacheGet<Settings>(CACHE_KEYS.settings) ?? DEFAULT_SETTINGS;
       void withTimeout(this.remote.loadSettings(), REMOTE_LOAD_TIMEOUT_MS)
         .then((result) => cacheSet(CACHE_KEYS.settings, result))
-        .catch(() => {
-          /* keep serving cache */
-        });
+        .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }));
       return cached;
     }
 
@@ -181,7 +180,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await withTimeout(this.remote.loadSettings(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.settings, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<Settings>(CACHE_KEYS.settings) ?? DEFAULT_SETTINGS;
     }
   }
@@ -206,9 +206,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const cached = fallback();
       void withTimeout(this.remote.loadDailyGoalData(dailyGoal), REMOTE_LOAD_TIMEOUT_MS)
         .then((result) => cacheSet(CACHE_KEYS.dailyGoal, result))
-        .catch(() => {
-          /* keep serving cache */
-        });
+        .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }));
       return cached;
     }
 
@@ -219,7 +217,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       );
       cacheSet(CACHE_KEYS.dailyGoal, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return fallback();
     }
   }
@@ -236,9 +235,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const cached = cacheGet<StreakHistory>(CACHE_KEYS.streakHistory) ?? { days: {} };
       void withTimeout(this.remote.loadStreakHistory(), REMOTE_LOAD_TIMEOUT_MS)
         .then((result) => cacheSet(CACHE_KEYS.streakHistory, result))
-        .catch(() => {
-          /* keep serving cache */
-        });
+        .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }));
       return cached;
     }
 
@@ -246,7 +243,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await withTimeout(this.remote.loadStreakHistory(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.streakHistory, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<StreakHistory>(CACHE_KEYS.streakHistory) ?? { days: {} };
     }
   }
@@ -291,9 +289,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
               notifyTasksUpdated();
             }
           })
-          .catch(() => {
-            /* keep serving cache */
-          })
+          .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }))
           .finally(() => {
             this.refreshingTasks = false;
           });
@@ -305,7 +301,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await withTimeout(this.remote.loadTasks(), REMOTE_LOAD_TIMEOUT_MS);
       cacheSet(CACHE_KEYS.tasks, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
     }
   }
@@ -371,9 +368,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
               notifyTasksUpdated();
             }
           })
-          .catch(() => {
-            /* keep serving cache */
-          })
+          .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }))
           .finally(() => {
             this.refreshingProjects = false;
           });
@@ -412,7 +407,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await this.remote.loadSelectedProjectId();
       cacheSet(CACHE_KEYS.selectedProject, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<string>(CACHE_KEYS.selectedProject) ?? ALL_PROJECTS_ID;
     }
   }
@@ -433,7 +429,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
         void this.remote
           .loadTaskViewPreferences()
           .then((result) => cacheSet(CACHE_KEYS.taskViewPrefs, result))
-          .catch(() => {})
+          .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }))
           .finally(() => {
             this.refreshingTaskViewPrefs = false;
           });
@@ -445,7 +441,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await this.remote.loadTaskViewPreferences();
       cacheSet(CACHE_KEYS.taskViewPrefs, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<TaskViewPreferences>(CACHE_KEYS.taskViewPrefs) ?? { ...DEFAULT_TASK_VIEW_PREFERENCES };
     }
   }
@@ -465,7 +462,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
         void this.remote
           .loadOneThing()
           .then((result) => cacheSet(CACHE_KEYS.oneThing, result))
-          .catch(() => {})
+          .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }))
           .finally(() => {
             this.refreshingOneThing = false;
           });
@@ -477,7 +474,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await this.remote.loadOneThing();
       cacheSet(CACHE_KEYS.oneThing, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<OneThingPreference | null>(CACHE_KEYS.oneThing) ?? null;
     }
   }
@@ -495,7 +493,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
         void this.remote
           .loadCustomQuote()
           .then((result) => cacheSet(CACHE_KEYS.customQuote, result))
-          .catch(() => {})
+          .catch((err) => reportError("Background cache refresh failed", err, { backgroundRefresh: true }))
           .finally(() => {
             this.refreshingCustomQuote = false;
           });
@@ -507,7 +505,8 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       const result = await this.remote.loadCustomQuote();
       cacheSet(CACHE_KEYS.customQuote, result);
       return result;
-    } catch {
+    } catch (err) {
+      reportError("Remote load failed", err, { usingCache: true });
       return cacheGet<string | null>(CACHE_KEYS.customQuote) ?? null;
     }
   }

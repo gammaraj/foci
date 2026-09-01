@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
@@ -56,7 +57,7 @@ export default function CollaborationInvitesButton() {
       setAccountInvites(accountResult.status === "fulfilled" ? accountResult.value : []);
       setSharedProjects(sharedResult.status === "fulfilled" ? sharedResult.value : []);
     } catch (err) {
-      console.error("[Foci] Failed to load sharing hub:", err);
+      reportError("Failed to load sharing hub", err);
     } finally {
       setLoading(false);
     }

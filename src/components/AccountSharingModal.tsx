@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { useState, useEffect, useRef } from "react";
 import { getStorage } from "@/lib/storage";
 import type { AccountCollaboratorInfo, AccountInvite, CollaboratorRole } from "@/lib/storage";
@@ -50,14 +51,14 @@ export default function AccountSharingModal({
         if (collabsResult.status === "fulfilled") {
           setCollaborators(collabsResult.value);
         } else {
-          console.error("[Foci] Failed to load account collaborators:", collabsResult.reason);
+          reportError("Failed to load account collaborators", collabsResult.reason);
           setCollaborators([]);
         }
 
         if (invitesResult.status === "fulfilled") {
           setPendingInvites(invitesResult.value);
         } else {
-          console.error("[Foci] Failed to load account invites:", invitesResult.reason);
+          reportError("Failed to load account invites", invitesResult.reason);
           setPendingInvites([]);
         }
 
@@ -81,7 +82,7 @@ export default function AccountSharingModal({
           showToast(`Failed to load pending invites: ${message}`, "error");
         }
       } catch (err) {
-        console.error("[Foci] Failed to load account collaborators:", err);
+        reportError("Failed to load account collaborators", err);
         const message = err instanceof Error ? err.message : "Unknown error";
         showToast(`Failed to load account sharing settings: ${message}`, "error");
       } finally {

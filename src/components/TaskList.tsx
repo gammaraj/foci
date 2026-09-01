@@ -1,5 +1,6 @@
 "use client";
 
+import { reportError } from "@/lib/report-error";
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
@@ -225,7 +226,7 @@ export default function TaskList({
     const refreshQuote = () => {
       loadCustomQuote()
         .then((q) => setCustomQuote(q))
-        .catch((err) => console.error("[Foci] Failed to load custom quote:", err));
+        .catch((err) => reportError("Failed to load custom quote", err));
     };
     refreshQuote();
     window.addEventListener(CUSTOM_QUOTE_CHANGED_EVENT, refreshQuote);
@@ -264,13 +265,13 @@ export default function TaskList({
     saveTaskViewPreferences({
       lastTaskView: mode,
       ...(explicit ? { defaultTaskView: mode, taskViewExplicit: true } : { taskViewExplicit: false }),
-    }).catch((err) => console.error("[Foci] Failed to save task view preference:", err));
+    }).catch((err) => reportError("Failed to save task view preference", err));
   }, []);
 
   const persistOneThing = useCallback((pref: OneThingPreference | null) => {
     setOneThingPref(pref);
     if (pref) setOneThingPromptDismissed(false);
-    saveOneThing(pref).catch((err) => console.error("[Foci] Failed to save One Thing:", err));
+    saveOneThing(pref).catch((err) => reportError("Failed to save One Thing", err));
     notifyOneThingChanged();
   }, []);
 
@@ -495,7 +496,7 @@ export default function TaskList({
     setEditingProjectId(null);
     setSelectedSharedProject(null);
     setSelectedProjectId(ALL_PROJECTS_ID);
-    saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+    saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
     setListReturnView(null);
     setExpandedTaskId(null);
     setExpandedSubtasksTaskId(null);
@@ -567,7 +568,7 @@ export default function TaskList({
       const returnTo = drillReturnViewRef.current;
       setListReturnView(null);
       setSelectedProjectId(ALL_PROJECTS_ID);
-      saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+      saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
       // Don't stomp an in-flight layout click (e.g. Plan while leaving a project drill).
       if (pendingViewModeRef.current && pendingViewModeRef.current !== returnTo) {
         /* keep pending view — selectViewMode already painted it */
@@ -709,10 +710,10 @@ export default function TaskList({
           nextProjects = demo.projects;
           nextOneThing = demo.oneThing;
           saveTasks(demo.tasks).catch((err) => {
-            console.error("[Foci] Failed to save sample tasks:", err);
+            reportError("Failed to save sample tasks", err);
           });
           saveProjects(demo.projects).catch((err) => {
-            console.error("[Foci] Failed to save sample projects:", err);
+            reportError("Failed to save sample projects", err);
           });
           persistOneThing(demo.oneThing);
         } else if (shouldAddDemoProjects) {
@@ -720,10 +721,10 @@ export default function TaskList({
           nextProjects = mergeGuestDemoProjects(existingProjects, demo.projects);
           nextTasks = [...baseTasks, ...extraGuestDemoTasks(demo)];
           saveTasks(nextTasks).catch((err) => {
-            console.error("[Foci] Failed to save sample tasks:", err);
+            reportError("Failed to save sample tasks", err);
           });
           saveProjects(nextProjects).catch((err) => {
-            console.error("[Foci] Failed to save sample projects:", err);
+            reportError("Failed to save sample projects", err);
           });
         } else {
           const bucketUpgrade =
@@ -734,10 +735,10 @@ export default function TaskList({
             nextTasks = bucketUpgrade.tasks;
             nextProjects = bucketUpgrade.projects;
             saveTasks(bucketUpgrade.tasks).catch((err) => {
-              console.error("[Foci] Failed to save sample tasks:", err);
+              reportError("Failed to save sample tasks", err);
             });
             saveProjects(bucketUpgrade.projects).catch((err) => {
-              console.error("[Foci] Failed to save sample projects:", err);
+              reportError("Failed to save sample projects", err);
             });
           } else {
             const migrated = existing.map((t) => ({
@@ -746,7 +747,7 @@ export default function TaskList({
             }));
             if (migrated.some((t, i) => t.projectId !== existing[i]?.projectId)) {
               saveTasks(migrated).catch((err) => {
-                console.error("[Foci] Failed to save migrated tasks:", err);
+                reportError("Failed to save migrated tasks", err);
               });
             }
             nextTasks = migrated;
@@ -758,7 +759,7 @@ export default function TaskList({
           if (spread) {
             nextTasks = spread;
             saveTasks(spread).catch((err) => {
-              console.error("[Foci] Failed to spread sample features:", err);
+              reportError("Failed to spread sample features", err);
             });
           }
         }
@@ -785,11 +786,11 @@ export default function TaskList({
           getSharedProjects()
             .then(setSharedProjects)
             .catch((err) => {
-              console.error("[Foci] Failed to load shared projects:", err);
+              reportError("Failed to load shared projects", err);
             });
         }
       } catch (err) {
-        console.error("[Foci] Failed to load data:", err);
+        reportError("Failed to load data", err);
         setTasksReady(true);
       } finally {
         setSyncingFromServer(false);
@@ -800,15 +801,15 @@ export default function TaskList({
 
     const handleUpdate = () => {
       loadTasks().then(setTasks).catch((err) => {
-        console.error("[Foci] Failed to reload tasks:", err);
+        reportError("Failed to reload tasks", err);
       });
       loadProjects().then(setProjects).catch((err) => {
-        console.error("[Foci] Failed to reload projects:", err);
+        reportError("Failed to reload projects", err);
       });
       // Also reload shared projects
       if (user) {
         getSharedProjects().then(setSharedProjects).catch((err) => {
-          console.error("[Foci] Failed to reload shared projects:", err);
+          reportError("Failed to reload shared projects", err);
         });
       }
     };
@@ -842,7 +843,7 @@ export default function TaskList({
         const changed = updated.find((t) => t.id === taskId);
         if (changed) {
           saveOneTask(changed).catch(err => {
-            console.error("[Foci] Failed to save session update:", err);
+            reportError("Failed to save session update", err);
           });
         }
         return updated;
@@ -862,7 +863,7 @@ export default function TaskList({
       }
       window.dispatchEvent(new Event("tempo-tasks-updated"));
     } catch (err) {
-      console.error("[Foci] Failed to save tasks:", err);
+      reportError("Failed to save tasks", err);
       showToast("Failed to save tasks. Changes may be lost.", "error");
     }
   }, [showToast]);
@@ -874,7 +875,7 @@ export default function TaskList({
       try {
         await saveOneTask(changedTask);
       } catch (err) {
-        console.error("[Foci] Failed to save task:", err);
+        reportError("Failed to save task", err);
         if (revertTo) {
           setTasks((curr) => curr.map((t) => (t.id === revertTo.id ? revertTo : t)));
         }
@@ -892,7 +893,7 @@ export default function TaskList({
   const persistProjects = useCallback((updated: Project[]) => {
     setProjects(updated);
     saveProjects(updated).catch((err) => {
-      console.error("[Foci] Failed to save projects:", err);
+      reportError("Failed to save projects", err);
       showToast("Failed to save projects.", "error");
     });
   }, [showToast]);
@@ -901,7 +902,7 @@ export default function TaskList({
     setSelectedSharedProject(null);
     setSelectedProjectId(id);
     saveSelectedProjectId(id).catch((err) => {
-      console.error("[Foci] Failed to save selected project:", err);
+      reportError("Failed to save selected project", err);
     });
     setShowOverflowProjectMenu(false);
     if (searchParams.get("projects") === "1") {
@@ -975,7 +976,7 @@ export default function TaskList({
       }
       showToast("Import complete", "success");
     } catch (err) {
-      console.error("[Foci] Failed to reload after import:", err);
+      reportError("Failed to reload after import", err);
       showToast("Imported, but failed to refresh the list. Reload the page.", "error");
     }
   }, [showToast, expandProjectToList]);
@@ -987,7 +988,7 @@ export default function TaskList({
     }
     const returnTo = listReturnView ?? "card";
     setSelectedProjectId(ALL_PROJECTS_ID);
-    saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+    saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
     setListReturnView(null);
     wasProjectDrillInRef.current = false;
     selectViewMode(returnTo);
@@ -1027,7 +1028,7 @@ export default function TaskList({
         const loaded = await loadSharedProjectTasks(shared.id, shared._ownerId);
         setSharedTasks((prev) => ({ ...prev, [key]: loaded }));
       } catch (err) {
-        console.error("[Foci] Failed to load shared project tasks:", err);
+        reportError("Failed to load shared project tasks", err);
         showToast("Failed to load shared project tasks", "error");
       }
     }
@@ -1066,7 +1067,7 @@ export default function TaskList({
           setSharedProjects(list);
           openFromList(list);
         })
-        .catch((err) => console.error("[Foci] Failed to open shared project:", err));
+        .catch((err) => reportError("Failed to open shared project", err));
     };
 
     window.addEventListener(OPEN_SHARED_PROJECT_EVENT, openShared);
@@ -1083,10 +1084,10 @@ export default function TaskList({
       setTasks(empty.tasks);
       setSelectedSharedProject(null);
       setSelectedProjectId(ALL_PROJECTS_ID);
-      saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+      saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
       setListReturnView(null);
       void Promise.all([saveProjects(empty.projects), saveTasks(empty.tasks)]).catch((err) => {
-        console.error("[Foci] Failed to clear sample workspace:", err);
+        reportError("Failed to clear sample workspace", err);
       });
       showToast("Samples cleared — add your own project", "success");
       openProjectManage();
@@ -1137,7 +1138,7 @@ export default function TaskList({
         .then((loaded) => {
           setSharedTasks((prev) => ({ ...prev, [key]: loaded }));
         })
-        .catch((err) => console.error("[Foci] Shared project refresh failed:", err));
+        .catch((err) => reportError("Shared project refresh failed", err));
     };
 
     const startPolling = () => {
@@ -1248,7 +1249,7 @@ export default function TaskList({
         [key]: (prev[key] || []).map((t) => (t.id === task.id ? task : t)),
       }));
     } catch (err) {
-      console.error("[Foci] Failed to update shared task:", err);
+      reportError("Failed to update shared task", err);
       showToast("Failed to update task", "error");
     }
   };
@@ -1312,7 +1313,7 @@ export default function TaskList({
     closeProjectManage();
     setSelectedSharedProject(null);
     setSelectedProjectId(ALL_PROJECTS_ID);
-    saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+    saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
     setListReturnView(null);
     selectViewMode("card");
     setCardJumpProjectId(project.id);
@@ -1456,12 +1457,12 @@ export default function TaskList({
           if (toRemove.length > 0) await removeTasksFromDB(toRemove);
           await removeProjectFromDB(id);
         } catch (err) {
-          console.error("[Foci] Failed to delete project:", err);
+          reportError("Failed to delete project", err);
           showToast("Failed to delete project.", "error");
         }
         setSelectedSharedProject(null);
         setSelectedProjectId(ALL_PROJECTS_ID);
-        saveSelectedProjectId(ALL_PROJECTS_ID).catch(() => {});
+        saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
         setListReturnView(null);
         setExpandedTaskId(null);
         closeProjectManage();
@@ -1632,7 +1633,7 @@ export default function TaskList({
         };
         updated = [...updated, nextTask];
         persist(updated, changed);
-        saveOneTask(nextTask).catch((err) => console.error("[Foci] Failed to save recurring task:", err));
+        saveOneTask(nextTask).catch((err) => reportError("Failed to save recurring task", err));
       } else {
         persistOne(updated, changed, task);
       }
@@ -1660,7 +1661,7 @@ export default function TaskList({
         try {
           await removeTaskFromDB(id);
         } catch (err) {
-          console.error("[Foci] Failed to delete task:", err);
+          reportError("Failed to delete task", err);
           showToast("Failed to delete task.", "error");
         }
         if (activeTaskId === id) onSelectTask(null);
@@ -1720,7 +1721,7 @@ export default function TaskList({
     try {
       await removeTasksFromDB(toRemove);
     } catch (err) {
-      console.error("[Foci] Failed to clear completed tasks:", err);
+      reportError("Failed to clear completed tasks", err);
     }
   };
 
@@ -1761,7 +1762,7 @@ export default function TaskList({
         try {
           await removeTasksFromDB(toRemove);
         } catch (err) {
-          console.error("[Foci] Failed to delete archived tasks:", err);
+          reportError("Failed to delete archived tasks", err);
           showToast("Failed to delete archived tasks.", "error");
         }
       },
@@ -3106,7 +3107,7 @@ export default function TaskList({
                   setCustomQuote(next);
                   notifyCustomQuoteChanged();
                 })
-                .catch((err) => console.error("[Foci] Failed to save custom quote:", err));
+                .catch((err) => reportError("Failed to save custom quote", err));
             }}
             onFocus={() => {
               if (oneThingResolved.task) onStartTask(oneThingResolved.task.id);
