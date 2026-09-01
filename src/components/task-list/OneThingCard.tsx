@@ -26,7 +26,7 @@ export interface OneThingCardProps {
 }
 
 const twoCol =
-  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-x-3 gap-y-1 items-center panel-inset-x mt-1 mb-0.5 land-compact:hidden";
+  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-x-3 gap-y-1 items-center panel-inset-x mt-1 mb-0.5 land-compact:hidden";
 
 const plate =
   "flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1";
@@ -100,6 +100,11 @@ function PinIcon({ className }: { className?: string }) {
 const quoteShell =
   "hidden min-[520px]:flex min-w-0 items-center gap-1.5 min-h-[2.25rem] rounded-xl px-2 py-1 ring-1 ring-slate-200/70 dark:ring-[#243350] bg-slate-50/70 dark:bg-white/[0.03]";
 
+/** Quote reads as content, not chrome — warmer/brighter than Keep and the One Thing prompt. */
+const quoteTextClass =
+  "line-clamp-2 text-[13px] italic font-medium leading-snug text-slate-800 dark:text-stone-100";
+const quoteAuthorClass = "not-italic font-normal text-slate-500 dark:text-stone-400";
+
 function QuoteColumn({
   quote,
   isCustomQuote,
@@ -161,7 +166,7 @@ function QuoteColumn({
               commit();
             }
           }}
-          className="w-full resize-none rounded-md px-1.5 py-1 text-xs italic text-slate-700 dark:text-slate-200 bg-[var(--surface-elevated)] dark:bg-[#0f172a] ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
+          className="w-full resize-none rounded-md px-1.5 py-1 text-[13px] italic font-medium text-slate-800 dark:text-stone-100 bg-[var(--surface-elevated)] dark:bg-[#0f172a] ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:font-normal placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
           aria-label="Your custom quote"
         />
         <div className="flex items-center justify-between gap-2">
@@ -234,15 +239,15 @@ function QuoteColumn({
           className="min-w-0 flex-1 text-left rounded-md px-1 py-0.5 hover:bg-slate-500/[0.06] dark:hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
           title={`${label} — click to edit`}
         >
-          <span className="block truncate text-xs italic font-normal text-slate-600 dark:text-slate-300">
+          <span className={quoteTextClass}>
             &ldquo;{text}&rdquo;
-            {author ? <span className="not-italic opacity-80"> — {author}</span> : null}
+            {author ? <span className={quoteAuthorClass}> — {author}</span> : null}
           </span>
         </button>
       ) : (
-        <p className="min-w-0 flex-1 truncate text-xs italic font-normal text-slate-600 dark:text-slate-300" title={label}>
+        <p className={`min-w-0 flex-1 ${quoteTextClass}`} title={label}>
           &ldquo;{text}&rdquo;
-          {author ? <span className="not-italic opacity-80"> — {author}</span> : null}
+          {author ? <span className={quoteAuthorClass}> — {author}</span> : null}
         </p>
       )}
 
