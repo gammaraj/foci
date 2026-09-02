@@ -14,7 +14,7 @@ interface TaskEditButtonProps {
 const openBtnClass = (isOpen: boolean) =>
   isOpen
     ? "text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/35 border-blue-300 dark:border-blue-600/60"
-    : "text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#2a3f5f]/80 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50/90 dark:hover:bg-blue-900/25 hover:border-blue-300 dark:hover:border-blue-600/50";
+    : "text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-surface-border/80 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50/90 dark:hover:bg-blue-900/25 hover:border-blue-300 dark:hover:border-blue-600/50";
 
 /** Pencil — opens the task editor / detail panel. */
 const PencilIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (

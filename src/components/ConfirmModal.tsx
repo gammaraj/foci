@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 
 interface ConfirmModalProps {
   title: string;
@@ -22,78 +24,34 @@ export default function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // Focus trap + ESC to close
-  useEffect(() => {
-    cancelRef.current?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onCancel();
-        return;
-      }
-      if (e.key === "Tab" && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last?.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first?.focus();
-          }
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onCancel]);
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/40 z-[9990]" onClick={onCancel} />
-      <div
-        ref={modalRef}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="confirm-title"
-        aria-describedby="confirm-message"
-        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto surface-panel border rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
-      >
-        <h3 id="confirm-title" className="text-lg font-semibold text-slate-900 dark:text-white mb-1.5">
-          {title}
-        </h3>
-        <p id="confirm-message" className="text-sm text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
-          {message}
-        </p>
-        <div className="flex items-center justify-end gap-2">
-          <button
-            ref={cancelRef}
-            onClick={onCancel}
-            className="btn-ghost px-4 py-2 text-sm"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            onClick={onConfirm}
-            className={
-              variant === "danger"
-                ? "px-4 py-2 text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors"
-                : "btn-primary px-4 py-2 text-sm"
-            }
-          >
-            {confirmLabel}
-          </button>
-        </div>
+    <Modal
+      onClose={onCancel}
+      role="alertdialog"
+      labelledBy="confirm-title"
+      describedBy="confirm-message"
+      sizeClassName="max-w-sm"
+      initialFocusRef={cancelRef}
+    >
+      <h3 id="confirm-title" className="text-lg font-semibold text-slate-900 dark:text-white mb-1.5">
+        {title}
+      </h3>
+      <p id="confirm-message" className="text-sm text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
+        {message}
+      </p>
+      <div className="flex items-center justify-end gap-2">
+        <Button ref={cancelRef} variant="ghost" size="md" onClick={onCancel}>
+          {cancelLabel}
+        </Button>
+        <Button
+          variant={variant === "danger" ? "danger" : "primary"}
+          size="md"
+          onClick={onConfirm}
+        >
+          {confirmLabel}
+        </Button>
       </div>
-    </>
+    </Modal>
   );
 }

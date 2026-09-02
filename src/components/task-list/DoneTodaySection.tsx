@@ -94,7 +94,7 @@ export function DoneTodaySection({
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={3}
+                      strokeWidth={2}
                       d="M5 13l4 4L19 7"
                     />
                   </svg>

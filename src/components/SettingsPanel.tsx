@@ -21,6 +21,8 @@ import {
   type DefaultTaskView,
 } from "@/lib/task-view-preference";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { Button } from "@/components/ui/Button";
 import { isStandaloneDisplay } from "@/lib/pwa-install";
 
 interface SettingsPanelProps {
@@ -74,7 +76,7 @@ function ToggleRow({
         id={id}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 border-slate-300 dark:border-[#3a5070] rounded"
+        className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 border-slate-300 dark:border-surface-border rounded"
       />
     </div>
   );
@@ -251,12 +253,12 @@ export default function SettingsPanel({
         aria-label="Settings"
         tabIndex={-1}
       >
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-200 dark:border-[#243350]">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-surface-border">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Settings</h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-surface-hover transition"
             aria-label="Close settings"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
@@ -268,7 +270,7 @@ export default function SettingsPanel({
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row min-h-0 flex-1">
           {/* Nav */}
           <nav
-            className="settings-nav flex sm:flex-col gap-1 p-2 sm:p-3 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-[#243350] overflow-x-auto shrink-0"
+            className="settings-nav flex sm:flex-col gap-1 p-2 sm:p-3 border-b sm:border-b-0 sm:border-r border-surface-border overflow-x-auto shrink-0"
             aria-label="Settings sections"
           >
             {visibleTabs.map((t) => (
@@ -279,7 +281,7 @@ export default function SettingsPanel({
                 className={`whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
                   tab === t.id
                     ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-hover"
                 }`}
                 aria-current={tab === t.id ? "page" : undefined}
               >
@@ -317,7 +319,7 @@ export default function SettingsPanel({
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                               isActive
                                 ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
-                                : "bg-[var(--surface-elevated)] dark:bg-[#0f172a] border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
+                                : "bg-surface-elevated dark:bg-surface-recessed border-surface-border text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a5070]"
                             }`}
                             title={preset.description}
                           >
@@ -359,10 +361,10 @@ export default function SettingsPanel({
                                   return rest;
                                 });
                               }}
-                              className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                              className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-surface-recessed dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                                 validationErrors.workMin
                                   ? "border-red-400"
-                                  : "border-slate-200 dark:border-[#243350]"
+                                  : "border-surface-border"
                               }`}
                             />
                             <p className="text-xs text-slate-400 mt-1">min</p>
@@ -385,10 +387,10 @@ export default function SettingsPanel({
                                   return rest;
                                 });
                               }}
-                              className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                              className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-surface-recessed dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                                 validationErrors.workMin
                                   ? "border-red-400"
-                                  : "border-slate-200 dark:border-[#243350]"
+                                  : "border-surface-border"
                               }`}
                             />
                             <p className="text-xs text-slate-400 mt-1">sec</p>
@@ -414,10 +416,10 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-surface-recessed dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.breakMin
                               ? "border-red-400"
-                              : "border-slate-200 dark:border-[#243350]"
+                              : "border-surface-border"
                           }`}
                         />
                         <FieldError message={validationErrors.breakMin} />
@@ -439,10 +441,10 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-surface-recessed dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.inactivityMin
                               ? "border-red-400"
-                              : "border-slate-200 dark:border-[#243350]"
+                              : "border-surface-border"
                           }`}
                         />
                         <FieldError message={validationErrors.inactivityMin} />
@@ -465,10 +467,10 @@ export default function SettingsPanel({
                               return rest;
                             });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-slate-900 dark:bg-surface-recessed dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none ${
                             validationErrors.dailyGoal
                               ? "border-red-400"
-                              : "border-slate-200 dark:border-[#243350]"
+                              : "border-surface-border"
                           }`}
                         />
                         <FieldError message={validationErrors.dailyGoal} />
@@ -486,7 +488,7 @@ export default function SettingsPanel({
                           className={`px-2.5 py-1 text-xs rounded-md border transition-colors ${
                             dailyGoal === gp.sessions
                               ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
-                              : "border-slate-200 dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                              : "border-surface-border text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-surface-hover"
                           }`}
                           title={gp.description}
                         >
@@ -496,7 +498,7 @@ export default function SettingsPanel({
                     </div>
                   </section>
 
-                  <section className="border-t border-slate-100 dark:border-[#243350] divide-y divide-slate-100 dark:divide-[#243350]">
+                  <section className="border-t border-slate-100 dark:border-surface-border divide-y divide-slate-100 dark:divide-[#243350]">
                     <ToggleRow
                       id="autoStart"
                       label="Auto-start next session"
@@ -509,7 +511,7 @@ export default function SettingsPanel({
                     />
                   </section>
 
-                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5">
+                  <section className="border-t border-slate-100 dark:border-surface-border pt-5">
                     <TimerAlarmPicker
                       onPersist={(alarmEnabled, alarmSound) => {
                         onSave({ ...settings, alarmEnabled, alarmSound });
@@ -554,7 +556,7 @@ export default function SettingsPanel({
                     />
                   </section>
 
-                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5 space-y-2">
+                  <section className="border-t border-slate-100 dark:border-surface-border pt-5 space-y-2">
                     <div>
                       <label
                         htmlFor="custom-quote"
@@ -584,7 +586,7 @@ export default function SettingsPanel({
                           })
                           .catch((err) => reportError("Failed to save custom quote", err));
                       }}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y min-h-[2.75rem]"
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-surface-border bg-surface-elevated dark:bg-surface-recessed text-slate-800 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y min-h-[2.75rem]"
                     />
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs text-slate-400 tabular-nums">
@@ -607,7 +609,7 @@ export default function SettingsPanel({
                     </div>
                   </section>
 
-                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5">
+                  <section className="border-t border-slate-100 dark:border-surface-border pt-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <label
@@ -639,7 +641,7 @@ export default function SettingsPanel({
                             reportError("Failed to save task view preference", err);
                           }
                         }}
-                        className="shrink-0 px-2.5 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-white text-slate-900 dark:bg-[#0f172a] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
+                        className="shrink-0 px-2.5 py-2 text-sm border border-surface-border rounded-lg bg-white text-slate-900 dark:bg-surface-recessed dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
                       >
                         {DEFAULT_TASK_VIEW_OPTIONS.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -650,7 +652,7 @@ export default function SettingsPanel({
                     </div>
                   </section>
 
-                  <section className="rounded-lg border border-slate-200 dark:border-[#243350] px-3 py-2.5">
+                  <section className="rounded-lg border border-surface-border px-3 py-2.5">
                     {browserPerm === "granted" ? (
                       <p className="text-xs text-emerald-600 dark:text-emerald-400">
                         Browser notifications are enabled
@@ -671,7 +673,7 @@ export default function SettingsPanel({
                   </section>
 
                   {!isStandaloneDisplay() && (
-                    <section className="rounded-lg border border-slate-200 dark:border-[#243350] px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <section className="rounded-lg border border-surface-border px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                           Add to Home Screen
@@ -680,13 +682,14 @@ export default function SettingsPanel({
                           Install Foci for one-tap access and offline tasks. Full iPhone &amp; Android steps on the install page.
                         </p>
                       </div>
-                      <Link
+                      <ButtonLink
                         href="/install"
                         onClick={onClose}
-                        className="btn-primary shrink-0 px-3 py-2 text-sm text-center"
+                        size="md"
+                        className="shrink-0 text-center"
                       >
                         Show how
-                      </Link>
+                      </ButtonLink>
                     </section>
                   )}
                 </>
@@ -711,7 +714,7 @@ export default function SettingsPanel({
                     </button>
                   </section>
 
-                  <section className="border-t border-slate-100 dark:border-[#243350] pt-5">
+                  <section className="border-t border-slate-100 dark:border-surface-border pt-5">
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
                       Share one project
                     </h3>
@@ -728,13 +731,13 @@ export default function SettingsPanel({
                         No projects to share yet.
                       </p>
                     ) : (
-                      <ul className="divide-y divide-slate-100 dark:divide-[#243350] border border-slate-200 dark:border-[#243350] rounded-lg overflow-hidden">
+                      <ul className="divide-y divide-slate-100 dark:divide-[#243350] border border-surface-border rounded-lg overflow-hidden">
                         {projects.map((project) => (
                           <li key={project.id}>
                             <button
                               type="button"
                               onClick={() => setShareModalProject(project)}
-                              className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-[#152340] transition-colors"
+                              className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-surface-hover transition-colors"
                             >
                               <span className="truncate text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                 {project.color && (
@@ -765,7 +768,7 @@ export default function SettingsPanel({
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
                     Back up your tasks or bring them in from another tool.
                   </p>
-                  <div className="rounded-lg border border-slate-200 dark:border-[#243350] p-3">
+                  <div className="rounded-lg border border-surface-border p-3">
                     <TaskImportExport
                       showDestinationPicker
                       onTasksImported={onTasksImported}
@@ -776,7 +779,7 @@ export default function SettingsPanel({
             </div>
 
             {/* Footer — save only matters for timer/notification fields */}
-            <div className="shrink-0 border-t border-slate-200 dark:border-[#243350] px-4 sm:px-5 py-3 flex items-center justify-between gap-3 bg-slate-50/80 dark:bg-[#0f172a]/50">
+            <div className="shrink-0 border-t border-surface-border px-4 sm:px-5 py-3 flex items-center justify-between gap-3 bg-slate-50/80 dark:bg-surface-recessed/50">
               <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
                 {dirty
                   ? "You have unsaved changes"
@@ -785,19 +788,12 @@ export default function SettingsPanel({
                     : "Sharing and data actions apply immediately"}
               </p>
               <div className="flex gap-2 ml-auto">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="btn-ghost px-4 py-2 text-sm"
-                >
+                <Button type="button" variant="ghost" size="md" onClick={onClose}>
                   {dirty ? "Cancel" : "Close"}
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary px-4 py-2 text-sm"
-                >
+                </Button>
+                <Button type="submit" size="md">
                   {saved ? "Saved" : "Save"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

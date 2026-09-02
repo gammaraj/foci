@@ -213,9 +213,8 @@ export function overdueDayChipClass(daysLate: number): string {
   return "urgency-chip--soft";
 }
 
-/** Shared size for every task-row tag — 20px, filled + border, one baseline. */
-export const META_CHIP_CLASS =
-  "inline-flex items-center justify-center shrink-0 h-5 min-h-[1.25rem] px-1.5 gap-0.5 rounded border text-xs font-medium tabular-nums leading-none whitespace-nowrap";
+/** Shared size for every task-row tag — same as ui/Badge. */
+export { BADGE_CLASS as META_CHIP_CLASS } from "@/components/ui/Badge";
 
 /** Stamp tokens (ONE, Q). Word chips use sentence case. */
 export const META_CHIP_CAPS = "uppercase";
@@ -225,7 +224,7 @@ export const CHIP_TONE = {
   one: "bg-indigo-100 dark:bg-indigo-900/35 text-indigo-800 dark:text-indigo-200 border-indigo-200 dark:border-indigo-700/50",
   today: "bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-100 border-amber-300/90 dark:border-amber-600/55",
   tomorrow: "bg-amber-50 dark:bg-amber-950/35 text-amber-800 dark:text-amber-200 border-amber-200/80 dark:border-amber-700/45",
-  due: "bg-slate-100/90 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-[#2a3f5f]/80",
+  due: "bg-slate-100/90 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-surface-border/80",
   waiting: "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/50",
   someday: "bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 border-violet-200 dark:border-violet-800/50",
   recurrence: "bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600/60",
@@ -238,7 +237,7 @@ export const CHIP_TONE = {
   high: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-900/50",
   med: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-900/50",
   low: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/50",
-  project: "bg-slate-100 dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-[#243350]",
+  project: "bg-slate-100 dark:bg-surface-hover text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-surface-border",
 } as const;
 
 /** Left-rail overdue row — no full wash (Cards look). */

@@ -75,7 +75,7 @@ export default function GuideLinkHub({
           <Link
             key={link.slug}
             href={`/blog/${link.slug}`}
-            className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f1b33] hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all"
+            className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-recessed hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all"
           >
             <h3 className="text-base font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               {link.label}

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AuthForm from "@/components/AuthForm";
 import AppNavbar from "@/components/AppNavbar";
 import { safeNextPath } from "@/lib/safe-next-path";
+import { Spinner } from "@/components/ui/Spinner";
 
 function LoginBody() {
   const { user, loading } = useAuth();
@@ -22,13 +23,13 @@ function LoginBody() {
   if (loading || user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+        <Spinner size="lg" className="text-blue-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page">
       <AppNavbar />
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-[360px]">
@@ -49,7 +50,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-screen">
-          <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+          <Spinner size="lg" className="text-blue-500" />
         </div>
       }
     >

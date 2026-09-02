@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { CompareLanding } from "@/lib/compare-landings";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { SITE_URL } from "@/lib/product-facts";
 
 function safeJsonLd(obj: unknown): string {
@@ -70,18 +70,17 @@ export default function CompareLandingView({ page }: { page: CompareLanding }) {
         )}
 
         <div className="mt-12 flex flex-col sm:flex-row gap-3">
-          <Link
-            href="/app"
-            className="btn-primary w-full sm:w-auto px-6 py-3 text-sm text-center"
-          >
+          <ButtonLink href="/app" size="lg" className="w-full sm:w-auto text-center">
             Try Foci — free
-          </Link>
-          <Link
+          </ButtonLink>
+          <ButtonLink
             href={`/blog/${page.blogSlug}`}
-            className="btn-chip w-full sm:w-auto px-6 py-3 text-sm text-center"
+            variant="chip"
+            size="lg"
+            className="w-full sm:w-auto text-center"
           >
             {page.blogLabel}
-          </Link>
+          </ButtonLink>
         </div>
       </article>
     </>

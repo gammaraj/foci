@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FociWordmark } from "@/components/FociLogoMark";
 import { BusyBeaver } from "@/components/BusyBeaver";
+import { Button } from "@/components/ui/Button";
 import { FOCI_WORDMARK_INLINE } from "@/lib/logo-brand";
 import {
   FOCI_APP_INSTALL_URL,
@@ -95,7 +96,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="pwa-install-title"
-        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
+        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto bg-surface-elevated border border-surface-border rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
       >
         <div className="flex items-start gap-3 mb-4">
           <BusyBeaver alt="" size={44} className="flex-shrink-0" />
@@ -121,14 +122,15 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         </div>
 
         {canNativeInstall && (
-          <button
+          <Button
             type="button"
             onClick={handleNativeInstall}
             disabled={installing}
-            className="btn-primary w-full mb-4 px-4 py-2.5 text-sm"
+            size="md"
+            className="w-full mb-4"
           >
             {installing ? "Opening…" : "Install app"}
-          </button>
+          </Button>
         )}
 
         {ios && (
@@ -175,7 +177,7 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         )}
 
         {showQr && (
-          <div className="rounded-lg border border-slate-200 dark:border-[#243350] bg-slate-50 dark:bg-[#0f172a] p-3 sm:p-4 mb-3">
+          <div className="rounded-lg border border-surface-border bg-slate-50 dark:bg-surface-recessed p-3 sm:p-4 mb-3">
             <p className="app-section-label text-slate-500 dark:text-slate-400 mb-2">
               On your phone
             </p>
@@ -199,13 +201,9 @@ export default function PWAInstallGuide({ onClose }: PWAInstallGuideProps) {
         )}
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="btn-chip px-3 py-1.5 text-sm"
-          >
+          <Button type="button" variant="chip" size="sm" onClick={handleCopy}>
             {copied ? "Copied" : "Copy link"}
-          </button>
+          </Button>
           <a
             href={FOCI_APP_INSTALL_URL}
             className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"

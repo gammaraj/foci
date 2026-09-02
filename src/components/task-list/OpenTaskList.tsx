@@ -190,12 +190,12 @@ export default function OpenTaskList({
               : isExpanded
                 ? "border-violet-300 dark:border-violet-600 bg-violet-50/40 dark:bg-violet-900/10 ring-1 ring-violet-400/25"
                 : isBlocked
-                  ? "border-slate-300 dark:border-[#1e3050] hover:bg-amber-50/30 dark:hover:bg-amber-950/15"
+                  ? "border-slate-300 dark:border-surface-border hover:bg-amber-50/30 dark:hover:bg-amber-950/15"
                   : isOverdue
                     ? `${OVERDUE_ROW_CLASS} border border-transparent`
                     : oneThingTaskId === task.id
                       ? "card-row--one-thing border border-transparent"
-                      : "border-[color:var(--surface-border)] dark:border-[#243350]/80 hover:bg-slate-50 dark:hover:bg-[#131d30]"
+                      : "border-surface-border dark:border-surface-border/80 hover:bg-slate-50 dark:hover:bg-surface-elevated"
           } ${dragTaskId === task.id ? "opacity-50" : ""} ${
             dragOverTaskId === task.id && dragTaskId !== task.id ? "border-t-2 border-t-blue-500" : ""
           }`}
@@ -224,7 +224,7 @@ export default function OpenTaskList({
                     if (e.key === "Escape") onCancelEdit();
                   }}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+                  className="w-full px-1 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none"
                   autoFocus
                 />
               ) : (
@@ -335,7 +335,7 @@ export default function OpenTaskList({
                 <button
                   type="button"
                   onClick={() => onSnoozeToToday(task.id)}
-                  className="px-2 py-1 text-xs font-semibold rounded-md bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-[color:var(--surface-border)] dark:border-[#243350] touch-target-sm !min-h-8"
+                  className="px-2 py-1 text-xs font-semibold rounded-md bg-surface-elevated dark:bg-surface-hover text-slate-700 dark:text-slate-200 border border-surface-border dark:border-surface-border touch-target-sm !min-h-8"
                 >
                   Today
                 </button>
@@ -353,10 +353,10 @@ export default function OpenTaskList({
               </div>
               {/* Desktop: overlay on hover — never toggle display, or the row reflows and the page flickers. */}
               <div
-                className="pointer-events-none absolute right-9 top-1/2 z-10 hidden -translate-y-1/2 items-center gap-1 rounded-md border border-[var(--urgency-border)] bg-[var(--urgency-soft-bg)]/95 px-1 py-0.5 opacity-0 shadow-sm backdrop-blur-sm transition-opacity sm:flex dark:border-rose-800/50 dark:bg-[#1a1520]/95 group-hover/task:pointer-events-auto group-hover/task:opacity-100"
+                className="pointer-events-none absolute right-9 top-1/2 z-10 hidden -translate-y-1/2 items-center gap-1 rounded-md border border-[var(--urgency-border)] bg-[var(--urgency-soft-bg)]/95 px-1 py-0.5 opacity-0 shadow-sm backdrop-blur-sm transition-opacity sm:flex dark:border-rose-800/50 dark:bg-surface-muted/95 group-hover/task:pointer-events-auto group-hover/task:opacity-100"
                 onClick={(e) => e.stopPropagation()}
               >
-                <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] text-slate-700 dark:text-slate-200 border border-[color:var(--surface-border)] dark:border-[#243350] hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
+                <button type="button" onClick={() => onSnoozeToToday(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-surface-elevated dark:bg-surface-hover text-slate-700 dark:text-slate-200 border border-surface-border dark:border-surface-border hover:border-blue-400 dark:hover:border-blue-500 transition-colors whitespace-nowrap">
                   Move to today
                 </button>
                 <button type="button" onClick={() => onToggleComplete(task.id)} className="px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors whitespace-nowrap">
@@ -427,7 +427,7 @@ export default function OpenTaskList({
         <button
           type="button"
           onClick={onToggle}
-          className={`${headerClass} hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]/80 transition-colors`}
+          className={`${headerClass} hover:bg-slate-100/80 dark:hover:bg-surface-hover/80 transition-colors`}
           aria-expanded={expanded}
         >
           {headerContent}

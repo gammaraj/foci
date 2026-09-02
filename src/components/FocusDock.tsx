@@ -13,6 +13,7 @@ import {
   miniDockGhostButtonClass,
   MiniSettingsIcon,
 } from "@/components/FocusStripControls";
+import { Button } from "@/components/ui/Button";
 import { parseQuote } from "@/lib/quotes";
 import {
   formatTimerDisplay,
@@ -87,7 +88,7 @@ function CompactTimerPopover({
               role="dialog"
               aria-label="Focus timer"
               style={{ top: pos.top, left: pos.left, width: pos.width }}
-              className={`fixed z-[80] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${className}`}
+              className={`fixed z-[80] rounded-xl border border-slate-200/90 dark:border-surface-border bg-surface-elevated p-2.5 sm:p-3 shadow-lg shadow-slate-900/10 ${className}`}
             >
               {children}
             </div>,
@@ -139,7 +140,7 @@ function WorkDurationControl({
   };
 
   const nudgeBtn =
-    "w-6 h-6 rounded flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200 transition-colors disabled:opacity-40";
+    "w-6 h-6 rounded flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200 transition-colors disabled:opacity-50";
 
   return (
     <span className={`${FOCUS_STRIP_CHIP_FRAME} shrink-0 px-0.5 gap-0`}>
@@ -247,7 +248,7 @@ function DurationAndAlarmBlock({
 
   return (
     <div className="space-y-2.5">
-      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350]">
+      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-surface-elevated rounded-lg border border-surface-border">
         {WORK_DURATION_PRESETS.map((minutes) => {
           const active = workDurationMs === minutes * 60 * 1000;
           return (
@@ -258,9 +259,9 @@ function DurationAndAlarmBlock({
               disabled={durationLocked}
               className={`flex-1 px-2 py-1 rounded-md text-xs sm:text-sm font-semibold transition-colors ${
                 active
-                  ? "bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] text-blue-700 dark:text-blue-300"
+                  ? "bg-surface-elevated dark:bg-surface-hover text-blue-700 dark:text-blue-300"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-              } disabled:opacity-40 disabled:cursor-not-allowed`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {minutes}m
             </button>
@@ -285,7 +286,7 @@ function DurationAndAlarmBlock({
           }}
           aria-label="Custom work duration. Type minutes, or 0:30 for 30 seconds"
           title="Minutes, or 0:30 / 30s for seconds"
-          className="w-16 shrink-0 px-1 py-1 rounded-md text-xs sm:text-sm font-semibold tabular-nums text-center bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] border border-transparent text-slate-700 dark:text-slate-200 disabled:opacity-40"
+          className="w-16 shrink-0 px-1 py-1 rounded-md text-xs sm:text-sm font-semibold tabular-nums text-center bg-surface-elevated dark:bg-surface-hover border border-transparent text-slate-700 dark:text-slate-200 disabled:opacity-50"
         />
       </div>
       <TimerAlarmPicker compact afterFinish={afterFinish} />
@@ -575,7 +576,7 @@ export function FocusDockToolbar({
     <button
       type="button"
       onClick={openTimerSettings}
-      className={embedded ? miniDockGhostButtonClass(false) : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"}
+      className={embedded ? miniDockGhostButtonClass(false) : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-hover transition-colors"}
       aria-label="Timer settings"
       title="Timer settings"
     >
@@ -609,7 +610,7 @@ export function FocusDockToolbar({
       className={`flex-shrink-0 ${
         embedded
           ? miniDockGhostButtonClass(false)
-          : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+          : "touch-target-sm p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-hover transition-colors"
       }`}
       aria-expanded={expanded}
       aria-label={expanded ? "Collapse focus timer" : "Expand focus timer"}
@@ -696,7 +697,7 @@ export function FocusDockToolbar({
           ? "border-green-300/60 dark:border-green-700/50 bg-green-50/80 dark:bg-green-900/25"
           : isRunning
             ? "border-blue-300/60 dark:border-blue-600/50 bg-blue-50/80 dark:bg-blue-900/25"
-            : "border-slate-200/90 dark:border-[#243350] bg-white/80 dark:bg-[#131d30]/90"
+            : "border-slate-200/90 dark:border-surface-border bg-white/80 dark:bg-surface-elevated/90"
       }`}
     >
       {sessionsLink}
@@ -787,43 +788,41 @@ export default function FocusDockPanel({
           onSetWorkSeconds={onSetWorkSeconds}
           afterFinish={timerStatus === "break"}
         />
-        <div className="flex items-center justify-center gap-1 pt-2 border-t border-slate-100/90 dark:border-[#243350]/80 mt-2">
-          <button
+        <div className="flex items-center justify-center gap-1 pt-2 border-t border-slate-100/90 dark:border-surface-border/80 mt-2">
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={openTimerSettings}
-            className="btn-ghost px-2.5 py-1.5 text-xs"
             aria-label="Timer settings"
             title="Timer settings"
           >
             Settings
-          </button>
+          </Button>
           <button
             type="button"
             onClick={onToggleFocusMode}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               focusMode
                 ? "bg-blue-700 text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-hover"
             }`}
             title="Zen mode — hide distractions (F)"
           >
             Zen
           </button>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={onShowShortcuts}
-            className="btn-ghost px-2.5 py-1.5 text-xs"
             title="Shortcuts (?)"
           >
             Shortcuts
-          </button>
-          <button
-            type="button"
-            onClick={onToggleExpanded}
-            className="btn-ghost px-2.5 py-1.5 text-xs"
-          >
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={onToggleExpanded}>
             Close
-          </button>
+          </Button>
         </div>
         {lastQuote && (timerStatus === "break" || timerStatus === "idle") && (
           <p className="text-xs italic text-slate-500 dark:text-slate-400 text-center leading-snug pt-2 line-clamp-2">
@@ -898,7 +897,7 @@ export default function FocusDockPanel({
           </div>
         </header>
 
-        <div className="bg-white dark:bg-[#0d1526] px-4 py-3 border-t border-slate-100 dark:border-[#1e3050]/60">
+        <div className="bg-white dark:bg-surface-muted px-4 py-3 border-t border-slate-100 dark:border-surface-border/60">
           <div className="flex items-center justify-center gap-3 sm:gap-5 pb-3">
             <TimerControls
               isRunning={isRunning}

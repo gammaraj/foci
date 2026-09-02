@@ -10,6 +10,7 @@ import {
 } from "@/lib/types";
 import { loadTasks, saveTasks, loadProjects, saveProjects } from "@/lib/storage";
 import { MAX_PROJECT_NAME, pickProjectColor } from "@/components/task-list/utils";
+import { Button } from "@/components/ui/Button";
 import {
   detectAndParse,
   FORMAT_LABELS,
@@ -507,7 +508,7 @@ export default function TaskImportExport({
                 type="button"
                 onClick={() => handleExport("json")}
                 disabled={exporting}
-                className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
+                className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-surface-border text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover transition disabled:opacity-50"
               >
                 Export JSON
               </button>
@@ -515,13 +516,13 @@ export default function TaskImportExport({
                 type="button"
                 onClick={() => handleExport("csv")}
                 disabled={exporting}
-                className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-[#243350] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition disabled:opacity-50"
+                className="flex-1 px-3 py-2 rounded-lg text-sm font-medium border border-surface-border text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover transition disabled:opacity-50"
               >
                 Export CSV
               </button>
             </div>
           </div>
-          <div className="border-t border-slate-200 dark:border-[#243350]" />
+          <div className="border-t border-surface-border" />
         </>
       )}
 
@@ -540,7 +541,7 @@ export default function TaskImportExport({
         </p>
 
         {showDestinationPicker && (
-          <fieldset className="mb-3 space-y-2 rounded-lg border border-slate-200 dark:border-[#243350] p-3">
+          <fieldset className="mb-3 space-y-2 rounded-lg border border-surface-border p-3">
             <legend className="px-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
               Put tasks in
             </legend>
@@ -562,7 +563,7 @@ export default function TaskImportExport({
                     onChange={(e) =>
                       setDestination({ mode: "existing", projectId: e.target.value })
                     }
-                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white"
+                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-surface-border bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white"
                   >
                     {availableProjects.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -593,7 +594,7 @@ export default function TaskImportExport({
                     }}
                     placeholder="Project name"
                     maxLength={MAX_PROJECT_NAME}
-                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus:border-blue-400"
+                    className="w-full px-2.5 py-1.5 text-sm rounded-md border border-surface-border bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none focus:border-blue-400"
                   />
                 )}
               </span>
@@ -626,7 +627,7 @@ export default function TaskImportExport({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium border-2 border-dashed border-slate-300 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition bg-slate-50/50 dark:bg-[#131d30]/50"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium border-2 border-dashed border-slate-300 dark:border-surface-border text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition bg-slate-50/50 dark:bg-surface-elevated/50"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12" />
@@ -658,7 +659,7 @@ export default function TaskImportExport({
             <p className="text-sm text-slate-600 dark:text-slate-300">{destinationSummary}</p>
             {destination.mode === "file" &&
               (projectPlan.createNew.length > 0 || projectPlan.matchExisting.length > 0) && (
-              <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1 rounded-md bg-white/60 dark:bg-[#0f172a]/40 px-2.5 py-2 border border-blue-100 dark:border-blue-900/40">
+              <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1 rounded-md bg-white/60 dark:bg-surface-recessed/40 px-2.5 py-2 border border-blue-100 dark:border-blue-900/40">
                 {projectPlan.createNew.map((name) => (
                   <li key={`new:${name}`} className="flex items-start gap-1.5">
                     <span className="shrink-0 mt-0.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold uppercase tracking-wide bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
@@ -721,27 +722,29 @@ export default function TaskImportExport({
             )}
 
             <div className="flex gap-2 pt-1">
-              <button
+              <Button
                 type="button"
+                size="md"
+                className="flex-1"
                 onClick={handleImport}
                 disabled={filteredCount === 0}
-                className="btn-primary flex-1 px-3 py-2 text-sm"
               >
                 Import {filteredCount} task{filteredCount !== 1 ? "s" : ""}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="ghost"
+                size="md"
                 onClick={() => setImportState({ step: "idle" })}
-                className="btn-ghost px-3 py-2 text-sm"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {importState.step === "importing" && (
-          <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
+          <div className="mt-3 p-3 rounded-lg bg-slate-50 dark:bg-surface-elevated border border-surface-border text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
             <span className="inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             Importing…
           </div>

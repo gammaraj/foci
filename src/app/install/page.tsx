@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import AppNavbar from "@/components/AppNavbar";
 import GuideLinkHub from "@/components/GuideLinkHub";
 import InstallPageActions from "@/components/InstallPageActions";
@@ -102,7 +103,7 @@ function StepList({
 
 export default function InstallPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--page-bg)] dark:bg-[#070b16]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(howToJsonLd) }}
@@ -131,7 +132,7 @@ export default function InstallPage() {
             </div>
 
             <aside className="hidden lg:block mt-2">
-              <div className="rounded-2xl border border-slate-200/80 dark:border-[#243350] bg-white/50 dark:bg-[#0f1b33]/60 p-5">
+              <div className="rounded-2xl border border-slate-200/80 dark:border-surface-border bg-white/50 dark:bg-surface-recessed/60 p-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">
                   On a computer
                 </p>
@@ -271,18 +272,12 @@ export default function InstallPage() {
           </section>
 
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link
-              href="/app"
-              className="btn-primary px-5 py-2.5 text-sm"
-            >
+            <ButtonLink href="/app" size="lg">
               Open Foci
-            </Link>
-            <Link
-              href="/about"
-              className="btn-chip px-5 py-2.5 text-sm"
-            >
+            </ButtonLink>
+            <ButtonLink href="/about" variant="chip" size="lg">
               About Foci
-            </Link>
+            </ButtonLink>
           </div>
         </article>
 

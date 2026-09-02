@@ -20,6 +20,7 @@ import {
   relativeDayLabel,
   weekdayShort,
 } from "@/lib/dates";
+import { Button } from "@/components/ui/Button";
 import { formatDuration, resolveProjectColor } from "@/components/task-list/utils";
 import { BusyBeaver } from "@/components/BusyBeaver";
 
@@ -79,7 +80,7 @@ function CapacityTrack({
         return (
           <span
             key={i}
-            className={`h-1.5 flex-1 rounded-full min-w-[0.35rem] ${st ? "" : "bg-slate-200 dark:bg-[#243350]"}`}
+            className={`h-1.5 flex-1 rounded-full min-w-[0.35rem] ${st ? "" : "bg-slate-200 dark:bg-surface-border"}`}
             style={st ? { backgroundColor: accentOf(st) } : undefined}
             title={st ? st.task.title : "Open slot"}
           />
@@ -140,8 +141,8 @@ function TaskChip({
           : st.overdue && isHero
             ? "bg-[var(--urgency-soft-bg)] dark:bg-rose-950/25"
             : isHero
-              ? "bg-[var(--surface-elevated)]/80 dark:bg-[#1a2d4a]/50"
-              : "hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]/70"
+              ? "bg-surface-elevated/80 dark:bg-surface-hover/50"
+              : "hover:bg-surface-muted dark:hover:bg-surface-hover/70"
       }`}
       style={{
         boxShadow: `inset 3px 0 0 ${color}`,
@@ -169,7 +170,7 @@ function TaskChip({
         </div>
         <p
           className={`truncate mt-0.5 ${
-            compact ? "text-[11px] text-slate-500 dark:text-slate-400" : "text-xs text-slate-500 dark:text-slate-400"
+            compact ? "text-xs text-slate-500 dark:text-slate-400" : "text-xs text-slate-500 dark:text-slate-400"
           }`}
         >
           {compact ? st.projectName : metaBits.join(" · ")}
@@ -197,19 +198,28 @@ function TaskChip({
             <StarIcon className="w-3.5 h-3.5" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => onStartTask(t.id)}
-          className={`rounded-md ${
-            isHero
-              ? "btn-primary p-1.5"
-              : "p-1 text-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-          }`}
-          title="Focus and start timer"
-          aria-label={`Focus task: ${t.title}`}
-        >
-          <PlayIcon className={isHero ? "w-3.5 h-3.5" : "w-3.5 h-3.5"} />
-        </button>
+        {isHero ? (
+          <Button
+            type="button"
+            size="sm"
+            className="rounded-md p-1.5"
+            onClick={() => onStartTask(t.id)}
+            title="Focus and start timer"
+            aria-label={`Focus task: ${t.title}`}
+          >
+            <PlayIcon className="w-3.5 h-3.5" />
+          </Button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onStartTask(t.id)}
+            className="rounded-md p-1 text-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+            title="Focus and start timer"
+            aria-label={`Focus task: ${t.title}`}
+          >
+            <PlayIcon className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -217,7 +227,7 @@ function TaskChip({
 
 function OpenSlot() {
   return (
-    <div className="rounded-lg border border-dashed border-slate-200 dark:border-[#243350] px-2 py-2 text-xs text-slate-400 dark:text-slate-500">
+    <div className="rounded-lg border border-dashed border-surface-border px-2 py-2 text-xs text-slate-400 dark:text-slate-500">
       Open slot
     </div>
   );
@@ -246,7 +256,7 @@ function GroupedTaskChips({
     <div className="space-y-2.5">
       {groups.map((group) => (
         <div key={group[0].task.projectId}>
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 px-1 mb-1">
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 px-1 mb-1">
             <span
               className="w-1.5 h-1.5 rounded-full shrink-0"
               style={{ backgroundColor: accentOf(group[0]) }}
@@ -287,14 +297,14 @@ function WeekDayCard({
     <section
       className={`min-w-0 flex flex-col rounded-xl border px-2 py-2 ${
         weekend
-          ? "border-[color:var(--surface-border)] dark:border-[#243350]/70 bg-[var(--surface-muted)]/40 dark:bg-[#0d1526]/60"
-          : "border-[color:var(--surface-border)] dark:border-[#243350] bg-[var(--surface-elevated)]/80 dark:bg-[#131d30]/90"
+          ? "border-surface-border dark:border-surface-border/70 bg-surface-muted/40 dark:bg-surface-muted/60"
+          : "border-surface-border dark:border-surface-border bg-surface-elevated/80 dark:bg-surface-elevated/90"
       }`}
     >
       <div className="flex items-start justify-between gap-1 px-0.5 mb-1.5">
         <div className="min-w-0">
           <p
-            className={`text-[11px] font-semibold uppercase tracking-wide ${
+            className={`text-xs font-semibold uppercase tracking-wide ${
               weekend ? "text-slate-400 dark:text-slate-500" : "text-slate-500 dark:text-slate-400"
             }`}
           >
@@ -304,7 +314,7 @@ function WeekDayCard({
             {monthDay(day.date)}
           </p>
         </div>
-        <span className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums pt-0.5">
+        <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums pt-0.5">
           {day.tasks.length === 0 ? "Open" : over ? `${day.tasks.length} · +${day.tasks.length - dailyGoal}` : `${day.tasks.length} · ~${totalTime}m`}
         </span>
       </div>
@@ -324,7 +334,7 @@ function WeekDayCard({
           ))}
         </div>
       ) : (
-        <p className="px-0.5 py-2 text-[11px] text-slate-400 dark:text-slate-500">Capacity free</p>
+        <p className="px-0.5 py-2 text-xs text-slate-400 dark:text-slate-500">Capacity free</p>
       )}
     </section>
   );
@@ -346,14 +356,14 @@ function ProjectMix({
     <section className="rounded-xl border surface-panel px-3 py-2.5 min-w-0 h-full">
       <div className="flex items-baseline justify-between gap-2 mb-2">
         <h3 className="app-section-label text-slate-500 dark:text-slate-400">Across projects</h3>
-        <span className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
+        <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
           {loads.length} {loads.length === 1 ? "project" : "projects"}
         </span>
       </div>
 
       {totalScheduled > 0 ? (
         <div
-          className="flex h-2 rounded-full overflow-hidden bg-slate-200 dark:bg-[#1a2d4a] mb-2.5"
+          className="flex h-2 rounded-full overflow-hidden bg-slate-200 dark:bg-surface-hover mb-2.5"
           title="Sessions scheduled this window"
         >
           {inPlay.map((p) => (
@@ -375,10 +385,10 @@ function ProjectMix({
           type="button"
           onClick={() => onSelect(null)}
           aria-pressed={selectedId === null}
-          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border transition-colors ${
+          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border transition-colors ${
             selectedId === null
-              ? "border-blue-500 bg-[var(--surface-elevated)] text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100"
-              : "border-[color:var(--surface-border)] bg-[var(--surface-elevated)] text-slate-600 dark:border-[#243350] dark:bg-[#0f172a] dark:text-slate-300"
+              ? "border-blue-500 bg-surface-elevated text-blue-700 dark:border-blue-400 dark:bg-surface-hover dark:text-blue-100"
+              : "border-surface-border bg-surface-elevated text-slate-600 dark:border-surface-border dark:bg-surface-recessed dark:text-slate-300"
           }`}
         >
           All
@@ -397,10 +407,10 @@ function ProjectMix({
                   ? `${p.name} has no sessions in this window`
                   : `${p.name}: ${p.scheduled} scheduled`
               }
-              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium border transition-colors max-w-full ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium border transition-colors max-w-full ${
                 active
-                  ? "border-blue-500 bg-[var(--surface-elevated)] text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100"
-                  : "border-[color:var(--surface-border)] bg-[var(--surface-elevated)] text-slate-600 dark:border-[#243350] dark:bg-[#0f172a] dark:text-slate-300"
+                  ? "border-blue-500 bg-surface-elevated text-blue-700 dark:border-blue-400 dark:bg-surface-hover dark:text-blue-100"
+                  : "border-surface-border bg-surface-elevated text-slate-600 dark:border-surface-border dark:bg-surface-recessed dark:text-slate-300"
               }`}
             >
               <span
@@ -566,7 +576,7 @@ export default function SmartPlan({
                       <button
                         type="button"
                         onClick={() => onSetOneThing(hero.task.id)}
-                        className="text-[11px] font-semibold text-blue-700 dark:text-blue-300 hover:underline"
+                        className="text-xs font-semibold text-blue-700 dark:text-blue-300 hover:underline"
                       >
                         Set as One Thing
                       </button>
@@ -603,7 +613,7 @@ export default function SmartPlan({
                   ))}
                 {overflow.length > 0 ? (
                   <>
-                    <p className="px-0.5 pt-1 text-[11px] font-semibold urgency-text--mild">
+                    <p className="px-0.5 pt-1 text-xs font-semibold urgency-text--mild">
                       Over capacity
                     </p>
                     {overflow
@@ -639,7 +649,7 @@ export default function SmartPlan({
             <section>
               <div className="flex items-baseline justify-between gap-2 px-0.5 mb-2">
                 <h3 className="app-section-label text-slate-500 dark:text-slate-400">Rest of this week</h3>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                <span className="text-xs text-slate-400 dark:text-slate-500">
                   {dailyGoal} sessions/day
                 </span>
               </div>
@@ -713,7 +723,7 @@ export default function SmartPlan({
           ) : null}
 
           {laterWork.length > 0 ? (
-            <div className="border-t border-slate-200/80 dark:border-[#243350]/80 pt-3">
+            <div className="border-t border-slate-200/80 dark:border-surface-border/80 pt-3">
               <button
                 type="button"
                 onClick={() => setLaterOpen((o) => !o)}

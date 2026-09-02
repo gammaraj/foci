@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
@@ -136,7 +137,7 @@ export default async function BlogPostPage({ params }: Props) {
     : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
@@ -195,9 +196,9 @@ export default async function BlogPostPage({ params }: Props) {
             <p className="flex-1 text-sm text-slate-700 dark:text-slate-200">
               Put this into practice in one tab — timer, tasks, and sounds. No account needed.
             </p>
-            <Link href="/app" className="btn-primary px-4 py-2 text-sm shrink-0 text-center">
+            <ButtonLink href="/app" size="md" className="shrink-0 text-center">
               Try Foci — free
-            </Link>
+            </ButtonLink>
           </div>
 
           <div className="prose prose-neutral dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline max-w-none">
@@ -236,18 +237,17 @@ export default async function BlogPostPage({ params }: Props) {
                 Open the app in this browser — no signup. Optional account syncs streaks later.
               </p>
               <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center">
-                <Link
-                  href="/app"
-                  className="btn-primary w-full sm:w-auto px-5 py-2.5 text-sm text-center"
-                >
+                <ButtonLink href="/app" size="lg" className="w-full sm:w-auto text-center">
                   Try Foci — free
-                </Link>
-                <Link
+                </ButtonLink>
+                <ButtonLink
                   href="/login"
-                  className="btn-chip w-full sm:w-auto px-5 py-2.5 text-sm text-center"
+                  variant="chip"
+                  size="lg"
+                  className="w-full sm:w-auto text-center"
                 >
                   Create free account
-                </Link>
+                </ButtonLink>
               </div>
             </div>
           </div>

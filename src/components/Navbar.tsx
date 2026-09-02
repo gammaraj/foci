@@ -2,6 +2,7 @@
 
 import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
@@ -235,12 +236,9 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                 <UserMenu />
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="btn-primary ml-2 text-sm px-4 py-2"
-              >
+              <ButtonLink href="/login" size="md" className="ml-2">
                 Log in
-              </Link>
+              </ButtonLink>
             )}
           </div>
 
@@ -304,13 +302,14 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                   <UserMenu />
                 </div>
               ) : (
-                <Link
+                <ButtonLink
                   href="/login"
+                  size="lg"
                   onClick={() => setMenuOpen(false)}
-                  className="btn-primary mx-3 mt-2 text-sm text-center px-4 py-2.5"
+                  className="mx-3 mt-2 text-center"
                 >
                   Log in
-                </Link>
+                </ButtonLink>
               )}
             </div>
           </div>

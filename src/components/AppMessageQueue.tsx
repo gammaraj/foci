@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ConfirmModal from "@/components/ConfirmModal";
+import { Button } from "@/components/ui/Button";
 import { BusyBeaver } from "@/components/BusyBeaver";
 import { FociDot } from "@/components/FociDot";
 import { loadProjects, loadTasks } from "@/lib/storage";
@@ -177,20 +178,23 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
               </p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
-              <button
+              <Button
                 type="button"
+                size="sm"
+                className="touch-target-sm"
                 onClick={() => setConfirmClearSamples(true)}
-                className="btn-primary px-3 py-1.5 text-sm touch-target-sm"
               >
                 Start fresh
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
+                className="touch-target-sm"
                 onClick={() => dismiss("sample-workspace")}
-                className="btn-ghost px-3 py-1.5 text-sm touch-target-sm"
               >
                 Keep exploring
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -258,19 +262,20 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
         <div className="p-3 rounded-xl app-surface flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-sm text-slate-700 dark:text-slate-200">Enable reminders for due dates and invites?</p>
           <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
-            <button
+            <Button
               type="button"
-              className="btn-primary px-3 py-1.5 text-sm touch-target-sm"
+              size="sm"
+              className="touch-target-sm"
               onClick={async () => {
                 await Notification.requestPermission();
                 dismiss("notification");
               }}
             >
               Enable
-            </button>
-            <button type="button" onClick={() => dismiss("notification")} className="btn-ghost px-3 py-1.5 text-sm touch-target-sm">
+            </Button>
+            <Button type="button" variant="ghost" size="sm" className="touch-target-sm" onClick={() => dismiss("notification")}>
               Later
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -289,9 +294,10 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
               : "Install Foci for offline access and a home-screen icon."}
           </p>
           <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
-            <button
+            <Button
               type="button"
-              className="btn-primary px-3 py-1.5 text-xs touch-target-sm"
+              size="sm"
+              className="touch-target-sm"
               onClick={async () => {
                 if (canPrompt && deferredPrompt) {
                   await deferredPrompt.prompt();
@@ -306,10 +312,10 @@ export default function AppMessageQueue({ user, focusMode }: AppMessageQueueProp
               }}
             >
               {ios ? "How to add" : canPrompt ? "Install" : "Add to Home Screen"}
-            </button>
-            <button type="button" onClick={() => dismiss("pwa")} className="btn-ghost px-3 py-1.5 text-sm touch-target-sm">
+            </Button>
+            <Button type="button" variant="ghost" size="sm" className="touch-target-sm" onClick={() => dismiss("pwa")}>
               Not now
-            </button>
+            </Button>
           </div>
         </div>
       </div>

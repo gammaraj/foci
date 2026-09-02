@@ -38,7 +38,7 @@ export default function DayRecap({ show, summary, onDismiss }: DayRecapProps) {
 
   return (
     <div className="fixed bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
-      <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-emerald-300 dark:border-emerald-700 p-4 shadow-2xl">
+      <div className="rounded-2xl app-surface dark:bg-surface-elevated border-2 border-emerald-300 dark:border-emerald-700 p-4 shadow-2xl">
         <div className="flex items-start gap-3">
           <BusyBeaver alt="" size={44} className="flex-shrink-0 -mt-0.5" />
           <div className="flex-1 min-w-0">

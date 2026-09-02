@@ -10,6 +10,7 @@ import {
   markWhatsNewSeen,
   startFeatureTour,
 } from "@/lib/whats-new";
+import { Button } from "@/components/ui/Button";
 
 interface WhatsNewBannerProps {
   focusMode?: boolean;
@@ -90,7 +91,7 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
           role="dialog"
           aria-label="What's new"
         >
-          <div className="px-3 py-2.5 border-b border-slate-100 dark:border-[#243350] bg-blue-50/70 dark:bg-blue-950/20">
+          <div className="px-3 py-2.5 border-b border-slate-100 dark:border-surface-border bg-blue-50/70 dark:bg-blue-950/20">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2.5 min-w-0">
                 <BusyBeaver alt="" size={36} className="flex-shrink-0" />
@@ -121,24 +122,21 @@ export default function WhatsNewBanner({ focusMode, headless }: WhatsNewBannerPr
             ))}
           </ul>
 
-          <div className="flex items-center gap-2 px-3 py-2 border-t border-slate-100 dark:border-[#243350]">
-            <button
+          <div className="flex items-center gap-2 px-3 py-2 border-t border-slate-100 dark:border-surface-border">
+            <Button
               type="button"
+              size="sm"
+              className="flex-1"
               onClick={() => {
                 startFeatureTour();
                 setOpen(false);
               }}
-              className="btn-primary flex-1 px-2.5 py-1.5 text-sm"
             >
               Take the tour
-            </button>
-            <button
-              type="button"
-              onClick={dismiss}
-              className="btn-ghost px-2.5 py-1.5 text-sm"
-            >
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={dismiss}>
               Got it
-            </button>
+            </Button>
           </div>
         </div>
       )}

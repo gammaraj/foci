@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { BusyBeaver } from "@/components/BusyBeaver";
+import { Button } from "@/components/ui/Button";
 import TimerAlarmPicker from "@/components/TimerAlarmPicker";
 import { parseQuote } from "@/lib/quotes";
 
@@ -42,7 +43,7 @@ export default function SessionCelebration({
 
   return (
     <div className="fixed bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 animate-slide-up">
-      <div className="rounded-2xl app-surface dark:bg-[#131d30] border-2 border-blue-300 dark:border-blue-600 p-4 shadow-2xl">
+      <div className="rounded-2xl app-surface dark:bg-surface-elevated border-2 border-blue-300 dark:border-blue-600 p-4 shadow-2xl">
         <div className="flex items-start gap-3">
           <BusyBeaver alt="" size={44} className="flex-shrink-0 -mt-0.5" />
           <div className="flex-1 min-w-0">
@@ -72,21 +73,22 @@ export default function SessionCelebration({
                   ["distracted", "Distracted"],
                   ["break-early", "Ended early"],
                 ] as const).map(([id, label]) => (
-                  <button
+                  <Button
                     key={id}
                     type="button"
+                    variant="chip"
+                    size="sm"
                     onClick={() => {
                       onFeedback(id);
                       onDismiss();
                     }}
-                    className="btn-chip px-2.5 py-1 text-xs"
                   >
                     {label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
-            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-[#243350]">
+            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-surface-border">
               <TimerAlarmPicker compact afterFinish />
             </div>
           </div>

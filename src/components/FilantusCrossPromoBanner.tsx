@@ -421,7 +421,7 @@ export function FilantusCrossPromoBanner({
           <span className="shrink-0 text-[12px] font-semibold tracking-tight leading-none text-slate-700 dark:text-slate-200">
             {ad.name}
           </span>
-          <span className="min-w-0 text-[10px] font-medium truncate leading-none text-slate-500 dark:text-slate-400">
+          <span className="min-w-0 text-xs font-medium truncate leading-none text-slate-500 dark:text-slate-400">
             {ad.headline}
           </span>
         </a>
@@ -441,7 +441,7 @@ export function FilantusCrossPromoBanner({
                 })
               }
             }}
-            className="inline-flex items-center px-1.5 text-[10px] font-semibold whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 hover:text-blue-700 dark:hover:text-blue-300 dark:hover:bg-slate-800/60 transition-colors"
+            className="inline-flex items-center px-1.5 text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 hover:text-blue-700 dark:hover:text-blue-300 dark:hover:bg-slate-800/60 transition-colors"
             style={{ textDecoration: 'none' }}
           >
             Try

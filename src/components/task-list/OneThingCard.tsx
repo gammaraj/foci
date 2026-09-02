@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Task } from "@/lib/types";
 import type { OneThingStatus } from "@/lib/one-thing";
 import { MAX_CUSTOM_QUOTE, parseQuote } from "@/lib/quotes";
+import { Button } from "@/components/ui/Button";
 
 export interface OneThingCardProps {
   status: OneThingStatus;
@@ -60,7 +61,7 @@ function ChevronIcon({ open, className }: { open: boolean; className?: string })
 
 function OneThingHowTo() {
   return (
-    <div className="rounded-2xl ring-1 ring-blue-500/15 dark:ring-blue-400/25 bg-[color:var(--surface-elevated)]/95 dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 shadow-lg shadow-blue-900/5 dark:shadow-black/40 p-3.5 text-xs leading-relaxed text-center">
+    <div className="rounded-2xl ring-1 ring-blue-500/15 dark:ring-blue-400/25 bg-surface-elevated/95 dark:bg-surface-recessed text-slate-700 dark:text-slate-200 shadow-lg shadow-blue-900/5 dark:shadow-black/40 p-3.5 text-xs leading-relaxed text-center">
       <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
       <ol className="mt-1.5 mx-auto w-fit list-decimal list-inside space-y-1 text-left text-slate-600 dark:text-slate-300">
         <li>Open any open task (click its name).</li>
@@ -166,25 +167,25 @@ function QuoteColumn({
               commit();
             }
           }}
-          className="w-full resize-none rounded-md px-1.5 py-1 text-[13px] italic font-medium text-slate-800 dark:text-stone-100 bg-[var(--surface-elevated)] dark:bg-[#0f172a] ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:font-normal placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
+          className="w-full resize-none rounded-md px-1.5 py-1 text-[13px] italic font-medium text-slate-800 dark:text-stone-100 bg-surface-elevated dark:bg-surface-recessed ring-1 ring-slate-200 dark:ring-[#243350] placeholder:not-italic placeholder:font-normal placeholder:text-slate-400 outline-none focus:ring-blue-500/50"
           aria-label="Your custom quote"
         />
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] text-slate-400 tabular-nums">
+          <span className="text-xs text-slate-400 tabular-nums">
             {draft.trim().length}/{MAX_CUSTOM_QUOTE}
           </span>
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={cancel}
-              className="px-2 py-0.5 text-[11px] font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 dark:hover:bg-white/10"
+              className="px-2 py-0.5 text-xs font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 dark:hover:bg-white/10"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={commit}
-              className="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700"
             >
               Save
             </button>
@@ -217,8 +218,8 @@ function QuoteColumn({
       <span
         className={
           isCustomQuote
-            ? "inline-flex items-center gap-0.5 shrink-0 rounded px-1 py-0.5 text-[10px] font-bold uppercase tracking-[0.05em] bg-blue-500/10 text-blue-700 dark:text-blue-300"
-            : "inline-flex items-center shrink-0 rounded px-1 py-0.5 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-500 dark:text-slate-400 bg-slate-500/10 dark:bg-white/5"
+            ? "inline-flex items-center gap-0.5 shrink-0 rounded px-1 py-0.5 text-xs font-bold uppercase tracking-[0.05em] bg-blue-500/10 text-blue-700 dark:text-blue-300"
+            : "inline-flex items-center shrink-0 rounded px-1 py-0.5 text-xs font-bold uppercase tracking-[0.05em] text-slate-500 dark:text-slate-400 bg-slate-500/10 dark:bg-white/5"
         }
         title={isCustomQuote ? "Stays until you change it" : "Changes each day"}
       >
@@ -257,7 +258,7 @@ function QuoteColumn({
             <button
               type="button"
               onClick={() => onSaveQuote(null)}
-              className="px-1.5 py-0.5 text-[11px] font-semibold rounded-md text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 dark:hover:bg-blue-400/15"
+              className="px-1.5 py-0.5 text-xs font-semibold rounded-md text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 dark:hover:bg-blue-400/15"
               title="Back to daily rotating quotes"
             >
               Daily
@@ -266,7 +267,7 @@ function QuoteColumn({
             <button
               type="button"
               onClick={() => onSaveQuote(quote.trim().slice(0, MAX_CUSTOM_QUOTE))}
-              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] font-semibold rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-500/10 dark:hover:bg-white/10"
+              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-semibold rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-500/10 dark:hover:bg-white/10"
               title="Keep showing this quote every day"
             >
               <PinIcon className="w-3 h-3 text-blue-600 dark:text-blue-400" />
@@ -445,22 +446,34 @@ export function OneThingCard({
             </p>
           </div>
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-            <button
-              type="button"
-              onClick={onFocus}
-              className={
-                isFocused
-                  ? "btn-primary gap-1 px-2 sm:px-2.5 py-1 text-xs"
-                  : "inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
-              }
-              title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
-              aria-label={isFocused ? "Focused on One Thing" : "Focus on One Thing"}
-            >
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
-              </svg>
-              <span className="hidden min-[400px]:inline">{isFocused ? "On" : "Focus"}</span>
-            </button>
+            {isFocused ? (
+              <Button
+                type="button"
+                size="sm"
+                className="gap-1 shrink-0"
+                onClick={onFocus}
+                title={isFocused ? "Already focused" : isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
+                aria-label={isFocused ? "Focused on One Thing" : "Focus on One Thing"}
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                  <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                </svg>
+                <span className="hidden min-[400px]:inline">{isFocused ? "On" : "Focus"}</span>
+              </Button>
+            ) : (
+              <button
+                type="button"
+                onClick={onFocus}
+                className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-500/10 dark:hover:bg-blue-400/15 transition-colors"
+                title={isTimerRunning ? "Switch focus to One Thing" : "Focus and start timer"}
+                aria-label="Focus on One Thing"
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                  <path d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                </svg>
+                <span className="hidden min-[400px]:inline">Focus</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={onComplete}

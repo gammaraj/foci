@@ -88,7 +88,7 @@ export default function BlogIndexPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

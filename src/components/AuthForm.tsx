@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { trackSignUp, trackLogin } from "@/lib/analytics";
 import { BusyBeaver } from "@/components/BusyBeaver";
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -63,7 +65,7 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
 
   return (
     <div className="w-full">
-      <div className="bg-white dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] p-6">
+      <div className="bg-surface-elevated rounded-xl border border-surface-border p-6">
         <div className="flex justify-center mb-3">
           <BusyBeaver alt="" size={56} />
         </div>
@@ -80,7 +82,7 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-lg border border-slate-200 dark:border-[#243350] bg-white dark:bg-[#131d30] text-slate-900 dark:text-white text-[15px] font-medium hover:bg-slate-50 dark:hover:bg-[#1a2d4a] transition-colors"
+          className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-lg border border-surface-border bg-surface-elevated text-slate-900 dark:text-white text-[15px] font-medium hover:bg-slate-50 dark:hover:bg-surface-hover transition-colors"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
@@ -93,10 +95,10 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
 
         <div className="relative my-5">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200 dark:border-[#243350]" />
+            <div className="w-full border-t border-surface-border" />
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-white dark:bg-[#131d30] px-3 text-slate-400 dark:text-slate-500 uppercase tracking-wide">or</span>
+            <span className="bg-surface-elevated px-3 text-slate-400 dark:text-slate-500 uppercase tracking-wide">or</span>
           </div>
         </div>
 
@@ -108,14 +110,14 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
             >
               Email
             </label>
-            <input
+            <TextField
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white text-[15px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              className="py-2.5 dark:bg-surface-recessed text-[15px]"
               placeholder="you@example.com"
             />
           </div>
@@ -127,7 +129,7 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
             >
               Password
             </label>
-            <input
+            <TextField
               id="password"
               type="password"
               value={password}
@@ -137,7 +139,7 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
                 mode === "sign-up" ? "new-password" : "current-password"
               }
               minLength={8}
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white text-[15px] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              className="py-2.5 dark:bg-surface-recessed text-[15px]"
               placeholder="••••••••"
             />
           </div>
@@ -151,39 +153,36 @@ export default function AuthForm({ nextPath = "/app" }: { nextPath?: string }) {
             </p>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full py-2.5 px-4 text-[15px] gap-2"
+            loading={loading}
+            size="lg"
+            className="w-full text-[15px]"
           >
-            {loading && (
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-            )}
             {loading
               ? "Signing in..."
               : mode === "sign-in"
                 ? "Sign In"
                 : "Sign Up"}
-          </button>
+          </Button>
         </form>
 
         <div className="mt-5 text-center">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => {
               setMode(mode === "sign-in" ? "sign-up" : "sign-in");
               setError(null);
               setMessage(null);
             }}
-            className="btn-ghost px-2 py-1 text-sm"
           >
             {mode === "sign-in"
               ? "Don't have an account? Sign up"
               : "Already have an account? Sign in"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

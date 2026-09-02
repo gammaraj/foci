@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { BusyBeaver } from "@/components/BusyBeaver";
 import { reportError } from "@/lib/report-error";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function Error({
   error,
@@ -16,27 +18,26 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0f1a] px-4">
-      <div className="max-w-md text-center">
-        <BusyBeaver
-          alt="Beavy the Beaver looking concerned"
-          size={140}
-          className="mx-auto mb-5"
-          priority
-        />
-        <h2 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">
-          Beavy dropped a log on this page
-        </h2>
-        <p className="mb-6 text-slate-600 dark:text-slate-400">
-          We&apos;ve been notified. Give it another chew — try again.
-        </p>
-        <button
-          onClick={() => reset()}
-          className="btn-primary px-6 py-3"
-        >
-          Try again
-        </button>
-      </div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 dark:bg-page px-4">
+      <EmptyState
+        titleAs="h2"
+        title="Beavy dropped a log on this page"
+        body="We've been notified. Give it another chew — try again."
+        bodyClassName="text-base text-slate-600 dark:text-slate-400"
+        illustration={
+          <BusyBeaver
+            alt="Beavy the Beaver looking concerned"
+            size={140}
+            className="mx-auto"
+            priority
+          />
+        }
+        action={
+          <Button size="lg" onClick={() => reset()}>
+            Try again
+          </Button>
+        }
+      />
     </div>
   );
 }

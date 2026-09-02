@@ -29,12 +29,12 @@ function deltaLabel(current: number, prior: number): { text: string; tone: "up" 
 
 function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+    <div className="rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/80 dark:bg-surface-elevated/80 px-3 py-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
         {label}
       </p>
       <p className="mt-1 text-xl font-semibold tabular-nums text-slate-900 dark:text-white">{value}</p>
-      {hint ? <p className="mt-0.5 text-[11px] text-slate-400">{hint}</p> : null}
+      {hint ? <p className="mt-0.5 text-xs text-slate-400">{hint}</p> : null}
     </div>
   );
 }
@@ -44,7 +44,7 @@ const DAILY_CHART_BAR_MAX_PX = 96;
 function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
+      <div className="rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/60 dark:bg-surface-elevated/60 p-3">
         <p className="text-sm text-slate-400">No daily data yet.</p>
       </div>
     );
@@ -53,7 +53,7 @@ function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
   const max = Math.max(...rows.map((r) => r.users), 1);
 
   return (
-    <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
+    <div className="rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/60 dark:bg-surface-elevated/60 p-3">
       <div className="flex items-end gap-0.5 sm:gap-1" style={{ minHeight: DAILY_CHART_BAR_MAX_PX + 18 }}>
         {rows.map((row) => {
           const barPx =
@@ -73,7 +73,7 @@ function DailyTrend({ rows }: { rows: AdminGaSummary["dailyUsers"] }) {
                 style={{ height: barPx }}
                 title={`${label}: ${row.users} users, ${row.sessions} sessions`}
               />
-              <span className="mt-1 text-[9px] text-slate-400 tabular-nums truncate w-full text-center">
+              <span className="mt-1 text-xs text-slate-400 tabular-nums truncate w-full text-center">
                 {label}
               </span>
             </div>
@@ -104,7 +104,7 @@ function BarList({
   return (
     <div>
       <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">{title}</h3>
-      <ul className="text-sm space-y-2 border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
+      <ul className="text-sm space-y-2 border border-surface-border dark:border-surface-border rounded-xl bg-surface-elevated/60 dark:bg-surface-elevated/60 p-3">
         {rows.map((r) => (
           <li key={r.label}>
             <div className="flex justify-between gap-3 tabular-nums mb-1">
@@ -115,7 +115,7 @@ function BarList({
                 {fmt(r.sessions)} sess · {fmt(r.users)}u
               </span>
             </div>
-            <div className="h-1.5 rounded-full bg-slate-100 dark:bg-[#1a2740] overflow-hidden">
+            <div className="h-1.5 rounded-full bg-slate-100 dark:bg-surface-hover overflow-hidden">
               <div className={`h-full rounded-full ${bar}`} style={{ width: `${(r.sessions / total) * 100}%` }} />
             </div>
           </li>
@@ -138,9 +138,9 @@ function PathTable({
   return (
     <div>
       <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">{title}</h3>
-      <div className="overflow-x-auto rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60">
+      <div className="overflow-x-auto rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/60 dark:bg-surface-elevated/60">
         <table className="w-full text-sm text-left">
-          <thead className="border-b border-[color:var(--surface-border)] dark:border-[#243350] text-[11px] uppercase tracking-wide text-slate-500">
+          <thead className="border-b border-surface-border dark:border-surface-border text-xs uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-3 py-2 font-semibold">Path</th>
               <th className="px-3 py-2 font-semibold text-right">{metricLabel}</th>
@@ -151,7 +151,7 @@ function PathTable({
             {rows.map((row) => (
               <tr
                 key={row.path}
-                className="border-b border-slate-100 dark:border-[#1a2740] last:border-0"
+                className="border-b border-slate-100 dark:border-surface-border last:border-0"
               >
                 <td className="px-3 py-2 font-mono text-xs text-slate-600 dark:text-slate-300 truncate max-w-[18rem]">
                   {row.path}
@@ -187,9 +187,9 @@ function SignalTable({
   return (
     <div>
       <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">{title}</h3>
-      <div className="overflow-x-auto rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60">
+      <div className="overflow-x-auto rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/60 dark:bg-surface-elevated/60">
         <table className="w-full text-sm text-left">
-          <thead className="border-b border-[color:var(--surface-border)] dark:border-[#243350] text-[11px] uppercase tracking-wide text-slate-500">
+          <thead className="border-b border-surface-border dark:border-surface-border text-xs uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-3 py-2 font-semibold">Event</th>
               <th className="px-3 py-2 font-semibold text-right">7d</th>
@@ -206,7 +206,7 @@ function SignalTable({
               return (
                 <tr
                   key={event}
-                  className="border-b border-slate-100 dark:border-[#1a2740] last:border-0"
+                  className="border-b border-slate-100 dark:border-surface-border last:border-0"
                 >
                   <td className="px-3 py-2">
                     <code className="text-xs font-mono text-blue-700 dark:text-blue-300">{event}</code>
@@ -366,7 +366,7 @@ export function AdminAnalyticsPanel({
                   {ga.contentSegments.map((seg) => (
                     <div
                       key={seg.segment}
-                      className="rounded-lg border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/70 dark:bg-[#131d30]/70 px-3 py-2 text-sm"
+                      className="rounded-lg border border-surface-border dark:border-surface-border bg-surface-elevated/70 dark:bg-surface-elevated/70 px-3 py-2 text-sm"
                     >
                       <p className="font-medium text-slate-800 dark:text-slate-200">{seg.segment}</p>
                       <p className="tabular-nums text-slate-500 mt-0.5">
@@ -405,7 +405,7 @@ export function AdminAnalyticsPanel({
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                   Top events (30d)
                 </h3>
-                <ul className="text-sm space-y-1.5 border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[color:var(--surface-elevated)]/60 dark:bg-[#131d30]/60 p-3">
+                <ul className="text-sm space-y-1.5 border border-surface-border dark:border-surface-border rounded-xl bg-surface-elevated/60 dark:bg-surface-elevated/60 p-3">
                   {ga.topEvents.map((e) => (
                     <li key={e.name} className="flex justify-between gap-3 tabular-nums">
                       <span className="truncate font-mono text-xs text-slate-600 dark:text-slate-300">

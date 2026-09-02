@@ -19,6 +19,7 @@ import {
 } from "@/lib/storage";
 import { isExactTasksAppPath } from "@/lib/task-view-url";
 import { trackCollaboratorAdded } from "@/lib/analytics";
+import { Button } from "@/components/ui/Button";
 
 const OPEN_SHARED_PROJECT_EVENT = "foci-open-shared-project";
 const SHARED_UPDATED_EVENT = "foci-shared-updated";
@@ -254,8 +255,8 @@ export default function CollaborationInvitesButton() {
       </button>
 
       {showPanel && (
-        <div className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-96 w-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl overflow-hidden">
-          <div className="p-4 border-b border-slate-200 dark:border-[#243350]">
+        <div className="fixed left-4 right-4 top-14 z-50 max-w-sm mx-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:mx-0 sm:w-96 w-auto bg-surface-elevated border border-surface-border rounded-xl shadow-2xl overflow-hidden">
+          <div className="p-4 border-b border-surface-border">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -286,7 +287,7 @@ export default function CollaborationInvitesButton() {
               <>
                 {/* Pending invites */}
                 {inviteCount > 0 && (
-                  <div className="border-b border-slate-200 dark:border-[#243350]">
+                  <div className="border-b border-surface-border">
                     <p className="px-4 pt-3 pb-1.5 app-section-label text-slate-500 dark:text-slate-400">
                       Pending invites
                     </p>
@@ -300,13 +301,15 @@ export default function CollaborationInvitesButton() {
                             All their projects · {invite.role === "editor" ? "Can edit" : "View only"}
                           </p>
                           <div className="flex gap-2 mt-3">
-                            <button
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="flex-1"
                               onClick={() => handleAcceptAccountInvite(invite.id)}
                               disabled={processingId === invite.id}
-                              className="btn-primary flex-1 px-3 py-1.5 text-sm"
                             >
                               {processingId === invite.id ? "..." : "Accept"}
-                            </button>
+                            </Button>
                             <button
                               onClick={() => handleDeclineAccountInvite(invite.id)}
                               disabled={processingId === invite.id}
@@ -327,13 +330,15 @@ export default function CollaborationInvitesButton() {
                             {invite.role === "editor" ? "Can edit" : "View only"}
                           </p>
                           <div className="flex gap-2 mt-3">
-                            <button
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="flex-1"
                               onClick={() => handleAccept(invite.id)}
                               disabled={processingId === invite.id}
-                              className="btn-primary flex-1 px-3 py-1.5 text-sm"
                             >
                               {processingId === invite.id ? "..." : "Accept"}
-                            </button>
+                            </Button>
                             <button
                               onClick={() => handleDecline(invite.id)}
                               disabled={processingId === invite.id}
@@ -374,7 +379,7 @@ export default function CollaborationInvitesButton() {
                               key={`${sp._ownerId}:${sp.id}`}
                               type="button"
                               onClick={() => openSharedProject(sp)}
-                              className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left hover:bg-slate-50 dark:hover:bg-[#152340] transition-colors"
+                              className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left hover:bg-slate-50 dark:hover:bg-surface-hover transition-colors"
                             >
                               {sp.color ? (
                                 <span
@@ -406,14 +411,10 @@ export default function CollaborationInvitesButton() {
             )}
           </div>
 
-          <div className="border-t border-slate-200 dark:border-[#243350] p-3">
-            <button
-              type="button"
-              onClick={openShareSettings}
-              className="btn-chip w-full px-3 py-2 text-sm"
-            >
+          <div className="border-t border-surface-border p-3">
+            <Button type="button" variant="chip" size="md" className="w-full" onClick={openShareSettings}>
               Share your projects…
-            </button>
+            </Button>
           </div>
         </div>
       )}

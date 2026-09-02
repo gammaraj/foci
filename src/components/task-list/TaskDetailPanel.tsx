@@ -12,9 +12,9 @@ const chipBase =
 const chipBaseDrawer =
   "flex w-full min-w-0 max-w-full box-border items-center gap-1.5 px-2.5 py-2 text-base sm:text-sm font-medium rounded-lg border transition-colors text-left min-h-[2.4rem]";
 const chipIdle =
-  "border-[color:var(--surface-border)] dark:border-[#243350] text-slate-500 dark:text-slate-400 bg-[var(--surface-elevated)] dark:bg-[#131d30]";
+  "border-surface-border dark:border-surface-border text-slate-500 dark:text-slate-400 bg-surface-elevated";
 const chipEmpty =
-  "border-dashed border-[color:var(--surface-border)] dark:border-[#243350] text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500";
+  "border-dashed border-surface-border dark:border-surface-border text-slate-400 dark:text-slate-400 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-500";
 const selectControl =
   "flex-1 w-full min-w-0 max-w-full bg-transparent text-slate-800 dark:text-white outline-none focus-visible:ring-1 focus-visible:ring-blue-400 cursor-pointer";
 
@@ -143,7 +143,7 @@ export function TaskDetailPanel({
       ? `border border-t-0 rounded-b-xl py-3 space-y-2 min-w-0 ${
           isLinked
             ? "border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10"
-            : "border-slate-200 dark:border-[#1e3050] bg-slate-50/50 dark:bg-[#131d30]/50"
+            : "border-surface-border bg-slate-50/50 dark:bg-surface-elevated/50"
         }`
       : "flex flex-col min-h-full min-w-0 w-full max-w-full overflow-x-hidden";
 
@@ -213,14 +213,14 @@ export function TaskDetailPanel({
           placeholder="Add a description..."
           maxLength={2000}
           rows={2}
-          className="w-full px-3 py-2.5 min-h-[4.25rem] border border-blue-300 dark:border-blue-600 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y text-base sm:text-sm"
+          className="w-full px-3 py-2.5 min-h-[4.25rem] border border-blue-300 dark:border-blue-600 rounded-lg bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50 resize-y text-base sm:text-sm"
           autoFocus
         />
       ) : (
         <div
           className={`w-full text-left px-3 py-2.5 min-h-[4.25rem] text-base sm:text-sm rounded-lg border transition-colors ${
             task.description
-              ? "border-[color:var(--surface-border)] dark:border-[#243350]"
+              ? "border-surface-border dark:border-surface-border"
               : chipEmpty
           }`}
         >
@@ -547,7 +547,7 @@ export function TaskDetailPanel({
       <button
         type="button"
         onClick={() => setDetailsOpen((open) => !open)}
-        className="w-full flex items-center gap-2 text-left py-1.5 rounded-lg hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]/60 transition-colors group"
+        className="w-full flex items-center gap-2 text-left py-1.5 rounded-lg hover:bg-slate-100/80 dark:hover:bg-surface-hover/60 transition-colors group"
         aria-expanded={detailsOpen}
       >
         <svg
@@ -578,8 +578,8 @@ export function TaskDetailPanel({
       <div
         className={`flex items-center gap-2 min-w-0 w-full ${pad} ${
           isDrawer
-            ? "pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:pb-4 sticky bottom-0 bg-[var(--surface-elevated)] dark:bg-[#131d30] border-t border-slate-100 dark:border-[#243350] mt-auto"
-            : "pt-3 pb-1 border-t border-slate-100 dark:border-[#243350] mt-2"
+            ? "pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:pb-4 sticky bottom-0 bg-surface-elevated border-t border-slate-100 dark:border-surface-border mt-auto"
+            : "pt-3 pb-1 border-t border-slate-100 dark:border-surface-border mt-2"
         }`}
       >
         {onSave && (

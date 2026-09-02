@@ -3,6 +3,8 @@
 import React from "react";
 import { BusyBeaver } from "@/components/BusyBeaver";
 import { reportError } from "@/lib/report-error";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface Props {
   children: React.ReactNode;
@@ -30,21 +32,16 @@ export default class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex items-center justify-center min-h-[60vh] px-4">
-          <div className="text-center max-w-md">
-            <BusyBeaver alt="Beavy the Beaver looking concerned" size={96} className="mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-              Beavy dropped a log on this page
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-              Something unexpected floated downstream. Try refreshing.
-            </p>
-            <button
-              onClick={() => this.setState({ hasError: false })}
-              className="btn-primary px-4 py-2 text-sm"
-            >
-              Try again
-            </button>
-          </div>
+          <EmptyState
+            title="Beavy dropped a log on this page"
+            body="Something unexpected floated downstream. Try refreshing."
+            illustration={
+              <BusyBeaver alt="Beavy the Beaver looking concerned" size={96} className="mx-auto" />
+            }
+            action={
+              <Button onClick={() => this.setState({ hasError: false })}>Try again</Button>
+            }
+          />
         </div>
       );
     }

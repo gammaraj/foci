@@ -59,13 +59,13 @@ export default function TaskPanelMenu({
       </button>
       {open && (
         <div
-          className={`absolute right-0 top-full mt-1 py-1 rounded-xl app-surface dark:bg-[#131d30] shadow-xl border border-slate-200 dark:border-[#243350] z-50 ${
+          className={`absolute right-0 top-full mt-1 py-1 rounded-xl app-surface dark:bg-surface-elevated shadow-xl border border-surface-border z-50 ${
             hasTemplates ? "w-64" : "w-48"
           }`}
         >
           <button
             type="button"
-            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
             onClick={() => {
               window.dispatchEvent(new Event("foci-open-project-menu"));
               setOpen(false);
@@ -75,7 +75,7 @@ export default function TaskPanelMenu({
           </button>
           <button
             type="button"
-            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
             onClick={() => {
               window.dispatchEvent(
                 new CustomEvent("foci-open-settings", { detail: { tab: "data" } }),
@@ -87,7 +87,7 @@ export default function TaskPanelMenu({
           </button>
           <button
             type="button"
-            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
             onClick={() => { onOpenSettings(); setOpen(false); }}
           >
             Settings
@@ -96,7 +96,7 @@ export default function TaskPanelMenu({
             <button
               type="button"
               disabled={printDisabled}
-              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => { onPrint(); setOpen(false); }}
             >
               Print current view
@@ -104,7 +104,7 @@ export default function TaskPanelMenu({
           )}
           <button
             type="button"
-            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
             onClick={() => {
               showWhatsNewBanner();
               startFeatureTour();
@@ -115,7 +115,7 @@ export default function TaskPanelMenu({
           </button>
           <button
             type="button"
-            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
             onClick={() => {
               startOnboardingTour();
               setOpen(false);
@@ -126,7 +126,7 @@ export default function TaskPanelMenu({
           {!isStandaloneDisplay() && (
             <Link
               href="/install"
-              className="block w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="block w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
               onClick={() => setOpen(false)}
             >
               Add to Home Screen
@@ -135,7 +135,7 @@ export default function TaskPanelMenu({
           {onToggleFullscreen && (
             <button
               type="button"
-              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
               onClick={() => { onToggleFullscreen(); setOpen(false); }}
             >
               {isFullscreen ? "Exit expand" : "Expand tasks"}
@@ -144,7 +144,7 @@ export default function TaskPanelMenu({
           {user && (
             <button
               type="button"
-              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
               onClick={() => {
                 window.dispatchEvent(
                   new CustomEvent("foci-open-settings", { detail: { tab: "sharing" } }),
@@ -157,7 +157,7 @@ export default function TaskPanelMenu({
           )}
           {hasTemplates && (
             <>
-              <div className="my-1 border-t border-slate-100 dark:border-[#243350]" />
+              <div className="my-1 border-t border-slate-100 dark:border-surface-border" />
               <div className="px-3 py-1.5">
                 <span className="app-section-label text-slate-500 dark:text-slate-400">
                   Project templates

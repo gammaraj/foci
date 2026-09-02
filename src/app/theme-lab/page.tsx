@@ -281,7 +281,7 @@ function NavBar({
         <div className="flex flex-col gap-1 min-w-0">
           <ThemedWordmark theme={theme} onDark={!light} />
           <span
-            className="text-[8px] font-semibold tracking-[0.13em] uppercase leading-none"
+            className="text-xs font-semibold tracking-[0.13em] uppercase leading-none"
             style={{ color: light ? theme.taglineLight : theme.taglineDark }}
           >
             FOCUS · FLOW · FINISH
@@ -315,7 +315,7 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
           {[theme.dim, theme.mid, theme.bright, theme.btn].map((hex) => (
             <span
               key={hex}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2 py-0.5 text-[10px] tabular-nums text-slate-600"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2 py-0.5 text-xs tabular-nums text-slate-600"
             >
               <span className="w-2.5 h-2.5 rounded-full ring-1 ring-black/10" style={{ backgroundColor: hex }} />
               {hex}
@@ -327,7 +327,7 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
       {/* —— Light mode (primary) —— */}
       <div className="border-b border-slate-200">
         <div className="px-3 pt-2.5 pb-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Light mode</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Light mode</span>
         </div>
         <NavBar theme={theme} mode="light" idPrefix={`${theme.id}-nav-light`} />
 
@@ -352,12 +352,12 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
               <span className="text-sm font-bold text-slate-900">Tasks</span>
               <div className="flex gap-1">
                 <span
-                  className="px-2 py-0.5 rounded text-[10px] font-semibold text-white"
+                  className="px-2 py-0.5 rounded text-xs font-semibold text-white"
                   style={{ backgroundColor: theme.btn }}
                 >
                   Today
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-medium text-slate-500 bg-slate-100">
+                <span className="px-2 py-0.5 rounded text-xs font-medium text-slate-500 bg-slate-100">
                   Week
                 </span>
               </div>
@@ -370,7 +370,7 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
                 <span className="w-3.5 h-3.5 rounded border-2 border-slate-300 shrink-0" />
                 <span className="font-medium text-slate-800 truncate">Ship theme mock page</span>
                 <span
-                  className="ml-auto text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border shrink-0"
+                  className="ml-auto text-xs font-bold uppercase px-1.5 py-0.5 rounded border shrink-0"
                   style={{ color: theme.accentText, borderColor: theme.mid, backgroundColor: theme.surfaceLight }}
                 >
                   High
@@ -398,7 +398,7 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
       {/* —— Dark mode peek —— */}
       <div>
         <div className="px-3 pt-2.5 pb-1 bg-slate-50 border-b border-slate-200">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Dark mode</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Dark mode</span>
         </div>
         <NavBar theme={theme} mode="dark" idPrefix={`${theme.id}-nav-dark`} />
         <div className="p-4" style={{ backgroundColor: theme.pageDark }}>
@@ -408,7 +408,7 @@ function ThemeCard({ theme }: { theme: ThemePalette }) {
           >
             <div className="flex items-center justify-between gap-2 mb-2">
               <span className="text-sm font-semibold text-white/90">Tasks</span>
-              <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: theme.wordmarkDark }}>
+              <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: theme.wordmarkDark }}>
                 Active
               </span>
             </div>

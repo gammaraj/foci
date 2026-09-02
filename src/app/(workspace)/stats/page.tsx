@@ -20,6 +20,7 @@ import { formatDateLocal, parseLocalDate, weekdayShort, diffCalendarDays } from 
 import { isActionableOverdue } from "@/lib/task-status";
 import { FociDot } from "@/components/FociDot";
 import { trackStatsViewed } from "@/lib/analytics";
+import { Spinner } from "@/components/ui/Spinner";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ function CountBar({
             <span className="font-medium text-slate-700 dark:text-slate-200">{item.label}</span>
             <span className="font-semibold tabular-nums text-slate-600 dark:text-slate-300">{item.value}</span>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-[#1a2744] rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-surface-hover rounded-full h-2.5 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -141,7 +142,7 @@ function HorizontalBar({
               </span>
             </div>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-[#1a2744] rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-surface-hover rounded-full h-2.5 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -346,7 +347,7 @@ function StatCard({
   accentText?: string;
 }) {
   return (
-    <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-4 sm:p-5 border dark:border-[#1e3355] shadow-sm hover:shadow-md transition-shadow">
+    <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-4 sm:p-5 border dark:border-surface-border shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${accentBg ?? "bg-blue-50 dark:bg-blue-900/30"} ${accentText ?? "text-blue-600 dark:text-blue-400"}`}>
           {icon}
@@ -549,7 +550,7 @@ export default function StatsPage() {
   if (!loaded) {
     return (
       <div className="app-container py-12 text-center text-slate-500 dark:text-slate-400">
-        <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin mx-auto" />
+        <Spinner size="lg" className="text-blue-500 mx-auto" />
       </div>
     );
   }
@@ -567,7 +568,7 @@ export default function StatsPage() {
         </div>
       </FocusBarTitle>
       <FocusBarActions>
-        <div className="flex gap-1 bg-slate-100 dark:bg-[#162a4a] rounded-lg p-0.5 shrink-0">
+        <div className="flex gap-1 bg-slate-100 dark:bg-surface-hover rounded-lg p-0.5 shrink-0">
           {([7, 30] as const).map((r) => (
             <button
               key={r}
@@ -575,7 +576,7 @@ export default function StatsPage() {
               onClick={() => setRange(r)}
               className={`px-2.5 sm:px-3 py-1 text-sm font-medium rounded-md transition-all ${
                 range === r
-                  ? "bg-[var(--surface-elevated)] dark:bg-[#0f1b33] text-slate-900 dark:text-white shadow-sm"
+                  ? "bg-surface-elevated dark:bg-surface-recessed text-slate-900 dark:text-white shadow-sm"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >
@@ -683,7 +684,7 @@ export default function StatsPage() {
               }
             />
           </div>
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
               Backlog snapshot
             </h2>
@@ -704,7 +705,7 @@ export default function StatsPage() {
         {/* Project breakdown + Today's activity row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           {/* Project distribution donut + bars */}
-          <div className="lg:col-span-2 surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="lg:col-span-2 surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-5">
               Focus by project
             </h2>
@@ -722,7 +723,7 @@ export default function StatsPage() {
           </div>
 
           {/* Today's activity */}
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-1">
               Today&apos;s activity
             </h2>
@@ -762,7 +763,7 @@ export default function StatsPage() {
         {/* Bottom insights row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           {/* Goal completion */}
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Goal completion
             </h2>
@@ -788,7 +789,7 @@ export default function StatsPage() {
           </div>
 
           {/* Best day + insights */}
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Weekly pattern
             </h2>
@@ -802,7 +803,7 @@ export default function StatsPage() {
                 return (
                   <div key={d} className="flex-1 flex flex-col items-center h-full justify-end">
                     <div
-                      className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-blue-500 dark:bg-blue-400" : "bg-slate-200 dark:bg-[#1a2744]"}`}
+                      className={`w-full rounded-t-md transition-all duration-300 ${isBest ? "bg-blue-500 dark:bg-blue-400" : "bg-slate-200 dark:bg-surface-hover"}`}
                       style={{ height: `${Math.max(pct, val > 0 ? 6 : 2)}%` }}
                     />
                     <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">{d.slice(0, 2)}</span>
@@ -818,24 +819,24 @@ export default function StatsPage() {
           </div>
 
           {/* Overview stats */}
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Overview
             </h2>
             <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-4">
-              <div className="bg-[var(--surface-muted)] dark:bg-[#162a4a] rounded-xl p-3 text-center">
+              <div className="bg-surface-muted dark:bg-surface-hover rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{longestStreak}d</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Longest streak</p>
               </div>
-              <div className="bg-[var(--surface-muted)] dark:bg-[#162a4a] rounded-xl p-3 text-center">
+              <div className="bg-surface-muted dark:bg-surface-hover rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{activeDays}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Active days</p>
               </div>
-              <div className="bg-[var(--surface-muted)] dark:bg-[#162a4a] rounded-xl p-3 text-center">
+              <div className="bg-surface-muted dark:bg-surface-hover rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{goalDays}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Goals met</p>
               </div>
-              <div className="bg-[var(--surface-muted)] dark:bg-[#162a4a] rounded-xl p-3 text-center">
+              <div className="bg-surface-muted dark:bg-surface-hover rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-slate-900 dark:text-white">{tasks.length}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total tasks</p>
               </div>
@@ -844,7 +845,7 @@ export default function StatsPage() {
         </div>
 
         {/* Activity heatmap + daily charts */}
-        <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm mb-6">
+        <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm mb-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
               Activity
@@ -863,7 +864,7 @@ export default function StatsPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Sessions per day
             </h2>
@@ -874,7 +875,7 @@ export default function StatsPage() {
             />
           </div>
 
-          <div className="surface-panel dark:bg-[#0f1b33] rounded-2xl p-5 sm:p-6 border dark:border-[#1e3355] shadow-sm">
+          <div className="surface-panel dark:bg-surface-recessed rounded-2xl p-5 sm:p-6 border dark:border-surface-border shadow-sm">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Focus time per day
             </h2>

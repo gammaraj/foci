@@ -65,7 +65,7 @@ export default function TimerAlarmPicker({ compact = false, afterFinish = false,
     `px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
       active
         ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200"
-        : "border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+        : "border-surface-border text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-hover"
     }`;
 
   return (

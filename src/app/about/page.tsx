@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import AppNavbar from "@/components/AppNavbar";
 import { BusyBeaver } from "@/components/BusyBeaver";
 import GuideLinkHub from "@/components/GuideLinkHub";
@@ -72,7 +73,7 @@ const aboutJsonLd = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(aboutJsonLd) }}
@@ -234,18 +235,12 @@ export default function AboutPage() {
           </section>
 
           <div className="mt-12 flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/app"
-              className="btn-primary px-6 py-3 text-sm"
-            >
+            <ButtonLink href="/app" size="lg">
               Try Foci — free
-            </Link>
-            <Link
-              href="/login"
-              className="btn-chip px-6 py-3 text-sm"
-            >
+            </ButtonLink>
+            <ButtonLink href="/login" variant="chip" size="lg">
               Create free account
-            </Link>
+            </ButtonLink>
           </div>
         </article>
 

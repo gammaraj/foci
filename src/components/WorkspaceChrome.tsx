@@ -18,6 +18,7 @@ import { hasLocalWorkspaceSnapshot } from "@/lib/storage";
 import { useTimerDocumentTitle } from "@/hooks/useTimerDocumentTitle";
 import { loadCustomQuote } from "@/lib/storage";
 import { CUSTOM_QUOTE_CHANGED_EVENT, getDisplayQuote } from "@/lib/quotes";
+import { Spinner } from "@/components/ui/Spinner";
 
 const DueDateReminders = dynamic(() => import("@/components/DueDateReminders"));
 
@@ -62,15 +63,15 @@ function WorkspaceChromeInner({
 
   if (loading && !hasSnapshot) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
-        <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen bg-page">
+        <Spinner size="lg" className="text-blue-500" />
         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="app-shell min-h-screen flex flex-col dark:bg-[#070b16]">
+    <div className="app-shell min-h-screen flex flex-col bg-page">
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
@@ -137,8 +138,8 @@ export default function WorkspaceChrome({
     <FocusSessionProvider>
       <Suspense
         fallback={
-          <div className="flex flex-col items-center justify-center gap-3 min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16]">
-            <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center gap-3 min-h-screen bg-page">
+            <Spinner size="lg" className="text-blue-500" />
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading…</p>
           </div>
         }

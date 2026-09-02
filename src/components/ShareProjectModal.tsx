@@ -20,6 +20,13 @@ import {
   copyText,
 } from "@/lib/collaboration-invite";
 import { trackInviteSent, trackShareModalOpened } from "@/lib/analytics";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { CloseIcon } from "@/components/ui/icons";
+import { TextField } from "@/components/ui/TextField";
+import { Select } from "@/components/ui/Select";
 
 interface ShareProjectModalProps {
   project: Project;
@@ -33,7 +40,6 @@ export default function ShareProjectModal({
   onClose,
 }: ShareProjectModalProps) {
   const { showToast } = useToast();
-  const modalRef = useRef<HTMLDivElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   const [collaborators, setCollaborators] = useState<CollaboratorInfo[]>([]);
@@ -95,39 +101,6 @@ export default function ShareProjectModal({
       setTimeout(() => emailInputRef.current?.focus(), 100);
     }
   }, [isOpen, loading]);
-
-  // Focus trap + ESC to close
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-        return;
-      }
-      if (e.key === "Tab" && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last?.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first?.focus();
-          }
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -234,18 +207,13 @@ export default function ShareProjectModal({
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/40 z-[9990]" onClick={onClose} />
-      
-      {/* Modal */}
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="share-title"
-        className="fixed left-4 right-4 bottom-4 safe-bottom z-[9991] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-5 sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full"
-      >
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      labelledBy="share-title"
+      sizeClassName="max-w-md"
+      initialFocusRef={emailInputRef}
+    >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 id="share-title" className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -253,12 +221,10 @@ export default function ShareProjectModal({
           </h2>
           <button
             onClick={onClose}
-            className="touch-target-sm p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+            className="touch-target-sm p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-surface-hover"
             aria-label="Close"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <CloseIcon />
           </button>
         </div>
 
@@ -268,32 +234,34 @@ export default function ShareProjectModal({
             Invite collaborator
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
-            <input
+            <TextField
               ref={emailInputRef}
               type="email"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@example.com"
-              className="flex-1 px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+              className="flex-1 dark:bg-surface-recessed"
               disabled={inviting}
             />
             <div className="flex gap-2">
-            <select
+            <Select
               value={inviteRole}
               onChange={(e) => setInviteRole(e.target.value as CollaboratorRole)}
-              className="flex-1 sm:flex-none px-3 py-2.5 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+              className="flex-1 sm:flex-none dark:bg-surface-recessed"
               disabled={inviting}
             >
               <option value="editor">Can edit</option>
               <option value="viewer">Can view</option>
-            </select>
-            <button
+            </Select>
+            <Button
               type="submit"
               disabled={inviting || !inviteEmail.trim()}
-              className="btn-primary flex-1 sm:flex-none px-4 py-2.5 text-sm touch-target-sm"
+              loading={inviting}
+              size="md"
+              className="flex-1 sm:flex-none touch-target-sm"
             >
-              {inviting ? "..." : "Invite"}
-            </button>
+              Invite
+            </Button>
             </div>
           </div>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
@@ -304,8 +272,8 @@ export default function ShareProjectModal({
         </form>
 
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="flex items-center justify-center py-8 text-blue-500">
+            <Spinner size="md" />
           </div>
         ) : (
           <>
@@ -367,7 +335,7 @@ export default function ShareProjectModal({
                   {collaborators.map((collab) => (
                     <li
                       key={collab.userId}
-                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-[#243350] rounded-lg"
+                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-surface-recessed border border-surface-border rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         {collab.avatarUrl ? (
@@ -400,7 +368,7 @@ export default function ShareProjectModal({
                           onChange={(e) =>
                             handleUpdateRole(collab.userId, e.target.value as CollaboratorRole)
                           }
-                          className="text-xs px-2 py-1 border border-slate-200 dark:border-[#243350] rounded bg-white dark:bg-[#131d30] text-slate-700 dark:text-slate-300"
+                          className="text-xs px-2 py-1 border border-surface-border rounded bg-surface-elevated text-slate-700 dark:text-slate-300"
                         >
                           <option value="editor">Can edit</option>
                           <option value="viewer">Can view</option>
@@ -410,9 +378,7 @@ export default function ShareProjectModal({
                           className="touch-target-sm p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400"
                           aria-label={`Remove ${collab.email}`}
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
+                          <CloseIcon size="sm" />
                         </button>
                       </div>
                     </li>
@@ -420,27 +386,28 @@ export default function ShareProjectModal({
                 </ul>
               </div>
             ) : pendingInvites.length === 0 ? (
-              <div className="text-center py-6 text-slate-500 dark:text-slate-400">
-                <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <p className="text-sm">No collaborators yet</p>
-                <p className="text-xs mt-1">Invite someone to collaborate on this project</p>
-              </div>
+              <EmptyState
+                className="py-4 gap-2 text-slate-500 dark:text-slate-400"
+                title="No collaborators yet"
+                body="Invite someone to collaborate on this project"
+                titleClassName="text-sm font-normal text-slate-500 dark:text-slate-400"
+                bodyClassName="text-xs mt-0"
+                illustration={
+                  <svg className="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                }
+              />
             ) : null}
           </>
         )}
 
         {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-slate-200 dark:border-[#243350]">
-          <button
-            onClick={onClose}
-            className="btn-chip w-full px-4 py-2 text-sm"
-          >
+        <div className="mt-6 pt-4 border-t border-surface-border">
+          <Button type="button" variant="chip" size="md" className="w-full" onClick={onClose}>
             Done
-          </button>
+          </Button>
         </div>
-      </div>
-    </>
+    </Modal>
   );
 }

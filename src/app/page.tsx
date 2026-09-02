@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import AppNavbar from "@/components/AppNavbar";
 import { getPostsBySlugs } from "@/lib/blog";
 import { FEATURED_POST_SLUGS } from "@/lib/blog-seo";
@@ -166,7 +167,7 @@ export default function LandingPage() {
       <CertStudInboundRedirect />
       <BoostLogikInboundRedirect />
       <WanderingHermitInboundRedirect />
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a] hero-gradient-bg">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page hero-gradient-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(webSiteJsonLd) }}
@@ -211,18 +212,12 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Link
-              href="/app"
-              className="btn-primary w-full sm:w-auto px-8 py-3.5 text-base"
-            >
+            <ButtonLink href="/app" size="lg" className="w-full sm:w-auto">
               Try without signing in
-            </Link>
-            <Link
-              href="/login"
-              className="btn-secondary w-full sm:w-auto px-7 py-3.5 text-base"
-            >
+            </ButtonLink>
+            <ButtonLink href="/login" variant="secondary" size="lg" className="w-full sm:w-auto">
               Create free account
-            </Link>
+            </ButtonLink>
           </div>
         </section>
 
@@ -276,7 +271,7 @@ export default function LandingPage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* Step 1 */}
-            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <div className="relative bg-white dark:bg-surface-recessed rounded-2xl p-6 border border-surface-border shadow-sm">
               <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-700 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 1
               </div>
@@ -292,7 +287,7 @@ export default function LandingPage() {
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <div className="relative bg-white dark:bg-surface-recessed rounded-2xl p-6 border border-surface-border shadow-sm">
               <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-700 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 2
               </div>
@@ -313,7 +308,7 @@ export default function LandingPage() {
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-white dark:bg-[#0f1b33] rounded-2xl p-6 border border-slate-200 dark:border-[#1e3355] shadow-sm">
+            <div className="relative bg-white dark:bg-surface-recessed rounded-2xl p-6 border border-surface-border shadow-sm">
               <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-blue-700 text-white text-xs font-bold flex items-center justify-center shadow-md">
                 3
               </div>
@@ -406,7 +401,7 @@ export default function LandingPage() {
                 iconClass: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30",
               },
             ].map((item) => (
-              <div key={item.title} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0f1b33] border border-slate-200 dark:border-[#1e3355]">
+              <div key={item.title} className="flex gap-4 p-4 sm:p-5 rounded-xl bg-white dark:bg-surface-recessed border border-surface-border">
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${item.iconClass}`}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                     {item.icon}
@@ -437,18 +432,12 @@ export default function LandingPage() {
               A free Foci account keeps projects, Smart Plan, settings, and streaks with you on every device.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/login"
-                className="btn-primary px-6 py-3 text-sm"
-              >
+              <ButtonLink href="/login" size="lg">
                 Create free account
-              </Link>
-              <Link
-                href="/app"
-                className="btn-secondary px-6 py-3 text-sm"
-              >
+              </ButtonLink>
+              <ButtonLink href="/app" variant="secondary" size="lg">
                 Try without signing in
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </section>
@@ -468,7 +457,7 @@ export default function LandingPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group bg-white dark:bg-[#0f1b33] rounded-2xl p-5 border border-slate-200 dark:border-[#1e3355] shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all"
+                className="group bg-white dark:bg-surface-recessed rounded-2xl p-5 border border-surface-border shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all"
               >
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {post.tags.slice(0, 2).map((tag) => (
@@ -511,18 +500,12 @@ export default function LandingPage() {
             Try the app free, or create an account to sync your tasks everywhere.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Link
-              href="/app"
-              className="btn-primary px-8 py-3.5 text-base"
-            >
+            <ButtonLink href="/app" size="lg" className="w-full sm:w-auto">
               Try without signing in
-            </Link>
-            <Link
-              href="/login"
-              className="btn-secondary px-7 py-3.5 text-base"
-            >
+            </ButtonLink>
+            <ButtonLink href="/login" variant="secondary" size="lg" className="w-full sm:w-auto">
               Create free account
-            </Link>
+            </ButtonLink>
           </div>
         </section>
       </main>

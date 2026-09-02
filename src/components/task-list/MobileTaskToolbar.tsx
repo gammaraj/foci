@@ -12,15 +12,18 @@ import {
 } from "@/lib/types";
 import { projectTabLabel, projectTabTooltip } from "@/components/task-list/utils";
 import { TaskSearchField } from "@/components/task-list/TaskSearchField";
+import { SELECT_FIELD_CLASS } from "@/components/ui/Select";
+import { cn } from "@/lib/cn";
 
-const SELECT_CLASS =
-  "min-w-0 px-1.5 py-1 min-h-[2rem] text-xs font-medium rounded-md border outline-none focus:border-blue-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2011.168l3.71-3.938a.75.75%200%20111.08%201.04l-4.25%204.5a.75.75%200%2001-1.08%200l-4.25-4.5a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem] bg-[right_0.3rem_center] bg-no-repeat pr-5 truncate";
+const SELECT_PRIMARY = cn(
+  SELECT_FIELD_CLASS,
+  "bg-blue-50/90 dark:bg-surface-elevated text-slate-700 dark:text-slate-200 border-blue-200/80 dark:border-surface-border",
+);
 
-const SELECT_PRIMARY =
-  `${SELECT_CLASS} bg-blue-50/90 dark:bg-[#131d30] text-slate-700 dark:text-slate-200 border-blue-200/80 dark:border-[#243350]`;
-
-const SELECT_SECONDARY =
-  `${SELECT_CLASS} bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-600 dark:text-slate-300 border-[color:var(--surface-border)] dark:border-[#243350]`;
+const SELECT_SECONDARY = cn(
+  SELECT_FIELD_CLASS,
+  "bg-surface-elevated dark:bg-surface-recessed text-slate-600 dark:text-slate-300 border-surface-border",
+);
 
 type TimeScopeId =
   | typeof ALL_PROJECTS_ID
@@ -140,7 +143,7 @@ export function MobileTaskToolbar({
           <button
             type="button"
             onClick={onClearTimeFilter}
-            className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border border-[color:var(--surface-border)] dark:border-[#243350] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors"
+            className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border border-surface-border dark:border-surface-border text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-surface-hover transition-colors"
             aria-label="Clear time filter — show all times"
             title="Clear filter"
           >
@@ -187,7 +190,7 @@ export function MobileTaskToolbar({
         <button
           type="button"
           onClick={onManageProjects}
-          className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-[color:var(--surface-border)] dark:border-[#243350] bg-[var(--surface-elevated)] dark:bg-[#131d30] text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+          className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-surface-border dark:border-surface-border bg-surface-elevated text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
           data-tour="manage-projects"
           title="Projects — manage, pin, share, import"
           aria-label="Manage projects"

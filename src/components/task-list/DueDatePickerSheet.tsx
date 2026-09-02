@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { formatDateLocal, getToday } from "@/lib/dates";
+import { Button } from "@/components/ui/Button";
 
 const MONTH_NAMES = [
   "January",
@@ -96,7 +97,7 @@ export function DueDatePickerSheet({
         <div className="flex items-center justify-between mb-3">
           <button
             type="button"
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-[#1a2d4a] touch-manipulation"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-surface-hover touch-manipulation"
             aria-label="Previous month"
             onClick={() => setCursor(new Date(year, month - 1, 1))}
           >
@@ -109,7 +110,7 @@ export function DueDatePickerSheet({
           </p>
           <button
             type="button"
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-[#1a2d4a] touch-manipulation"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-surface-hover touch-manipulation"
             aria-label="Next month"
             onClick={() => setCursor(new Date(year, month + 1, 1))}
           >
@@ -120,7 +121,7 @@ export function DueDatePickerSheet({
         </div>
         <div className="grid grid-cols-7 gap-0.5 mb-1">
           {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-            <div key={`${d}-${i}`} className="text-center text-[11px] font-medium text-slate-500 dark:text-slate-400 py-1">
+            <div key={`${d}-${i}`} className="text-center text-xs font-medium text-slate-500 dark:text-slate-400 py-1">
               {d}
             </div>
           ))}
@@ -146,7 +147,7 @@ export function DueDatePickerSheet({
                     ? "bg-blue-700 text-white font-semibold"
                     : isToday
                       ? "text-blue-700 dark:text-blue-300 font-semibold ring-1 ring-blue-400/70"
-                      : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                      : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-surface-hover"
                 }`}
               >
                 {day}
@@ -155,17 +156,18 @@ export function DueDatePickerSheet({
           })}
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" className="btn-chip px-3 py-2 text-sm touch-manipulation" onClick={onCancel}>
+          <Button type="button" variant="chip" size="md" className="touch-manipulation" onClick={onCancel}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             ref={saveRef}
             type="button"
-            className="btn-primary flex-1 px-3 py-2 text-sm touch-manipulation"
+            size="md"
+            className="flex-1 touch-manipulation"
             onClick={() => onSave(draft)}
           >
             Save
-          </button>
+          </Button>
         </div>
       </div>
     </>

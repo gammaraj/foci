@@ -14,7 +14,7 @@ export default function HomeFaq() {
         {HOME_FAQS.map((faq) => (
           <details
             key={faq.question}
-            className="group rounded-xl border border-slate-200 dark:border-[#1e3355] bg-white dark:bg-[#0f1b33] px-5 py-4 open:shadow-sm"
+            className="group rounded-xl border border-surface-border bg-white dark:bg-surface-recessed px-5 py-4 open:shadow-sm"
           >
             <summary className="cursor-pointer list-none flex items-start justify-between gap-3 text-left text-base font-semibold text-slate-900 dark:text-white [&::-webkit-details-marker]:hidden">
               <span>{faq.question}</span>

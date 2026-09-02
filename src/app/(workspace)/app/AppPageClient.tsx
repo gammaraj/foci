@@ -9,6 +9,7 @@ import { useFocusSession } from "@/components/FocusSessionProvider";
 import { useAuth } from "@/components/AuthProvider";
 import CertStudStudyPromo from "@/components/CertStudStudyPromo";
 import BoostLogikPromo from "@/components/BoostLogikPromo";
+import { Spinner } from "@/components/ui/Spinner";
 
 const OnboardingTour = dynamic(() => import("@/components/OnboardingTour"));
 const FeatureTour = dynamic(() => import("@/components/FeatureTour"));
@@ -18,7 +19,7 @@ export default function AppPageClient() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="w-8 h-8 border-4 border-slate-200 dark:border-[#243350] border-t-blue-500 rounded-full animate-spin" />
+          <Spinner size="lg" className="text-blue-500" />
         </div>
       }
     >

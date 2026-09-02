@@ -9,6 +9,7 @@ import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import { subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
+import { Button } from "@/components/ui/Button";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -129,21 +130,23 @@ export default function TaskCalendarView({
     <div className="p-4">
       {visibleProjects.length > 1 && (
         <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
-          <button
+          <Button
+            type="button"
+            variant={projectFilter === ALL_PROJECTS_ID ? "chipActive" : "chip"}
+            size="sm"
+            className="flex-shrink-0 transition-colors"
             onClick={() => setProjectFilter(ALL_PROJECTS_ID)}
-            className={`flex-shrink-0 text-xs px-2.5 py-1 transition-colors ${
-              projectFilter === ALL_PROJECTS_ID ? "btn-chip-active" : "btn-chip"
-            }`}
           >
             All
-          </button>
+          </Button>
           {visibleProjects.map((p) => (
-            <button
+            <Button
               key={p.id}
+              type="button"
+              variant={projectFilter === p.id ? "chipActive" : "chip"}
+              size="sm"
+              className="flex-shrink-0 flex items-center gap-1.5 transition-colors"
               onClick={() => setProjectFilter(p.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1 transition-colors ${
-                projectFilter === p.id ? "btn-chip-active" : "btn-chip"
-              }`}
             >
               {p.color && (
                 <span
@@ -152,7 +155,7 @@ export default function TaskCalendarView({
                 />
               )}
               {p.name}
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -160,7 +163,7 @@ export default function TaskCalendarView({
       <div className="flex items-center justify-between mb-3">
         <button
           onClick={prevMonth}
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
+          className="p-1.5 hover:bg-slate-100 dark:hover:bg-surface-hover rounded-lg transition-colors"
         >
           <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -179,7 +182,7 @@ export default function TaskCalendarView({
         </div>
         <button
           onClick={nextMonth}
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] rounded-lg transition-colors"
+          className="p-1.5 hover:bg-slate-100 dark:hover:bg-surface-hover rounded-lg transition-colors"
         >
           <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -216,7 +219,7 @@ export default function TaskCalendarView({
                   ? "bg-blue-700 text-white ring-2 ring-blue-400 ring-offset-1 dark:ring-offset-[#131d30]"
                   : isToday
                     ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                    : "hover:bg-slate-100 dark:hover:bg-[#1a2d4a] text-slate-600 dark:text-slate-300"
+                    : "hover:bg-slate-100 dark:hover:bg-surface-hover text-slate-600 dark:text-slate-300"
               }`}
             >
               <span className={`text-xs font-semibold self-end leading-none mb-1 ${isToday && !isSelected ? "font-bold" : ""}`}>{day}</span>
@@ -257,7 +260,7 @@ export default function TaskCalendarView({
       </div>
 
       {selectedDay && (
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#1e3050]">
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-surface-border">
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {formatDueDate(selectedDay)}
@@ -291,7 +294,7 @@ export default function TaskCalendarView({
                       }
                     }}
                     placeholder="Add a task for this day..."
-                    className="flex-1 px-3 py-2 text-sm border border-[color:var(--surface-border)] dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 outline-none"
+                    className="flex-1 px-3 py-2 text-sm border border-surface-border dark:border-surface-border rounded-lg bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white focus:border-blue-500 outline-none"
                   />
                   {quickAddTitle.trim() ? (
                     <button
@@ -310,12 +313,9 @@ export default function TaskCalendarView({
                       </svg>
                     </button>
                   ) : null}
-                  <button
-                    type="submit"
-                    className="btn-primary px-3 py-2 text-sm"
-                  >
+                  <Button type="submit" size="md">
                     Add
-                  </button>
+                  </Button>
                 </form>
               )}
             </div>
@@ -330,12 +330,12 @@ export default function TaskCalendarView({
                     detailOpen
                       ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15 ring-1 ring-violet-400/25"
                       : task.completed
-                        ? "border-slate-100 dark:border-[#1e3050] opacity-60"
+                        ? "border-slate-100 dark:border-surface-border opacity-60"
                         : activeTaskId === task.id
                           ? "border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
                           : selectedDay < todayStr
                             ? "card-row--overdue border border-transparent"
-                            : "border-slate-200 dark:border-[#1e3050] hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
+                            : "border-surface-border hover:bg-slate-50/80 dark:hover:bg-surface-elevated/60"
                   }`}
                 >
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
@@ -353,7 +353,7 @@ export default function TaskCalendarView({
                       }}
                       onClick={(e) => e.stopPropagation()}
                       maxLength={MAX_TASK_TITLE}
-                      className="flex-1 min-w-0 px-1.5 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+                      className="flex-1 min-w-0 px-1.5 py-0.5 text-sm font-medium border border-blue-300 rounded-lg bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none"
                       autoFocus
                       aria-label="Edit task title"
                     />
@@ -426,7 +426,7 @@ export default function TaskCalendarView({
       )}
 
       {unscheduledTasks.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#1e3050]">
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-surface-border">
           <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
             No due date ({unscheduledTasks.length})
           </h4>
@@ -439,7 +439,7 @@ export default function TaskCalendarView({
                 className={`flex items-center gap-2 px-2 py-0.5 rounded-lg border transition-colors ${
                   detailOpen
                     ? "border-violet-300 dark:border-violet-600 bg-violet-50/50 dark:bg-violet-900/15"
-                    : "border-transparent hover:bg-slate-50/80 dark:hover:bg-[#131d30]/60"
+                    : "border-transparent hover:bg-slate-50/80 dark:hover:bg-surface-elevated/60"
                 }`}
               >
                 {editingId === task.id && canEditTitle ? (
@@ -454,7 +454,7 @@ export default function TaskCalendarView({
                     }}
                     onClick={(e) => e.stopPropagation()}
                     maxLength={MAX_TASK_TITLE}
-                    className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-300 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+                    className="flex-1 min-w-0 px-1.5 py-0.5 text-sm border border-blue-300 rounded-lg bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none"
                     autoFocus
                     aria-label="Edit task title"
                   />

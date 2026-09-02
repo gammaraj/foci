@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import {
   FOCI_APP_INSTALL_URL,
   consumeDeferredInstallPrompt,
@@ -71,14 +72,15 @@ export default function InstallPageActions({ showQr = true }: InstallPageActions
   return (
     <div className="mt-6 space-y-4">
       {canNativeInstall && (
-        <button
+        <Button
           type="button"
           onClick={handleNativeInstall}
           disabled={installing}
-          className="btn-primary w-full sm:w-auto px-5 py-2.5 text-sm"
+          size="md"
+          className="w-full sm:w-auto"
         >
           {installing ? "Opening…" : "Install with one tap (Android / Chrome)"}
-        </button>
+        </Button>
       )}
 
       {ios && (
@@ -89,13 +91,9 @@ export default function InstallPageActions({ showQr = true }: InstallPageActions
       )}
 
       <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="btn-chip px-3 py-1.5 text-sm"
-        >
+        <Button type="button" variant="chip" size="sm" onClick={handleCopy}>
           {copied ? "Copied" : "Copy usefoci.com/app"}
-        </button>
+        </Button>
         <a
           href={FOCI_APP_INSTALL_URL}
           className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"

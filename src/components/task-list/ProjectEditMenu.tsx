@@ -178,7 +178,7 @@ export function ProjectNameInput({
       }}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
-      className={`min-w-0 px-2 py-1 text-sm font-semibold border border-blue-300 dark:border-blue-600 rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none select-text ${className}`}
+      className={`min-w-0 px-2 py-1 text-sm font-semibold border border-blue-300 dark:border-blue-600 rounded-lg bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none select-text ${className}`}
       aria-label={ariaLabel ?? "Project name"}
       autoFocus
     />
@@ -252,7 +252,7 @@ export function ProjectEditMenu({
       aria-label={showRename ? `Edit ${project.name}` : `Change ${project.name} color`}
       onContextMenu={(e) => e.preventDefault()}
     >
-      <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+      <p className="px-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         Color
       </p>
       <div className="px-3 pb-2 grid grid-cols-5 gap-1.5">
@@ -275,7 +275,7 @@ export function ProjectEditMenu({
           );
         })}
       </div>
-      <label className="mx-3 mb-1 flex items-center gap-2 px-1 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a] cursor-pointer">
+      <label className="mx-3 mb-1 flex items-center gap-2 px-1 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-surface-muted dark:hover:bg-surface-hover cursor-pointer">
         <span
           className="w-4 h-4 rounded-full ring-1 ring-black/15 dark:ring-white/20 shrink-0"
           style={{ backgroundColor: current }}
@@ -292,7 +292,7 @@ export function ProjectEditMenu({
       </label>
       {showRename && (
         <>
-          <div className="my-1.5 border-t border-slate-100 dark:border-[#243350]" />
+          <div className="my-1.5 border-t border-slate-100 dark:border-surface-border" />
           <button
             type="button"
             role="menuitem"
@@ -300,7 +300,7 @@ export function ProjectEditMenu({
               onClose();
               onRename();
             }}
-            className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
+            className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
           >
             Rename
           </button>

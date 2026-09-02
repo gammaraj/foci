@@ -9,6 +9,7 @@ import {
 } from "@/lib/whats-new";
 import { positionTourTooltip } from "@/lib/tour-tooltip";
 import { FociDot } from "@/components/FociDot";
+import { Button } from "@/components/ui/Button";
 
 export default function FeatureTour() {
   const [currentStep, setCurrentStep] = useState(-1);
@@ -88,7 +89,7 @@ export default function FeatureTour() {
         role="dialog"
         aria-modal="true"
         aria-label={step.title}
-        className="w-[calc(100%-2rem)] max-w-[300px] bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] rounded-xl shadow-2xl p-4 z-[9999]"
+        className="w-[calc(100%-2rem)] max-w-[300px] bg-surface-elevated border border-surface-border rounded-xl shadow-2xl p-4 z-[9999]"
       >
         <div className="flex items-center justify-between mb-1 gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
@@ -103,20 +104,12 @@ export default function FeatureTour() {
         </div>
         <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{step.description}</p>
         <div className="flex items-center justify-between mt-3">
-          <button
-            type="button"
-            onClick={finish}
-            className="btn-ghost px-2 py-1 text-sm"
-          >
+          <Button type="button" variant="ghost" size="sm" onClick={finish}>
             Skip
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            className="btn-primary px-4 py-2 text-sm"
-          >
+          </Button>
+          <Button type="button" size="md" onClick={next}>
             {currentStep < FEATURE_TOUR_STEPS.length - 1 ? "Next" : "Done"}
-          </button>
+          </Button>
         </div>
       </div>
     </>

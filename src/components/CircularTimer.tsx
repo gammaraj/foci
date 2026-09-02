@@ -67,7 +67,7 @@ export default function CircularTimer({
       {/* Center text overlay */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className="rounded-full flex flex-col items-center justify-center text-center gap-0 bg-white dark:bg-[#131d30] border-2 border-slate-200 dark:border-slate-600 shadow-lg px-1.5 py-1"
+          className="rounded-full flex flex-col items-center justify-center text-center gap-0 bg-surface-elevated border-2 border-slate-200 dark:border-slate-600 shadow-lg px-1.5 py-1"
           style={{
             width: compact ? "min(72px, 18vw)" : "min(100px, 22vw)",
             height: compact ? "min(72px, 18vw)" : "min(100px, 22vw)",

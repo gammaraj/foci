@@ -7,8 +7,8 @@ import {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80 px-3 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+    <div className="rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/80 dark:bg-surface-elevated/80 px-3 py-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
         {label}
       </p>
       <p className="mt-1 text-xl font-semibold tabular-nums text-slate-900 dark:text-white">
@@ -54,9 +54,9 @@ export function AdminUsersPanel({
           {users.length === 0 ? (
             <p className="text-sm text-slate-400">No accounts yet.</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-[color:var(--surface-border)] dark:border-[#243350] bg-[color:var(--surface-elevated)]/80 dark:bg-[#131d30]/80">
+            <div className="overflow-x-auto rounded-xl border border-surface-border dark:border-surface-border bg-surface-elevated/80 dark:bg-surface-elevated/80">
               <table className="w-full text-sm text-left">
-                <thead className="border-b border-[color:var(--surface-border)] dark:border-[#243350] text-xs uppercase tracking-wide text-slate-500">
+                <thead className="border-b border-surface-border dark:border-surface-border text-xs uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="px-3 py-2.5 font-semibold">User</th>
                     <th className="px-3 py-2.5 font-semibold">Last sign-in</th>
@@ -71,7 +71,7 @@ export function AdminUsersPanel({
                     return (
                       <tr
                         key={user.user_id}
-                        className="border-b border-slate-100 dark:border-[#1a2740] last:border-0"
+                        className="border-b border-slate-100 dark:border-surface-border last:border-0"
                       >
                         <td className="px-3 py-2">
                           <p className="font-medium text-slate-800 dark:text-slate-200">
@@ -86,7 +86,7 @@ export function AdminUsersPanel({
                             {formatAdminSignIn(user.last_sign_in_at)}
                           </span>
                           {active ? (
-                            <span className="ml-2 inline-flex rounded-full bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                            <span className="ml-2 inline-flex rounded-full bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
                               Active
                             </span>
                           ) : null}

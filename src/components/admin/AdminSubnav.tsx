@@ -16,7 +16,7 @@ export default function AdminSubnav({ email }: { email: string }) {
   const openCount = activeBacklogItems().length;
 
   return (
-    <div className="border-b border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-[#0c1220]/50">
+    <div className="border-b border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-page/50">
       <div className={`${ADMIN_SHELL} py-4 flex flex-wrap items-end justify-between gap-3`}>
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -40,7 +40,7 @@ export default function AdminSubnav({ email }: { email: string }) {
                   {link.label}
                   {link.href === "/admin/backlog" && openCount > 0 ? (
                     <span
-                      className={`tabular-nums text-[11px] ${
+                      className={`tabular-nums text-xs ${
                         active ? "text-white/80 dark:text-slate-600" : "text-slate-400"
                       }`}
                     >

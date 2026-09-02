@@ -53,7 +53,7 @@ export default async function AlternativesPage({
   if (!page) notFound();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-page">
       <AppNavbar />
       <main className="flex-1 app-container py-12 sm:py-16">
         <CompareLandingView page={page} />

@@ -36,7 +36,7 @@ export default function DailyQuoteBanner({
       )}
       {hasMusic && (
         <div
-          className="hidden roomy:block w-px h-4 bg-slate-200 dark:bg-[#2a3f5f] shrink-0 mx-1"
+          className="hidden roomy:block w-px h-4 bg-slate-200 dark:bg-surface-border shrink-0 mx-1"
           aria-hidden
         />
       )}

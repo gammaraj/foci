@@ -32,6 +32,7 @@ import {
   type AmbientMode,
 } from "@/lib/ambient-prefs";
 import { trackSoundPlayed, trackSoundStopped } from "@/lib/analytics";
+import { Button } from "@/components/ui/Button";
 
 // ── Procedural ambient sound generators using Web Audio API ──
 // No external files or streams needed — fully offline-capable.
@@ -242,7 +243,7 @@ interface AmbientSoundsProps {
 }
 
 const FOCUS_STRIP_ICON_BTN =
-  "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors";
+  "p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-hover transition-colors";
 
 type SpotifyEmbedController = {
   play?: () => void;
@@ -389,7 +390,7 @@ function StripMusicPopover({
       role="dialog"
       aria-label="Music player"
       style={{ top: pos.top, left: pos.left, width: "min(20rem, calc(100vw - 1.5rem))" }}
-      className="fixed z-[80] rounded-xl border border-slate-200/90 dark:border-[#243350] bg-white dark:bg-[#131d30] p-2 shadow-lg shadow-slate-900/10 space-y-2"
+      className="fixed z-[80] rounded-xl border border-slate-200/90 dark:border-surface-border bg-surface-elevated p-2 shadow-lg shadow-slate-900/10 space-y-2"
     >
       {children}
     </div>,
@@ -460,7 +461,7 @@ function StripSourceMenu({
       role="listbox"
       aria-label="Music sources"
       style={{ top: pos.top, left: pos.left }}
-      className="fixed z-[90] min-w-[10.5rem] py-1 rounded-lg bg-white dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] shadow-xl"
+      className="fixed z-[90] min-w-[10.5rem] py-1 rounded-lg bg-surface-elevated border border-surface-border shadow-xl"
     >
       {children}
     </div>,
@@ -826,7 +827,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
               className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-left transition-colors ${
                 active
                   ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                  : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2d4a]"
+                  : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-surface-hover"
               }`}
             >
               {tab.icon}
@@ -948,7 +949,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                       className={`flex flex-col items-center gap-0.5 rounded-lg py-2 px-1 text-xs font-medium transition-all ${
                         activeSound === s.id
                           ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                          : "bg-slate-50 dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#243350]"
+                          : "bg-slate-50 dark:bg-surface-hover text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-border"
                       }`}
                       aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
                     >
@@ -959,7 +960,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 </div>
               )}
               {mode === "sounds" && activeSound && (
-                <div className="flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-[#243350]">
+                <div className="flex items-center gap-2 pt-1 border-t border-surface-border">
                   <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
                   </svg>
@@ -983,13 +984,13 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                     </button>
                     <div className="min-w-0 text-center">
                       <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate block">{spotifyPlaylist.label}</span>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 truncate block">{spotifyPlaylist.desc}</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500 truncate block">{spotifyPlaylist.desc}</span>
                     </div>
                     <button type="button" onClick={() => cyclePlaylist(1)} className={FOCUS_STRIP_ICON_BTN} aria-label="Next playlist">
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" /></svg>
                     </button>
                   </div>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 text-center">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 text-center">
                     Log in to Spotify for full tracks
                   </p>
                 </>
@@ -1005,13 +1006,9 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                   </button>
                 </div>
               )}
-              <button
-                type="button"
-                onClick={() => setCollapsed(true)}
-                className="btn-ghost w-full py-1 text-xs"
-              >
+              <Button type="button" variant="ghost" size="sm" className="w-full py-1" onClick={() => setCollapsed(true)}>
                 Close
-              </button>
+              </Button>
             </StripMusicPopover>
           )}
         </div>
@@ -1023,8 +1020,8 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             : "px-2 sm:px-2.5 py-1.5 rounded-xl border shadow-sm"
         } ${
           activeSound || mode === "soundcloud"
-            ? "bg-slate-50 dark:bg-[#131d30] border-slate-300 dark:border-[#3a5070] ring-1 ring-blue-400/20 dark:ring-blue-500/25"
-            : "bg-slate-100 dark:bg-[#131d30] border-slate-200 dark:border-[#243350]"
+            ? "bg-slate-50 dark:bg-surface-elevated border-slate-300 dark:border-surface-border ring-1 ring-blue-400/20 dark:ring-blue-500/25"
+            : "bg-slate-100 dark:bg-surface-elevated border-surface-border"
         }`}
       >
         <button
@@ -1074,7 +1071,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); scCommand("prev"); }}
-              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-surface-hover touch-target-sm"
               aria-label="Previous track"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
@@ -1082,7 +1079,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); scCommand("next"); }}
-              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a] touch-target-sm"
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-surface-hover touch-target-sm"
               aria-label="Next track"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
@@ -1124,7 +1121,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className="flex-shrink-0 touch-target-sm flex items-center gap-0.5 p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#1a2d4a]"
+          className="flex-shrink-0 touch-target-sm flex items-center gap-0.5 p-1.5 rounded-lg text-slate-400 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-surface-hover"
           aria-label={collapsed ? "Expand music library" : "Collapse music library"}
           aria-expanded={!collapsed}
           title={collapsed ? "Expand music library" : "Collapse music library"}
@@ -1189,7 +1186,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
       {/* Ambient Sounds mode */}
       {mode === "sounds" && (
         <div
-          className={`bg-slate-100 dark:bg-[#131d30] rounded-lg border border-slate-200 dark:border-[#243350] ${
+          className={`bg-slate-100 dark:bg-surface-elevated rounded-lg border border-surface-border ${
             stripEmbedded ? "px-2 py-2" : inline ? "px-2 py-2" : "px-3 py-3"
           }`}
         >
@@ -1207,7 +1204,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
                 } ${
                   activeSound === s.id
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300 dark:ring-blue-700"
-                    : "bg-[var(--surface-elevated)] dark:bg-[#1a2d4a] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#243350]"
+                    : "bg-surface-elevated dark:bg-surface-hover text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-border"
                 }`}
                 aria-label={`${activeSound === s.id ? "Stop" : "Play"} ${s.label}`}
               >
@@ -1218,7 +1215,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
           </div>
           {/* Volume control — only show when a sound is active */}
           {activeSound && (
-            <div className="flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-[#243350]">
+            <div className="flex items-center gap-2 pt-1 border-t border-surface-border">
               <svg className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
               </svg>
@@ -1242,10 +1239,10 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
 
       {/* Spotify mode (embed lives above so it stays mounted when collapsed) */}
       {mode === "spotify" && (
-        <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
+        <div className="bg-slate-100 dark:bg-surface-elevated rounded-xl border border-surface-border overflow-hidden">
           {/* Playlist selector */}
           <div
-            className={`flex items-center justify-between border-t border-slate-200 dark:border-[#243350] ${
+            className={`flex items-center justify-between border-t border-surface-border ${
               stripEmbedded ? "px-2 py-1" : "px-3 py-2"
             }`}
           >
@@ -1280,7 +1277,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
 
       {/* SoundCloud mode (embed lives above so it stays mounted when collapsed) */}
       {mode === "soundcloud" && (
-        <div className="bg-slate-100 dark:bg-[#131d30] rounded-xl border border-slate-200 dark:border-[#243350] overflow-hidden">
+        <div className="bg-slate-100 dark:bg-surface-elevated rounded-xl border border-surface-border overflow-hidden">
           {scError && (
             <div className="flex items-center justify-between px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800/40">
               <span className="text-xs text-amber-700 dark:text-amber-400">Playlist unavailable</span>
@@ -1293,7 +1290,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             </div>
           )}
           {/* Track skip controls */}
-          <div className="flex items-center justify-center gap-3 px-3 py-2 border-t border-slate-200 dark:border-[#243350]">
+          <div className="flex items-center justify-center gap-3 px-3 py-2 border-t border-surface-border">
             <button
               onClick={() => scCommand("prev")}
               className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors p-2"
@@ -1336,7 +1333,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             </button>
           </div>
           {/* Playlist selector */}
-          <div className="flex items-center justify-between px-3 py-2 border-t border-slate-200 dark:border-[#243350]">
+          <div className="flex items-center justify-between px-3 py-2 border-t border-surface-border">
             <button
               onClick={() => setScIdx((i) => (i - 1 + SOUNDCLOUD_PLAYLISTS.length) % SOUNDCLOUD_PLAYLISTS.length)}
               className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors p-1"
@@ -1376,7 +1373,7 @@ export default function AmbientSounds({ inline = false, embedded = false }: Ambi
             href={`https://somafm.com/player/#/now-playing/${s.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors ${
+            className={`inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-md bg-slate-100 dark:bg-surface-elevated border border-surface-border text-slate-600 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-[#3a5070] transition-colors ${
               stripEmbedded ? "px-2 py-1 text-xs sm:text-sm font-medium" : "px-2.5 py-1 text-sm font-medium gap-1.5"
             }`}
             title={s.desc}

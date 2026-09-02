@@ -80,10 +80,10 @@ export function TaskSubtaskSection({
     <div
       className={`${pad} ${
         compact
-          ? "pb-1 pt-0.5 border-t border-slate-100/80 dark:border-[#243350]/60 bg-transparent"
+          ? "pb-1 pt-0.5 border-t border-slate-100/80 dark:border-surface-border/60 bg-transparent"
           : spacious
             ? "pb-4 pt-1"
-            : "pb-2 pt-0.5 border-t border-slate-100/80 dark:border-[#243350]/60 bg-slate-50/50 dark:bg-black/10"
+            : "pb-2 pt-0.5 border-t border-slate-100/80 dark:border-surface-border/60 bg-slate-50/50 dark:bg-black/10"
       }`}
       onClick={(e) => e.stopPropagation()}
     >
@@ -128,7 +128,7 @@ export function TaskSubtaskSection({
         <ul
           className={
             spacious
-              ? "space-y-1 mb-3 max-h-[min(40vh,18rem)] overflow-y-auto overscroll-contain rounded-xl border border-slate-100 dark:border-[#243350]/80 bg-slate-50/60 dark:bg-black/20 p-1.5"
+              ? "space-y-1 mb-3 max-h-[min(40vh,18rem)] overflow-y-auto overscroll-contain rounded-xl border border-slate-100 dark:border-surface-border/80 bg-slate-50/60 dark:bg-black/20 p-1.5"
               : ""
           }
         >
@@ -160,7 +160,7 @@ export function TaskSubtaskSection({
                   compact
                     ? "py-0.5"
                     : spacious
-                      ? "gap-2 py-2 px-2.5 rounded-lg hover:bg-[var(--surface-elevated)] dark:hover:bg-white/[0.04]"
+                      ? "gap-2 py-2 px-2.5 rounded-lg hover:bg-surface-elevated dark:hover:bg-white/[0.04]"
                       : "py-0.5 gap-2"
                 } ${indent} ${borderColor} ${isDragging ? "opacity-50" : ""} ${
                   isDropTarget ? "border-t-2 border-t-blue-500" : ""
@@ -215,7 +215,7 @@ export function TaskSubtaskSection({
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                 </button>
@@ -261,7 +261,7 @@ export function TaskSubtaskSection({
                         : "text-sm px-2 py-1.5"
                   } ${
                     isEditing
-                      ? "rounded-md border border-blue-400 bg-[var(--surface-elevated)] dark:bg-[#0f172a] text-slate-800 dark:text-white focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                      ? "rounded-md border border-blue-400 bg-surface-elevated dark:bg-surface-recessed text-slate-800 dark:text-white focus-visible:ring-2 focus-visible:ring-blue-400/40"
                       : `rounded-md border border-transparent bg-transparent cursor-text ${
                           sub.completed
                             ? "text-slate-400 dark:text-slate-500 line-through"
@@ -365,14 +365,14 @@ export function TaskSubtaskSection({
             enterKeyHint="done"
             className={`flex-1 min-w-0 text-slate-900 dark:text-white outline-none ${
               spacious
-                ? "px-3.5 py-3 text-base sm:text-sm border border-[color:var(--surface-border)] dark:border-[#243350] rounded-xl bg-[var(--surface-elevated)] dark:bg-[#0f172a] focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40 shadow-sm"
-                : "px-2 py-1 text-sm border border-[color:var(--surface-border)] dark:border-[#243350] rounded-md bg-[var(--surface-elevated)] dark:bg-[#131d30] focus:border-blue-400"
+                ? "px-3.5 py-3 text-base sm:text-sm border border-surface-border dark:border-surface-border rounded-xl bg-surface-elevated dark:bg-surface-recessed focus:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-400/40 shadow-sm"
+                : "px-2 py-1 text-sm border border-surface-border dark:border-surface-border rounded-md bg-surface-elevated focus:border-blue-400"
             }`}
           />
           <button
             type="submit"
             disabled={!newSubtaskTitle.trim()}
-            className={`font-semibold border transition-colors shrink-0 self-stretch flex items-center disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`font-semibold border transition-colors shrink-0 self-stretch flex items-center disabled:opacity-50 disabled:cursor-not-allowed ${
               spacious
                 ? "px-4 sm:px-5 text-sm rounded-xl border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"
                 : "px-2 py-1 text-sm rounded-md border-blue-400/70 dark:border-blue-500/55 text-blue-700 dark:text-blue-300 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/35"

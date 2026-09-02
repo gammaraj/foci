@@ -155,7 +155,7 @@ export default async function RootLayout({
         <link rel="alternate" href="/llms-full.txt" type="text/plain" title="LLM-optimized full content" />
         <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
       </head>
-      <body className={`${fontSans.className} min-h-screen bg-[var(--page-bg)] dark:bg-[#070b16] antialiased`}>
+      <body className={`${fontSans.className} min-h-screen bg-page antialiased`}>
         {/* SSR + client-dismissed splash — do not remove via DOM APIs (breaks soft nav). */}
         <BootSplash />
         <div id="foci-offline-fallback" hidden />

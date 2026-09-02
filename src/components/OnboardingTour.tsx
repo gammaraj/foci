@@ -24,6 +24,7 @@ import {
   type OnboardingStepId,
 } from "@/lib/onboarding";
 import { positionTourTooltip } from "@/lib/tour-tooltip";
+import { Button } from "@/components/ui/Button";
 import { FociDot } from "@/components/FociDot";
 
 function queryVisibleTourTarget(selector: string): Element | null {
@@ -228,7 +229,7 @@ export default function OnboardingTour() {
         role="dialog"
         aria-modal="false"
         aria-label="Get to your first win"
-        className="fixed z-[9999] bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-5 sm:w-[22rem] rounded-2xl app-surface dark:bg-[#131d30] border border-slate-200 dark:border-[#243350] shadow-2xl p-4"
+        className="fixed z-[9999] bottom-4 safe-bottom left-4 right-4 sm:left-auto sm:right-5 sm:w-[22rem] rounded-2xl app-surface dark:bg-surface-elevated border border-surface-border shadow-2xl p-4"
       >
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0">
@@ -265,7 +266,7 @@ export default function OnboardingTour() {
                 }`}
               >
                 <span
-                  className={`mt-0.5 inline-flex w-4 h-4 items-center justify-center rounded-full border text-[10px] font-bold shrink-0 ${
+                  className={`mt-0.5 inline-flex w-4 h-4 items-center justify-center rounded-full border text-xs font-bold shrink-0 ${
                     done
                       ? "border-emerald-500 bg-emerald-500 text-white"
                       : current
@@ -298,9 +299,9 @@ export default function OnboardingTour() {
         </ol>
 
         <div className="flex items-center justify-end mt-3">
-          <button type="button" onClick={() => persistDone("skip", activeStep)} className="btn-ghost px-2 py-1 text-sm">
+          <Button type="button" variant="ghost" size="sm" onClick={() => persistDone("skip", activeStep)}>
             Skip tour
-          </button>
+          </Button>
         </div>
       </div>
     </>

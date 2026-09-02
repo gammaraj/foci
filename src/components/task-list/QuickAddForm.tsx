@@ -74,7 +74,7 @@ export function QuickAddForm({
         <button
           type="submit"
           disabled={!canSubmit}
-          className={`shrink-0 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
+          className={`shrink-0 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
             compact ? "text-xs" : "text-sm"
           }`}
           aria-label="Quick Add"

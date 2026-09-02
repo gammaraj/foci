@@ -71,7 +71,7 @@ export default function TimerControls({
                 ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
                 : emphasizeStart
                   ? "bg-blue-700 text-white shadow-sm hover:bg-blue-800"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d4a]"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-hover"
             }`}
             aria-label={isRunning ? "Pause timer" : "Start timer"}
           >
@@ -90,7 +90,7 @@ export default function TimerControls({
         {showReset && (
           <button
             onClick={onReset}
-            className={`${btnPad} rounded-lg text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-colors`}
+            className={`${btnPad} rounded-lg text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-surface-hover transition-colors`}
             aria-label="Reset timer"
           >
             <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">

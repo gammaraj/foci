@@ -285,8 +285,8 @@ function BucketTaskCard({
               : isDueToday
               ? "border-amber-200/70 dark:border-amber-800/45 bg-amber-50/65 dark:bg-amber-950/38 hover:border-amber-300/85 dark:hover:border-amber-700/55 hover:bg-amber-50/85 dark:hover:bg-amber-950/48"
               : isLowUrgency
-              ? "border-slate-300/80 dark:border-[#1a2438]/80 bg-slate-100/70 dark:bg-black/25 hover:border-slate-400/70 dark:hover:border-[#223048] hover:bg-slate-100/90 dark:hover:bg-black/20"
-              : "border-slate-300/90 dark:border-[#2a3f5f]/90 bg-slate-50 dark:bg-white/[0.03] hover:border-slate-400/90 dark:hover:border-[#3a5070] hover:bg-white dark:hover:bg-white/[0.05]"
+              ? "border-slate-300/80 dark:border-surface-border/80 bg-slate-100/70 dark:bg-black/25 hover:border-slate-400/70 dark:hover:border-surface-border hover:bg-slate-100/90 dark:hover:bg-black/20"
+              : "border-slate-300/90 dark:border-surface-border/90 bg-slate-50 dark:bg-white/[0.03] hover:border-slate-400/90 dark:hover:border-[#3a5070] hover:bg-white dark:hover:bg-white/[0.05]"
       } ${isDragging ? "opacity-40 scale-[0.99]" : ""} ${
         isDragOver
           ? "before:absolute before:inset-x-2 before:top-0 before:h-0.5 before:rounded-full before:bg-blue-500 dark:before:bg-blue-400"
@@ -316,7 +316,7 @@ function BucketTaskCard({
         >
           {task.completed && (
             <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           )}
         </button>
@@ -332,7 +332,7 @@ function BucketTaskCard({
             }}
             onClick={(e) => e.stopPropagation()}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none"
             autoFocus
             aria-label="Edit task title"
           />
@@ -599,7 +599,7 @@ function BucketColumn({
     >
       <div
         {...(editMenuBind ? editMenuBind(project.id) : {})}
-        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-[#334863]/80 select-none"
+        className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-surface-border/80 select-none"
         title={project.description?.trim() || `${project.name}. Right-click to rename.`}
       >
         {onToggleProjectFavorite ? (
@@ -648,7 +648,7 @@ function BucketColumn({
         <BucketColumnTitle project={project} projectEdit={projectEdit} />
         {isPersonal && (
           <span
-            className="text-xs font-medium text-slate-600 dark:text-slate-200 bg-slate-100/95 dark:bg-[#1e3050]/90 border border-slate-200/90 dark:border-[#3a5070]/70 rounded-full px-2 py-1 shrink-0"
+            className="text-xs font-medium text-slate-600 dark:text-slate-200 bg-slate-100/95 dark:bg-surface-hover/90 border border-slate-200/90 dark:border-surface-border/70 rounded-full px-2 py-1 shrink-0"
             title="Personal tasks — your default bucket"
           >
             Personal
@@ -664,7 +664,7 @@ function BucketColumn({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onExpandProject(project.id); }}
-            className="flex-shrink-0 touch-target-sm p-1 rounded-md text-slate-400 dark:text-slate-500 opacity-100 sm:opacity-0 sm:group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1a2d4a] transition-all"
+            className="flex-shrink-0 touch-target-sm p-1 rounded-md text-slate-400 dark:text-slate-500 opacity-100 sm:opacity-0 sm:group-hover/col:opacity-100 hover:!opacity-100 focus-visible:opacity-100 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-surface-hover transition-all"
             title={`View ${project.name} full screen`}
             aria-label={`Expand ${project.name} to full view`}
           >
@@ -682,7 +682,7 @@ function BucketColumn({
           onSubmit={submitQuickAdd}
           onAddWithDetails={submitQuickAddWithDetails}
           inputRef={topAddInputRef}
-          className="px-3 pt-2 pb-2 shrink-0 border-b border-slate-200/60 dark:border-[#243350]/50"
+          className="px-3 pt-2 pb-2 shrink-0 border-b border-slate-200/60 dark:border-surface-border/50"
         />
       )}
 

@@ -173,8 +173,8 @@ function CardTaskMoreMenu({
         onClick={toggleOpen}
         className={`inline-flex items-center justify-center p-1 rounded-md border transition-colors ${
           open
-            ? "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#1a2d4a] border-slate-300 dark:border-[#3a5070]"
-            : "text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-[#2a3f5f]/80 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-[#1a2d4a]"
+            ? "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-surface-hover border-slate-300 dark:border-surface-border"
+            : "text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-surface-border/80 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-surface-hover"
         }`}
         aria-label={`More actions for "${taskTitle}"`}
         aria-expanded={open}
@@ -201,7 +201,7 @@ function CardTaskMoreMenu({
                 setOpen(false);
                 onRename();
               }}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-[var(--surface-muted)] dark:hover:bg-[#1a2d4a]"
+              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
             >
               Rename
             </button>
@@ -421,7 +421,7 @@ function CardTaskRow({
               if (e.key === "Escape") onCancelEdit?.();
             }}
             maxLength={MAX_TASK_TITLE}
-            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white outline-none"
+            className="flex-1 min-w-0 text-sm font-medium px-1 py-0 border border-blue-300 dark:border-blue-600 rounded bg-surface-elevated text-slate-900 dark:bg-surface-elevated dark:text-white outline-none"
             autoFocus
             aria-label="Edit task title"
           />
@@ -662,7 +662,7 @@ function ProjectCard({
       }}
       className={`group/card project-surface project-accent-edge rounded-2xl px-2 py-2 sm:px-3.5 sm:py-3 min-w-0 flex flex-col gap-1 sm:gap-2 transition-[colors,box-shadow] duration-300 ${isDragging ? "opacity-40" : ""} ${
         isDropTarget ? "ring-2 ring-blue-400/70 ring-offset-1 ring-offset-transparent" : ""
-      } ${collapsed ? "bg-slate-100/95 dark:bg-[#121c2e] border-dashed opacity-95" : ""} ${
+      } ${collapsed ? "bg-slate-100/95 dark:bg-surface-elevated border-dashed opacity-95" : ""} ${
         project.favorite && !collapsed
           ? "ring-1 ring-amber-400/50 dark:ring-amber-500/40 shadow-[0_0_0_1px_rgba(251,191,36,0.15)]"
           : ""
@@ -676,7 +676,7 @@ function ProjectCard({
     >
       <header
         {...(editMenuBind ? editMenuBind(project.id) : {})}
-        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-[#243350]/80 select-none ${
+        className={`flex flex-col gap-0 min-w-0 pb-1 mb-0.5 sm:pb-1.5 border-b border-slate-200/70 dark:border-surface-border/80 select-none ${
           collapsed ? "pb-0 mb-0 border-b-0" : ""
         }`}
         style={{
@@ -694,7 +694,7 @@ function ProjectCard({
               className={`flex-shrink-0 p-0.5 rounded transition-colors ${
                 collapsed
                   ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                  : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+                  : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-surface-hover"
               }`}
               title={
                 collapsed
@@ -753,7 +753,7 @@ function ProjectCard({
                 touchOverIdRef.current = null;
                 onProjectDragEnd?.();
               }}
-              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a]"
+              className="hidden sm:inline-flex text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-0.5 rounded hover:text-slate-500 dark:hover:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-surface-hover"
               title="Drag to reorder projects"
               aria-label={`Drag ${project.name} to reorder`}
               role="button"
@@ -768,7 +768,7 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "up")}
                 disabled={projectIndex === 0}
-                className="p-0 h-5 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="p-0 h-5 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-surface-hover disabled:opacity-50"
                 aria-label={`Move ${project.name} up`}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -779,7 +779,7 @@ function ProjectCard({
                 type="button"
                 onClick={() => onMoveProject(project.id, "down")}
                 disabled={projectIndex >= projectCount - 1}
-                className="p-0 h-5 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-[#1a2d4a] disabled:opacity-30"
+                className="p-0 h-5 w-5 flex items-center justify-center rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-surface-hover disabled:opacity-50"
                 aria-label={`Move ${project.name} down`}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -911,7 +911,7 @@ function ProjectCard({
             )}
           </div>
 
-          <div className="mt-auto pt-2 border-t border-slate-200/60 dark:border-[#243350]/70 space-y-1.5">
+          <div className="mt-auto pt-2 border-t border-slate-200/60 dark:border-surface-border/70 space-y-1.5">
             {onToggleComplete && doneTodayTasks.length > 0 ? (
               <DoneTodaySection
                 tasks={doneTodayTasks.slice(0, 5)}
