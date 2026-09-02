@@ -124,6 +124,24 @@ export type GaReferralRow = {
   users: number;
 };
 
+export type GaLandingRow = {
+  path: string;
+  sessions: number;
+  users: number;
+};
+
+export type GaCampaignRow = {
+  campaign: string;
+  sessions: number;
+  users: number;
+};
+
+export type GaCountryRow = {
+  country: string;
+  sessions: number;
+  users: number;
+};
+
 export type AdminGaSummary = {
   propertyId: string;
   measurementId: string;
@@ -150,6 +168,9 @@ export type AdminGaSummary = {
   dailyUsers: GaDailyRow[];
   contentSegments: GaContentSegment[];
   referralSources: GaReferralRow[];
+  landingPages: GaLandingRow[];
+  campaigns: GaCampaignRow[];
+  countries: GaCountryRow[];
 };
 
 export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
@@ -187,6 +208,9 @@ export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
     homeSeg,
     seoSeg,
     referrals,
+    landings,
+    campaigns,
+    countries,
   ] = await Promise.all([
     runReport(token, propertyId, {
       dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
@@ -325,6 +349,27 @@ export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
       orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
       limit: 12,
     }),
+    runReport(token, propertyId, {
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dimensions: [{ name: "landingPage" }],
+      metrics: [{ name: "sessions" }, { name: "activeUsers" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 12,
+    }),
+    runReport(token, propertyId, {
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dimensions: [{ name: "sessionCampaignName" }],
+      metrics: [{ name: "sessions" }, { name: "activeUsers" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 12,
+    }),
+    runReport(token, propertyId, {
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dimensions: [{ name: "country" }],
+      metrics: [{ name: "sessions" }, { name: "activeUsers" }],
+      orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+      limit: 10,
+    }),
   ]);
 
   const m30 = overview30.rows?.[0];
@@ -423,6 +468,21 @@ export async function fetchAdminGaSummary(): Promise<AdminGaSummary> {
     referralSources: (referrals.rows || []).map((r) => ({
       source: r.dimensionValues?.[0]?.value ?? "(unknown)",
       medium: r.dimensionValues?.[1]?.value ?? "(unknown)",
+      sessions: metric(r, 0),
+      users: metric(r, 1),
+    })),
+    landingPages: (landings.rows || []).map((r) => ({
+      path: r.dimensionValues?.[0]?.value || "/",
+      sessions: metric(r, 0),
+      users: metric(r, 1),
+    })),
+    campaigns: (campaigns.rows || []).map((r) => ({
+      campaign: r.dimensionValues?.[0]?.value || "(not set)",
+      sessions: metric(r, 0),
+      users: metric(r, 1),
+    })),
+    countries: (countries.rows || []).map((r) => ({
+      country: r.dimensionValues?.[0]?.value || "(unknown)",
       sessions: metric(r, 0),
       users: metric(r, 1),
     })),

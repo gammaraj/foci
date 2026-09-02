@@ -72,7 +72,7 @@ export const PRODUCT_GOALS: ProductGoal[] = [
     id: "operator-ops",
     title: "Operator dashboard",
     status: "achieved",
-    detail: "Allowlisted /admin with GA4 summary, ops checklist, and draft Free/Pro notes.",
+    detail: "Allowlisted /admin with GA4 dashboard, /admin/analytics measurement, ops checklist, and draft Free/Pro notes.",
   },
   {
     id: "growth-target",

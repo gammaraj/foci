@@ -57,13 +57,21 @@ export default async function AdminPage() {
             Traffic, ops, and draft packaging.
           </p>
         </div>
-        <Link
-          href="/admin/backlog"
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30] px-3 py-1.5 text-sm font-medium hover:border-blue-400 dark:hover:border-blue-500"
-        >
-          Backlog
-          <span className="tabular-nums text-slate-400">{counts.active} open</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/analytics"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30] px-3 py-1.5 text-sm font-medium hover:border-blue-400 dark:hover:border-blue-500"
+          >
+            Analytics
+          </Link>
+          <Link
+            href="/admin/backlog"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-[#243350] bg-white/80 dark:bg-[#131d30] px-3 py-1.5 text-sm font-medium hover:border-blue-400 dark:hover:border-blue-500"
+          >
+            Backlog
+            <span className="tabular-nums text-slate-400">{counts.active} open</span>
+          </Link>
+        </div>
       </div>
 
       <AdminGaPanel ga={ga} error={gaError} />
@@ -209,6 +217,7 @@ export default async function AdminPage() {
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Quick links</h2>
           <ul className="flex flex-wrap gap-2 text-sm">
             {[
+              { href: "/admin/analytics", label: "Analytics" },
               { href: "/admin/backlog", label: "Backlog" },
               { href: "https://analytics.google.com/", label: "GA4 console" },
               { href: "https://adsense.google.com/", label: "AdSense" },

@@ -1,4 +1,5 @@
 import type { AdminGaSummary } from "@/lib/ga-data-api";
+import Link from "next/link";
 import {
   MONETIZATION_GA_EVENTS,
   MONETIZATION_SIGNAL_META,
@@ -226,11 +227,19 @@ export function AdminGaPanel({ ga, error }: { ga: AdminGaSummary | null; error: 
             Live Data API · property {ga?.propertyId ?? "—"} · {ga?.measurementId ?? "—"}
           </p>
         </div>
-        {ga?.fetchedAt && (
-          <p className="text-xs text-slate-400 tabular-nums">
-            Fetched {new Date(ga.fetchedAt).toLocaleString()}
-          </p>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/analytics"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Full measurement
+          </Link>
+          {ga?.fetchedAt && (
+            <p className="text-xs text-slate-400 tabular-nums">
+              Fetched {new Date(ga.fetchedAt).toLocaleString()}
+            </p>
+          )}
+        </div>
       </div>
 
       {error && (

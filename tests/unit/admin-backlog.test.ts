@@ -60,5 +60,6 @@ describe("admin backlog", () => {
 describe("safeNextPath admin backlog", () => {
   it("allows the backlog path after login", () => {
     expect(safeNextPath("/admin/backlog")).toBe("/admin/backlog");
+    expect(safeNextPath("/admin/analytics")).toBe("/admin/analytics");
   });
 });

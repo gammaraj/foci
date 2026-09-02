@@ -7,6 +7,7 @@ import { ADMIN_SHELL } from "@/components/admin/admin-shell";
 
 const LINKS = [
   { href: "/admin", label: "Dashboard", match: "exact" as const },
+  { href: "/admin/analytics", label: "Analytics", match: "prefix" as const },
   { href: "/admin/backlog", label: "Backlog", match: "prefix" as const },
 ];
 
