@@ -313,7 +313,8 @@ export default function AccountSharingModal({
           </div>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
             Foci saves the invite in-app (no email is sent). We&apos;ll copy a short message you can paste to them.
-            Once they accept, they&apos;ll see all your projects, including ones you create later.
+            Once they accept, they&apos;ll see all your projects, including ones you create later. Editors can add,
+            complete, and edit tasks; viewers can only view. Only you can delete.
           </p>
         </form>
 

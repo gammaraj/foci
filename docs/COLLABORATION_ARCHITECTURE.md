@@ -1,8 +1,8 @@
 # Foci Collaboration Architecture
 
-> **Status:** Implemented (sharing UI + DB); invite **email delivery not shipped** (copy-text flow).  
+> **Status:** Implemented (sharing UI + DB + Realtime on tasks); invite **email delivery not shipped** (copy-text flow). Editors can add and update tasks; delete stays owner-only.  
 > **Author:** GitHub Copilot  
-> **Date:** April 13, 2026 (design); shipped incrementally through May 2026; messaging updated August 2026
+> **Date:** April 13, 2026 (design); shipped incrementally through May 2026; messaging updated August 2026; editor create + docs hygiene September 2026
 
 This document outlines the architecture for adding task collaboration to Foci, enabling users to share tasks and projects with collaborators.
 
@@ -183,9 +183,18 @@ create policy "Users can view tasks in accessible projects"
     )
   );
 
--- Only owners can INSERT tasks
-create policy "Owners can insert tasks"
-  on public.tasks for insert with check (auth.uid() = user_id);
+-- Owners and editors can INSERT tasks (stored under the owner's user_id)
+create policy "Editors can insert tasks"
+  on public.tasks for insert with check (
+    auth.uid() = user_id
+    OR exists (
+      select 1 from public.project_collaborators pc
+      where pc.project_id = tasks.project_id
+        and pc.owner_id = tasks.user_id
+        and pc.collaborator_id = auth.uid()
+        and pc.role = 'editor'
+    )
+  );
 
 -- Owners OR editors can UPDATE tasks
 create policy "Owners and editors can update tasks"
@@ -566,7 +575,7 @@ async getSharedProjects(): Promise<Project[]> {
 │  ├── Sees all tasks in that project                             │
 │  ├── Can complete/uncomplete tasks (editor)                     │
 │  ├── Can edit task details (editor)                             │
-│  ├── Cannot create new tasks (owner only)                       │
+│  ├── Can create new tasks (editor; stored as the owner's)       │
 │  └── Cannot delete tasks (owner only)                           │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -644,32 +653,16 @@ App
 
 ## Real-time Sync
 
-For v1, use **polling** instead of Supabase Realtime:
-
-```typescript
-// Poll for updates every 30 seconds when viewing a shared project
-useEffect(() => {
-  if (!isSharedProject) return;
-  
-  const interval = setInterval(() => {
-    refreshTasks();
-  }, 30000);
-  
-  return () => clearInterval(interval);
-}, [isSharedProject]);
-```
-
-### Future Enhancement (v2)
-Use Supabase Realtime subscriptions for instant updates:
+Shared project task lists subscribe to Supabase Realtime `postgres_changes` on `tasks` (filtered by owner `user_id`, client-filtered by `project_id`). Polling is retained only as a fallback if the channel errors.
 
 ```typescript
 const subscription = supabase
-  .channel(`project:${projectId}`)
-  .on('postgres_changes', { 
-    event: '*', 
-    schema: 'public', 
+  .channel(`shared-tasks:${ownerId}:${projectId}`)
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
     table: 'tasks',
-    filter: `project_id=eq.${projectId}`
+    filter: `user_id=eq.${ownerId}`
   }, handleChange)
   .subscribe();
 ```
@@ -730,17 +723,17 @@ drop table if exists public.user_profiles cascade;
 ## Implementation Phases
 
 ### Phase 1: Foundation (3-4 days)
-- [ ] Database migration with new tables
-- [ ] Updated RLS policies
-- [ ] User profiles table + auto-creation trigger
-- [ ] Extended StorageAdapter interface
-- [ ] SupabaseStorageAdapter collaboration methods
+- [x] Database migration with new tables
+- [x] Updated RLS policies
+- [x] User profiles table + auto-creation trigger
+- [x] Extended StorageAdapter interface
+- [x] SupabaseStorageAdapter collaboration methods
 
 ### Phase 2: Core UI (3-4 days)
-- [ ] ShareProjectModal component
-- [ ] Sidebar "Shared With Me" section
-- [ ] Permission-aware task rendering
-- [ ] InvitesPanel in NotificationBell
+- [x] ShareProjectModal component
+- [x] Sidebar "Shared With Me" section
+- [x] Permission-aware task rendering
+- [x] InvitesPanel in NotificationBell
 
 ### Phase 3: Invite Flow (2-3 days)
 - [x] Invite creation and validation
@@ -771,7 +764,7 @@ drop table if exists public.user_profiles cascade;
 
 ## Open Questions
 
-1. **Can editors create tasks?** Current design: No (only owners). Should this change?
+1. **Can editors create tasks?** Yes. Editors insert under the owner's `user_id`. Delete stays owner-only. Viewers remain read-only.
 2. **Notifications for task changes?** Not in v1, but consider for v2
 3. **Maximum collaborators per project?** Suggest limit of 10 for v1
 4. **What happens when owner deletes their account?** Cascade delete all shared access

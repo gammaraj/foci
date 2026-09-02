@@ -168,6 +168,9 @@ export interface StorageAdapter {
   
   // Update a task in a shared project (editors only)
   updateSharedTask(task: Task, ownerId: string): Promise<void>;
+
+  // Insert a task in a shared project (editors only; stored under the owner's user_id)
+  insertSharedTask(task: Task, ownerId: string): Promise<void>;
   
   // Leave a shared project (project-level share only)
   leaveProject(projectId: string, ownerId: string): Promise<void>;

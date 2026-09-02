@@ -298,8 +298,8 @@ export default function ShareProjectModal({
           </div>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
             Foci saves the invite in-app (no email is sent). We&apos;ll copy a short message you can paste to them.
-            They sign in at usefoci.com/app and accept under the people icon. Editors can complete and edit tasks;
-            viewers can only view.
+            They sign in at usefoci.com/app and accept under the people icon. Editors can add, complete, and edit tasks;
+            viewers can only view. Only the owner can delete.
           </p>
         </form>
 

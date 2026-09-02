@@ -40,6 +40,9 @@ describe("admin backlog", () => {
     expect(ids.has("stripe-pricing")).toBe(true);
     expect(BACKLOG_ITEMS.find((i) => i.id === "invite-email")?.status).toBe("blocked");
     expect(BACKLOG_ITEMS.find((i) => i.id === "realtime-shared")?.status).toBe("done");
+    expect(BACKLOG_ITEMS.find((i) => i.id === "editor-create-tasks")?.status).toBe("done");
+    expect(BACKLOG_ITEMS.find((i) => i.id === "rls-live-ci")?.status).toBe("done");
+    expect(BACKLOG_ITEMS.find((i) => i.id === "collab-doc-hygiene")?.status).toBe("done");
     expect(BACKLOG_ITEMS.find((i) => i.id === "ads-in-app")?.status).toBe("wont");
     expect(BACKLOG_ITEMS.find((i) => i.id === "team-workspaces")?.status).toBe("wont");
   });

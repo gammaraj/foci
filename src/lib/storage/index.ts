@@ -310,6 +310,8 @@ export const subscribeSharedProjectTasks = (
 ) => currentAdapter.subscribeSharedProjectTasks(...args);
 export const updateSharedTask = (...args: Parameters<StorageAdapter["updateSharedTask"]>) =>
   currentAdapter.updateSharedTask(...args);
+export const insertSharedTask = (...args: Parameters<StorageAdapter["insertSharedTask"]>) =>
+  currentAdapter.insertSharedTask(...args);
 export const leaveProject = (...args: Parameters<StorageAdapter["leaveProject"]>) =>
   currentAdapter.leaveProject(...args);
 export const leaveSharedAccount = (...args: Parameters<StorageAdapter["leaveSharedAccount"]>) =>

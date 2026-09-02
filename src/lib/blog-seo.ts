@@ -38,6 +38,11 @@ export const BLOG_POST_META_OVERRIDES: Record<
     description:
       "Side-by-side: free Pomodoro, tasks, and lo-fi in Foci vs Focus@Will’s $9.99/mo music subscription. Who should pay?",
   },
+  "foci-vs-ticktick": {
+    title: "Foci vs TickTick — Free Focus App vs Premium Suite",
+    description:
+      "Foci vs TickTick: free browser tasks, Pomodoro, Smart Plan, and sounds versus TickTick’s calendar app with a Premium paywall. See which fits.",
+  },
   "foci-vs-todoist": {
     title: "Foci vs Todoist — Focus Timer Built In (2026)",
     description:

@@ -1333,6 +1333,17 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     }
   }
 
+  async insertSharedTask(task: Task, ownerId: string): Promise<void> {
+    const row = taskToRow(task, ownerId);
+
+    const { error } = await this.supabase.from("tasks").insert(row);
+
+    if (error) {
+      reportError("insertSharedTask error", error);
+      throw new Error(error.message);
+    }
+  }
+
   async leaveProject(projectId: string, ownerId: string): Promise<void> {
     const userId = await this.getUserId();
     

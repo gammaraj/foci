@@ -4,7 +4,7 @@ import { reportError } from "@/lib/report-error";
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Task, Project, Settings, DEFAULT_SETTINGS, DEFAULT_PROJECT, DEFAULT_PROJECT_ID, ALL_PROJECTS_ID, TODAY_FILTER_ID, THIS_WEEK_FILTER_ID, THIS_MONTH_FILTER_ID, THIS_YEAR_FILTER_ID, Subtask, RecurrenceType, TaskPriority, TaskKind } from "@/lib/types";
-import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, subscribeSharedProjectTasks, updateSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, loadCustomQuote, saveCustomQuote, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
+import { loadTasks, saveTasks, saveTask as saveOneTask, loadProjects, saveProjects, saveSelectedProjectId, deleteTask as removeTaskFromDB, deleteTasks as removeTasksFromDB, deleteProject as removeProjectFromDB, loadSettings, getSharedProjects, loadSharedProjectTasks, subscribeSharedProjectTasks, updateSharedTask, insertSharedTask, leaveProject, leaveSharedAccount, SharedProject, isSharedProjectFn, loadTaskViewPreferences, saveTaskViewPreferences, loadOneThing, saveOneThing, loadCustomQuote, saveCustomQuote, readLocalWorkspaceSnapshot, type LocalWorkspaceSnapshot } from "@/lib/storage";
 import { OPEN_SHARED_PROJECT_EVENT } from "@/components/CollaborationInvitesButton";
 import { VIEW_DUE_TASKS_EVENT } from "@/components/DueRemindersButton";
 import { trackTaskAdded, trackTaskCompleted, trackTaskDeleted, trackSharedProjectOpened } from "@/lib/analytics";
@@ -1254,6 +1254,21 @@ export default function TaskList({
     }
   };
 
+  const addTaskInSharedProject = async (task: Task, ownerId: string) => {
+    try {
+      await insertSharedTask(task, ownerId);
+      const key = `${ownerId}:${task.projectId}`;
+      setSharedTasks((prev) => ({
+        ...prev,
+        [key]: [...(prev[key] || []), task],
+      }));
+    } catch (err) {
+      reportError("Failed to add shared task", err);
+      showToast("Failed to add task", "error");
+      throw err;
+    }
+  };
+
   // Check if currently viewing a shared project
   const isViewingSharedProject = selectedProjectId.startsWith("shared:");
   const currentSharedProjectTasks = selectedSharedProject
@@ -1477,8 +1492,8 @@ export default function TaskList({
     projectIdOverride?: string,
     options?: { openDetail?: boolean },
   ) => {
-    if (isViewingSharedProject) {
-      showToast("You can't add tasks to a shared project", "info");
+    if (isViewingSharedProject && (!canEditSharedProject || !selectedSharedProject)) {
+      showToast("You have view-only access to this project", "info");
       return;
     }
     const title = titleRaw.trim().slice(0, MAX_TASK_TITLE);
@@ -1497,20 +1512,23 @@ export default function TaskList({
         (viewMode === "calendar" && calendarSelectedDay ? calendarSelectedDay : undefined));
 
     const projectId =
-      projectIdOverride ??
-      (addingInTimeScope
-        ? projectFilterId !== ALL_PROJECTS_ID
-          ? projectFilterId
-          : DEFAULT_PROJECT_ID
-        : selectedProjectId === ALL_PROJECTS_ID
-          ? DEFAULT_PROJECT_ID
-          : selectedProjectId);
+      isViewingSharedProject && selectedSharedProject
+        ? selectedSharedProject.id
+        : (projectIdOverride ??
+          (addingInTimeScope
+            ? projectFilterId !== ALL_PROJECTS_ID
+              ? projectFilterId
+              : DEFAULT_PROJECT_ID
+            : selectedProjectId === ALL_PROJECTS_ID
+              ? DEFAULT_PROJECT_ID
+              : selectedProjectId));
 
     // For tasks without a due date, place them at the top by assigning an order
     // value below all existing manually-ordered tasks
     let newOrder: number | undefined;
     if (!dueDate) {
-      const orderedNoDueDateOrders = tasks
+      const orderSource = isViewingSharedProject ? currentSharedProjectTasks : tasks;
+      const orderedNoDueDateOrders = orderSource
         .filter((t) => !t.completed && !t.archivedAt && !t.dueDate && t.order != null)
         .map((t) => t.order as number);
       if (orderedNoDueDateOrders.length > 0) {
@@ -1530,6 +1548,25 @@ export default function TaskList({
       ...(dueDate ? { dueDate } : {}),
       ...(newOrder != null ? { order: newOrder } : {}),
     };
+
+    if (isViewingSharedProject && selectedSharedProject) {
+      void addTaskInSharedProject(task, selectedSharedProject._ownerId)
+        .then(() => {
+          trackTaskAdded();
+          setNewTaskTitle("");
+          setNewTaskDueDate("");
+          if (options?.openDetail !== false) {
+            setExpandedTaskId(task.id);
+            setNewSubtaskTitle("");
+            taskDetailPushedRef.current = true;
+            router.push(appHref((p) => p.set("task", task.id)), { scroll: false });
+          }
+        })
+        .catch(() => {
+          /* toast already shown */
+        });
+      return;
+    }
 
     persist([...tasks, task], task);
     trackTaskAdded();
@@ -1578,15 +1615,32 @@ export default function TaskList({
     const changed = updated.find((t) => t.id === id)!;
 
     if (isViewingSharedProject && selectedSharedProject) {
-      // Shared editors can update but not insert recurring follow-ups.
       void updateTaskInSharedProject(changed, selectedSharedProject._ownerId);
       if (isCompleting) {
         trackTaskCompleted(changed.timeSpent || 0);
         markFirstTaskCompleted();
+        if (task.recurrence) {
+          const nextTask: Task = {
+            id: crypto.randomUUID(),
+            title: task.title,
+            completed: false,
+            sessions: 0,
+            timeSpent: 0,
+            createdAt: Date.now(),
+            projectId: task.projectId,
+            subtasks: (task.subtasks || []).map((s) => ({ ...s, id: crypto.randomUUID(), completed: false })),
+            description: task.description,
+            dueDate: getNextDueDate(task.dueDate, task.recurrence),
+            recurrence: task.recurrence,
+            ...(task.priority != null ? { priority: task.priority } : {}),
+            ...(task.kind ? { kind: task.kind } : {}),
+          };
+          void addTaskInSharedProject(nextTask, selectedSharedProject._ownerId);
+        }
         showToast(
-          task.recurrence
-            ? `${doneTodayToastMessage(updated.filter((t) => isDoneToday(t)).length)} · next occurrence isn’t created in shared projects`
-            : doneTodayToastMessage(updated.filter((t) => isDoneToday(t)).length),
+          doneTodayToastMessage(updated.filter((t) => isDoneToday(t)).length, {
+            recurring: !!task.recurrence,
+          }),
           "success",
         );
         setTallyPulse(true);
@@ -2775,7 +2829,7 @@ export default function TaskList({
               <button
                 type="button"
                 onClick={backFromProjectsManage}
-                className="no-print btn-chip gap-1.5 px-2 py-1 mb-1 text-sm touch-target-sm"
+                className="no-print btn-chip-active gap-1.5 px-2 py-1 mb-1 text-sm touch-target-sm"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -3409,7 +3463,11 @@ export default function TaskList({
                 }
                 selectProject(TODAY_FILTER_ID);
               }}
-              className="shrink-0 text-xs font-medium text-slate-600 dark:text-slate-300 hover:underline"
+              className={
+                isListDrillIn
+                  ? "shrink-0 btn-chip-active gap-1 px-2 py-1 text-xs touch-target-sm !min-h-8"
+                  : "shrink-0 text-xs font-medium text-slate-600 dark:text-slate-300 hover:underline"
+              }
             >
               {isListDrillIn ? `Back to ${drillReturnLabel}` : "Back"}
             </button>
@@ -3435,7 +3493,7 @@ export default function TaskList({
             <button
               type="button"
               onClick={backFromProjectList}
-              className="btn-chip gap-1.5 px-2.5 py-1.5 min-h-[2rem] text-xs font-semibold shrink-0 touch-target-sm"
+              className="btn-chip-active gap-1.5 px-2.5 py-1.5 min-h-[2rem] text-xs shrink-0 touch-target-sm"
               title={`Return to ${drillReturnLabel} view`}
               aria-label={`Back to ${drillReturnLabel}`}
               data-tour="back-from-project-list"
@@ -3851,11 +3909,9 @@ export default function TaskList({
         )}
 
         {/* Add task input */}
-        {isViewingSharedProject ? (
+        {isViewingSharedProject && !canEditSharedProject ? (
           <p className="text-xs text-slate-500 dark:text-slate-400 py-1">
-            {canEditSharedProject
-              ? "You can edit and complete tasks. Adding new tasks isn’t supported on shared projects."
-              : "View-only access — you can browse tasks but not make changes."}
+            View-only access — you can browse tasks but not make changes.
           </p>
         ) : (
         <div className="flex flex-col gap-1.5">
@@ -3876,7 +3932,7 @@ export default function TaskList({
             className="app-placeholder w-full min-w-0 sm:flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-[#243350] rounded-lg bg-[var(--surface-elevated)] text-slate-900 dark:bg-[#131d30] dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none"
           />
           <div className="flex gap-2 min-w-0 w-full sm:w-auto">
-          {!isListDrillIn && (
+          {!isViewingSharedProject && !isListDrillIn && (
           <>
           <label htmlFor="new-task-project" className="sr-only">
             Project
@@ -3938,7 +3994,7 @@ export default function TaskList({
           </div>
         </form>
 
-        {tasksReady && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && !isListDrillIn && (
+        {tasksReady && !isViewingSharedProject && tasks.filter((t) => !t.archivedAt && !t.completed).length === 0 && !isTimeFilter && !focusMode && !isListDrillIn && (
           <div className="flex flex-wrap gap-1.5">
             <span className="text-xs text-slate-500 dark:text-slate-400 w-full">Quick start a project:</span>
             {PROJECT_TEMPLATES.slice(0, 4).map((tpl) => (

@@ -17,8 +17,18 @@ const slugs = fs
   .filter((f) => f.endsWith(".mdx"))
   .map((f) => f.replace(/\.mdx$/, ""));
 
-const vs = ["forest", "todoist", "focusatwill"];
-const alternatives = ["forest", "pomodoro-apps", "focus-apps-for-students"];
+const compareSrc = fs.readFileSync(path.join(process.cwd(), "src/lib/compare-landings.ts"), "utf8");
+function landingSlugs(constName) {
+  const start = compareSrc.indexOf(`export const ${constName}`);
+  const next =
+    constName === "VS_LANDINGS"
+      ? compareSrc.indexOf("export const ALTERNATIVES_LANDINGS")
+      : compareSrc.indexOf("export function getVsLanding");
+  const block = compareSrc.slice(start, next);
+  return [...block.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1]);
+}
+const vs = landingSlugs("VS_LANDINGS");
+const alternatives = landingSlugs("ALTERNATIVES_LANDINGS");
 
 const urls = [
   SITE_URL,

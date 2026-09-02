@@ -26,7 +26,7 @@ export interface OneThingCardProps {
 }
 
 const twoCol =
-  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-x-3 gap-y-1 items-center panel-inset-x mt-1 mb-0.5 land-compact:hidden";
+  "no-print grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,45fr)_minmax(0,55fr)] gap-x-3 gap-y-1 items-center panel-inset-x mt-1 mb-0.5 land-compact:hidden";
 
 const plate =
   "flex items-center gap-2 min-h-[2.25rem] min-w-0 rounded-2xl px-2.5 py-1.5 border-0 ring-1";

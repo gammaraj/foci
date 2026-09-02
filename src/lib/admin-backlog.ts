@@ -3,7 +3,7 @@
  * Snapshot of stated product goals vs what is still open — not a living issue tracker.
  */
 
-export const BACKLOG_SNAPSHOT = "2026-08-24";
+export const BACKLOG_SNAPSHOT = "2026-09-02";
 
 export const BACKLOG_VERDICT = {
   headline: "Core product goals are met.",
@@ -66,7 +66,7 @@ export const PRODUCT_GOALS: ProductGoal[] = [
     title: "Project + account sharing without team workspaces",
     status: "partial",
     detail:
-      "UI, DB, RLS, viewer/editor roles, and copy-invite are shipped. Invite email is blocked; shared projects poll every 30s instead of Realtime.",
+      "UI, DB, RLS, viewer/editor roles, copy-invite, and Realtime on shared tasks are shipped. Editors can add and update tasks; delete stays owner-only. Invite email is blocked.",
   },
   {
     id: "operator-ops",
@@ -143,21 +143,22 @@ export const BACKLOG_ITEMS: BacklogItem[] = [
   {
     id: "rls-live-ci",
     title: "Live RLS tests in CI",
-    status: "todo",
+    status: "done",
     area: "quality",
     priority: "p2",
     why: "Static policy-name checks cannot catch a broken USING/WITH CHECK at runtime.",
     notes:
-      "docs/RLS_POLICY_MATRIX.md: needs a test Supabase. Local path is npx supabase db reset plus invite-flow exercise.",
+      "Shipped: supabase/tests/database/rls.test.sql via supabase test db. CI job Live RLS starts local Supabase. npm run test:rls locally after supabase start.",
   },
   {
     id: "editor-create-tasks",
     title: "Decide: can editors create tasks?",
-    status: "todo",
+    status: "done",
     area: "collaboration",
     priority: "p2",
-    why: "Open design question. Today only owners create/delete; editors update.",
-    notes: "If yes, extend RLS INSERT and the Share UI copy. If no, document it in-product so owners are not surprised.",
+    why: "Editors needed to add tasks in shared projects, not only update them.",
+    notes:
+      "Decided yes. Editors INSERT under the owner's user_id (project + account). Delete stays owner-only. Share UI copy and RLS WITH CHECK updated.",
   },
   {
     id: "collab-limits",
@@ -204,16 +205,16 @@ export const BACKLOG_ITEMS: BacklogItem[] = [
     priority: "p1",
     why: "Stated 6–12 month target. Product is ready; distribution is not.",
     notes:
-      "Keep shipping comparison/migration posts, IndexNow, and cross-promo. Watch bounce on marketing (~54% in the Aug snapshot) vs /app session quality.",
+      "Keep shipping comparison/migration posts, IndexNow, and cross-promo. TickTick vs + alternatives landings added 2026-09-02. Watch bounce on marketing (~54% in the Aug snapshot) vs /app session quality. Target still open until 2–5k / 30d.",
   },
   {
     id: "collab-doc-hygiene",
     title: "Refresh collaboration architecture checkboxes",
-    status: "todo",
+    status: "done",
     area: "ops",
     priority: "p3",
     why: "Phase 1–2 boxes are unchecked even though UI+DB shipped; the status header is the truth.",
-    notes: "docs/COLLABORATION_ARCHITECTURE.md. Hygiene only — no product change.",
+    notes: "docs/COLLABORATION_ARCHITECTURE.md Phase 1–2 checked; editor-create and Realtime sections match shipped behavior.",
   },
   {
     id: "vercel-project-name",

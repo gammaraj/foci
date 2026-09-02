@@ -36,8 +36,10 @@ const REQUIRED_POLICIES = [
   "Owners can manage their own tasks",
   "Collaborators can view tasks in shared projects",
   "Editors can update tasks in shared projects",
+  "Editors can insert tasks in shared projects",
   "Account collaborators can view all owner tasks",
   "Account editors can update all owner tasks",
+  "Account editors can insert tasks for owner",
   "Users can manage own profile",
   "Users can view project collaborator profiles",
   "Users can view account collaborator profiles",
@@ -154,11 +156,19 @@ function lastCreatePolicySnippet(name) {
 
 const editorSnippet = lastCreatePolicySnippet("Editors can update tasks in shared projects");
 const accountEditorSnippet = lastCreatePolicySnippet("Account editors can update all owner tasks");
+const editorInsertSnippet = lastCreatePolicySnippet("Editors can insert tasks in shared projects");
+const accountEditorInsertSnippet = lastCreatePolicySnippet("Account editors can insert tasks for owner");
 if (!/with check/i.test(editorSnippet) || !/with check/i.test(accountEditorSnippet)) {
   console.error("\n❌ Latest editor task UPDATE policies must include WITH CHECK");
   passed = false;
 } else {
   console.log("✅ Editor UPDATE policies include WITH CHECK");
+}
+if (!/with check/i.test(editorInsertSnippet) || !/with check/i.test(accountEditorInsertSnippet)) {
+  console.error("\n❌ Latest editor task INSERT policies must include WITH CHECK");
+  passed = false;
+} else {
+  console.log("✅ Editor INSERT policies include WITH CHECK");
 }
 
 if (!passed) {

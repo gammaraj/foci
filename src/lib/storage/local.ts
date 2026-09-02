@@ -445,6 +445,10 @@ export class LocalStorageAdapter implements StorageAdapter {
     throw new Error("Sign in to update shared tasks");
   }
 
+  async insertSharedTask(_task: Task, _ownerId: string): Promise<void> {
+    throw new Error("Sign in to add tasks to shared projects");
+  }
+
   async leaveProject(_projectId: string, _ownerId: string): Promise<void> {
     throw new Error("Sign in to leave projects");
   }

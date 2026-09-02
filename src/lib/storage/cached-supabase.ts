@@ -575,6 +575,10 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     return this.remote.updateSharedTask(task, ownerId);
   }
 
+  async insertSharedTask(task: Task, ownerId: string): Promise<void> {
+    return this.remote.insertSharedTask(task, ownerId);
+  }
+
   async leaveProject(projectId: string, ownerId: string): Promise<void> {
     return this.remote.leaveProject(projectId, ownerId);
   }

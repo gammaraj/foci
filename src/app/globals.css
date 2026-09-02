@@ -254,8 +254,7 @@ select {
   background: var(--surface-elevated);
 }
 .btn-chip-active {
-  @apply rounded-lg border border-blue-500 font-semibold text-blue-700 dark:border-blue-400 dark:bg-[#1a2744] dark:text-blue-100;
-  background: var(--surface-elevated);
+  @apply inline-flex items-center justify-center rounded-lg border border-blue-500 bg-blue-50 font-semibold text-blue-800 dark:border-blue-400 dark:bg-blue-900/20 dark:text-blue-100;
 }
 
 /* Quiet dismiss — Cancel, Close, Skip, Later */

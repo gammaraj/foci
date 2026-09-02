@@ -100,6 +100,35 @@ export const VS_LANDINGS: CompareLanding[] = [
     blogSlug: "foci-vs-focusatwill",
     blogLabel: "Full Foci vs Focus@Will comparison",
   },
+  {
+    slug: "ticktick",
+    kind: "vs",
+    title: "Foci vs TickTick — Free Focus App vs Premium Suite",
+    description:
+      "Foci vs TickTick: free browser tasks, Pomodoro, Smart Plan, and ambient sounds versus TickTick’s calendar-heavy app with a Premium paywall. See which fits.",
+    h1: "Foci vs TickTick",
+    answer:
+      "Choose Foci if you want a free focus system with tasks, an optional timer, Smart Plan, and ambient sounds in the browser. Choose TickTick if you need a calendar-first task manager with habits, a widget-heavy mobile app, and you are fine paying for Premium.",
+    bullets: [
+      "Foci is free with optional account sync; TickTick’s timer, calendar views, and extra lists sit behind Premium.",
+      "Both combine tasks and a Pomodoro-style timer; Foci also includes Smart Plan and offline brown noise.",
+      "Open Foci at usefoci.com/app without signing in; TickTick requires an account for sync.",
+    ],
+    faqs: [
+      {
+        question: "Is Foci a free TickTick alternative?",
+        answer:
+          "Yes. Foci is a free TickTick alternative for people who want tasks plus a focus timer and ambient sounds without a Premium subscription.",
+      },
+      {
+        question: "Does Foci have a calendar like TickTick?",
+        answer:
+          "Foci has a calendar layout for due dates plus List, Cards, Buckets, and Smart Plan. TickTick’s calendar is more agenda/week-oriented and pairs with habits.",
+      },
+    ],
+    blogSlug: "foci-vs-ticktick",
+    blogLabel: "Full Foci vs TickTick comparison",
+  },
 ];
 
 export const ALTERNATIVES_LANDINGS: CompareLanding[] = [
@@ -179,6 +208,30 @@ export const ALTERNATIVES_LANDINGS: CompareLanding[] = [
     ],
     blogSlug: "best-focus-apps-for-students-2026",
     blogLabel: "Full student focus apps guide",
+  },
+  {
+    slug: "ticktick",
+    kind: "alternatives",
+    title: "Best TickTick Alternatives — Free Focus Apps",
+    description:
+      "Best TickTick alternatives if you want tasks and a Pomodoro timer without Premium: free browser options, Todoist, Microsoft To Do, and when to stay on TickTick.",
+    h1: "Best TickTick alternatives",
+    answer:
+      "The best TickTick alternative depends on what you use: Foci for a free browser focus system with tasks, timer, and sounds; Todoist if you only need a powerful task manager; Microsoft To Do if you live in Outlook. Keep TickTick if the calendar + habits combo is worth Premium.",
+    bullets: [
+      "Foci — best free alternative when you want tasks, a timer, Smart Plan, and ambient sounds together.",
+      "Todoist — best if you outgrew TickTick’s lists and do not need a built-in timer.",
+      "Microsoft To Do — best if you already live in Outlook/Microsoft 365.",
+    ],
+    faqs: [
+      {
+        question: "What is the best free TickTick alternative?",
+        answer:
+          "Foci is the best free TickTick alternative for most people who want a task list plus a focus timer and ambient sounds without a paywall. Start at usefoci.com/app with no signup.",
+      },
+    ],
+    blogSlug: "ticktick-alternatives",
+    blogLabel: "Full TickTick alternatives guide",
   },
 ];
 

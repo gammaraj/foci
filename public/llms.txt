@@ -2,7 +2,7 @@
 title: Foci – Focus System Documentation
 description: LLM-optimized documentation for Foci, a free all-in-one focus system with Pomodoro timer, task tracking, Smart Plan scheduling, collaboration features, and ambient music.
 url: https://usefoci.com
-version: 2026-08-30
+version: 2026-09-02
 contact: hello@usefoci.com
 contact_page: https://usefoci.com/contact
 license: Content may be cited with attribution to Foci (usefoci.com)
@@ -25,9 +25,9 @@ license: Content may be cited with attribution to Foci (usefoci.com)
 - **Contact**: hello@usefoci.com · https://usefoci.com/contact
 - **Entity**: sameAs — https://twitter.com/usefoci , https://x.com/usefoci , https://github.com/gammaraj/foci
 - **Mascot**: Beavy the Beaver — paddle-tailed Foci mascot; buzzes on the Done bar and appears on error/404 screens
-- **Last updated**: 2026-08-30
-- **Evergreen comparisons**: https://usefoci.com/vs/forest , https://usefoci.com/vs/todoist , https://usefoci.com/vs/focusatwill
-- **Evergreen alternatives**: https://usefoci.com/alternatives/forest , https://usefoci.com/alternatives/pomodoro-apps , https://usefoci.com/alternatives/focus-apps-for-students
+- **Last updated**: 2026-09-02
+- **Evergreen comparisons**: https://usefoci.com/vs/forest , https://usefoci.com/vs/todoist , https://usefoci.com/vs/focusatwill , https://usefoci.com/vs/ticktick
+- **Evergreen alternatives**: https://usefoci.com/alternatives/forest , https://usefoci.com/alternatives/pomodoro-apps , https://usefoci.com/alternatives/focus-apps-for-students , https://usefoci.com/alternatives/ticktick
 - **RSS**: https://usefoci.com/feed.xml
 
 ## What is Foci?
@@ -61,7 +61,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Today's One Thing**: Intent row under When/Layout next to Focus actions (soft plate + left accent when set). Set from task detail → Set as Today's One Thing; Focus / complete / clear inline. Empty state is a quiet prompt. Quote column sits beside it on wider screens.
 - **Add project**: Solid primary CTA on Tasks (and mobile toolbar) that opens Projects manage — not a ghost/outline control.
 - **Productivity Stats**: Dashboard with session heatmap, per-project charts, streak history, and daily/weekly/monthly analytics.
-- **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly in the task detail drawer. Completing a recurring task auto-creates the next open occurrence with an advanced due date and reset subtasks (not a background cron). Shared projects do not auto-spawn the next occurrence.
+- **Recurring Tasks**: Set tasks to repeat daily, weekly, monthly, or yearly in the task detail drawer. Completing a recurring task auto-creates the next open occurrence with an advanced due date and reset subtasks (not a background cron). Shared-project editors also spawn the next occurrence.
 - **Subtask Due Dates**: Assign individual due dates to subtasks for granular deadline tracking. Integrated with Smart Plan and smart filters.
 - **Move Tasks Between Projects**: Reassign any task to a different project from the edit menu — no delete-and-recreate needed.
 - **Calendar View**: Click any date to auto-set it as a task's due date. Visual overview of deadlines across the month.
@@ -76,7 +76,7 @@ Foci is more than a Pomodoro timer. It's a complete focus system designed for st
 - **Collapsible Timer Panel**: Collapse the timer to a compact bar to give the task list full width.
 - **Spotify Integration**: 9 curated Spotify playlists for meditation, ambient, deep focus, Indian indie, and lo-fi chill.
 - **Account Collaboration**: Invite collaborators by email address; they accept in-app under the people icon (viewer or editor). Foci does not send invite emails yet — copy the invite text and share it yourself.
-- **Project Collaboration**: Share a specific project the same way — in-app invite + copyable message, role-based access (viewer/editor). Shared projects appear under Shared with me (multi-column when 2+). Recipients use Remove access (not Leave) to drop project or full-account access.
+- **Project Collaboration**: Share a specific project the same way — in-app invite + copyable message, role-based access (viewer/editor). Editors can add, complete, and edit tasks; only the owner can delete. Shared projects appear under Shared with me (multi-column when 2+). Recipients use Remove access (not Leave) to drop project or full-account access.
 - **Notification Bell**: In-app alerts for collaboration invites and due/overdue tasks with badge counters. Optional browser notifications for daily due digests.
 - **IndexNow Integration**: Instant search engine notifications when content updates via IndexNow protocol (Bing, Yandex, Naver, Seznam.cz). Accelerates discovery of new blog posts and pages without waiting for traditional crawl cycles.
 - **Bucket Board View**: Kanban-style columns per project with Overdue, Today, This Week, and No date swimlanes. Drag to reorder tasks within a section or move between projects. Priority badges (HIGH/MED/LOW) and a slide-over task detail drawer.
@@ -371,6 +371,7 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - https://usefoci.com/blog/flowtime-technique-guide — Flowtime Technique: How It Works (Complete Guide)
 - https://usefoci.com/blog/foci-vs-focusatwill — Foci vs Focus@Will: Free All-in-One vs Paid Music Subscription
 - https://usefoci.com/blog/foci-vs-forest-app — Foci vs Forest App: The Free Alternative That Does More
+- https://usefoci.com/blog/foci-vs-ticktick — Foci vs TickTick: Free Focus App vs Premium All-in-One
 - https://usefoci.com/blog/foci-vs-todoist — Foci vs Todoist: Focus System vs Task Manager — Which Do You Need?
 - https://usefoci.com/blog/forest-app-alternatives — 5 Best Forest App Alternatives in 2026 (Free & Paid)
 - https://usefoci.com/blog/how-to-focus-while-working-from-home — How to Focus While Working From Home (2026 Guide)
@@ -386,6 +387,7 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 - https://usefoci.com/blog/productive-morning-routine — The Productive Morning Routine: How to Win Your Day Before 9 AM
 - https://usefoci.com/blog/stoicism-and-focus — Stoicism and Focus: Ancient Wisdom for the Distracted Modern Mind
 - https://usefoci.com/blog/task-batching-productivity — Task Batching: How to Get More Done by Grouping Similar Work
+- https://usefoci.com/blog/ticktick-alternatives — Best TickTick Alternatives in 2026 (Free & Paid)
 - https://usefoci.com/blog/time-blocking-method — Time Blocking: The Scheduling Method Used by the World's Most Productive People
 - https://usefoci.com/blog/white-noise-vs-brown-noise-for-focus — White Noise vs Brown Noise for Focus: Which Is Better?
 - https://usefoci.com/blog/two-minute-rule-productivity — The 2-Minute Rule: The Simplest Productivity Hack That Actually Works
@@ -463,6 +465,8 @@ Unlike most standalone Pomodoro timers, Foci integrates task tracking, ambient m
 
 Foci publishes articles about the Pomodoro technique, focus strategies, and time management. Blog posts are available at https://usefoci.com/blog.
 
+- [Foci vs TickTick — Free Focus App vs Premium All-in-One](https://usefoci.com/blog/foci-vs-ticktick) — 2026-09-02
+- [Best TickTick Alternatives in 2026 (Free & Paid)](https://usefoci.com/blog/ticktick-alternatives) — 2026-09-02
 - [Best Free Pomodoro App 2026 (7 Tested, No Signup)](https://usefoci.com/blog/best-free-pomodoro-apps-2026) — 2026-07-19
 - [Best Music for Studying: What Actually Helps Focus](https://usefoci.com/blog/best-music-for-studying-and-focus) — 2026-07-19
 - [Flowtime Technique Guide — How It Works (Free Timer)](https://usefoci.com/blog/flowtime-technique-guide) — 2026-07-19
