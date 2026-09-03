@@ -128,58 +128,35 @@ interface TaskCardViewProps {
 
 function CardTaskRowActions({
   taskTitle,
-  canRename,
   canDelete,
-  onRename,
   onDelete,
 }: {
   taskTitle: string;
-  canRename: boolean;
   canDelete: boolean;
-  onRename?: () => void;
   onDelete?: () => void;
 }) {
-  if (!canRename && !canDelete) return null;
+  if (!canDelete || !onDelete) return null;
 
   return (
-    <div className="relative shrink-0 flex items-center gap-0.5">
-      {canRename && onRename && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRename();
-          }}
-          className="inline-flex items-center justify-center px-1.5 py-1 rounded-md text-xs font-semibold text-slate-500 dark:text-slate-400 border border-transparent hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-surface-hover hover:border-slate-200/90 dark:hover:border-surface-border/80 transition-colors"
-          aria-label={`Rename "${taskTitle}"`}
-          title="Rename"
-        >
-          Rename
-        </button>
-      )}
-      {canDelete && onDelete && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="inline-flex items-center gap-1 px-1.5 py-1 rounded-md text-xs font-semibold text-red-600 dark:text-red-400 border border-transparent hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200/80 dark:hover:border-red-800/50 transition-colors"
-          aria-label={`Delete "${taskTitle}"`}
-          title="Delete task"
-        >
-          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-          <span className="hidden min-[380px]:inline">Delete</span>
-        </button>
-      )}
-    </div>
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onDelete();
+      }}
+      className="hover-reveal-desktop shrink-0 inline-flex items-center justify-center p-1 rounded-md text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-900/20 transition-colors"
+      aria-label={`Delete "${taskTitle}"`}
+      title="Delete task"
+    >
+      <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        />
+      </svg>
+    </button>
   );
 }
 
@@ -463,9 +440,7 @@ function CardTaskRow({
             />
             <CardTaskRowActions
               taskTitle={task.title}
-              canRename={!!onStartEdit}
               canDelete={!!onDeleteTask && !(isTimerRunning && isActive)}
-              onRename={onStartEdit ? () => onStartEdit(task) : undefined}
               onDelete={onDeleteTask ? () => onDeleteTask(task.id) : undefined}
             />
           </div>
