@@ -2,6 +2,7 @@
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/types";
+import { buttonClassName } from "@/components/ui/button-styles";
 
 interface ListToolbarProjectMenuProps {
   /** When set, show rename/share/archive/delete for this project. */
@@ -98,18 +99,20 @@ export function ListToolbarProjectMenu({
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className={`inline-flex items-center gap-1 touch-target-sm px-2.5 py-1.5 min-h-[2rem] text-xs font-semibold rounded-lg border transition-colors ${
-          open
-            ? "border-slate-300 dark:border-surface-border bg-slate-200 dark:bg-surface-hover text-slate-800 dark:text-slate-100"
-            : "border-surface-border dark:border-surface-border bg-slate-100 dark:bg-surface-elevated text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#3a4f6e] hover:bg-slate-200 dark:hover:bg-surface-hover hover:text-slate-800 dark:hover:text-slate-100"
-        }`}
+        className={buttonClassName({
+          variant: "chipActive",
+          size: "sm",
+          className: `gap-1.5 min-h-[2rem] touch-target-sm${
+            open ? " ring-2 ring-blue-400/40 dark:ring-blue-300/30" : ""
+          }`,
+        })}
         title={title}
         aria-label={title}
         aria-expanded={open}
         aria-haspopup="menu"
         data-tour="list-project-menu"
       >
-        <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
           <circle cx="12" cy="5" r="1.75" />
           <circle cx="12" cy="12" r="1.75" />
           <circle cx="12" cy="19" r="1.75" />
