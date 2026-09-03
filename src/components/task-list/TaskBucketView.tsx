@@ -23,6 +23,8 @@ import { DueChip } from "@/components/task-list/DueChip";
 import { SelectedBadge, TimingBadge, subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
+import { SetOneThingButton } from "@/components/task-list/SetOneThingButton";
+import { canBeOneThing } from "@/lib/one-thing";
 import {
   ProjectColorSwatch,
   ProjectEditMenu,
@@ -106,6 +108,12 @@ interface TaskBucketViewProps {
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
+  /** Delete a task from a bucket row. */
+  onDeleteTask?: (taskId: string) => void;
+  onSetOneThing?: (taskId: string) => void;
+  onClearOneThing?: () => void;
+  onArchiveProjectCompleted?: (projectId: string) => void;
+  onClearProjectCompleted?: (projectId: string) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
   expandedSubtasksTaskId?: string | null;
@@ -202,6 +210,9 @@ function BucketTaskCard({
   onToggleTaskDetail,
   subtasksExpanded = false,
   onToggleSubtasks,
+  onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
   onDragStart,
   onDragOver,
   onDrop,
@@ -228,6 +239,9 @@ function BucketTaskCard({
   onToggleTaskDetail?: (taskId: string) => void;
   subtasksExpanded?: boolean;
   onToggleSubtasks?: (taskId: string) => void;
+  onDeleteTask?: (taskId: string) => void;
+  onSetOneThing?: (taskId: string) => void;
+  onClearOneThing?: () => void;
   onDragStart?: () => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: () => void;
@@ -365,6 +379,37 @@ function BucketTaskCard({
             }}
           />
         )}
+        {!isEditing && onDeleteTask && !(isTimerRunning && isActive) && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteTask(task.id);
+            }}
+            className="shrink-0 mt-[1px] p-1 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-900/20 transition-colors"
+            aria-label={`Delete "${task.title}"`}
+            title="Delete task"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        )}
+        {!isEditing && (
+          <SetOneThingButton
+            taskTitle={task.title}
+            isOneThing={isOneThing}
+            canSet={!!onSetOneThing && canBeOneThing(task)}
+            onSet={onSetOneThing ? () => onSetOneThing(task.id) : undefined}
+            onClear={onClearOneThing}
+            className="mt-[1px]"
+          />
+        )}
         {!isEditing && (
           <div
             className={`shrink-0 mt-[1px] transition-opacity duration-150 ${
@@ -491,6 +536,11 @@ function BucketColumn({
   onSaveEdit,
   onCancelEdit,
   onSetDueDate,
+  onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
+  onArchiveProjectCompleted,
+  onClearProjectCompleted,
   expandedTaskId,
   onToggleTaskDetail,
   expandedSubtasksTaskId,
@@ -531,6 +581,11 @@ function BucketColumn({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onSetDueDate?: (taskId: string, date: string | undefined) => void;
+  onDeleteTask?: (taskId: string) => void;
+  onSetOneThing?: (taskId: string) => void;
+  onClearOneThing?: () => void;
+  onArchiveProjectCompleted?: (projectId: string) => void;
+  onClearProjectCompleted?: (projectId: string) => void;
   expandedTaskId?: string | null;
   onToggleTaskDetail?: (taskId: string) => void;
   expandedSubtasksTaskId?: string | null;
@@ -720,7 +775,18 @@ function BucketColumn({
             </p>
             <DoneTodaySection
               tasks={doneTodayTasks}
+              completedCount={completedCount}
               onToggleComplete={onToggleComplete}
+              onArchiveCompleted={
+                onArchiveProjectCompleted
+                  ? () => onArchiveProjectCompleted(project.id)
+                  : undefined
+              }
+              onClearCompleted={
+                onClearProjectCompleted
+                  ? () => onClearProjectCompleted(project.id)
+                  : undefined
+              }
               compact
             />
           </div>
@@ -832,6 +898,9 @@ function BucketColumn({
                       onSaveEdit={onSaveEdit}
                       onCancelEdit={onCancelEdit}
                       onSetDueDate={onSetDueDate}
+                      onDeleteTask={onDeleteTask}
+                      onSetOneThing={onSetOneThing}
+                      onClearOneThing={onClearOneThing}
                       isDetailOpen={expandedTaskId === task.id}
                       onToggleTaskDetail={onToggleTaskDetail}
                       subtasksExpanded={expandedSubtasksTaskId === task.id}
@@ -851,7 +920,18 @@ function BucketColumn({
             })}
             <DoneTodaySection
               tasks={doneTodayTasks}
+              completedCount={completedCount}
               onToggleComplete={onToggleComplete}
+              onArchiveCompleted={
+                onArchiveProjectCompleted
+                  ? () => onArchiveProjectCompleted(project.id)
+                  : undefined
+              }
+              onClearCompleted={
+                onClearProjectCompleted
+                  ? () => onClearProjectCompleted(project.id)
+                  : undefined
+              }
               compact
             />
           </div>
@@ -891,6 +971,11 @@ export default function TaskBucketView({
   onSaveEdit,
   onCancelEdit,
   onSetDueDate,
+  onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
+  onArchiveProjectCompleted,
+  onClearProjectCompleted,
   expandedTaskId = null,
   onToggleTaskDetail,
   expandedSubtasksTaskId = null,
@@ -1003,6 +1088,11 @@ export default function TaskBucketView({
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
             onSetDueDate={onSetDueDate}
+            onDeleteTask={onDeleteTask}
+            onSetOneThing={onSetOneThing}
+            onClearOneThing={onClearOneThing}
+            onArchiveProjectCompleted={onArchiveProjectCompleted}
+            onClearProjectCompleted={onClearProjectCompleted}
             expandedTaskId={expandedTaskId}
             onToggleTaskDetail={onToggleTaskDetail}
             expandedSubtasksTaskId={expandedSubtasksTaskId}

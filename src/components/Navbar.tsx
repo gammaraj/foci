@@ -120,7 +120,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           key: "projects",
           href: `${cardsHomeHref}?projects=1`,
           label: "Projects",
-          title: "Manage projects — pin, rename, share, import",
+          title: "Manage projects — pin, rename, share, delete, import",
           active: projectsOpen,
           onClick: openProjects,
         },
@@ -220,7 +220,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                   onClick={onOpenSettings}
                   className={chromeLabelBtn}
                   aria-label="Open settings"
-                  title="Timer and app settings"
+                  title="Timer, data, and sharing settings"
                 >
                   <SettingsIcon className="w-4 h-4 opacity-80" />
                   <span>Settings</span>
@@ -250,7 +250,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                 onClick={onOpenSettings}
                 className={`${chromeIconBtn} touch-target-sm`}
                 aria-label="Open settings"
-                title="Settings"
+                title="Timer, data, and sharing settings"
               >
                 <SettingsIcon className="w-4 h-4" />
               </button>

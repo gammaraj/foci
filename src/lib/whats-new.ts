@@ -65,7 +65,7 @@ export const FEATURE_TOUR_STEPS: FeatureTourStep[] = [
     target: "[data-tour='one-thing']",
     title: "Today's One Thing",
     description:
-      "Open a task and tap Set as Today's One Thing so your daily priority stays obvious while you work through the rest.",
+      "Tap the ★ on any open task to set Today's One Thing — your daily priority stays pinned while you work through the rest.",
     position: "bottom",
   },
   {

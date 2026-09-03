@@ -125,15 +125,11 @@ function ProjectRowMenu({
   user,
   onStartRename,
   onShare,
-  onArchive,
-  onDelete,
 }: {
   project: Project;
   user: { id: string } | null;
   onStartRename: (p: Project) => void;
   onShare: (p: Project) => void;
-  onArchive: (id: string) => void;
-  onDelete: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [openUp, setOpenUp] = useState(false);
@@ -156,7 +152,7 @@ function ProjectRowMenu({
   const toggleOpen = () => {
     if (!open && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      setOpenUp(window.innerHeight - rect.bottom < 200);
+      setOpenUp(window.innerHeight - rect.bottom < 160);
     }
     setOpen((v) => !v);
   };
@@ -171,9 +167,9 @@ function ProjectRowMenu({
           toggleOpen();
         }}
         className="touch-target-sm p-2 rounded-lg text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-hover hover:text-slate-800 dark:hover:text-white transition-colors"
-        aria-label={`Manage ${project.name}`}
+        aria-label={`More for ${project.name}`}
         aria-expanded={open}
-        title="Rename, archive, or delete"
+        title="Rename or share"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
           <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -210,28 +206,6 @@ function ProjectRowMenu({
               Share
             </button>
           )}
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              setOpen(false);
-              onArchive(project.id);
-            }}
-            className="w-full text-left px-3 py-2.5 text-sm font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-          >
-            Archive
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              setOpen(false);
-              onDelete(project.id);
-            }}
-            className="w-full text-left px-3 py-2.5 text-sm font-medium text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
-          >
-            Delete project…
-          </button>
         </div>
       )}
     </div>
@@ -462,14 +436,54 @@ function ProjectRow({
         )}
 
         {canManage && (
-          <ProjectRowMenu
-            project={project}
-            user={user}
-            onStartRename={onStartRename}
-            onShare={onShare}
-            onArchive={onArchive}
-            onDelete={onDelete}
-          />
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onArchive(project.id);
+              }}
+              className="touch-target-sm inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors shrink-0"
+              aria-label={`Archive ${project.name}`}
+              title="Archive — hide project, keep tasks"
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                />
+              </svg>
+              <span className="hidden sm:inline text-xs font-semibold">Archive</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(project.id);
+              }}
+              className="touch-target-sm inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0"
+              aria-label={`Delete ${project.name}`}
+              title="Delete project and its tasks"
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+              <span className="hidden sm:inline text-xs font-semibold">Delete</span>
+            </button>
+            <ProjectRowMenu
+              project={project}
+              user={user}
+              onStartRename={onStartRename}
+              onShare={onShare}
+            />
+          </>
         )}
       </div>
 
@@ -759,15 +773,19 @@ export default function ProjectManageView({
             <h3 id="projects-yours-heading" className="app-section-label text-slate-400">
               Your projects
             </h3>
-            {sortedProjects.length >= 2 && (
+            {(sortedProjects.length >= 2 ||
+              sortedProjects.some((p) => p.id !== DEFAULT_PROJECT_ID)) && (
               <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
-                Drag ⋮⋮ to reorder · ★ to pin
+                {sortedProjects.length >= 2 ? "Drag ⋮⋮ to reorder · ★ to pin · " : ""}
+                Archive or Delete on each row
               </p>
             )}
           </div>
-          {sortedProjects.length >= 2 && (
+          {(sortedProjects.length >= 2 ||
+            sortedProjects.some((p) => p.id !== DEFAULT_PROJECT_ID)) && (
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 sm:hidden">
-              Use ▲▼ to reorder · ★ to pin · ⋯ for more
+              {sortedProjects.length >= 2 ? "▲▼ reorder · ★ pin · " : ""}
+              Archive or trash to remove
             </p>
           )}
 

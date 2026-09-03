@@ -17,6 +17,8 @@ import { TaskRecurrenceBadge } from "@/components/task-list/TaskRecurrenceBadge"
 import { TaskKindBadge } from "@/components/task-list/TaskKindBadge";
 import { DueChip } from "@/components/task-list/DueChip";
 import { SomedayBadge, WaitingBadge, subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
+import { SetOneThingButton } from "@/components/task-list/SetOneThingButton";
+import { canBeOneThing } from "@/lib/one-thing";
 
 export interface OpenTaskListProps {
   tasks: Task[];
@@ -53,6 +55,8 @@ export interface OpenTaskListProps {
   onStartTask: (id: string) => void;
   onSelectTask: (id: string | null) => void;
   onDeleteTask: (id: string) => void;
+  onSetOneThing?: (id: string) => void;
+  onClearOneThing?: () => void;
   onSetDueDate: (id: string, date: string | undefined) => void;
   onSnoozeToToday: (id: string) => void;
   onDragStart: (id: string) => void;
@@ -96,6 +100,8 @@ export default function OpenTaskList({
   onStartTask,
   onSelectTask,
   onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
   onSetDueDate,
   onSnoozeToToday,
   onDragStart,
@@ -380,10 +386,32 @@ export default function OpenTaskList({
             </button>
           )}
           {!(isTimerRunning && activeTaskId === task.id) && (
-            <button onClick={(e) => { e.stopPropagation(); onDeleteTask(task.id); }} className="flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hidden sm:flex hover-reveal-desktop transition-all" aria-label={`Delete "${task.title}"`}>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteTask(task.id);
+              }}
+              className="flex-shrink-0 inline-flex items-center gap-1 p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-900/20 transition-colors"
+              aria-label={`Delete "${task.title}"`}
+              title="Delete task"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
             </button>
           )}
+          <SetOneThingButton
+            taskTitle={task.title}
+            isOneThing={oneThingTaskId === task.id}
+            canSet={!!onSetOneThing && canBeOneThing(task)}
+            onSet={onSetOneThing ? () => onSetOneThing(task.id) : undefined}
+            onClear={onClearOneThing}
+          />
         </div>
 
         {renderBelowTask(task)}

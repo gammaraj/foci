@@ -1833,6 +1833,52 @@ export default function TaskList({
     if (oneThingPref?.taskId && archivedIds.includes(oneThingPref.taskId)) clearOneThingPick();
   };
 
+  const archiveCompletedForProject = useCallback(
+    (projectId: string) => {
+      const now = Date.now();
+      const archivedIds = tasks
+        .filter((t) => t.projectId === projectId && t.completed && !t.archivedAt)
+        .map((t) => t.id);
+      if (archivedIds.length === 0) return;
+      const updated = tasks.map((t) =>
+        t.projectId === projectId && t.completed && !t.archivedAt
+          ? { ...t, archivedAt: now }
+          : t
+      );
+      persist(updated);
+      if (oneThingPref?.taskId && archivedIds.includes(oneThingPref.taskId)) clearOneThingPick();
+      showToast(
+        `Archived ${archivedIds.length} completed task${archivedIds.length !== 1 ? "s" : ""}`,
+        "success"
+      );
+    },
+    [tasks, oneThingPref?.taskId, clearOneThingPick, persist, showToast]
+  );
+
+  const clearCompletedForProject = useCallback(
+    (projectId: string) => {
+      const toRemove = tasks
+        .filter((t) => t.projectId === projectId && t.completed)
+        .map((t) => t.id);
+      if (toRemove.length === 0) return;
+      const projectName = projects.find((p) => p.id === projectId)?.name ?? "this project";
+      setPendingConfirm({
+        title: "Delete completed tasks",
+        message: `Delete ${toRemove.length} completed task${toRemove.length !== 1 ? "s" : ""} in “${projectName}”? This cannot be undone.`,
+        confirmLabel: "Delete",
+        onConfirm: () => {
+          setPendingConfirm(null);
+          persist(tasks.filter((t) => !(t.projectId === projectId && t.completed)));
+          if (oneThingPref?.taskId && toRemove.includes(oneThingPref.taskId)) clearOneThingPick();
+          removeTasksFromDB(toRemove).catch((err) => {
+            reportError("Failed to clear completed tasks", err);
+          });
+        },
+      });
+    },
+    [tasks, projects, oneThingPref?.taskId, clearOneThingPick, persist]
+  );
+
   const unarchiveTask = (id: string) => {
     const previous = tasks.find((t) => t.id === id);
     const updated = tasks.map((t) =>
@@ -2751,6 +2797,8 @@ export default function TaskList({
       onStartTask={onStartTask}
       onSelectTask={onSelectTask}
       onDeleteTask={deleteTask}
+      onSetOneThing={setAsOneThing}
+      onClearOneThing={clearOneThingPick}
       onSetDueDate={setDueDate}
       onSnoozeToToday={snoozeToToday}
       onDragStart={handleDragStart}
@@ -2884,6 +2932,9 @@ export default function TaskList({
                   <span className="text-amber-600 dark:text-amber-300">
                     {" "}· {pinnedProjectCount} pinned
                   </span>
+                )}
+                {sortedProjects.some((p) => p.id !== DEFAULT_PROJECT_ID) && (
+                  <span>{" · "}Archive or Delete on a row</span>
                 )}
               </p>
             </>
@@ -3393,6 +3444,11 @@ export default function TaskList({
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
           onSetDueDate={setDueDate}
+          onDeleteTask={deleteTask}
+          onSetOneThing={setAsOneThing}
+          onClearOneThing={clearOneThingPick}
+          onArchiveProjectCompleted={archiveCompletedForProject}
+          onClearProjectCompleted={clearCompletedForProject}
           expandedTaskId={preparingPrint ? null : expandedTaskId}
           expandedSubtasksTaskId={preparingPrint ? null : expandedSubtasksTaskId}
           onToggleTaskDetail={toggleTaskDetail}
@@ -3452,6 +3508,10 @@ export default function TaskList({
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
           onDeleteTask={deleteTask}
+          onSetOneThing={setAsOneThing}
+          onClearOneThing={clearOneThingPick}
+          onArchiveProjectCompleted={archiveCompletedForProject}
+          onClearProjectCompleted={clearCompletedForProject}
           onMoveProject={handleMoveProject}
           onExpandProject={expandProjectToList}
           onOpenProject={expandProjectToList}
@@ -4166,7 +4226,7 @@ export default function TaskList({
                   <button
                     onClick={() => {
                       setPendingConfirm({
-                        title: "Clear completed tasks",
+                        title: "Delete completed tasks",
                         message: `Delete ${completedTasks.length} completed task${completedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`,
                         confirmLabel: "Delete",
                         onConfirm: () => {
@@ -4176,8 +4236,9 @@ export default function TaskList({
                       });
                     }}
                     className="text-sm text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                    title="Permanently delete completed tasks"
                   >
-                    Clear
+                    Clear completed
                   </button>
                 </div>
               </div>
@@ -4257,7 +4318,7 @@ export default function TaskList({
                   <button
                     onClick={() => {
                       setPendingConfirm({
-                        title: "Clear completed tasks",
+                        title: "Delete completed tasks",
                         message: `Delete ${completedTasks.length} completed task${completedTasks.length !== 1 ? "s" : ""}? This cannot be undone.`,
                         confirmLabel: "Delete",
                         onConfirm: () => {
@@ -4267,8 +4328,9 @@ export default function TaskList({
                       });
                     }}
                     className="text-sm text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                    title="Permanently delete completed tasks"
                   >
-                    Clear
+                    Clear completed
                   </button>
                 </div>
               )}
@@ -4316,6 +4378,8 @@ export default function TaskList({
                 onStartTask={onStartTask}
                 onSelectTask={onSelectTask}
                 onDeleteTask={deleteTask}
+                onSetOneThing={setAsOneThing}
+                onClearOneThing={clearOneThingPick}
                 onSetDueDate={setDueDate}
                 onSnoozeToToday={snoozeToToday}
                 onDragStart={handleDragStart}

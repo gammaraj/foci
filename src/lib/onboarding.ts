@@ -34,7 +34,7 @@ export const ONBOARDING_CHECKLIST: {
   {
     id: "one-thing",
     label: "Set Today's One Thing",
-    hint: "Open a task, then tap Set as Today's One Thing.",
+    hint: "Tap the ★ on a task to set Today's One Thing.",
     target: "[data-tour='one-thing']",
   },
   {

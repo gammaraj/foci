@@ -64,10 +64,10 @@ function OneThingHowTo() {
     <div className="rounded-2xl ring-1 ring-blue-500/15 dark:ring-blue-400/25 bg-surface-elevated/95 dark:bg-surface-recessed text-slate-700 dark:text-slate-200 shadow-lg shadow-blue-900/5 dark:shadow-black/40 p-3.5 text-xs leading-relaxed text-center">
       <p className="font-semibold text-blue-900 dark:text-blue-100">How to pick your One Thing</p>
       <ol className="mt-1.5 mx-auto w-fit list-decimal list-inside space-y-1 text-left text-slate-600 dark:text-slate-300">
-        <li>Open any open task (click its name).</li>
         <li>
-          Tap <span className="font-semibold text-blue-700 dark:text-blue-300">Set as Today&apos;s One Thing</span>.
+          Tap the <span className="font-semibold text-blue-700 dark:text-blue-300">★</span> on any open task.
         </li>
+        <li>Or open a task and choose <span className="font-semibold text-blue-700 dark:text-blue-300">Set as Today&apos;s One Thing</span>.</li>
       </ol>
       <p className="mt-2.5 text-slate-600 dark:text-slate-300">
         It&apos;s the one outcome that would make today a success. It stays pinned here until you finish or clear it, then
@@ -335,9 +335,9 @@ export function OneThingCard({
   );
 
   if (status === "unset") {
-    const prompt = hasOpenTasks
-      ? "Open a task → Set as One Thing"
-      : "Add a task, then set it as your One Thing";
+      const prompt = hasOpenTasks
+      ? "Tap the ★ on a task to set it"
+      : "Add a task, then tap ★ for your One Thing";
 
     return (
       <div ref={rootRef} data-tour="one-thing" className="relative min-w-0">

@@ -27,6 +27,8 @@ import { DueChip } from "@/components/task-list/DueChip";
 import { subtaskCountChipClass } from "@/components/task-list/TaskFlagBadge";
 import { DoneTodaySection } from "@/components/task-list/DoneTodaySection";
 import { AddProjectButton } from "@/components/task-list/AddProjectButton";
+import { SetOneThingButton } from "@/components/task-list/SetOneThingButton";
+import { canBeOneThing } from "@/lib/one-thing";
 import {
   ProjectColorSwatch,
   ProjectEditMenu,
@@ -90,6 +92,12 @@ interface TaskCardViewProps {
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
+  onSetOneThing?: (taskId: string) => void;
+  onClearOneThing?: () => void;
+  /** Archive all completed tasks in a project. */
+  onArchiveProjectCompleted?: (projectId: string) => void;
+  /** Permanently delete completed tasks in a project (parent should confirm). */
+  onClearProjectCompleted?: (projectId: string) => void;
   onMoveProject?: (projectId: string, direction: "up" | "down") => void;
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
@@ -118,7 +126,7 @@ interface TaskCardViewProps {
   projectEdit?: ProjectEditHandlers;
 }
 
-function CardTaskMoreMenu({
+function CardTaskRowActions({
   taskTitle,
   canRename,
   canDelete,
@@ -131,96 +139,45 @@ function CardTaskMoreMenu({
   onRename?: () => void;
   onDelete?: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [openUp, setOpenUp] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: Event) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("touchstart", close, { passive: true });
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("touchstart", close);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
   if (!canRename && !canDelete) return null;
 
-  const toggleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!open && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setOpenUp(window.innerHeight - rect.bottom < 140);
-    }
-    setOpen((v) => !v);
-  };
-
   return (
-    <div className={`relative shrink-0 ${open ? "" : "hover-reveal-desktop"}`} ref={menuRef}>
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={toggleOpen}
-        className={`inline-flex items-center justify-center p-1 rounded-md border transition-colors ${
-          open
-            ? "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-surface-hover border-slate-300 dark:border-surface-border"
-            : "text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-surface-border/80 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-surface-hover"
-        }`}
-        aria-label={`More actions for "${taskTitle}"`}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        title="More"
-      >
-        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-        </svg>
-      </button>
-      {open && (
-        <div
-          className={`absolute right-0 z-40 min-w-[8.5rem] py-1 rounded-lg border surface-panel shadow-lg ${
-            openUp ? "bottom-full mb-1" : "top-full mt-1"
-          }`}
-          role="menu"
+    <div className="relative shrink-0 flex items-center gap-0.5">
+      {canRename && onRename && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRename();
+          }}
+          className="inline-flex items-center justify-center px-1.5 py-1 rounded-md text-xs font-semibold text-slate-500 dark:text-slate-400 border border-transparent hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-surface-hover hover:border-slate-200/90 dark:hover:border-surface-border/80 transition-colors"
+          aria-label={`Rename "${taskTitle}"`}
+          title="Rename"
         >
-          {canRename && onRename && (
-            <button
-              type="button"
-              role="menuitem"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-                onRename();
-              }}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
-            >
-              Rename
-            </button>
-          )}
-          {canDelete && onDelete && (
-            <button
-              type="button"
-              role="menuitem"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-                onDelete();
-              }}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
-            >
-              Delete
-            </button>
-          )}
-        </div>
+          Rename
+        </button>
+      )}
+      {canDelete && onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="inline-flex items-center gap-1 px-1.5 py-1 rounded-md text-xs font-semibold text-red-600 dark:text-red-400 border border-transparent hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200/80 dark:hover:border-red-800/50 transition-colors"
+          aria-label={`Delete "${taskTitle}"`}
+          title="Delete task"
+        >
+          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          <span className="hidden min-[380px]:inline">Delete</span>
+        </button>
       )}
     </div>
   );
@@ -309,6 +266,8 @@ function CardTaskRow({
   onSaveEdit,
   onCancelEdit,
   onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
 }: {
   task: Task;
   projectId: string;
@@ -333,6 +292,8 @@ function CardTaskRow({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
+  onSetOneThing?: (taskId: string) => void;
+  onClearOneThing?: () => void;
 }) {
   const overdue = isActionableOverdue(task);
   const blocked = !!task.blocked;
@@ -483,19 +444,24 @@ function CardTaskRow({
               </button>
             )}
             {onToggleTaskDetail && (
-              <span className={isExpanded ? "" : "hover-reveal-desktop"}>
-                <TaskEditButton
-                  compact
-                  isOpen={isExpanded}
-                  taskTitle={task.title}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleTaskDetail(task.id);
-                  }}
-                />
-              </span>
+              <TaskEditButton
+                compact
+                isOpen={isExpanded}
+                taskTitle={task.title}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleTaskDetail(task.id);
+                }}
+              />
             )}
-            <CardTaskMoreMenu
+            <SetOneThingButton
+              taskTitle={task.title}
+              isOneThing={isOneThing}
+              canSet={!!onSetOneThing && canBeOneThing(task)}
+              onSet={onSetOneThing ? () => onSetOneThing(task.id) : undefined}
+              onClear={onClearOneThing}
+            />
+            <CardTaskRowActions
               taskTitle={task.title}
               canRename={!!onStartEdit}
               canDelete={!!onDeleteTask && !(isTimerRunning && isActive)}
@@ -544,6 +510,10 @@ function ProjectCard({
   onSaveEdit,
   onCancelEdit,
   onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
+  onArchiveProjectCompleted,
+  onClearProjectCompleted,
   onExpandProject,
   onOpenProject,
   onQuickAdd,
@@ -592,6 +562,10 @@ function ProjectCard({
   onSaveEdit?: (taskId: string) => void;
   onCancelEdit?: () => void;
   onDeleteTask?: (taskId: string) => void;
+  onSetOneThing?: (taskId: string) => void;
+  onClearOneThing?: () => void;
+  onArchiveProjectCompleted?: (projectId: string) => void;
+  onClearProjectCompleted?: (projectId: string) => void;
   onExpandProject?: (projectId: string) => void;
   onOpenProject?: (projectId: string) => void;
   onToggleProjectFavorite?: (projectId: string) => void;
@@ -904,6 +878,8 @@ function ProjectCard({
                     onSaveEdit={onSaveEdit}
                     onCancelEdit={onCancelEdit}
                     onDeleteTask={onDeleteTask}
+                    onSetOneThing={onSetOneThing}
+                    onClearOneThing={onClearOneThing}
                   />
                   {renderBelowTask?.(task)}
                 </div>
@@ -912,10 +888,21 @@ function ProjectCard({
           </div>
 
           <div className="mt-auto pt-2 border-t border-slate-200/60 dark:border-surface-border/70 space-y-1.5">
-            {onToggleComplete && doneTodayTasks.length > 0 ? (
+            {onToggleComplete && (doneTodayTasks.length > 0 || completedCount > 0) ? (
               <DoneTodaySection
                 tasks={doneTodayTasks.slice(0, 5)}
+                completedCount={completedCount}
                 onToggleComplete={onToggleComplete}
+                onArchiveCompleted={
+                  onArchiveProjectCompleted
+                    ? () => onArchiveProjectCompleted(project.id)
+                    : undefined
+                }
+                onClearCompleted={
+                  onClearProjectCompleted
+                    ? () => onClearProjectCompleted(project.id)
+                    : undefined
+                }
                 compact
                 flush
               />
@@ -992,6 +979,10 @@ export default function TaskCardView({
   onSaveEdit,
   onCancelEdit,
   onDeleteTask,
+  onSetOneThing,
+  onClearOneThing,
+  onArchiveProjectCompleted,
+  onClearProjectCompleted,
   onMoveProject,
   onExpandProject,
   onOpenProject,
@@ -1213,6 +1204,10 @@ export default function TaskCardView({
               onSaveEdit={onSaveEdit}
               onCancelEdit={onCancelEdit}
               onDeleteTask={onDeleteTask}
+              onSetOneThing={onSetOneThing}
+              onClearOneThing={onClearOneThing}
+              onArchiveProjectCompleted={onArchiveProjectCompleted}
+              onClearProjectCompleted={onClearProjectCompleted}
               onExpandProject={onExpandProject}
               onOpenProject={onOpenProject}
               onQuickAdd={onQuickAdd}
