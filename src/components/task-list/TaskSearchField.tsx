@@ -21,7 +21,7 @@ export function TaskSearchField({
   const compact = size === "compact";
   return (
     <label className={`relative block min-w-0 ${className}`.trim()}>
-      <span className="sr-only">Search projects and tasks</span>
+      <span className="sr-only">{placeholder}</span>
       <SearchIcon
         className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-400 ${
           compact ? "left-2" : "left-2.5"
@@ -37,7 +37,7 @@ export function TaskSearchField({
             ? "control-field control-field--sm w-full pl-7 pr-2.5 py-1 min-h-[1.875rem] text-xs app-placeholder"
             : "control-field w-full pl-8 pr-3 py-1.5 min-h-[2rem] text-sm app-placeholder shadow-sm"
         }
-        aria-label="Filter projects or tasks"
+        aria-label={placeholder}
         data-tour="card-filter"
       />
     </label>

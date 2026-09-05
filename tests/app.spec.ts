@@ -246,6 +246,44 @@ test.describe("App Page (unauthenticated)", () => {
   });
 });
 
+test.describe("Project drill-in chrome", () => {
+  test("puts Back and Manage in the focus bar", async ({ page }) => {
+    await page.goto("/app");
+    await waitForBoot(page);
+    await dismissChrome(page);
+
+    await page.goto("/app/list?project=__general__&from=card");
+    await waitForBoot(page);
+    await dismissChrome(page);
+
+    const title = page.locator("#foci-focus-bar-title");
+    await expect(title.getByRole("button", { name: "Back to Cards" })).toBeVisible();
+    await expect(title.getByRole("heading", { name: /General/ })).toBeVisible();
+
+    const actions = page.locator("#foci-focus-bar-actions");
+    await expect(actions.getByRole("button", { name: /Manage General/ })).toBeVisible();
+
+    await expect(page.getByRole("button", { name: "Add project" })).toHaveCount(0);
+    await expect(page.getByRole("searchbox", { name: "Filter tasks…" }).filter({ visible: true })).toBeVisible();
+
+    await title.getByRole("button", { name: "Back to Cards" }).click();
+    await expect(page).not.toHaveURL(/project=/);
+    await expect(page.getByRole("button", { name: "Back to Cards" })).toHaveCount(0);
+  });
+
+  test("Projects manage uses the same inline Back + title", async ({ page }) => {
+    await page.goto("/app");
+    await waitForBoot(page);
+    await dismissChrome(page);
+
+    await page.getByRole("button", { name: "Add project" }).click();
+
+    const title = page.locator("#foci-focus-bar-title");
+    await expect(title.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
+    await expect(title.getByRole("button", { name: /Back to / })).toBeVisible();
+  });
+});
+
 test.describe("Onboarding first-win checklist", () => {
   test("pre-checks You're in and does not block the app", async ({ page }) => {
     await page.goto("/app");

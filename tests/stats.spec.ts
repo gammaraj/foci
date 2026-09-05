@@ -7,9 +7,11 @@ test.describe("Stats Page", () => {
     await waitForBoot(page);
   });
 
-  test("renders page heading and subtitle", async ({ page }) => {
+  test("renders page heading and subtitle", async ({ page }, testInfo) => {
     await expect(page.getByRole("heading", { name: "Stats", exact: true })).toBeVisible();
-    await expect(page.getByText("Focus habits, sessions, and backlog health")).toBeVisible();
+    if (!testInfo.project.use?.isMobile) {
+      await expect(page.getByText("Focus habits, sessions, and backlog health")).toBeVisible();
+    }
   });
 
   test("renders 4 stat cards", async ({ page }) => {
@@ -29,13 +31,13 @@ test.describe("Stats Page", () => {
   test("can switch between 7D and 30D range", async ({ page }) => {
     const btn30 = page.getByRole("button", { name: "30D" });
     await btn30.click();
-
-    // 30D button should now have the active styling (white bg / shadow)
-    await expect(btn30).toHaveClass(/shadow/);
+    await expect(btn30).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "7D" })).toHaveAttribute("aria-pressed", "false");
 
     const btn7 = page.getByRole("button", { name: "7D" });
     await btn7.click();
-    await expect(btn7).toHaveClass(/shadow/);
+    await expect(btn7).toHaveAttribute("aria-pressed", "true");
+    await expect(btn30).toHaveAttribute("aria-pressed", "false");
   });
 
   test("renders activity heatmap section", async ({ page }) => {

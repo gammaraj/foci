@@ -52,6 +52,9 @@ interface MobileTaskToolbarProps {
   cardQuery?: string;
   onCardQueryChange?: (value: string) => void;
   showCardSearch?: boolean;
+  /** Hide the Projects control (drill-in puts Manage in the focus bar). */
+  showManageProjects?: boolean;
+  searchPlaceholder?: string;
 }
 
 const VIEW_OPTIONS: { mode: TaskViewMode; label: string }[] = [
@@ -97,6 +100,8 @@ export function MobileTaskToolbar({
   cardQuery = "",
   onCardQueryChange,
   showCardSearch = false,
+  showManageProjects = true,
+  searchPlaceholder,
 }: MobileTaskToolbarProps) {
   const showJump = showProjectJump && projects.length > 1 && !!onProjectJump;
   const timeFilterActive = selectedScope !== ALL_PROJECTS_ID;
@@ -184,22 +189,25 @@ export function MobileTaskToolbar({
             onChange={onCardQueryChange ?? (() => {})}
             size="compact"
             className="hidden land-compact:block flex-1 min-w-[7rem]"
+            placeholder={searchPlaceholder}
           />
         )}
 
-        <button
-          type="button"
-          onClick={onManageProjects}
-          className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-surface-border dark:border-surface-border bg-surface-elevated text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-          data-tour="manage-projects"
-          title="Projects — manage, pin, share, delete, import"
-          aria-label="Manage projects"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
-          </svg>
-          <span className="text-xs font-semibold">Projects</span>
-        </button>
+        {showManageProjects && (
+          <button
+            type="button"
+            onClick={onManageProjects}
+            className="shrink-0 inline-flex items-center justify-center gap-0.5 px-2 py-1 min-h-[2rem] rounded-md border border-surface-border dark:border-surface-border bg-surface-elevated text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+            data-tour="manage-projects"
+            title="Projects — manage, pin, share, delete, import"
+            aria-label="Manage projects"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4m0 4v2m0-2a2 2 0 100 4m0-4a2 2 0 110 4" />
+            </svg>
+            <span className="text-xs font-semibold">Projects</span>
+          </button>
+        )}
 
         {onAddProject && (
           <AddProjectButton onClick={onAddProject} size="sm" shortLabel="Project" />

@@ -47,6 +47,12 @@ import TaskPanelMenu from "@/components/TaskPanelMenu";
 import { printCurrentView } from "@/lib/print-tasks";
 import DayRecap from "@/components/DayRecap";
 import { FocusBarTitle, FocusBarActions } from "@/components/AppFocusBar";
+import {
+  FocusBarActionRow,
+  FocusBarBackButton,
+  FocusBarHeading,
+  FocusBarMeta,
+} from "@/components/FocusBarHeading";
 import { FOCUS_BAR_ICON_BTN } from "@/components/FocusStripControls";
 
 import SmartPlan from "@/components/SmartPlan";
@@ -2910,106 +2916,116 @@ export default function TaskList({
 
       {/* Title + actions live in the shared App Focus Bar */}
       <FocusBarTitle>
-        <div className="min-w-0 text-slate-700 dark:text-white">
-          {projectManageOpen ? (
-            <>
-              <Button
-                type="button"
-                variant="chipActive"
-                size="sm"
-                className="no-print gap-1.5 mb-1 touch-target-sm"
+        {projectManageOpen ? (
+          <FocusBarHeading
+            back={
+              <FocusBarBackButton
+                label={VIEW_RETURN_LABELS[viewBeforeManageRef.current] ?? "tasks"}
                 onClick={backFromProjectsManage}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              />
+            }
+            meta={
+              <FocusBarMeta nowrap className="tabular-nums hidden min-[480px]:inline">
+                · {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
+                {pinnedProjectCount > 0 ? ` · ${pinnedProjectCount} pinned` : ""}
+              </FocusBarMeta>
+            }
+          >
+            Projects
+          </FocusBarHeading>
+        ) : (
+          <FocusBarHeading
+            back={
+              isListDrillIn ? (
+                <FocusBarBackButton
+                  label={drillReturnLabel}
+                  onClick={backFromProjectList}
+                  data-tour="back-from-project-list"
+                />
+              ) : undefined
+            }
+            title={drillInProject?.name}
+            leading={
+              drillInProject ? (
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/15"
+                  style={{ backgroundColor: resolveProjectColor(drillInProject) }}
+                  aria-hidden
+                />
+              ) : (
+                <svg className="w-[1.125rem] h-[1.125rem] sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                Back to {VIEW_RETURN_LABELS[viewBeforeManageRef.current] ?? "tasks"}
-              </Button>
-              <h2 className="text-sm sm:text-base font-semibold tracking-tight leading-none">Projects</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
-                {sortedProjects.length} project{sortedProjects.length === 1 ? "" : "s"}
-                {pinnedProjectCount > 0 && (
-                  <span className="text-amber-600 dark:text-amber-300">
-                    {" "}· {pinnedProjectCount} pinned
-                  </span>
-                )}
-                {sortedProjects.some((p) => p.id !== DEFAULT_PROJECT_ID) && (
-                  <span>{" · "}Archive or Delete on a row</span>
-                )}
-              </p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-base sm:text-lg font-semibold tracking-tight flex items-center gap-1.5 min-w-0 text-slate-800 dark:text-white leading-none">
-                {drillInProject ? (
-                  <>
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/15"
-                      style={{ backgroundColor: resolveProjectColor(drillInProject) }}
-                      aria-hidden
+              )
+            }
+            meta={
+              drillInProject ? (
+                <FocusBarMeta nowrap className="tabular-nums">
+                  {isViewingSharedProject ? " · shared" : ""}
+                  {drillInOpenCount > 0 ? ` · ${drillInOpenCount} open` : ""}
+                </FocusBarMeta>
+              ) : undefined
+            }
+            trailing={
+              (showUrgencySummary ||
+                (!focusMode && !projectManageOpen && !drillInProject)) ? (
+                <span className="no-print inline-flex items-center gap-2.5 shrink-0 min-w-0">
+                  {showUrgencySummary && (
+                    <TaskUrgencySummary
+                      compact
+                      className="shrink-0"
+                      overdueCount={overdueTasks.length}
+                      dueTodayCount={dueExactlyTodayCount}
+                      onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
+                      onViewToday={() => selectProject(TODAY_FILTER_ID)}
                     />
-                    <span className="truncate min-w-0" title={drillInProject.name}>
-                      {drillInProject.name}
-                    </span>
-                    {isViewingSharedProject && (
-                      <span className="shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400 normal-case tracking-normal">
-                        · shared
-                      </span>
-                    )}
-                    {drillInOpenCount > 0 && (
-                      <span className="shrink-0 text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400 normal-case tracking-normal">
-                        · {drillInOpenCount} open
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-[1.125rem] h-[1.125rem] sm:w-5 sm:h-5 flex-shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    <span className="shrink-0">
-                      Tasks
-                      {viewMode === "plan" && (
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-300 normal-case tracking-normal"> · Smart Plan</span>
-                      )}
-                    </span>
-                  </>
+                  )}
+                  {!focusMode && !projectManageOpen && !drillInProject && (
+                    <DoneTodayTally
+                      compact
+                      count={doneProgress.today}
+                      weekCount={doneProgress.week}
+                      monthCount={doneProgress.month}
+                      idleDays={doneProgress.idleDays}
+                      pulse={tallyPulse}
+                      onClick={scrollToDoneToday}
+                      className="shrink-0"
+                    />
+                  )}
+                </span>
+              ) : undefined
+            }
+          >
+            {drillInProject ? (
+              drillInProject.name
+            ) : (
+              <>
+                Tasks
+                {viewMode === "plan" && (
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-300"> · Smart Plan</span>
                 )}
-                {(showUrgencySummary ||
-                  (!focusMode && !projectManageOpen && !drillInProject)) && (
-                  <span className="no-print inline-flex items-center gap-2.5 ml-3 sm:ml-4 shrink-0 min-w-0">
-                    {showUrgencySummary && (
-                      <TaskUrgencySummary
-                        compact
-                        className="shrink-0"
-                        overdueCount={overdueTasks.length}
-                        dueTodayCount={dueExactlyTodayCount}
-                        onViewOverdue={() => selectProject(TODAY_FILTER_ID)}
-                        onViewToday={() => selectProject(TODAY_FILTER_ID)}
-                      />
-                    )}
-                    {!focusMode && !projectManageOpen && !drillInProject && (
-                      <DoneTodayTally
-                        compact
-                        count={doneProgress.today}
-                        weekCount={doneProgress.week}
-                        monthCount={doneProgress.month}
-                        idleDays={doneProgress.idleDays}
-                        pulse={tallyPulse}
-                        onClick={scrollToDoneToday}
-                        className="shrink-0"
-                      />
-                    )}
-                  </span>
-                )}
-              </h2>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </FocusBarHeading>
+        )}
       </FocusBarTitle>
 
       <FocusBarActions>
-        <div className="no-print flex items-center gap-0.5 flex-shrink-0">
+        <FocusBarActionRow>
+          {isListDrillIn && !isViewingSharedProject && !projectManageOpen && (
+            <ListToolbarProjectMenu
+              project={listToolbarMenuProject}
+              user={user}
+              onManageProjects={openProjectManage}
+              onStartRename={(p) => {
+                startEditingProject(p);
+                openProjectManage();
+              }}
+              onShare={setShareModalProject}
+              onArchive={toggleProjectArchived}
+              onDelete={deleteProject}
+            />
+          )}
           {!projectManageOpen && (
             <button
               type="button"
@@ -3054,7 +3070,7 @@ export default function TaskList({
               )}
             </button>
           )}
-        </div>
+        </FocusBarActionRow>
       </FocusBarActions>
 
       {/* Card toolbar — When / Layout (title is in App Focus Bar) */}
@@ -3104,6 +3120,7 @@ export default function TaskList({
                 value={cardQuery}
                 onChange={setCardQuery}
                 className="w-full max-w-md"
+                placeholder={isListDrillIn ? "Filter tasks…" : undefined}
               />
             </div>
 
@@ -3168,7 +3185,7 @@ export default function TaskList({
                   <span className="hidden lg:inline">Plan</span>
                 </LayoutSegTab>
               </div>
-              <AddProjectButton onClick={openProjectManage} size="sm" />
+              {!isListDrillIn && <AddProjectButton onClick={openProjectManage} size="sm" />}
             </div>
           </div>
         )}
@@ -3181,7 +3198,9 @@ export default function TaskList({
           viewMode={viewMode}
           onSelectViewMode={selectViewMode}
           onManageProjects={openProjectManage}
-          onAddProject={openProjectManage}
+          onAddProject={isListDrillIn ? undefined : openProjectManage}
+          showManageProjects={!isListDrillIn}
+          searchPlaceholder={isListDrillIn ? "Filter tasks…" : undefined}
           projects={sortedProjects}
           projectJumpId={bucketJumpProjectId}
           onProjectJump={handleMobileProjectJump}
@@ -3195,7 +3214,12 @@ export default function TaskList({
         )}
 
         <div className="roomy:hidden land-compact:hidden mt-1.5">
-          <TaskSearchField value={cardQuery} onChange={setCardQuery} size="compact" />
+          <TaskSearchField
+            value={cardQuery}
+            onChange={setCardQuery}
+            size="compact"
+            placeholder={isListDrillIn ? "Filter tasks…" : undefined}
+          />
         </div>
 
         {!focusMode && !projectManageOpen && viewMode === "card" && showCardReorderTip && sortedProjects.length >= 2 && (
@@ -3540,14 +3564,16 @@ export default function TaskList({
         />
       )}
 
-      {/* Project filter — works with Today/Week/Month/Year via projectFilterId */}
+      {/* Sharing metadata — name + Back live in the focus bar during drill-in */}
       {!projectManageOpen && viewMode === "list" && isViewingSharedProject && selectedSharedProject && (
         <div className="panel-pad-x pt-2 pb-2 border-b border-surface-border dark:border-surface-border/80 no-print">
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/20 px-3 py-2">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                {selectedSharedProject.name}
-              </p>
+              {!isListDrillIn && (
+                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                  {selectedSharedProject.name}
+                </p>
+              )}
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                 Shared by {selectedSharedProject._ownerName || selectedSharedProject._ownerEmail}
                 {" · "}
@@ -3555,19 +3581,7 @@ export default function TaskList({
                 {selectedSharedProject._shareSource === "account" ? " · Full account access" : ""}
               </p>
             </div>
-            {isListDrillIn ? (
-              <Button
-                type="button"
-                variant="chipActive"
-                size="sm"
-                className="shrink-0 gap-1 touch-target-sm !min-h-8"
-                onClick={() => {
-                  backFromProjectList();
-                }}
-              >
-                {`Back to ${drillReturnLabel}`}
-              </Button>
-            ) : (
+            {!isListDrillIn && (
               <button
                 type="button"
                 onClick={() => selectProject(TODAY_FILTER_ID)}
@@ -3584,45 +3598,6 @@ export default function TaskList({
             >
               Remove access
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Slim drill-in chrome: Back + Manage (replaces When/Layout + project tabs) */}
-      {!projectManageOpen && viewMode === "list" && !isViewingSharedProject && isListDrillIn && (
-        <div
-          className="panel-pad-x pt-1.5 pb-1.5 relative border-b border-surface-border dark:border-surface-border/80 no-print"
-          ref={projectMenuRef}
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <Button
-              type="button"
-              variant="chipActive"
-              size="sm"
-              className="gap-1.5 min-h-[2rem] shrink-0 touch-target-sm"
-              onClick={backFromProjectList}
-              title={`Return to ${drillReturnLabel} view`}
-              aria-label={`Back to ${drillReturnLabel}`}
-              data-tour="back-from-project-list"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to {drillReturnLabel}
-            </Button>
-            <div className="min-w-0 flex-1" />
-            <ListToolbarProjectMenu
-              project={listToolbarMenuProject}
-              user={user}
-              onManageProjects={openProjectManage}
-              onStartRename={(p) => {
-                startEditingProject(p);
-                openProjectManage();
-              }}
-              onShare={setShareModalProject}
-              onArchive={toggleProjectArchived}
-              onDelete={deleteProject}
-            />
           </div>
         </div>
       )}
@@ -3847,6 +3822,7 @@ export default function TaskList({
               )}
               {p.color && (
                 <ProjectColorSwatch
+                  nested
                   projectName={p.name}
                   color={p.color}
                   onOpenColor={(x, y) => listProjectEditMenu.openColor(p.id, x, y)}
@@ -3922,6 +3898,7 @@ export default function TaskList({
                     >
                       {p.color && (
                         <ProjectColorSwatch
+                          nested
                           projectName={p.name}
                           color={p.color}
                           onOpenColor={(x, y) => listProjectEditMenu.openColor(p.id, x, y)}

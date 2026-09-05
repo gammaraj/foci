@@ -10,6 +10,13 @@ import { useFocusSession } from "@/components/FocusSessionProvider";
 const TITLE_HOST_ID = "foci-focus-bar-title";
 const ACTIONS_HOST_ID = "foci-focus-bar-actions";
 
+export {
+  FocusBarActionRow,
+  FocusBarBackButton,
+  FocusBarHeading,
+  FocusBarMeta,
+} from "@/components/FocusBarHeading";
+
 /** Portal page title into the shared App Focus Bar. */
 export function FocusBarTitle({ children }: { children: React.ReactNode }) {
   const [host, setHost] = React.useState<HTMLElement | null>(null);

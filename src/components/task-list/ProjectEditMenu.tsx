@@ -93,6 +93,7 @@ export function ProjectColorSwatch({
   color,
   useAccentVar = false,
   className = "",
+  nested = false,
 }: {
   projectName: string;
   onOpenColor?: (x: number, y: number) => void;
@@ -101,6 +102,8 @@ export function ProjectColorSwatch({
   /** Use `.project-accent-swatch` (parent sets `--project-accent`). */
   useAccentVar?: boolean;
   className?: string;
+  /** Render as a span so it can sit inside a parent button. */
+  nested?: boolean;
 }) {
   const dot = (
     <span
@@ -125,17 +128,39 @@ export function ProjectColorSwatch({
     );
   }
 
+  const open = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    onOpenColor(r.left, r.bottom + 6);
+  };
+  const interactiveClass = `inline-flex shrink-0 items-center justify-center p-1 -m-0.5 rounded-full hover:bg-slate-500/10 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 transition-colors ${className}`;
+
+  if (nested) {
+    return (
+      <span
+        className={interactiveClass}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          open(e.currentTarget);
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+        title={`Change ${projectName} color`}
+      >
+        {dot}
+      </span>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        const r = e.currentTarget.getBoundingClientRect();
-        onOpenColor(r.left, r.bottom + 6);
+        open(e.currentTarget);
       }}
       onPointerDown={(e) => e.stopPropagation()}
-      className={`inline-flex shrink-0 items-center justify-center p-1 -m-0.5 rounded-full hover:bg-slate-500/10 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 transition-colors ${className}`}
+      className={interactiveClass}
       title={`Change ${projectName} color`}
       aria-label={`Change ${projectName} color`}
     >

@@ -4,6 +4,12 @@ import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { FocusBarTitle, FocusBarActions } from "@/components/AppFocusBar";
 import {
+  FocusBarActionRow,
+  FocusBarHeading,
+  FocusBarMeta,
+} from "@/components/FocusBarHeading";
+import { Button } from "@/components/ui/Button";
+import {
   loadStreakHistory,
   loadTasks,
   loadProjects,
@@ -558,32 +564,33 @@ export default function StatsPage() {
   return (
     <>
       <FocusBarTitle>
-        <div className="min-w-0">
-          <h1 className="text-sm sm:text-base font-semibold tracking-tight text-slate-800 dark:text-white leading-none">
-            Stats
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
-            Focus habits, sessions, and backlog health
-          </p>
-        </div>
+        <FocusBarHeading
+          meta={
+            <FocusBarMeta className="hidden min-[480px]:inline">
+              Focus habits, sessions, and backlog health
+            </FocusBarMeta>
+          }
+        >
+          Stats
+        </FocusBarHeading>
       </FocusBarTitle>
       <FocusBarActions>
-        <div className="flex gap-1 bg-slate-100 dark:bg-surface-hover rounded-lg p-0.5 shrink-0">
-          {([7, 30] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRange(r)}
-              className={`px-2.5 sm:px-3 py-1 text-sm font-medium rounded-md transition-all ${
-                range === r
-                  ? "bg-surface-elevated dark:bg-surface-recessed text-slate-900 dark:text-white shadow-sm"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-              }`}
-            >
-              {r}D
-            </button>
-          ))}
-        </div>
+        <FocusBarActionRow>
+          <div className="app-seg-track flex items-center gap-0" role="group" aria-label="Stats range">
+            {([7, 30] as const).map((r) => (
+              <Button
+                key={r}
+                type="button"
+                variant={range === r ? "chipActive" : "chip"}
+                size="sm"
+                aria-pressed={range === r}
+                onClick={() => setRange(r)}
+              >
+                {r}D
+              </Button>
+            ))}
+          </div>
+        </FocusBarActionRow>
       </FocusBarActions>
 
       <main className="app-container py-4 sm:py-6">
