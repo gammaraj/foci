@@ -434,7 +434,7 @@ export function FocusDockToolbar({
           )}
           {sessions.streak > 0 && (
             <span
-              className="text-xs font-medium text-orange-600 dark:text-orange-400 shrink-0"
+              className="text-xs font-medium text-orange-700 dark:text-orange-300 shrink-0"
               title={`${sessions.streak}-day streak`}
             >
               🔥
@@ -449,7 +449,7 @@ export function FocusDockToolbar({
             </span>
             {sessions.streak > 0 && (
               <span
-                className="hidden sm:inline text-orange-600 dark:text-orange-400 text-xs font-medium"
+                className="hidden sm:inline text-orange-700 dark:text-orange-300 text-xs font-medium"
                 title={`${sessions.streak}-day streak`}
               >
                 🔥 {sessions.streak}d
@@ -886,7 +886,7 @@ export default function FocusDockPanel({
             <button
               type="button"
               onClick={onToggleExpanded}
-              className="p-2 rounded-lg text-slate-500 dark:text-white/60 hover:bg-black/[0.04] dark:hover:bg-white/10"
+              className="p-2 rounded-lg text-slate-500 dark:text-white/80 hover:bg-black/[0.04] dark:hover:bg-white/10"
               aria-label="Collapse timer"
               title="Collapse"
             >

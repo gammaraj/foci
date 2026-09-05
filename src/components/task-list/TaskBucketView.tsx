@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { MAX_TASK_TITLE, OVERDUE_ROW_CLASS, resolveProjectColor } from "@/components/task-list/utils";
+import { MAX_TASK_TITLE, OVERDUE_ROW_CLASS, TASK_CHECK_DONE_CLASS, TASK_CHECK_OPEN_CLASS, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -323,8 +323,8 @@ function BucketTaskCard({
           onClick={() => onToggleComplete(task.id)}
           className={`w-4 h-4 mt-[3px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center transition-colors ${
             task.completed
-              ? "bg-emerald-500 border-emerald-500 text-white"
-              : "border-slate-300/90 dark:border-slate-600 hover:border-emerald-400 dark:hover:border-emerald-500"
+              ? TASK_CHECK_DONE_CLASS
+              : `${TASK_CHECK_OPEN_CLASS} hover:border-emerald-600 dark:hover:border-emerald-600`
           }`}
           aria-label={`Mark "${task.title}" complete`}
         >

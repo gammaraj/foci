@@ -50,14 +50,13 @@ type NavLink = {
 };
 
 function navLinkClass(active: boolean, mobile = false) {
+  const tone = active ? "nav-chrome-link nav-chrome-link-active" : "nav-chrome-link";
   if (mobile) {
-    return active
-      ? "nav-chrome-link-active px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full bg-blue-500/10 dark:bg-blue-400/10"
-      : "nav-chrome-link px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full";
+    return `${tone} px-3 py-2.5 rounded-lg text-base transition-colors text-left w-full${
+      active ? " bg-blue-500/10 dark:bg-blue-400/10" : ""
+    }`;
   }
-  return active
-    ? "nav-chrome-link-active text-[0.9375rem] transition-colors"
-    : "nav-chrome-link text-[0.9375rem] transition-colors";
+  return `${tone} text-[0.9375rem] transition-colors`;
 }
 
 const chromeIconBtn = "nav-chrome-icon-btn";
@@ -203,16 +202,16 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
             <div className="hidden roomy:block flex-1 min-w-0" aria-hidden />
           )}
 
-          <div className="hidden roomy:flex items-center gap-1 flex-shrink-0 ml-auto">
+          <div className="hidden roomy:flex items-center flex-shrink-0 ml-auto">
             {navLinks.length > 0 ? (
               <>
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center">
                   {navLinks.map((link) => renderNavLink(link))}
                 </div>
-                <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
+                <span className="nav-chrome-divider w-px h-4 mx-2.5 rounded-full self-center" aria-hidden />
               </>
             ) : null}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center">
               {toolbarSlot}
               {onOpenSettings && (
                 <button
@@ -222,24 +221,24 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
                   aria-label="Open settings"
                   title="Timer, data, and sharing settings"
                 >
-                  <SettingsIcon className="w-4 h-4 opacity-80" />
+                  <SettingsIcon className="w-4 h-4" />
                   <span>Settings</span>
                 </button>
               )}
             </div>
             {toolbarSlot || onOpenSettings ? (
-              <span className="nav-chrome-divider w-px h-4 mx-2 rounded-full self-center" aria-hidden />
+              <span className="nav-chrome-divider w-px h-4 mx-2.5 rounded-full self-center" aria-hidden />
             ) : null}
-            <ThemeToggle className={chromeIconBtn} />
-            {user ? (
-              <div className="ml-1.5">
+            <div className="flex items-center">
+              <ThemeToggle className={chromeIconBtn} />
+              {user ? (
                 <UserMenu />
-              </div>
-            ) : (
-              <ButtonLink href="/login" size="md" className="ml-2">
-                Log in
-              </ButtonLink>
-            )}
+              ) : (
+                <ButtonLink href="/login" size="md" className="ml-1.5">
+                  Log in
+                </ButtonLink>
+              )}
+            </div>
           </div>
 
           <div className="flex roomy:hidden items-center gap-0.5 ml-auto">

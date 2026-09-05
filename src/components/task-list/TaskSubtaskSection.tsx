@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Subtask, Task } from "@/lib/types";
-import { formatDueDate, isDueDateOverdue } from "@/components/task-list/utils";
+import { formatDueDate, isDueDateOverdue, TASK_CHECK_DONE_CLASS, TASK_CHECK_OPEN_CLASS } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 
 export interface TaskSubtaskSectionProps {
@@ -203,8 +203,8 @@ export function TaskSubtaskSection({
                     compact ? "w-3.5 h-3.5" : spacious ? "w-5 h-5" : "w-4 h-4"
                   } ${
                     sub.completed
-                      ? "border-emerald-500 bg-emerald-500"
-                      : "border-slate-300 dark:border-slate-600 hover:border-blue-500"
+                      ? TASK_CHECK_DONE_CLASS
+                      : `${TASK_CHECK_OPEN_CLASS} hover:border-blue-500`
                   }`}
                   aria-label={`Toggle subtask "${sub.title}"`}
                 >

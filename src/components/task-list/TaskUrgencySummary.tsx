@@ -94,7 +94,7 @@ export function TaskUrgencySummary({
           className={`${pad} border border-orange-200/80 dark:border-orange-800/50 bg-surface-elevated text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-900/20 shadow-sm`}
           title={`${dueTodayCount} due today`}
         >
-          <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-500 text-white text-xs font-bold tabular-nums leading-none shrink-0">
+          <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-orange-700 text-white text-xs font-bold tabular-nums leading-none shrink-0">
             {dueTodayCount}
           </span>
           <span className="leading-none whitespace-nowrap">due today</span>

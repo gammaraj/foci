@@ -72,7 +72,7 @@ export default function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="nav-chrome-btn rounded-full p-1.5"
+        className="nav-chrome-btn rounded-full p-0.5"
         aria-label="User menu"
         aria-expanded={open}
       >

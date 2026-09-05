@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import type { Task, Project } from "@/lib/types";
 import { ALL_PROJECTS_ID } from "@/lib/types";
-import { formatDueDate, MAX_TASK_TITLE } from "./utils";
+import { formatDueDate, MAX_TASK_TITLE, TASK_DONE_DOT_CLASS } from "./utils";
 import { formatDateLocal, getToday } from "@/lib/dates";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
@@ -228,7 +228,7 @@ export default function TaskCalendarView({
                   const chipColor = isSelected
                     ? "bg-white/20 text-white"
                     : t.completed
-                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                      ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300"
                       : hasOverdue && !t.completed
                         ? "urgency-chip--soft"
                         : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400";
@@ -255,7 +255,7 @@ export default function TaskCalendarView({
 
       <div className="flex items-center justify-center gap-4 mt-3 text-xs text-slate-400 dark:text-slate-300">
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Pending</div>
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> Done</div>
+        <div className="flex items-center gap-1"><div className={`w-2 h-2 rounded-full ${TASK_DONE_DOT_CLASS}`} /> Done</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[var(--urgency-chip)]" /> Overdue</div>
       </div>
 
@@ -339,7 +339,7 @@ export default function TaskCalendarView({
                   }`}
                 >
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    task.completed ? "bg-green-400" : selectedDay < todayStr ? "bg-[var(--urgency-chip)]" : "bg-blue-400"
+                    task.completed ? TASK_DONE_DOT_CLASS : selectedDay < todayStr ? "bg-[var(--urgency-chip)]" : "bg-blue-400"
                   }`} />
                   {editingId === task.id && canEditTitle ? (
                     <input

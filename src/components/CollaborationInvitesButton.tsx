@@ -235,7 +235,7 @@ export default function CollaborationInvitesButton() {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          className="w-4 h-4 opacity-80"
+          className="w-4 h-4"
           aria-hidden
         >
           <path

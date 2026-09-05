@@ -14,6 +14,7 @@ import {
   overdueDayChipClass,
   META_CHIP_CLASS,
   resolveProjectColor,
+  TASK_CHECK_OPEN_CLASS,
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
 import { QuickAddForm } from "@/components/task-list/QuickAddForm";
@@ -343,7 +344,7 @@ function CardTaskRow({
             aria-label={`Mark "${task.title}" complete`}
           >
             <span
-              className="w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-500 group-hover/row:border-blue-500 dark:group-hover/row:border-blue-400"
+              className={`w-4 h-4 rounded border-2 ${TASK_CHECK_OPEN_CLASS} group-hover/row:border-blue-500 dark:group-hover/row:border-blue-400`}
               aria-hidden
             />
           </button>

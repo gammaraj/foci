@@ -26,6 +26,7 @@ import {
 import { positionTourTooltip } from "@/lib/tour-tooltip";
 import { Button } from "@/components/ui/Button";
 import { FociDot } from "@/components/FociDot";
+import { TASK_CHECK_DONE_CLASS, TASK_CHECK_OPEN_CLASS } from "@/components/task-list/utils";
 
 function queryVisibleTourTarget(selector: string): Element | null {
   const nodes = document.querySelectorAll(selector);
@@ -268,10 +269,10 @@ export default function OnboardingTour() {
                 <span
                   className={`mt-0.5 inline-flex w-4 h-4 items-center justify-center rounded-full border text-xs font-bold shrink-0 ${
                     done
-                      ? "border-emerald-500 bg-emerald-500 text-white"
+                      ? TASK_CHECK_DONE_CLASS
                       : current
                         ? "border-blue-500 text-blue-600 dark:text-blue-300"
-                        : "border-slate-300 dark:border-slate-600 text-transparent"
+                        : `${TASK_CHECK_OPEN_CLASS} text-transparent`
                   }`}
                   aria-hidden
                 >

@@ -107,6 +107,7 @@ import {
   resolveProjectColor,
   pickProjectColor,
   filterTasksByQuery,
+  TASK_CHECK_DONE_CLASS,
 } from "@/components/task-list/utils";
 import { OneThingCard } from "@/components/task-list/OneThingCard";
 import {
@@ -4233,7 +4234,7 @@ export default function TaskList({
                   >
                     <button
                       onClick={() => toggleComplete(task.id)}
-                      className="flex-shrink-0 w-5 h-5 rounded border-2 border-green-400 bg-green-500 flex items-center justify-center"
+                      className={`flex-shrink-0 w-5 h-5 rounded border-2 ${TASK_CHECK_DONE_CLASS} flex items-center justify-center`}
                       aria-label={`Mark "${task.title}" incomplete`}
                     >
                       <svg

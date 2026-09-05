@@ -234,11 +234,21 @@ export const CHIP_TONE = {
   subtasksOpen: "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700",
   timing: "bg-blue-700 text-white border-blue-700",
   selected: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700/50",
-  high: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-900/50",
-  med: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-900/50",
-  low: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/50",
+  high: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-900/50",
+  med: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-900/50",
+  low: "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-900/50",
   project: "bg-slate-100 dark:bg-surface-hover text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-surface-border",
 } as const;
+
+/** Empty complete checkbox — border dark enough to read on navy and mist. */
+export const TASK_CHECK_OPEN_CLASS = "border-slate-400 dark:border-slate-400";
+
+/** Filled complete checkbox — dark enough that a white check stays visible. */
+export const TASK_CHECK_DONE_CLASS =
+  "border-emerald-700 bg-emerald-700 text-white dark:border-emerald-800 dark:bg-emerald-800";
+
+/** Solid done marker (calendar dots) — same green as the filled checkbox. */
+export const TASK_DONE_DOT_CLASS = "bg-emerald-700 dark:bg-emerald-800";
 
 /** Left-rail overdue row — no full wash (Cards look). */
 export const OVERDUE_ROW_CLASS = "card-row--overdue";

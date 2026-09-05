@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { Task } from "@/lib/types";
-import { CHIP_TONE, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass } from "@/components/task-list/utils";
+import { CHIP_TONE, formatDuration, formatOverdueChip, formatOverdueLabel, getDaysOverdue, META_CHIP_CLASS, OVERDUE_ROW_CLASS, overdueDayChipClass, TASK_CHECK_OPEN_CLASS } from "@/components/task-list/utils";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
 import {
@@ -214,7 +214,7 @@ export default function OpenTaskList({
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); onToggleComplete(task.id); }}
-            className="flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-slate-300 dark:border-slate-500 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center"
+            className={`flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5 rounded border-2 ${TASK_CHECK_OPEN_CLASS} hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:animate-check-bounce flex items-center justify-center`}
             aria-label={`Mark "${task.title}" complete`}
           />
           <div className="flex-1 min-w-0">

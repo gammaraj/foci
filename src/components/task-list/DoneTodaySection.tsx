@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import type { Task } from "@/lib/types";
 import { formatDoneTaskMeta } from "@/lib/done-today";
+import { TASK_CHECK_DONE_CLASS } from "@/components/task-list/utils";
 
 interface DoneTodaySectionProps {
   tasks: Task[];
@@ -195,7 +196,7 @@ export function DoneTodaySection({
                 <button
                   type="button"
                   onClick={() => onToggleComplete(task.id)}
-                  className="flex-shrink-0 w-5 h-5 rounded border-2 border-emerald-400 bg-emerald-500 flex items-center justify-center"
+                  className={`flex-shrink-0 w-5 h-5 rounded border-2 ${TASK_CHECK_DONE_CLASS} flex items-center justify-center`}
                   aria-label={`Mark "${task.title}" incomplete`}
                 >
                   <svg

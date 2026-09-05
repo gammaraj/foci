@@ -147,8 +147,8 @@ export default function DueRemindersButton() {
         </svg>
         {badgeCount > 0 && (
           <span
-            className={`absolute -top-0.5 -right-0.5 min-w-[1.15rem] h-[1.15rem] px-0.5 flex items-center justify-center rounded-full text-xs font-bold text-white ${
-              overdueCount > 0 ? "bg-rose-600" : "bg-orange-500"
+            className={`absolute top-0 right-0 min-w-[1.15rem] h-[1.15rem] px-0.5 flex items-center justify-center rounded-full text-xs font-bold text-white ${
+              overdueCount > 0 ? "bg-rose-700" : "bg-orange-700"
             }`}
           >
             {badgeCount > 9 ? "9+" : badgeCount}
@@ -199,8 +199,8 @@ export default function DueRemindersButton() {
                       <span
                         className={`mt-0.5 shrink-0 inline-flex items-center h-5 px-1.5 rounded text-xs font-bold tabular-nums ${
                           kind === "overdue"
-                            ? "bg-rose-600 text-white"
-                            : "bg-orange-500 text-white"
+                            ? "bg-rose-700 text-white"
+                            : "bg-orange-700 text-white"
                         }`}
                       >
                         {kind === "overdue" ? formatOverdueChip(daysLate) : "Today"}

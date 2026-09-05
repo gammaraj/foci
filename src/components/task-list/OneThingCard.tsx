@@ -185,7 +185,7 @@ function QuoteColumn({
             <button
               type="button"
               onClick={commit}
-              className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              className="px-2 py-0.5 text-xs font-semibold rounded-md bg-blue-700 text-white hover:bg-blue-800"
             >
               Save
             </button>
