@@ -54,9 +54,9 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "Foci vs Forest — free timer, tasks, and ambient sounds vs paid gamified trees. Feature and pricing comparison for real work sessions.",
   },
   "best-music-for-studying-and-focus": {
-    title: "Best Music for Studying: What Actually Helps Focus",
+    title: "Best Music for Studying: Brown Noise, Lo-Fi & Classical",
     description:
-      "Best music for studying in 2026 — brown noise, lo-fi, rain, and classical ranked by task. Free built-in study sounds in Foci (no signup).",
+      "What type of music helps you focus while studying? Brown noise, lo-fi, rain, and classical ranked by task — free study sounds in Foci.",
   },
   "52-17-rule-guide": {
     title: "52/17 Rule Explained — Work 52, Break 17 (Not Cirillo)",
@@ -64,14 +64,14 @@ export const BLOG_POST_META_OVERRIDES: Record<
       "What is the 52/17 rule? DeskTime research, vs Pomodoro, and the Francesco Cirillo myth debunked. Try the 52/17 preset free in Foci.",
   },
   "pomodoro-vs-flowtime-vs-52-17": {
-    title: "Flowtime vs Pomodoro vs 52/17: Which Is Better?",
+    title: "Flowtime vs Pomodoro vs 52/17 — Which Should You Use?",
     description:
-      "Flowtime vs Pomodoro vs 52/17 compared for studying, coding, and deep work — clear pick for each. Free timer for all three in Foci.",
+      "Flowtime vs Pomodoro vs 52/17 for studying, coding, and deep work — clear pick for each. Free timer for all three in Foci, no signup.",
   },
   "flowtime-technique-guide": {
-    title: "Flowtime Technique Guide — How It Works (Free Timer)",
+    title: "What Is Flowtime? Technique Guide + Free Timer",
     description:
-      "What is the Flowtime technique (flowmodoro)? Work until focus fades, take proportional breaks, vs Pomodoro. Free Flowtime timer in Foci.",
+      "What is Flowtime (flowmodoro)? Work until focus fades, take proportional breaks — vs Pomodoro. Free Flowtime timer in Foci, no signup.",
   },
   "adhd-focus-strategies": {
     title: "ADHD Focus Strategies That Actually Work (2026)",
@@ -209,13 +209,13 @@ export interface GuideLink {
 export const GUIDE_HUB_LINKS: GuideLink[] = [
   {
     slug: "flowtime-technique-guide",
-    label: "Flowtime technique guide",
-    description: "How Flowtime works, break ratios, flowmodoro, and when to use it.",
+    label: "What is Flowtime?",
+    description: "Flowtime / flowmodoro explained — break ratios, vs Pomodoro, and a free timer.",
   },
   {
     slug: "pomodoro-vs-flowtime-vs-52-17",
     label: "Flowtime vs Pomodoro vs 52/17",
-    description: "Side-by-side comparison with a clear pick for studying, coding, and deep work.",
+    description: "Which should you use for studying, coding, and deep work?",
   },
   {
     slug: "pomodoro-technique-guide",

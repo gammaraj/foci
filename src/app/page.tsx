@@ -100,7 +100,7 @@ const jsonLd = {
     "Shared with me multi-column list; Remove access to drop shared project or account access",
     "Projects manage: 2–3 column grid, full-width expand, muted compact color swatches",
     "Card view (default): project cards with drag-and-drop task reorder and slide-over task detail drawer",
-    "Bucket board view: kanban columns per project with drag-and-drop reorder and cross-project moves",
+    "Bucket board view: kanban columns per project — reorder columns, drag tasks within a section, or move across projects",
     "List and calendar task views",
     "Import tasks from Google Tasks, Todoist, Asana, and Notion with destination picker and new vs existing project preview",
     "Export tasks as JSON or CSV for backup and migration",

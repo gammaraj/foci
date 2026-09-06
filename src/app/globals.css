@@ -1583,6 +1583,7 @@ textarea:focus-visible {
   #tasks-section button[title="Deselect task"],
   #tasks-section [draggable][aria-label*="Drag"],
   #tasks-section [title="Drag to reorder projects"],
+  #tasks-section [title="Drag to reorder columns"],
   #tasks-section .hover-reveal-desktop,
   #tasks-section form,
   #tasks-section select,

@@ -3390,7 +3390,7 @@ export default function TaskList({
         <div className="no-print hidden roomy:flex panel-pad-x py-2.5 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-surface-border dark:border-surface-border/80 bg-surface-muted/70 dark:bg-surface-muted/50">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <span className="hidden lg:inline app-text-meta text-slate-400 dark:text-slate-500">
-              Drag to reorder · pin columns · manage in Projects (nav or ⋯)
+              ⋮⋮ reorders columns · drag tasks in a section · ★ pins
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -3483,6 +3483,13 @@ export default function TaskList({
           scrollToProjectToken={bucketScrollToken}
           renderBelowTask={preparingPrint ? () => null : renderGridSubtasks}
           projectEdit={projectEdit}
+          dragProjectId={dragProjectId}
+          dragOverProjectId={dragOverProjectId}
+          onProjectDragStart={handleProjectDragStart}
+          onProjectDragOver={handleProjectDragOver}
+          onProjectDrop={handleProjectDrop}
+          onProjectDragEnd={handleProjectDragEnd}
+          onMoveProject={handleMoveProject}
         />
       )}
 

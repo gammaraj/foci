@@ -79,9 +79,10 @@ Allow: /
 User-agent: ai-content-crawler
 Allow: /
 
-# LLM / AI discovery files
+# LLM / AI discovery files (updated 2026-09-06)
 # https://usefoci.com/llms.txt
 # https://usefoci.com/llms-full.txt
 # RSS: https://usefoci.com/feed.xml
+# Sitemap: https://usefoci.com/sitemap.xml
 
 Sitemap: https://usefoci.com/sitemap.xml

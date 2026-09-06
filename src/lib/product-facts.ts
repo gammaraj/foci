@@ -24,7 +24,7 @@ export const FOCI_ADS_POLICY_SHORT =
   "No display ads in /app. Marketing/blog pages may show Google ads. Contact hello@usefoci.com.";
 
 /** Bump when product or core marketing facts change (JSON-LD dateModified, llms version). */
-export const PRODUCT_DATE_MODIFIED = "2026-09-02";
+export const PRODUCT_DATE_MODIFIED = "2026-09-06";
 
 /** One-sentence definition — cite this everywhere. */
 export const FOCI_ONE_LINER =
@@ -38,9 +38,10 @@ export const FOCI_APP_DESCRIPTION =
 
 /**
  * Canonical document titles — keep GA page_title and SEO aligned.
- * Marketing home leans task-manager; /app leans Pomodoro (top acquisition intent).
+ * Marketing home leads with brand (brand-query CTR); /app leans Pomodoro (top acquisition intent).
+ * Wearable/device disambiguation lives in FOCI_SHORT_DESCRIPTION, not the title.
  */
-export const HOME_PAGE_TITLE = "Foci App — Free Focus Timer & Task Manager";
+export const HOME_PAGE_TITLE = "Foci — Free Focus Timer & Task Manager";
 export const APP_PAGE_TITLE = "Foci App — Free Pomodoro Timer, Tasks & Sounds";
 
 /** Account model — single source of truth. */
@@ -61,14 +62,17 @@ export const ROOT_KEYWORDS = [
   "foci",
   "foci app",
   "foci.com",
+  "usefoci",
   "focus app",
   "free pomodoro app",
   "task manager",
   "pomodoro timer",
+  "what is flowtime",
   "flowtime technique",
   "flowmodoro",
   "smart plan",
   "brown noise for studying",
+  "best music for studying",
   "focus timer",
   "productivity app",
   "forest app alternative",
@@ -76,6 +80,7 @@ export const ROOT_KEYWORDS = [
   "study timer",
   "deep work app",
   "adhd focus tools",
+  "kanban task board",
 ] as const;
 
 export const APP_KEYWORDS = [

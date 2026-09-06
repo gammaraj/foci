@@ -125,6 +125,22 @@ interface TaskBucketViewProps {
   scrollToProjectToken?: number;
   /** Right-click / long-press to rename or recolor a project. */
   projectEdit?: ProjectEditHandlers;
+  /** Project column reorder (same handlers as card / tab order). */
+  dragProjectId?: string | null;
+  dragOverProjectId?: string | null;
+  onProjectDragStart?: (id: string) => void;
+  onProjectDragOver?: (e: React.DragEvent, id: string) => void;
+  onProjectDrop?: (id: string) => void;
+  onProjectDragEnd?: () => void;
+  onMoveProject?: (projectId: string, direction: "up" | "down") => void;
+}
+
+function GripIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+      <path d="M7 4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM7 13a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
+    </svg>
+  );
 }
 
 const LANE_COLLAPSE_THRESHOLD = 4;
@@ -509,6 +525,8 @@ function BucketTaskCard({
 
 function BucketColumn({
   project,
+  projectIndex,
+  projectCount,
   tasks,
   completedCount = 0,
   doneTodayTasks = [],
@@ -520,6 +538,13 @@ function BucketColumn({
   dragOverTaskId,
   dragOverColumn,
   dragEnabled,
+  dragProjectId = null,
+  dragOverProjectId = null,
+  onProjectDragStart,
+  onProjectDragOver,
+  onProjectDrop,
+  onProjectDragEnd,
+  onMoveProject,
   onToggleComplete,
   onStartTask,
   onSelectTask,
@@ -554,6 +579,8 @@ function BucketColumn({
   renderBelowTask,
 }: {
   project: Project;
+  projectIndex: number;
+  projectCount: number;
   tasks: Task[];
   completedCount?: number;
   doneTodayTasks?: Task[];
@@ -565,6 +592,13 @@ function BucketColumn({
   dragOverTaskId: string | null;
   dragOverColumn: { projectId: string; swimlaneId: BucketSwimlaneId } | null;
   dragEnabled: boolean;
+  dragProjectId?: string | null;
+  dragOverProjectId?: string | null;
+  onProjectDragStart?: (id: string) => void;
+  onProjectDragOver?: (e: React.DragEvent, id: string) => void;
+  onProjectDrop?: (id: string) => void;
+  onProjectDragEnd?: () => void;
+  onMoveProject?: (projectId: string, direction: "up" | "down") => void;
   onToggleComplete: (taskId: string) => void;
   onStartTask: (taskId: string) => void;
   onSelectTask: (taskId: string | null) => void;
@@ -601,6 +635,9 @@ function BucketColumn({
   const [draft, setDraft] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
   const topAddInputRef = useRef<HTMLInputElement>(null);
+  const canReorderColumns = projectCount >= 2 && !!onProjectDragStart;
+  const isColumnDragging = dragProjectId === project.id;
+  const isColumnDropTarget = dragOverProjectId === project.id && dragProjectId !== project.id;
   const swimlanes = buildSwimlanes(tasks, activeTaskId, datedLaneLabel);
   const showLaneHeaders = tasks.length > 0;
   /** Explicit user toggles win over smart defaults (so undated stays visible until they collapse it). */
@@ -649,7 +686,25 @@ function BucketColumn({
   return (
     <div
       data-bucket-project={project.id}
-      className={`${BUCKET_COLUMN_CLASS} project-surface project-accent-edge flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 ${columnHighlighted ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35" : ""}`}
+      onDragOver={(e) => {
+        if (!canReorderColumns || !onProjectDragOver || !dragProjectId) return;
+        onProjectDragOver(e, project.id);
+      }}
+      onDrop={(e) => {
+        if (!canReorderColumns || !onProjectDrop || !dragProjectId) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onProjectDrop(project.id);
+      }}
+      className={`${BUCKET_COLUMN_CLASS} project-surface project-accent-edge flex flex-col rounded-2xl min-h-[10rem] max-h-[calc(100vh-12.5rem)] sm:max-h-[calc(100vh-11rem)] transition-all duration-200 ${
+        isColumnDragging ? "opacity-40" : ""
+      } ${
+        isColumnDropTarget
+          ? "ring-2 ring-blue-400/70 dark:ring-blue-500/50"
+          : columnHighlighted
+            ? "ring-2 ring-blue-400/30 dark:ring-blue-500/35"
+            : ""
+      }`}
       style={{ ["--project-accent" as string]: accentColor } as React.CSSProperties}
     >
       <div
@@ -657,6 +712,61 @@ function BucketColumn({
         className="group/col flex items-center gap-2.5 px-3 py-3 shrink-0 lg:min-h-[4.25rem] rounded-t-2xl border-b border-slate-300/80 dark:border-surface-border/80 select-none"
         title={project.description?.trim() || `${project.name}. Right-click to rename.`}
       >
+        {canReorderColumns ? (
+          <span
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.effectAllowed = "move";
+              e.dataTransfer.setData("text/plain", project.id);
+              onProjectDragStart?.(project.id);
+              e.stopPropagation();
+            }}
+            onDragEnd={onProjectDragEnd}
+            onKeyDown={(e) => {
+              if (!onMoveProject) return;
+              if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                e.preventDefault();
+                onMoveProject(project.id, "up");
+              } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                e.preventDefault();
+                onMoveProject(project.id, "down");
+              }
+            }}
+            className="hidden sm:inline-flex text-slate-400 dark:text-slate-500 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 -ml-1 rounded hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
+            title="Drag to reorder columns"
+            aria-label={`Drag ${project.name} to reorder. Arrow keys also move.`}
+            role="button"
+            tabIndex={0}
+          >
+            <GripIcon />
+          </span>
+        ) : null}
+        {canReorderColumns && onMoveProject ? (
+          <div className="sm:hidden flex items-center shrink-0 -ml-0.5">
+            <button
+              type="button"
+              onClick={() => onMoveProject(project.id, "up")}
+              disabled={projectIndex === 0}
+              className="touch-target-sm p-1 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-surface-hover disabled:opacity-40"
+              aria-label={`Move ${project.name} left`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => onMoveProject(project.id, "down")}
+              disabled={projectIndex >= projectCount - 1}
+              className="touch-target-sm p-1 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 dark:hover:bg-surface-hover disabled:opacity-40"
+              aria-label={`Move ${project.name} right`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        ) : null}
         {onToggleProjectFavorite ? (
           <button
             type="button"
@@ -889,7 +999,7 @@ function BucketColumn({
                       editTitle={editTitle}
                       isDragging={dragTaskId === task.id}
                       isDragOver={dragOverTaskId === task.id && dragTaskId !== task.id}
-                      dragEnabled={dragEnabled}
+                      dragEnabled={dragEnabled && !dragProjectId}
                       onToggleComplete={onToggleComplete}
                       onStartTask={onStartTask}
                       onSelectTask={onSelectTask}
@@ -985,6 +1095,13 @@ export default function TaskBucketView({
   scrollToProjectId = null,
   scrollToProjectToken = 0,
   projectEdit,
+  dragProjectId = null,
+  dragOverProjectId = null,
+  onProjectDragStart,
+  onProjectDragOver,
+  onProjectDrop,
+  onProjectDragEnd,
+  onMoveProject,
 }: TaskBucketViewProps) {
   const projectMenu = useProjectEditMenu();
   const menu = projectMenu.menu;
@@ -1049,6 +1166,36 @@ export default function TaskBucketView({
     }
   }, [activeTaskId]);
 
+  // Auto-scroll the board horizontally while dragging a column near an edge.
+  useEffect(() => {
+    if (!dragProjectId) return;
+    const scroller = scrollContainerRef.current;
+    if (!scroller) return;
+
+    let raf = 0;
+    const EDGE = 56;
+    const SPEED = 14;
+
+    const onPointer = (clientX: number) => {
+      const rect = scroller.getBoundingClientRect();
+      let dx = 0;
+      if (clientX < rect.left + EDGE) dx = -SPEED;
+      else if (clientX > rect.right - EDGE) dx = SPEED;
+      if (!dx) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        scroller.scrollLeft += dx;
+      });
+    };
+
+    const onDragOver = (e: DragEvent) => onPointer(e.clientX);
+    window.addEventListener("dragover", onDragOver);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("dragover", onDragOver);
+    };
+  }, [dragProjectId]);
+
   return (
     <div className="px-1 sm:px-2 pb-3 pt-1 min-h-0">
       <div className="relative">
@@ -1057,10 +1204,12 @@ export default function TaskBucketView({
           className="w-full flex gap-4 overflow-x-auto print:overflow-visible print:flex-wrap pb-2 pr-1 scrollbar-hide items-stretch scroll-smooth overscroll-x-contain"
           onScroll={showScrollHint ? dismissScrollHint : undefined}
         >
-        {orderedColumns.map((project) => (
+        {orderedColumns.map((project, projectIndex) => (
           <BucketColumn
             key={project.id}
             project={project}
+            projectIndex={projectIndex}
+            projectCount={orderedColumns.length}
             tasks={tasksByProject.get(project.id) ?? []}
             completedCount={completedCountByProject?.get(project.id) ?? 0}
             doneTodayTasks={doneTodayByProject?.get(project.id) ?? []}
@@ -1072,6 +1221,13 @@ export default function TaskBucketView({
             dragOverTaskId={dragOverTaskId}
             dragOverColumn={dragOverColumn}
             dragEnabled={dragEnabled}
+            dragProjectId={dragProjectId}
+            dragOverProjectId={dragOverProjectId}
+            onProjectDragStart={onProjectDragStart}
+            onProjectDragOver={onProjectDragOver}
+            onProjectDrop={onProjectDrop}
+            onProjectDragEnd={onProjectDragEnd}
+            onMoveProject={onMoveProject}
             onToggleComplete={onToggleComplete}
             onStartTask={onStartTask}
             onSelectTask={onSelectTask}

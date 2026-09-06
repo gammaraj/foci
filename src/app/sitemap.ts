@@ -65,7 +65,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${siteUrl}/app/${segment}`,
     lastModified: siteContentDate,
     changeFrequency: "weekly" as const,
-    priority: segment === "plan" || segment === "cards" ? 0.92 : 0.88,
+    // Cards + Plan + Buckets are primary acquisition / product layouts.
+    priority:
+      segment === "plan" || segment === "cards" || segment === "buckets" ? 0.92 : 0.88,
     images: [`${siteUrl}/opengraph-image`],
   }));
 

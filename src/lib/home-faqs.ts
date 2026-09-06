@@ -53,7 +53,12 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: "What task views does Foci have?",
     answer:
-      "Cards (default), Buckets (kanban), List, Calendar, and Smart Plan. Each has a shareable URL: usefoci.com/app/cards, /app/buckets, /app/list, /app/calendar, and /app/plan.",
+      "Cards (default), Buckets (kanban), List, Calendar, and Smart Plan. Each has a shareable URL: usefoci.com/app/cards, /app/buckets, /app/list, /app/calendar, and /app/plan. In Buckets, drag ⋮⋮ on a column header (or ← → on mobile) to reorder project columns; drag tasks within a section or across projects to move them.",
+  },
+  {
+    question: "What is Flowtime (flowmodoro)?",
+    answer:
+      "Flowtime (also called flowmodoro) is a focus method where you work until concentration fades, then take a proportional break — unlike Pomodoro's fixed 25-minute blocks. Foci includes a free Flowtime timer. Full guide: usefoci.com/blog/flowtime-technique-guide · comparison: usefoci.com/blog/pomodoro-vs-flowtime-vs-52-17.",
   },
   {
     question: "Can I import tasks from Todoist, Notion, Asana, or Google Tasks?",

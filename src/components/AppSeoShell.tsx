@@ -38,7 +38,7 @@ const appJsonLd = {
     "Offline ambient sounds including brown noise, rain, and café",
     "Live lo-fi streams and curated Spotify playlists",
     "Daily goals and streak tracking",
-    "Card, list, bucket (kanban), calendar, and Smart Plan views",
+    "Card, list, bucket (kanban with reorderable columns), calendar, and Smart Plan views",
     "Import from Todoist, Notion, Asana, Google Tasks",
     "Recurring tasks (daily, weekly, monthly, yearly) with next occurrence on complete",
     "Account and project collaboration with viewer/editor roles",
@@ -79,7 +79,7 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
               <a href={`${SITE_URL}/app/cards`}>Cards</a> — default project cards
             </li>
             <li>
-              <a href={`${SITE_URL}/app/buckets`}>Buckets</a> — kanban columns
+              <a href={`${SITE_URL}/app/buckets`}>Buckets</a> — kanban columns you can reorder; drag tasks within a section or across projects
             </li>
             <li>
               <a href={`${SITE_URL}/app/list`}>List</a> — grind through open work
@@ -104,7 +104,7 @@ export default function AppSeoShell({ children }: { children: React.ReactNode })
             <li>Shared with me + Remove access for shared projects; account and project collaboration</li>
             <li>Muted project color swatches; 2–3 column Projects grid</li>
             <li>Offline ambient sounds: rain, café, white noise, brown noise</li>
-            <li>Card, list, bucket (kanban), calendar, and Smart Plan views</li>
+            <li>Card, list, bucket (kanban — reorder columns; drag tasks within a section or across projects), calendar, and Smart Plan views</li>
             <li>Import tasks from Todoist, Notion, Asana, or Google Tasks</li>
             <li>Optional free account to sync streaks across devices</li>
           </ul>
