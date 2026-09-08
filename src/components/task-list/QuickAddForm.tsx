@@ -68,7 +68,7 @@ export function QuickAddForm({
             type="button"
             onClick={() => {
               blurActiveInput();
-              onAddWithDetails();
+              onAddWithDetails?.();
             }}
             className={`shrink-0 inline-flex items-center gap-0.5 font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
               compact ? "text-xs" : "text-sm"
