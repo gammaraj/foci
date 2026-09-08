@@ -69,7 +69,7 @@ import {
 } from "@/lib/task-view-url";
 import TaskBucketView from "@/components/task-list/TaskBucketView";
 import TaskCardView from "@/components/task-list/TaskCardView";
-import { applyBucketDrop, moveCardTaskInProject, type BucketDropTarget } from "@/components/task-list/bucket-order";
+import { applyBucketDrop, moveCardTaskInProject, nextOrderForNewTask, type BucketDropTarget } from "@/components/task-list/bucket-order";
 import { TaskDetailPanel } from "@/components/task-list/TaskDetailPanel";
 import { TaskSubtaskSection } from "@/components/task-list/TaskSubtaskSection";
 import { TaskExpansionDrawer } from "@/components/task-list/TaskExpansionDrawer";
@@ -1569,18 +1569,10 @@ export default function TaskList({
               ? DEFAULT_PROJECT_ID
               : selectedProjectId));
 
-    // For tasks without a due date, place them at the top by assigning an order
-    // value below all existing manually-ordered tasks
-    let newOrder: number | undefined;
-    if (!dueDate) {
-      const orderSource = isViewingSharedProject ? currentSharedProjectTasks : tasks;
-      const orderedNoDueDateOrders = orderSource
-        .filter((t) => !t.completed && !t.archivedAt && !t.dueDate && t.order != null)
-        .map((t) => t.order as number);
-      if (orderedNoDueDateOrders.length > 0) {
-        newOrder = Math.min(...orderedNoDueDateOrders) - 1;
-      }
-    }
+    // Keep card/list order identical across devices: if this project already has
+    // manual order, give the new task a synced order at the top of that project.
+    const orderSource = isViewingSharedProject ? currentSharedProjectTasks : tasks;
+    const newOrder = nextOrderForNewTask(orderSource, projectId);
 
     const task: Task = {
       id: crypto.randomUUID(),
@@ -1971,12 +1963,14 @@ export default function TaskList({
       handleDragEnd();
       return;
     }
+    const pinTaskId =
+      oneThingPref?.date === getToday() ? oneThingPref.taskId : null;
     const updated = moveCardTaskInProject(
       tasks,
       projectId,
       dragTaskId,
       targetTaskId,
-      activeTaskId
+      pinTaskId
     );
     if (updated) persist(updated);
     handleDragEnd();

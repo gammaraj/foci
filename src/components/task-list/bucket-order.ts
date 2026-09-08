@@ -45,20 +45,33 @@ export function tasksInSwimlane(
   return sortBucketTasks(tasks, activeTaskId).filter((t) => getBucketSwimlaneId(t) === laneId);
 }
 
-/** Card view — swimlane priority first, or manual order once set via card drag. */
-export function sortCardTasks(tasks: Task[], activeTaskId: string | null): Task[] {
+/**
+ * Card view — swimlane priority first, or manual order once set via card drag.
+ * `pinTaskId` must be synced across devices (e.g. One Thing). Do not pass a
+ * device-local timer selection — that makes the truncated top-5 diverge.
+ */
+export function sortCardTasks(tasks: Task[], pinTaskId: string | null): Task[] {
   const hasManualOrder = tasks.some((t) => t.order != null);
   if (hasManualOrder) {
     return [...tasks].sort((a, b) => {
-      if (a.id === activeTaskId && b.id !== activeTaskId) return -1;
-      if (b.id === activeTaskId && a.id !== activeTaskId) return 1;
+      if (a.id === pinTaskId && b.id !== pinTaskId) return -1;
+      if (b.id === pinTaskId && a.id !== pinTaskId) return 1;
       if (a.order != null && b.order != null && a.order !== b.order) return a.order - b.order;
       if (a.order != null && b.order == null) return -1;
       if (a.order == null && b.order != null) return 1;
-      return sortBucketTasks([a, b], activeTaskId)[0].id === a.id ? -1 : 1;
+      return sortBucketTasks([a, b], pinTaskId)[0].id === a.id ? -1 : 1;
     });
   }
-  return SWIMLANE_ORDER.flatMap((laneId) => tasksInSwimlane(tasks, laneId, activeTaskId));
+  return SWIMLANE_ORDER.flatMap((laneId) => tasksInSwimlane(tasks, laneId, pinTaskId));
+}
+
+/** Place a new task at the top of a project that already has manual card/list order. */
+export function nextOrderForNewTask(tasks: Task[], projectId: string): number | undefined {
+  const projectOrders = tasks
+    .filter((t) => t.projectId === projectId && !t.completed && !t.archivedAt && t.order != null)
+    .map((t) => t.order as number);
+  if (projectOrders.length === 0) return undefined;
+  return Math.min(...projectOrders) - 1;
 }
 
 /** Reorder tasks within a project card (persists `order` on all open project tasks). */

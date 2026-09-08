@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   applyBucketDrop,
   moveBucketTaskInLane,
+  nextOrderForNewTask,
   sortBucketTasks,
+  sortCardTasks,
   tasksInSwimlane,
 } from "@/components/task-list/bucket-order";
 import type { Task } from "@/lib/types";
@@ -120,5 +122,57 @@ describe("sortBucketTasks", () => {
       task("b", "p1", { dueDate: "2020-01-10", order: 0 }),
     ];
     expect(sortBucketTasks(tasks, null).map((t) => t.id)).toEqual(["b", "a"]);
+  });
+});
+
+describe("sortCardTasks", () => {
+  it("puts unordered new tasks after manually ordered ones", () => {
+    const tasks = [
+      task("admin", "me", { order: 0, createdAt: 1 }),
+      task("gelato", "me", { order: 1, createdAt: 2 }),
+      task("test", "me", { createdAt: 99 }),
+    ];
+    expect(sortCardTasks(tasks, null).map((t) => t.id)).toEqual([
+      "admin",
+      "gelato",
+      "test",
+    ]);
+  });
+
+  it("pins only when a synced pin id is passed", () => {
+    const tasks = [
+      task("admin", "me", { order: 0 }),
+      task("gelato", "me", { order: 1 }),
+      task("test", "me", { order: 2 }),
+    ];
+    expect(sortCardTasks(tasks, null).slice(0, 2).map((t) => t.id)).toEqual([
+      "admin",
+      "gelato",
+    ]);
+    expect(sortCardTasks(tasks, "test").map((t) => t.id)[0]).toBe("test");
+  });
+});
+
+describe("nextOrderForNewTask", () => {
+  it("returns undefined when the project has no manual order", () => {
+    expect(nextOrderForNewTask([task("a", "me")], "me")).toBeUndefined();
+  });
+
+  it("scopes to the project and places the new task above existing order", () => {
+    const tasks = [
+      task("a", "me", { order: 2 }),
+      task("b", "me", { order: 5 }),
+      task("c", "other", { order: 0 }),
+    ];
+    expect(nextOrderForNewTask(tasks, "me")).toBe(1);
+  });
+
+  it("ignores completed and archived tasks", () => {
+    const tasks = [
+      task("done", "me", { order: 0, completed: true }),
+      task("open", "me", { order: 3 }),
+      task("archived", "me", { order: -10, archivedAt: 1 }),
+    ];
+    expect(nextOrderForNewTask(tasks, "me")).toBe(2);
   });
 });

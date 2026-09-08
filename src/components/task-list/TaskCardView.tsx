@@ -558,7 +558,8 @@ function ProjectCard({
   const [showAdd, setShowAdd] = useState(false);
   const addInputRef = useRef<HTMLInputElement>(null);
   const touchOverIdRef = useRef<string | null>(null);
-  const topTasks = sortCardTasks(tasks, activeTaskId).slice(0, 5);
+  // Pin synced One Thing only — local timer selection must not reshuffle the top-5 across devices.
+  const topTasks = sortCardTasks(tasks, oneThingTaskId ?? null).slice(0, 5);
   const remaining = tasks.length - topTasks.length;
   const overdueCount = tasks.filter((t) => isActionableOverdue(t)).length;
   const accentColor = resolveProjectColor(project);
