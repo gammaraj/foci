@@ -10,6 +10,7 @@ import {
   activateLocalStorage,
   hasOfflineCache,
   hasLocalWorkspaceSnapshot,
+  flushPendingStorageSyncs,
 } from "@/lib/storage";
 
 interface AuthContextType {
@@ -81,6 +82,9 @@ async function applyAuthState(
 ) {
   try {
     await ensureOfflineCapableStorage(sessionUser);
+    if (sessionUser) {
+      void flushPendingStorageSyncs();
+    }
   } catch (err) {
     reportError("Storage activation failed", err);
   }

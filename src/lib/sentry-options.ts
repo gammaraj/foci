@@ -23,11 +23,17 @@ function isServiceWorkerRegistrationNoise(error: unknown): boolean {
   );
 }
 
+function causedBy(error: unknown): unknown {
+  if (error instanceof Error) return error.cause;
+  return undefined;
+}
+
 export function sentryBeforeSend(event: ErrorEvent, hint: EventHint): ErrorEvent | null {
-  if (isAuthLockError(hint.originalException)) {
+  const original = hint.originalException;
+  if (isAuthLockError(original) || isAuthLockError(causedBy(original))) {
     return null;
   }
-  if (isServiceWorkerRegistrationNoise(hint.originalException)) {
+  if (isServiceWorkerRegistrationNoise(original) || isServiceWorkerRegistrationNoise(causedBy(original))) {
     return null;
   }
   return event;

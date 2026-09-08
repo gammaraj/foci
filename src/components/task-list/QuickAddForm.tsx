@@ -3,6 +3,13 @@
 import React from "react";
 import { MAX_TASK_TITLE } from "@/components/task-list/utils";
 
+function blurActiveInput() {
+  if (typeof document === "undefined") return;
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+}
+
 export function QuickAddForm({
   draft,
   onDraftChange,
@@ -25,7 +32,14 @@ export function QuickAddForm({
   const showDetails = Boolean(onAddWithDetails);
 
   return (
-    <form className={className} onSubmit={onSubmit}>
+    <form
+      className={className}
+      onSubmit={(e) => {
+        // Blur first so iOS dismisses the keyboard before the save fetch.
+        blurActiveInput();
+        onSubmit(e);
+      }}
+    >
       <div
         className={`flex items-center gap-1.5 rounded-xl bg-slate-100/70 dark:bg-white/5 focus-within:ring-2 focus-within:ring-blue-500/15 dark:focus-within:ring-blue-400/20 transition-shadow ${
           compact ? "px-2 py-1.5" : "px-3 py-2"
@@ -52,7 +66,10 @@ export function QuickAddForm({
         {showDetails && canSubmit ? (
           <button
             type="button"
-            onClick={onAddWithDetails}
+            onClick={() => {
+              blurActiveInput();
+              onAddWithDetails();
+            }}
             className={`shrink-0 inline-flex items-center gap-0.5 font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
               compact ? "text-xs" : "text-sm"
             }`}

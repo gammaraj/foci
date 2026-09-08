@@ -12,7 +12,7 @@ export { SupabaseStorageAdapter } from "./supabase";
 
 import { LocalStorageAdapter } from "./local";
 import { SupabaseStorageAdapter } from "./supabase";
-import { CachedSupabaseAdapter, clearOfflineCache, hasOfflineCache } from "./cached-supabase";
+import { CachedSupabaseAdapter, clearOfflineCache, hasOfflineCache, flushPendingStorageSyncs } from "./cached-supabase";
 import type { StorageAdapter } from "./types";
 import { createClient } from "../supabase/client";
 import { DEFAULT_SETTINGS, type DailyGoalData, type Project, type Settings, type StreakHistory, type Task } from "../types";
@@ -25,7 +25,7 @@ import {
   hasSessionAlarmOverride,
 } from "../timer-alarm";
 
-export { hasOfflineCache };
+export { hasOfflineCache, flushPendingStorageSyncs };
 export {
   hasLocalWorkspaceSnapshot,
   readLocalWorkspaceSnapshot,

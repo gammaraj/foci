@@ -24,6 +24,7 @@ import type { OneThingPreference } from "../one-thing";
 import { getToday, getYesterday, formatDateLocal, migrateDate } from "../dates";
 import { chunkArray } from "./chunk";
 import { appendAccountSharedProjects } from "./shared-projects";
+import { isTransientSyncError } from "./sync-errors";
 
 type TaskRow = {
   id: string;
@@ -99,26 +100,6 @@ function taskToRow(task: Task, userId: string) {
   };
 }
 
-function isTransientSyncError(message: string): boolean {
-  const m = message.toLowerCase();
-  return (
-    m.includes("connection timeout") ||
-    m.includes("upstream connect error") ||
-    m.includes("disconnect/reset") ||
-    m.includes("failed to fetch") ||
-    m.includes("networkerror") ||
-    m.includes("network request failed") ||
-    m.includes("load failed") ||
-    m.includes("timed out") ||
-    m.includes("timeout") ||
-    m.includes("fetch failed") ||
-    m.includes("abort") ||
-    m.includes("503") ||
-    m.includes("502") ||
-    m.includes("504")
-  );
-}
-
 async function withRetries<T>(
   run: () => Promise<T>,
   options?: { attempts?: number; label?: string },
@@ -131,7 +112,7 @@ async function withRetries<T>(
     } catch (err) {
       lastError = err;
       const message = err instanceof Error ? err.message : String(err);
-      if (!isTransientSyncError(message) || i === attempts - 1) throw err;
+      if (!isTransientSyncError(err) || i === attempts - 1) throw err;
       await new Promise((r) => setTimeout(r, 250 * (i + 1) * (i + 1)));
       console.warn(
         `[Foci] Retrying ${options?.label ?? "storage write"} (${i + 2}/${attempts}):`,
@@ -172,13 +153,27 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     if (this.cachedUserId) return this.cachedUserId;
     // Prefer local session so offline / flaky networks still resolve the user id.
     // getUser() always hits the Auth server and can hang or fail offline.
-    const {
-      data: { session },
-    } = await this.supabase.auth.getSession();
-    if (session?.user) {
-      this.cachedUserId = session.user.id;
-      return session.user.id;
+    const readSessionUser = async () => {
+      const {
+        data: { session },
+      } = await this.supabase.auth.getSession();
+      return session?.user ?? null;
+    };
+
+    const existing = await readSessionUser();
+    if (existing) {
+      this.cachedUserId = existing.id;
+      return existing.id;
     }
+
+    // Cache-first mobile paint can let the user add a task before auth hydrates.
+    await new Promise((r) => setTimeout(r, 150));
+    const retried = await readSessionUser();
+    if (retried) {
+      this.cachedUserId = retried.id;
+      return retried.id;
+    }
+
     const {
       data: { user },
     } = await this.supabase.auth.getUser();

@@ -14,7 +14,9 @@ function toError(value: unknown): Error {
 
 /**
  * Log an application error to the console and Sentry.
- * Filtered noise (auth lock conflicts, SW registration, etc.) is dropped in sentryBeforeSend.
+ * Always capture a wrapper named after the Foci message — raw AbortError /
+ * "Failed to fetch" / "Load failed" events are dropped by Sentry defaults
+ * and inbound filters, which hid mobile save failures.
  */
 export function reportError(
   message: string,
@@ -29,11 +31,19 @@ export function reportError(
     console.error(`[Foci] ${message}`);
   }
 
-  const exception = error !== undefined ? toError(error) : new Error(message);
+  const original = error !== undefined ? toError(error) : undefined;
+  const exception =
+    original && original.message === message
+      ? original
+      : new Error(message, original ? { cause: original } : undefined);
+
   Sentry.captureException(exception, {
     extra: {
       message,
       ...(context ?? {}),
+      ...(original && original !== exception
+        ? { originalErrorName: original.name, originalErrorMessage: original.message }
+        : {}),
       ...(error !== undefined && !(error instanceof Error) ? { originalError: error } : {}),
     },
   });
