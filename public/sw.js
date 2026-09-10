@@ -1,8 +1,10 @@
-const CACHE_VERSION = "9";
+const CACHE_VERSION = "10";
 const CACHE_NAME = `foci-v${CACHE_VERSION}`;
 const APP_SHELL = "/app";
 const STATIC_ASSETS = ["/", APP_SHELL, "/manifest.json", "/stats"];
-const NAV_TIMEOUT_MS = 2500;
+const NAV_TIMEOUT_MS = 3000;
+/** Longer than NAV_TIMEOUT_MS: revalidation must not delay the response. */
+const REVALIDATE_TIMEOUT_MS = 15000;
 const MATCH_OPTS = { ignoreSearch: true, ignoreVary: true };
 
 self.addEventListener("install", (event) => {
@@ -248,6 +250,21 @@ function cacheFirst(request) {
   });
 }
 
+/**
+ * Refresh the cached document (and the assets it references) after a slow or
+ * failed navigation, without delaying the response. Keeps the cached shell
+ * from pinning a device to an old deploy: the next launch serves the fresh one.
+ */
+async function revalidateShellInBackground(request) {
+  try {
+    const response = await fetchWithTimeout(request, REVALIDATE_TIMEOUT_MS);
+    if (!response || !response.ok) return;
+    await putDocumentAndAssets(request, response.clone());
+  } catch {
+    /* Still unreachable — keep the cached shell for now. */
+  }
+}
+
 async function networkFirstNavigation(event, request) {
   try {
     const response = await fetchWithTimeout(request, NAV_TIMEOUT_MS);
@@ -258,6 +275,9 @@ async function networkFirstNavigation(event, request) {
       return new Response("", { status: 503, statusText: "Offline" });
     }
     const url = new URL(request.url);
+    // Network was too slow or unreachable: serve the cached shell immediately,
+    // then refresh it in the background so the next launch picks up new deploys.
+    event.waitUntil(revalidateShellInBackground(request));
     const cached = await matchFromCaches(request);
     if (cached && (await htmlAssetsAreCached(cached))) {
       return cached;
