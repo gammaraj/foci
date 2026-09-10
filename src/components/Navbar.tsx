@@ -276,11 +276,6 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
 
         {menuOpen && (
           <div className="roomy:hidden mt-3 pb-1 border-t nav-chrome-menu">
-            {toolbarSlot && (
-              <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b nav-chrome-menu">
-                {toolbarSlot}
-              </div>
-            )}
             <div className="flex flex-col gap-1 pt-3">
               {navLinks.map((link) => renderNavLink(link, true))}
               {onOpenSettings && (

@@ -1,0 +1,14 @@
+---
+description: When fixing an error, also find and fix the same class of error elsewhere
+alwaysApply: true
+---
+
+# Fix similar errors, not just the one you found
+
+When you encounter an error (build, type, lint, runtime, test failure, or a bug in code), do not stop at the first instance.
+
+1. **Fix the error you found.**
+2. **Search the codebase for the same pattern.** Look for the same API misuse, missing check, wrong type, copy-pasted logic, or equivalent failure in other files, routes, and call sites.
+3. **Fix those similar errors too** in the same change, unless they are intentionally different.
+
+Do this for every error you hit while implementing or debugging. Treat one occurrence as evidence of a class of problems, not a one-off.
