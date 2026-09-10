@@ -195,7 +195,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
           </Link>
 
           {centerSlot ? (
-            <div className="hidden roomy:flex flex-1 min-w-0 items-center justify-center px-1 sm:px-2">
+            <div className="flex flex-1 min-w-0 items-center justify-center px-1 sm:px-2">
               {centerSlot}
             </div>
           ) : (

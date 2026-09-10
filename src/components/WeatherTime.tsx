@@ -100,35 +100,49 @@ export default function WeatherTime() {
 
   return (
     <div
-      className="nav-chrome-meta flex items-center justify-center gap-2.5 sm:gap-3 min-w-0 max-w-full"
+      className="nav-chrome-meta flex items-center justify-center min-w-0 max-w-full"
       title={weatherTitle || undefined}
       aria-label={weatherTitle ? `Local time and weather: ${formatClock(now)}. ${weatherTitle}` : `Local time ${formatClock(now)}`}
     >
-      <span className="text-[0.875rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
-        {formatClock(now)}
-      </span>
-      <span className="text-[0.75rem] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:inline">
-        {formatShortWeekday(now)}
-      </span>
+      {/* Compact — phones: weather only, centered between logo and menu button. */}
       {weather && (
-        <>
-          <span className="nav-chrome-divider w-px h-3.5 shrink-0 mx-1.5 sm:mx-2 rounded-full" aria-hidden />
-          <span className="text-[0.875rem] leading-none shrink-0" aria-hidden>
+        <span className="flex roomy:hidden items-center gap-1 min-w-0">
+          <span className="text-[0.9375rem] leading-none shrink-0" aria-hidden>
             {weather.icon}
           </span>
-          <span className="text-[0.875rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
+          <span className="text-[0.8125rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
             {weather.temp}°{unitSuffix}
           </span>
-          <span className="text-[0.75rem] font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden lg:inline max-w-[7rem]">
-            {weather.description}
-          </span>
-          {weather.city && (
-            <span className="text-[0.75rem] font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden xl:inline max-w-[6rem]">
-              {weather.city}
-            </span>
-          )}
-        </>
+        </span>
       )}
+      {/* Full — desktop chrome: clock, weekday, then weather detail. */}
+      <span className="hidden roomy:flex items-center gap-2.5 sm:gap-3 min-w-0 max-w-full">
+        <span className="text-[0.875rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
+          {formatClock(now)}
+        </span>
+        <span className="text-[0.75rem] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:inline">
+          {formatShortWeekday(now)}
+        </span>
+        {weather && (
+          <>
+            <span className="nav-chrome-divider w-px h-3.5 shrink-0 mx-1.5 sm:mx-2 rounded-full" aria-hidden />
+            <span className="text-[0.875rem] leading-none shrink-0" aria-hidden>
+              {weather.icon}
+            </span>
+            <span className="text-[0.875rem] font-semibold tabular-nums text-slate-700 dark:text-slate-200 whitespace-nowrap tracking-tight">
+              {weather.temp}°{unitSuffix}
+            </span>
+            <span className="text-[0.75rem] font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden lg:inline max-w-[7rem]">
+              {weather.description}
+            </span>
+            {weather.city && (
+              <span className="text-[0.75rem] font-medium text-slate-500 dark:text-slate-400 truncate min-w-0 hidden xl:inline max-w-[6rem]">
+                {weather.city}
+              </span>
+            )}
+          </>
+        )}
+      </span>
     </div>
   );
 }
