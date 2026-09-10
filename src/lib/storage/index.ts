@@ -66,13 +66,25 @@ async function doActivateSupabase(): Promise<void> {
     const supabase = createClient();
     supabaseAdapter = new SupabaseStorageAdapter(supabase);
     // Install cache-first adapter before any network so offline paint works.
-    currentAdapter = new CachedSupabaseAdapter(supabaseAdapter);
+    const cachedAdapter = new CachedSupabaseAdapter(supabaseAdapter);
+    currentAdapter = cachedAdapter;
 
     if (typeof window === "undefined") return;
 
+    // Validate cache ownership before serving it, so another account's snapshot
+    // cannot bleed into this session.
+    try {
+      await cachedAdapter.ensureAccountScope();
+    } catch {
+      // Non-fatal — cache is still usable, scope is retried on next activation.
+    }
+
     const online = typeof navigator === "undefined" || navigator.onLine !== false;
-    // Guest → account migration needs the network; skip while offline.
+    // Guest → account migration and stranded-write retry need the network.
     if (!online) return;
+
+    // Re-push task writes stranded by a reload while offline.
+    void cachedAdapter.flushPersistedPendingTasks();
 
     try {
       await withTimeout(migrateGuestDataIfNeeded(supabaseAdapter), MIGRATION_TIMEOUT_MS);

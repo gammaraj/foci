@@ -149,6 +149,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   constructor(private supabase: SupabaseClient) {}
 
+  /** Exposed so the cache layer can verify cached data belongs to this account. */
+  getUserIdForCache(): Promise<string> {
+    return this.getUserId();
+  }
+
   private async getUserId(): Promise<string> {
     if (this.cachedUserId) return this.cachedUserId;
     // Prefer local session so offline / flaky networks still resolve the user id.

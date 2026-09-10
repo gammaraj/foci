@@ -47,6 +47,16 @@ const CACHE_KEYS = {
   customQuote: `${CACHE_PREFIX}custom_quote`,
 } as const;
 
+/**
+ * Task ids with local changes the server has not confirmed yet. Persisted so a
+ * failed/offline write is retried after a reload instead of becoming a
+ * device-only orphan that the cache would otherwise keep forever.
+ */
+const PENDING_TASKS_KEY = `${CACHE_PREFIX}pending_tasks`;
+/** Account that owns the current cache — guards against cross-account bleed. */
+const CACHE_OWNER_KEY = `${CACHE_PREFIX}owner`;
+const PENDING_TASKS_LABEL = "pending tasks";
+
 function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
@@ -144,14 +154,15 @@ async function syncOrKeepLocal(
   label: string,
   write: () => Promise<void>,
   localOk = true,
-): Promise<void> {
+): Promise<boolean> {
   try {
     await write();
+    return true;
   } catch (err) {
     if (localOk && (isLikelyOffline() || isQueueableSyncError(err))) {
       reportError(`Offline: ${label} saved locally, sync pending`, err, { offline: true });
       enqueuePendingWrite(label, write);
-      return;
+      return false;
     }
     throw err;
   }
@@ -187,6 +198,47 @@ function cacheHas(key: string): boolean {
   }
 }
 
+/** Task ids whose latest local write the server has not confirmed yet. */
+function readPendingTaskIds(): Set<string> {
+  const raw = cacheGet<string[]>(PENDING_TASKS_KEY);
+  if (!Array.isArray(raw)) return new Set();
+  return new Set(raw.filter((id): id is string => typeof id === "string" && id.length > 0));
+}
+
+function writePendingTaskIds(ids: Set<string>): void {
+  if (!isBrowser()) return;
+  if (ids.size === 0) {
+    try {
+      localStorage.removeItem(PENDING_TASKS_KEY);
+    } catch {
+      /* ignore quota / private mode */
+    }
+    return;
+  }
+  cacheSet(PENDING_TASKS_KEY, Array.from(ids));
+}
+
+function markPendingTaskIds(ids: Iterable<string>): void {
+  const pending = readPendingTaskIds();
+  let changed = false;
+  for (const id of ids) {
+    if (id && !pending.has(id)) {
+      pending.add(id);
+      changed = true;
+    }
+  }
+  if (changed) writePendingTaskIds(pending);
+}
+
+function clearPendingTaskIds(ids: Iterable<string>): void {
+  const pending = readPendingTaskIds();
+  let changed = false;
+  for (const id of ids) {
+    if (pending.delete(id)) changed = true;
+  }
+  if (changed) writePendingTaskIds(pending);
+}
+
 const REMOTE_LOAD_TIMEOUT_MS = 15_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -205,10 +257,17 @@ function notifyTasksUpdated(): void {
 
 /**
  * Merge a remote snapshot into the local cache without clobbering optimistic writes.
- * Keeps local-only tasks (not yet on server) and prefers local when completion
- * state is newer than what the background refresh returned.
+ * Keeps local-only tasks only while they still have a pending (unconfirmed) write;
+ * any other local-only task is a true orphan and is dropped so the device converges
+ * on the server instead of hoarding rows that will never sync.
+ *
+ * @internal exported for tests
  */
-function mergeRemoteTasks(local: Task[] | null | undefined, remote: Task[]): Task[] {
+export function mergeRemoteTasks(
+  local: Task[] | null | undefined,
+  remote: Task[],
+  pendingIds: ReadonlySet<string> = new Set(),
+): Task[] {
   if (!local || local.length === 0) return remote;
   const localById = new Map(local.map((t) => [t.id, t]));
   const remoteIds = new Set(remote.map((t) => t.id));
@@ -231,7 +290,8 @@ function mergeRemoteTasks(local: Task[] | null | undefined, remote: Task[]): Tas
   });
 
   for (const localTask of local) {
-    if (!remoteIds.has(localTask.id)) merged.push(localTask);
+    if (remoteIds.has(localTask.id)) continue;
+    if (pendingIds.has(localTask.id)) merged.push(localTask);
   }
   return merged;
 }
@@ -241,6 +301,12 @@ export function clearOfflineCache(): void {
   clearPendingStorageSyncs();
   if (!isBrowser()) return;
   Object.values(CACHE_KEYS).forEach((k) => localStorage.removeItem(k));
+  try {
+    localStorage.removeItem(PENDING_TASKS_KEY);
+    localStorage.removeItem(CACHE_OWNER_KEY);
+  } catch {
+    /* ignore quota / private mode */
+  }
 }
 
 /** True when a previous session left tasks (or projects) in the offline cache. */
@@ -258,6 +324,74 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   private refreshingCustomQuote = false;
   /** In-flight task writes — background refresh must not clobber these. */
   private pendingTaskWrites = 0;
+  /** Guards the one-shot retry of writes stranded by a previous session. */
+  private pendingFlushStarted = false;
+
+  /**
+   * Drop cached account data when a different user takes over the browser.
+   * Cache keys are shared across accounts, so without this a stale snapshot
+   * from a previous session could leak into a new one.
+   */
+  async ensureAccountScope(): Promise<void> {
+    const remote = this.remote as StorageAdapter & { getUserIdForCache?: () => Promise<string> };
+    if (typeof remote.getUserIdForCache !== "function") return;
+    let userId: string;
+    try {
+      userId = await remote.getUserIdForCache();
+    } catch {
+      // No session yet (cold start) — scope is validated on the next activation.
+      return;
+    }
+    const owner = cacheGet<string>(CACHE_OWNER_KEY);
+    if (owner && owner !== userId) {
+      this.clearLocalCache();
+    }
+    if (owner !== userId) cacheSet(CACHE_OWNER_KEY, userId);
+  }
+
+  private clearLocalCache(): void {
+    if (!isBrowser()) return;
+    Object.values(CACHE_KEYS).forEach((k) => localStorage.removeItem(k));
+    try {
+      localStorage.removeItem(PENDING_TASKS_KEY);
+    } catch {
+      /* ignore quota / private mode */
+    }
+  }
+
+  /**
+   * Re-push task writes persisted as pending but never confirmed (e.g. the tab
+   * was closed while offline). Clears the marker only once the server confirms,
+   * so a write is never silently lost.
+   */
+  async flushPersistedPendingTasks(): Promise<void> {
+    const pending = readPendingTaskIds();
+    if (pending.size === 0) return;
+    const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
+    const byId = new Map(cached.map((t) => [t.id, t]));
+    for (const id of Array.from(pending)) {
+      const task = byId.get(id);
+      if (!task) {
+        // Task was deleted locally — drop the stale marker.
+        clearPendingTaskIds([id]);
+        continue;
+      }
+      try {
+        await this.remote.saveTask(task);
+        clearPendingTaskIds([id]);
+      } catch (err) {
+        if (isLikelyOffline() || isQueueableSyncError(err)) {
+          enqueuePendingWrite(PENDING_TASKS_LABEL, async () => {
+            await this.remote.saveTask(task);
+            clearPendingTaskIds([id]);
+          });
+          break;
+        }
+        reportError("Persisted pending task sync failed", err);
+        break;
+      }
+    }
+  }
 
   // ── Settings ──────────────────────────────────────────
 
@@ -369,6 +503,12 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   // ── Tasks ─────────────────────────────────────────────
 
   async loadTasks(): Promise<Task[]> {
+    // Retry writes stranded by a previous session (e.g. closed while offline).
+    if (!this.pendingFlushStarted && !isLikelyOffline()) {
+      this.pendingFlushStarted = true;
+      void this.flushPersistedPendingTasks();
+    }
+
     // Cache-first: paint immediately for returning users, refresh in background.
     if (cacheHas(CACHE_KEYS.tasks)) {
       const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
@@ -379,7 +519,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
             // Don't apply a stale snapshot over optimistic completes / quick-adds.
             if (this.pendingTaskWrites > 0) return;
             const prev = cacheGet<Task[]>(CACHE_KEYS.tasks);
-            const merged = mergeRemoteTasks(prev, result);
+            const merged = mergeRemoteTasks(prev, result, readPendingTaskIds());
             cacheSet(CACHE_KEYS.tasks, merged);
             if (JSON.stringify(prev) !== JSON.stringify(merged)) {
               notifyTasksUpdated();
@@ -405,9 +545,13 @@ export class CachedSupabaseAdapter implements StorageAdapter {
 
   async saveTasks(tasks: Task[]): Promise<void> {
     const localOk = cacheSet(CACHE_KEYS.tasks, tasks);
+    const ids = tasks.map((t) => t.id);
+    // Mark before the write so an interrupted sync is retried after a reload.
+    markPendingTaskIds(ids);
     this.pendingTaskWrites += 1;
     try {
-      await syncOrKeepLocal("tasks", () => this.remote.saveTasks(tasks), localOk);
+      const synced = await syncOrKeepLocal("tasks", () => this.remote.saveTasks(tasks), localOk);
+      if (synced) clearPendingTaskIds(ids);
     } finally {
       this.pendingTaskWrites = Math.max(0, this.pendingTaskWrites - 1);
     }
@@ -423,10 +567,13 @@ export class CachedSupabaseAdapter implements StorageAdapter {
       cached.push(task);
     }
     const localOk = cacheSet(CACHE_KEYS.tasks, cached);
+    // Mark before the write so an interrupted sync is retried after a reload.
+    markPendingTaskIds([task.id]);
 
     this.pendingTaskWrites += 1;
     try {
-      await syncOrKeepLocal("task", () => this.remote.saveTask(task), localOk);
+      const synced = await syncOrKeepLocal("task", () => this.remote.saveTask(task), localOk);
+      if (synced) clearPendingTaskIds([task.id]);
     } finally {
       this.pendingTaskWrites = Math.max(0, this.pendingTaskWrites - 1);
     }
@@ -435,6 +582,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
   async deleteTask(id: string): Promise<void> {
     const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
     const localOk = cacheSet(CACHE_KEYS.tasks, cached.filter((t) => t.id !== id));
+    clearPendingTaskIds([id]);
 
     await syncOrKeepLocal("task delete", () => this.remote.deleteTask(id), localOk);
   }
@@ -444,6 +592,7 @@ export class CachedSupabaseAdapter implements StorageAdapter {
     const idSet = new Set(ids);
     const cached = cacheGet<Task[]>(CACHE_KEYS.tasks) ?? [];
     const localOk = cacheSet(CACHE_KEYS.tasks, cached.filter((t) => !idSet.has(t.id)));
+    clearPendingTaskIds(ids);
 
     await syncOrKeepLocal("task deletes", () => this.remote.deleteTasks(ids), localOk);
   }
