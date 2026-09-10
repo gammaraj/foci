@@ -187,7 +187,7 @@ function NavbarContent({ onOpenSettings, toolbarSlot, centerSlot }: NavbarProps)
               <FociWordmark className={FOCI_WORDMARK_NAV} tone={wordmarkTone} />
               {/* Logged-in: brand rhythm. Logged-out: omit so the hero owns the value prop. */}
               {user ? (
-                <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap hidden min-[380px]:block [@media(max-height:500px)]:hidden`}>
+                <p className={`${FOCI_TAGLINE_NAV} ${taglineClass} whitespace-nowrap hidden roomy:block`}>
                   {FOCI_TAGLINE_FOCUS}
                 </p>
               ) : null}
