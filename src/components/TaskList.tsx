@@ -107,6 +107,8 @@ import {
   resolveProjectColor,
   pickProjectColor,
   filterTasksByQuery,
+  findProjectByName,
+  mergeTargetCandidates,
   TASK_CHECK_DONE_CLASS,
 } from "@/components/task-list/utils";
 import { OneThingCard } from "@/components/task-list/OneThingCard";
@@ -1346,6 +1348,28 @@ export default function TaskList({
   const addProject = (template?: ProjectTemplate) => {
     const name = (template?.label ?? newProjectName).trim().slice(0, MAX_PROJECT_NAME);
     if (!name) return;
+    // Guard against creating a second project with the same name (common when a
+    // device hasn't synced yet) — jump to the existing one instead.
+    const existing = findProjectByName(projects, name);
+    if (existing) {
+      showToast(`A project named "${existing.name}" already exists.`, "info");
+      closeProjectManage();
+      setNewProjectName("");
+      setSelectedSharedProject(null);
+      setSelectedProjectId(ALL_PROJECTS_ID);
+      saveSelectedProjectId(ALL_PROJECTS_ID).catch((err) => reportError("Failed to save selected project", err));
+      setListReturnView(null);
+      selectViewMode("card");
+      setForceVisibleProjectIds((prev) => {
+        const next = new Set(prev);
+        next.add(existing.id);
+        return next;
+      });
+      setCardJumpProjectId(existing.id);
+      setCardJumpToken((n) => n + 1);
+      setHighlightProjectId(existing.id);
+      return;
+    }
     const nextColor = pickProjectColor(projects);
     const orders = projects.map((p) => p.order ?? 0);
     const minOrder = orders.length > 0 ? Math.min(...orders) : 0;
@@ -1394,10 +1418,67 @@ export default function TaskList({
     setEditProjectName("");
   };
 
+  /**
+   * Move every task from `sourceId` into `targetId`, then delete the source
+   * project. Used to combine duplicates created independently on two devices.
+   */
+  const mergeProject = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId || sourceId === DEFAULT_PROJECT_ID) return;
+    const source = projects.find((p) => p.id === sourceId);
+    const target = projects.find((p) => p.id === targetId);
+    if (!source || !target) return;
+    const movingCount = tasks.filter((t) => t.projectId === sourceId).length;
+    setPendingConfirm({
+      title: "Merge projects",
+      message:
+        movingCount > 0
+          ? `Move ${movingCount} task${movingCount === 1 ? "" : "s"} from "${source.name}" into "${target.name}" and delete "${source.name}"?`
+          : `Delete the empty project "${source.name}"? It has no tasks to move.`,
+      confirmLabel: "Merge",
+      onConfirm: async () => {
+        setPendingConfirm(null);
+        // Re-point the source's tasks at the target; persist() upserts them server-side.
+        persist(tasks.map((t) => (t.projectId === sourceId ? { ...t, projectId: targetId } : t)));
+        persistProjects(projects.filter((p) => p.id !== sourceId));
+        setForceVisibleProjectIds((prev) => {
+          if (!prev.has(sourceId) && !prev.has(targetId)) return prev;
+          const next = new Set(prev);
+          next.delete(sourceId);
+          next.add(targetId);
+          return next;
+        });
+        if (selectedProjectId === sourceId) {
+          setSelectedProjectId(targetId);
+          saveSelectedProjectId(targetId).catch((err) =>
+            reportError("Failed to save selected project", err),
+          );
+        }
+        try {
+          // Deletes only the project row — its tasks were moved above.
+          await removeProjectFromDB(sourceId);
+        } catch (err) {
+          reportError("Failed to merge projects", err);
+          showToast("Failed to merge projects.", "error");
+        }
+        closeProjectManage();
+        showToast(`Merged "${source.name}" into "${target.name}"`, "success");
+      },
+    });
+  };
+
   const saveProjectEdit = () => {
     const name = editProjectName.trim().slice(0, MAX_PROJECT_NAME);
     if (!name || !editingProjectId) {
       cancelEditingProject();
+      return;
+    }
+    const duplicate = findProjectByName(projects, name, editingProjectId);
+    if (duplicate) {
+      // Offer the merge instead of silently creating a same-named project.
+      const sourceId = editingProjectId;
+      cancelEditingProject();
+      showToast(`"${duplicate.name}" already exists — merge instead?`, "info");
+      mergeProject(sourceId, duplicate.id);
       return;
     }
     persistProjects(
@@ -1427,6 +1508,7 @@ export default function TaskList({
     onSaveRename: saveProjectEdit,
     onCancelRename: cancelEditingProject,
     onUpdateColor: updateProjectColor,
+    onMergeProject: mergeProject,
   };
 
   const listProjectEditMenu = useProjectEditMenu();
@@ -3953,6 +4035,8 @@ export default function TaskList({
                 }
               : undefined
           }
+          mergeTargets={mergeTargetCandidates(listMenuProject, projects)}
+          onMergeInto={(targetId) => mergeProject(listMenuProject.id, targetId)}
         />
       )}
 

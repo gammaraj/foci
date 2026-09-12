@@ -1,5 +1,5 @@
 import type { Project, RecurrenceType, Subtask, Task } from "@/lib/types";
-import { LEGACY_PROJECT_COLOR_MAP, PROJECT_COLORS } from "@/lib/types";
+import { DEFAULT_PROJECT_ID, LEGACY_PROJECT_COLOR_MAP, PROJECT_COLORS } from "@/lib/types";
 import { diffCalendarDays, formatDateLocal, getToday, getTomorrow, parseLocalDate } from "@/lib/dates";
 
 export const MAX_TASK_TITLE = 200;
@@ -161,6 +161,34 @@ export function projectTabLabel(project: { name: string; description?: string })
     return `${project.name} — ${short}`;
   }
   return project.name;
+}
+
+/** Case- and whitespace-insensitive key for comparing project names. */
+export function normalizeProjectName(name: string): string {
+  return name.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+/**
+ * First active (non-archived) project whose name matches, ignoring case and
+ * surrounding/duplicate whitespace. Pass `excludeId` to skip the project being
+ * renamed. Used to stop the same project being created twice on two devices.
+ */
+export function findProjectByName(
+  projects: Project[],
+  name: string,
+  excludeId?: string,
+): Project | undefined {
+  const key = normalizeProjectName(name);
+  if (!key) return undefined;
+  return projects.find(
+    (p) => p.id !== excludeId && !p.archived && normalizeProjectName(p.name) === key,
+  );
+}
+
+/** Active projects a `source` project can be merged into (never the default project as source). */
+export function mergeTargetCandidates(source: Project, projects: Project[]): Project[] {
+  if (source.id === DEFAULT_PROJECT_ID) return [];
+  return projects.filter((p) => p.id !== source.id && !p.archived);
 }
 
 export function formatDuration(ms: number): string {

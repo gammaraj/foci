@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DEFAULT_PROJECT_ID, type Project, type Task } from "@/lib/types";
 import { getToday } from "@/lib/dates";
-import { MAX_TASK_TITLE, OVERDUE_ROW_CLASS, TASK_CHECK_DONE_CLASS, TASK_CHECK_OPEN_CLASS, resolveProjectColor } from "@/components/task-list/utils";
+import { MAX_TASK_TITLE, OVERDUE_ROW_CLASS, TASK_CHECK_DONE_CLASS, TASK_CHECK_OPEN_CLASS, mergeTargetCandidates, resolveProjectColor } from "@/components/task-list/utils";
 import { DueDateField } from "@/components/task-list/DueDateField";
 import { TaskEditButton } from "@/components/task-list/TaskEditButton";
 import { TaskTitleButton } from "@/components/task-list/TaskTitleButton";
@@ -1303,6 +1303,8 @@ export default function TaskBucketView({
               ? () => projectEdit.onStartRename(menuProject)
               : undefined
           }
+          mergeTargets={mergeTargetCandidates(menuProject, projects)}
+          onMergeInto={(targetId) => projectEdit.onMergeProject(menuProject.id, targetId)}
         />
       )}
     </div>

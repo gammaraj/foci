@@ -14,6 +14,7 @@ import {
   overdueDayChipClass,
   META_CHIP_CLASS,
   resolveProjectColor,
+  mergeTargetCandidates,
   TASK_CHECK_OPEN_CLASS,
 } from "@/components/task-list/utils";
 import { isActionableOverdue } from "@/lib/task-status";
@@ -1246,6 +1247,8 @@ export default function TaskCardView({
               ? () => projectEdit.onStartRename(menuProject)
               : undefined
           }
+          mergeTargets={mergeTargetCandidates(menuProject, projects)}
+          onMergeInto={(targetId) => projectEdit.onMergeProject(menuProject.id, targetId)}
         />
       )}
     </div>

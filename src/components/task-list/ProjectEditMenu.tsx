@@ -22,6 +22,8 @@ export interface ProjectEditHandlers {
   onSaveRename: () => void;
   onCancelRename: () => void;
   onUpdateColor: (id: string, color: string) => void;
+  /** Move every task from `sourceId` into `targetId`, then delete the source project. */
+  onMergeProject: (sourceId: string, targetId: string) => void;
 }
 
 export function canRenameProject(project: Pick<Project, "id">): boolean {
@@ -218,6 +220,8 @@ export function ProjectEditMenu({
   onClose,
   onUpdateColor,
   onRename,
+  mergeTargets,
+  onMergeInto,
 }: {
   project: Project;
   x: number;
@@ -226,11 +230,22 @@ export function ProjectEditMenu({
   onClose: () => void;
   onUpdateColor: (id: string, color: string) => void;
   onRename?: () => void;
+  /** Candidate projects to merge this one into. */
+  mergeTargets?: Project[];
+  onMergeInto?: (targetProjectId: string) => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ left: x, top: y });
+  const [pickingMergeTarget, setPickingMergeTarget] = useState(false);
   const current = resolveProjectColor(project);
   const showRename = mode === "full" && !!onRename && canRenameProject(project);
+  const showMerge =
+    mode === "full" &&
+    !!onMergeInto &&
+    canRenameProject(project) &&
+    !!mergeTargets &&
+    mergeTargets.length > 0;
+  const merging = pickingMergeTarget && showMerge;
 
   useLayoutEffect(() => {
     const el = panelRef.current;
@@ -241,7 +256,7 @@ export function ProjectEditMenu({
       left: Math.min(Math.max(pad, x), window.innerWidth - width - pad),
       top: Math.min(Math.max(pad, y), window.innerHeight - height - pad),
     });
-  }, [x, y]);
+  }, [x, y, merging]);
 
   useEffect(() => {
     const onPointerDown = (e: PointerEvent) => {
@@ -274,61 +289,123 @@ export function ProjectEditMenu({
       className="fixed z-[9998] w-[13.5rem] py-2 rounded-lg border surface-panel shadow-xl"
       style={{ left: pos.left, top: pos.top }}
       role="menu"
-      aria-label={showRename ? `Edit ${project.name}` : `Change ${project.name} color`}
+      aria-label={
+        merging
+          ? `Merge ${project.name} into another project`
+          : showRename
+            ? `Edit ${project.name}`
+            : `Change ${project.name} color`
+      }
       onContextMenu={(e) => e.preventDefault()}
     >
-      <p className="px-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-        Color
-      </p>
-      <div className="px-3 pb-2 grid grid-cols-5 gap-1.5">
-        {PROJECT_COLORS.map((color) => {
-          const selected = current.toLowerCase() === color.toLowerCase();
-          return (
-            <button
-              key={color}
-              type="button"
-              role="menuitem"
-              onClick={() => onUpdateColor(project.id, color)}
-              className={`w-6 h-6 rounded-full ring-1 ring-black/15 dark:ring-white/20 transition-shadow ${
-                selected ? "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 ring-offset-white dark:ring-offset-[#131d30]" : "hover:ring-2 hover:ring-slate-400/70"
-              }`}
-              style={{ backgroundColor: color }}
-              aria-label={`Set color ${color}`}
-              aria-pressed={selected}
-              title="Set project color"
-            />
-          );
-        })}
-      </div>
-      <label className="mx-3 mb-1 flex items-center gap-2 px-1 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-surface-muted dark:hover:bg-surface-hover cursor-pointer">
-        <span
-          className="w-4 h-4 rounded-full ring-1 ring-black/15 dark:ring-white/20 shrink-0"
-          style={{ backgroundColor: current }}
-          aria-hidden
-        />
-        Custom color
-        <input
-          type="color"
-          value={current}
-          onChange={(e) => onUpdateColor(project.id, e.target.value)}
-          className="sr-only"
-          aria-label={`Custom color for ${project.name}`}
-        />
-      </label>
-      {showRename && (
+      {merging && mergeTargets ? (
         <>
-          <div className="my-1.5 border-t border-slate-100 dark:border-surface-border" />
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              onClose();
-              onRename();
-            }}
-            className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
-          >
-            Rename
-          </button>
+          <div className="flex items-center gap-1 px-2 pb-1.5">
+            <button
+              type="button"
+              onClick={() => setPickingMergeTarget(false)}
+              className="p-1 -ml-0.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-surface-muted dark:hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
+              aria-label="Back"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 truncate">
+              Merge {project.name} into
+            </p>
+          </div>
+          <div className="max-h-64 overflow-y-auto">
+            {mergeTargets.map((target) => (
+              <button
+                key={target.id}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  onClose();
+                  onMergeInto?.(target.id);
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
+              >
+                <span
+                  className="w-3.5 h-3.5 rounded-full ring-1 ring-black/15 dark:ring-white/20 shrink-0"
+                  style={{ backgroundColor: resolveProjectColor(target) }}
+                  aria-hidden
+                />
+                <span className="truncate">{target.name}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="px-3 pb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+            Color
+          </p>
+          <div className="px-3 pb-2 grid grid-cols-5 gap-1.5">
+            {PROJECT_COLORS.map((color) => {
+              const selected = current.toLowerCase() === color.toLowerCase();
+              return (
+                <button
+                  key={color}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => onUpdateColor(project.id, color)}
+                  className={`w-6 h-6 rounded-full ring-1 ring-black/15 dark:ring-white/20 transition-shadow ${
+                    selected ? "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 ring-offset-white dark:ring-offset-[#131d30]" : "hover:ring-2 hover:ring-slate-400/70"
+                  }`}
+                  style={{ backgroundColor: color }}
+                  aria-label={`Set color ${color}`}
+                  aria-pressed={selected}
+                  title="Set project color"
+                />
+              );
+            })}
+          </div>
+          <label className="mx-3 mb-1 flex items-center gap-2 px-1 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-surface-muted dark:hover:bg-surface-hover cursor-pointer">
+            <span
+              className="w-4 h-4 rounded-full ring-1 ring-black/15 dark:ring-white/20 shrink-0"
+              style={{ backgroundColor: current }}
+              aria-hidden
+            />
+            Custom color
+            <input
+              type="color"
+              value={current}
+              onChange={(e) => onUpdateColor(project.id, e.target.value)}
+              className="sr-only"
+              aria-label={`Custom color for ${project.name}`}
+            />
+          </label>
+          {showRename && (
+            <>
+              <div className="my-1.5 border-t border-slate-100 dark:border-surface-border" />
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  onClose();
+                  onRename();
+                }}
+                className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
+              >
+                Rename
+              </button>
+            </>
+          )}
+          {showMerge && (
+            <>
+              {!showRename && <div className="my-1.5 border-t border-slate-100 dark:border-surface-border" />}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => setPickingMergeTarget(true)}
+                className="w-full text-left px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-surface-muted dark:hover:bg-surface-hover"
+              >
+                Merge into…
+              </button>
+            </>
+          )}
         </>
       )}
     </div>,

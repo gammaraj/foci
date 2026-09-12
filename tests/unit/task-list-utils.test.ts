@@ -12,8 +12,11 @@ import {
   moveProjectInDisplayOrder,
   resolveProjectColor,
   filterTasksByQuery,
+  normalizeProjectName,
+  findProjectByName,
+  mergeTargetCandidates,
 } from "@/components/task-list/utils";
-import type { Project, Subtask, Task } from "@/lib/types";
+import { DEFAULT_PROJECT_ID, type Project, type Subtask, type Task } from "@/lib/types";
 import { getToday, getTomorrow } from "@/lib/dates";
 
 describe("task-list utils", () => {
@@ -116,5 +119,40 @@ describe("task-list utils", () => {
     expect(filterTasksByQuery(tasks, "essay", projects).map((t) => t.id)).toEqual(["1"]);
     expect(filterTasksByQuery(tasks, "home", projects).map((t) => t.id)).toEqual(["2"]);
     expect(filterTasksByQuery(tasks, "xyz", projects)).toEqual([]);
+  });
+
+  it("normalizeProjectName ignores case and extra whitespace", () => {
+    expect(normalizeProjectName("  Physics  ")).toBe("physics");
+    expect(normalizeProjectName("PHYSICS\n")).toBe("physics");
+    expect(normalizeProjectName("a   b")).toBe("a b");
+  });
+
+  it("findProjectByName matches duplicates ignoring case and whitespace", () => {
+    const projects: Project[] = [
+      { id: "d", name: "General", createdAt: 0 },
+      { id: "p1", name: "PHYSICS", createdAt: 1 },
+      { id: "p2", name: "Archive", createdAt: 2, archived: true },
+    ];
+    expect(findProjectByName(projects, " physics ")?.id).toBe("p1");
+    expect(findProjectByName(projects, "Physics", "p1")).toBeUndefined();
+    expect(findProjectByName(projects, "Archive")).toBeUndefined();
+    expect(findProjectByName(projects, "   ")).toBeUndefined();
+  });
+
+  it("mergeTargetCandidates excludes the source and archived projects", () => {
+    const projects: Project[] = [
+      { id: DEFAULT_PROJECT_ID, name: "General", createdAt: 0 },
+      { id: "p1", name: "PHYSICS", createdAt: 1 },
+      { id: "p2", name: "PHYSICS", createdAt: 2 },
+      { id: "p3", name: "Old", createdAt: 3, archived: true },
+    ];
+    const source = projects.find((p) => p.id === "p1")!;
+    expect(mergeTargetCandidates(source, projects).map((p) => p.id)).toEqual([
+      DEFAULT_PROJECT_ID,
+      "p2",
+    ]);
+    // The default project cannot be merged away, so it has no candidates.
+    const general = projects.find((p) => p.id === DEFAULT_PROJECT_ID)!;
+    expect(mergeTargetCandidates(general, projects)).toEqual([]);
   });
 });
